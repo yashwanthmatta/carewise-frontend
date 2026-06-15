@@ -1,0 +1,242 @@
+[
+  {
+    "id": "high_blood_pressure",
+    "name": "High blood pressure",
+    "terms": ["high blood pressure", "hypertension", "bp"],
+    "precautions": ["Check blood pressure regularly.", "Bring readings to a clinician.", "Seek urgent care for readings around or above 180/120 or severe symptoms."],
+    "diet": ["DASH-style low-sodium meals.", "Vegetables, fruits, whole grains, beans, nuts, low-fat dairy if tolerated.", "Limit salty packaged foods, processed meat, fast food, and sugary drinks."],
+    "doctor": "Primary care or cardiology"
+  },
+  {
+    "id": "diabetes",
+    "name": "Diabetes",
+    "terms": ["diabetes", "high glucose", "blood sugar", "a1c"],
+    "precautions": ["Track glucose, meals, symptoms, and medications.", "Do not change insulin or diabetes medicine without clinician guidance.", "Urgent care for confusion, vomiting, severe weakness, or very high/low glucose."],
+    "diet": ["Consistent meal timing.", "Non-starchy vegetables, beans, lentils, controlled portions of whole grains, lean protein.", "Limit sugary drinks, large refined-carb portions, and sweets."],
+    "doctor": "Primary care, endocrinology, registered dietitian"
+  },
+  {
+    "id": "high_cholesterol",
+    "name": "High cholesterol",
+    "terms": ["cholesterol", "ldl", "triglycerides"],
+    "precautions": ["Review lipid labs with a clinician.", "Ask about family history and heart risk.", "Do not stop cholesterol medication without clinician guidance."],
+    "diet": ["Mediterranean or DASH-style pattern.", "Oats, beans, vegetables, fruits, nuts, fish if eaten.", "Limit saturated fat, trans fat, fried foods, fatty red meat, and processed meat."],
+    "doctor": "Primary care or cardiology"
+  },
+  {
+    "id": "heart_disease",
+    "name": "Heart disease",
+    "terms": ["heart disease", "coronary", "heart failure", "angina"],
+    "precautions": ["Emergency care for chest pain, shortness of breath, fainting, or blue lips.", "Track symptoms, weight changes if heart failure, and medications.", "Follow clinician activity limits."],
+    "diet": ["Mediterranean or DASH-style pattern.", "Low sodium if advised.", "Limit fried foods, processed meat, excess saturated fat, and high-salt foods."],
+    "doctor": "Primary care or cardiology"
+  },
+  {
+    "id": "asthma",
+    "name": "Asthma",
+    "terms": ["asthma", "wheezing", "inhaler"],
+    "precautions": ["Know triggers and keep an asthma action plan.", "Use prescribed controller/rescue medicines as directed.", "Emergency care if breathing is severe or rescue medicine is not helping."],
+    "diet": ["No single asthma diet replaces asthma treatment.", "Balanced meals, hydration, fruits and vegetables.", "Avoid known food allergies and reflux-triggering foods if they worsen symptoms."],
+    "doctor": "Primary care, pulmonology, allergy/immunology"
+  },
+  {
+    "id": "copd",
+    "name": "COPD",
+    "terms": ["copd", "emphysema", "chronic bronchitis"],
+    "precautions": ["Avoid smoking and air pollution.", "Use inhalers/oxygen only as prescribed.", "Emergency care for blue lips, confusion, or severe breathing trouble."],
+    "diet": ["Small balanced meals if breathing is harder after large meals.", "Adequate protein and hydration unless restricted.", "Limit excess salt if swelling or heart disease is present."],
+    "doctor": "Primary care or pulmonology"
+  },
+  {
+    "id": "chronic_kidney_disease",
+    "name": "Chronic kidney disease",
+    "terms": ["kidney disease", "ckd", "kidney failure", "dialysis"],
+    "precautions": ["Nutrition depends on kidney stage and labs.", "Avoid NSAIDs or supplements unless clinician-approved.", "Track blood pressure, diabetes control, labs, and medications."],
+    "diet": ["Kidney-modified diet with clinician/dietitian guidance.", "Often sodium control; potassium, phosphorus, protein, and fluid may need individual limits.", "Do not use generic high-protein, high-potassium, or DASH plans without kidney review."],
+    "doctor": "Primary care, nephrology, renal dietitian"
+  },
+  {
+    "id": "obesity_weight",
+    "name": "Obesity or weight management",
+    "terms": ["obesity", "overweight", "lose weight", "weight loss"],
+    "precautions": ["Screen for eating-disorder risk.", "Choose sustainable changes over extreme dieting.", "Review medications and medical causes with a clinician when appropriate."],
+    "diet": ["Balanced plate with vegetables, protein, high-fiber carbs, and water.", "Limit sugary drinks, ultra-processed foods, and frequent fried foods.", "Use culturally familiar, affordable meals."],
+    "doctor": "Primary care, registered dietitian, obesity medicine if needed"
+  },
+  {
+    "id": "gerd",
+    "name": "Acid reflux / GERD",
+    "terms": ["gerd", "acid reflux", "heartburn"],
+    "precautions": ["Emergency care for chest pain with heart attack symptoms.", "Clinician review for trouble swallowing, vomiting blood, black stool, or weight loss.", "Avoid lying down soon after meals."],
+    "diet": ["Smaller meals.", "Limit personal triggers such as spicy foods, fatty meals, chocolate, peppermint, caffeine, or alcohol.", "Avoid late heavy meals."],
+    "doctor": "Primary care or gastroenterology"
+  },
+  {
+    "id": "fatty_liver",
+    "name": "Fatty liver disease",
+    "terms": ["fatty liver", "nafld", "masld"],
+    "precautions": ["Review liver tests and alcohol use with a clinician.", "Manage diabetes, cholesterol, and weight if present.", "Avoid unnecessary supplements that may harm the liver."],
+    "diet": ["Mediterranean-style eating.", "Weight-management pattern if appropriate.", "Limit sugary drinks, excess alcohol, refined carbs, and ultra-processed foods."],
+    "doctor": "Primary care, gastroenterology, hepatology"
+  },
+  {
+    "id": "anemia",
+    "name": "Anemia",
+    "terms": ["anemia", "low iron", "low hemoglobin"],
+    "precautions": ["Find the cause before taking high-dose supplements.", "Urgent care for chest pain, fainting, severe shortness of breath, or black stool.", "Ask about heavy bleeding or GI bleeding."],
+    "diet": ["Iron-rich foods such as beans, lentils, leafy greens, fortified grains, eggs, fish, poultry, or lean meats depending preference.", "Pair plant iron with vitamin C foods.", "Discuss B12/folate needs for vegan/vegetarian users."],
+    "doctor": "Primary care, hematology if severe or unclear"
+  },
+  {
+    "id": "depression",
+    "name": "Depression",
+    "terms": ["depression", "depressed", "hopeless"],
+    "precautions": ["Emergency/crisis support for suicidal thoughts or self-harm risk.", "Encourage therapy, primary care, or mental-health care.", "Do not stop psychiatric medication without clinician guidance."],
+    "diet": ["Regular meals and hydration.", "Mediterranean-style pattern may support overall health.", "Limit alcohol and avoid using substances to cope."],
+    "doctor": "Primary care, therapy, psychiatry"
+  },
+  {
+    "id": "anxiety",
+    "name": "Anxiety",
+    "terms": ["anxiety", "panic", "worry"],
+    "precautions": ["Emergency care for chest pain, fainting, or trouble breathing that could be medical.", "Consider therapy or primary care if persistent.", "Avoid excessive caffeine if it worsens symptoms."],
+    "diet": ["Regular meal timing.", "Hydration.", "Limit caffeine, alcohol, and heavy late meals if they worsen symptoms."],
+    "doctor": "Primary care, therapy, psychiatry"
+  },
+  {
+    "id": "insomnia",
+    "name": "Insomnia",
+    "terms": ["insomnia", "can't sleep", "sleep problem", "trouble sleeping", "sleep poorly"],
+    "precautions": ["Seek care if persistent, severe, or linked to depression/anxiety.", "Avoid mixing sleep medicines with alcohol.", "Do not start sedatives without clinician guidance."],
+    "diet": ["Limit late caffeine and heavy late meals.", "Keep regular meal and sleep timing.", "Avoid alcohol as a sleep aid."],
+    "doctor": "Primary care, behavioral health, sleep medicine"
+  },
+  {
+    "id": "arthritis",
+    "name": "Arthritis / joint pain",
+    "terms": ["arthritis", "joint pain", "osteoarthritis"],
+    "precautions": ["Clinician review for swollen hot joint, fever, injury, or sudden severe pain.", "Use safe movement and joint protection.", "Ask before frequent NSAID use, especially with kidney/stomach/heart issues."],
+    "diet": ["Mediterranean-style anti-inflammatory pattern.", "Weight-management support if joint load is a concern.", "Limit ultra-processed foods and excess sugary drinks."],
+    "doctor": "Primary care, rheumatology, physical therapy"
+  },
+  {
+    "id": "gout",
+    "name": "Gout",
+    "terms": ["gout", "uric acid"],
+    "precautions": ["Clinician review for sudden severe joint swelling, fever, or first attack.", "Do not change gout medication without clinician guidance.", "Hydrate unless fluid-restricted."],
+    "diet": ["Limit alcohol, sugary drinks, organ meats, and large portions of red meat/seafood.", "Emphasize water, vegetables, whole grains, and low-fat dairy if tolerated.", "Use caution with fish-heavy diets."],
+    "doctor": "Primary care or rheumatology"
+  },
+  {
+    "id": "migraine",
+    "name": "Migraine / recurrent headache",
+    "terms": ["migraine", "headache", "mild headache"],
+    "precautions": ["Emergency care for sudden worst headache, confusion, weakness, stiff neck, fever, or head injury.", "Track triggers and medication use.", "Avoid overusing pain medicines."],
+    "diet": ["Regular meals and hydration.", "Limit individual triggers such as alcohol or skipped meals.", "Do not use extreme elimination diets without guidance."],
+    "doctor": "Primary care or neurology"
+  },
+  {
+    "id": "pregnancy",
+    "name": "Pregnancy care",
+    "terms": ["pregnant", "pregnancy", "prenatal"],
+    "precautions": ["Emergency care for heavy bleeding, fainting, severe abdominal pain, severe headache, vision changes, or trouble breathing.", "Use prenatal care and medication review.", "Avoid alcohol and unsafe foods."],
+    "diet": ["Balanced prenatal eating with folic acid/iron guidance from clinician.", "Food safety: avoid high-mercury fish and risky unpasteurized foods.", "Manage nausea/hydration with clinician support if severe."],
+    "doctor": "OB/GYN, midwife, primary care"
+  },
+  {
+    "id": "pcos",
+    "name": "PCOS",
+    "terms": ["pcos", "polycystic ovary"],
+    "precautions": ["Review irregular periods, fertility goals, diabetes risk, and symptoms with clinician.", "Do not self-prescribe hormones.", "Screen for mood and metabolic issues."],
+    "diet": ["Balanced high-fiber meals.", "Protein with meals, controlled refined carbs, vegetables, whole grains.", "Weight-neutral or weight-management plan depending patient goals and clinician guidance."],
+    "doctor": "Primary care, OB/GYN, endocrinology"
+  },
+  {
+    "id": "hypothyroidism",
+    "name": "Hypothyroidism",
+    "terms": ["hypothyroid", "thyroid", "low thyroid"],
+    "precautions": ["Use thyroid medication exactly as prescribed.", "Do not change dose without lab review.", "Discuss supplements because iron/calcium can affect absorption timing."],
+    "diet": ["Balanced diet with adequate iodine from normal food sources unless restricted.", "Avoid extreme thyroid diets.", "Take medication timing instructions seriously."],
+    "doctor": "Primary care or endocrinology"
+  },
+  {
+    "id": "celiac",
+    "name": "Celiac disease",
+    "terms": ["celiac", "gluten"],
+    "precautions": ["Confirm diagnosis before starting lifelong restriction when possible.", "Avoid gluten if diagnosed.", "Review nutrient deficiencies and cross-contamination."],
+    "diet": ["Strict gluten-free diet for diagnosed celiac disease.", "Naturally gluten-free foods: rice, potatoes, corn, beans, fruits, vegetables, plain meats/fish/eggs if eaten.", "Check labels and avoid wheat, barley, rye."],
+    "doctor": "Primary care, gastroenterology, registered dietitian"
+  },
+  {
+    "id": "ibs",
+    "name": "Irritable bowel syndrome",
+    "terms": ["ibs", "irritable bowel"],
+    "precautions": ["Clinician review for blood in stool, weight loss, fever, anemia, or nighttime symptoms.", "Track triggers.", "Do not over-restrict food without dietitian help."],
+    "diet": ["Regular meals and hydration.", "Fiber adjustment depending constipation/diarrhea.", "Low-FODMAP trial only with guidance if needed."],
+    "doctor": "Primary care, gastroenterology, registered dietitian"
+  },
+  {
+    "id": "osteoporosis",
+    "name": "Osteoporosis",
+    "terms": ["osteoporosis", "low bone density"],
+    "precautions": ["Fall prevention.", "Review fracture risk and medications.", "Ask clinician before calcium/vitamin D supplements if kidney stones or CKD."],
+    "diet": ["Adequate calcium and vitamin D from food/supplements if advised.", "Protein and strength-supporting nutrition.", "Limit excess alcohol and avoid smoking."],
+    "doctor": "Primary care, endocrinology, rheumatology"
+  },
+  {
+    "id": "food_allergy",
+    "name": "Food allergy",
+    "terms": ["food allergy", "peanut allergy", "allergic reaction"],
+    "precautions": ["Emergency care for breathing trouble, swelling, dizziness, or widespread hives.", "Carry prescribed epinephrine if advised.", "Read labels and avoid known allergens."],
+    "diet": ["Avoid confirmed allergens.", "Use safe substitutes to keep nutrition complete.", "Dietitian/allergist support for multiple allergies."],
+    "doctor": "Allergy/immunology, primary care"
+  },
+  {
+    "id": "flu_covid_respiratory_infection",
+    "name": "Flu/COVID/respiratory infection",
+    "terms": ["flu", "covid", "respiratory infection", "fever cough"],
+    "precautions": ["Emergency care for trouble breathing, chest pain, confusion, blue lips, or inability to stay awake.", "Rest, hydration, isolation precautions when contagious.", "Ask clinician about antivirals if high-risk."],
+    "diet": ["Hydration.", "Small nourishing meals if appetite is low.", "Avoid alcohol and dehydration."],
+    "doctor": "Primary care, urgent care if worsening"
+  },
+  {
+    "id": "pneumonia",
+    "name": "Pneumonia",
+    "terms": ["pneumonia"],
+    "precautions": ["Emergency care for breathing trouble, blue lips, chest pain, confusion, or low oxygen.", "Do not use leftover antibiotics.", "Follow clinician treatment and vaccination guidance."],
+    "diet": ["Hydration unless fluid-restricted.", "Balanced meals with protein as tolerated.", "Small meals if breathing is difficult."],
+    "doctor": "Primary care, urgent care, pulmonology if severe"
+  },
+  {
+    "id": "stroke_recovery",
+    "name": "Stroke recovery",
+    "terms": ["stroke recovery", "after stroke"],
+    "precautions": ["New stroke symptoms are always emergency symptoms.", "Follow rehab and medication plan.", "Address swallowing safety if affected."],
+    "diet": ["DASH or Mediterranean-style eating.", "Texture-modified diet if swallowing problems, guided by speech/swallow team.", "Limit sodium and saturated fat."],
+    "doctor": "Neurology, primary care, rehab team"
+  },
+  {
+    "id": "cancer_support",
+    "name": "Cancer support",
+    "terms": ["cancer", "chemotherapy", "radiation"],
+    "precautions": ["Fever during chemotherapy can be urgent.", "Do not take supplements without oncology approval.", "Report severe vomiting, dehydration, bleeding, or infection signs."],
+    "diet": ["High-protein, calorie-adequate meals if losing weight.", "Food safety during immune suppression.", "Manage nausea with small meals and oncology dietitian guidance."],
+    "doctor": "Oncology, primary care, oncology dietitian"
+  },
+  {
+    "id": "lactose_intolerance",
+    "name": "Lactose intolerance",
+    "terms": ["lactose intolerance", "milk upset"],
+    "precautions": ["Clinician review for weight loss, blood in stool, anemia, or severe symptoms.", "Avoid unnecessary restriction without diagnosis.", "Ensure calcium/vitamin D intake."],
+    "diet": ["Lactose-free dairy, fortified plant milks, yogurt if tolerated, calcium-rich foods.", "Limit lactose-containing foods based on tolerance.", "Read labels."],
+    "doctor": "Primary care or gastroenterology"
+  },
+  {
+    "id": "anaphylaxis",
+    "name": "Anaphylaxis / severe allergic reaction",
+    "terms": ["anaphylaxis", "severe allergic reaction", "swelling of tongue", "hives"],
+    "precautions": ["Call emergency services for breathing trouble, swelling, dizziness, or widespread hives.", "Use prescribed epinephrine if available.", "Avoid known triggers and get allergy follow-up."],
+    "diet": ["Strictly avoid known food allergens.", "Use safe alternatives.", "Dietitian support if multiple foods are removed."],
+    "doctor": "Emergency care, allergy/immunology"
+  }
+]

@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CareWise AI Health Planner</title>
+    <link rel="stylesheet" href="styles.css?v=carewise-sync-1" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace" aria-labelledby="app-title">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Care navigation workspace</p>
+            <h1 id="app-title">CareWise AI</h1>
+          </div>
+          <div class="topbar-actions">
+            <span class="trust-pill">Not a diagnosis</span>
+            <span class="live-pill">Local MVP</span>
+          </div>
+        </header>
+
+        <section class="hero-panel">
+          <div class="hero-copy">
+            <h2>Build safer monthly care plans with one guided workspace.</h2>
+            <p>
+              Screen symptoms, organize patient details, plan food and activity,
+              prepare doctor notes, and route complex cases into clinician
+              review.
+            </p>
+          </div>
+          <div class="hero-meter" aria-label="Care categories">
+            <span><strong>Safety</strong><small>Red-flag routing</small></span>
+            <span><strong>Nutrition</strong><small>Diet and meals</small></span>
+            <span><strong>Medication</strong><small>Organizer</small></span>
+            <span><strong>Review</strong><small>Clinician queue</small></span>
+          </div>
+        </section>
+
+        <nav class="quick-nav" aria-label="CareWise sections">
+          <a href="#account-title">Account</a>
+          <a href="#patient-form">Intake</a>
+          <a href="#backend-title">Backend</a>
+          <a href="#saved-title">Plans</a>
+          <a href="#medication-title">Meds</a>
+          <a href="#checkin-title">Check-ins</a>
+          <a href="#review-title">Review</a>
+          <a href="#results">Results</a>
+        </nav>
+
+        <section class="panel account-panel" aria-labelledby="account-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Production account</p>
+              <h3 id="account-title">Sign in or create account</h3>
+            </div>
+            <span id="auth-badge" class="sync-badge offline">Not signed in</span>
+          </div>
+          <div class="account-grid">
+            <label>
+              API URL
+              <input id="api-url" type="text" value="https://carewise-api.onrender.com" />
+            </label>
+            <label>
+              Email
+              <input id="auth-email" type="email" value="patient@example.com" />
+            </label>
+            <label>
+              Password
+              <input id="auth-password" type="password" placeholder="At least 12 characters" />
+            </label>
+            <label>
+              Role
+              <select id="auth-role">
+                <option value="patient" selected>Patient</option>
+                <option value="clinician">Clinician</option>
+                <option value="admin">Admin</option>
+              </select>
+            </label>
+          </div>
+          <div class="sync-grid">
+            <button id="signup" class="secondary-button" type="button">Create account</button>
+            <button id="login" class="secondary-button" type="button">Login</button>
+            <button id="logout" class="secondary-button" type="button">Logout</button>
+            <button id="record-consent" class="secondary-button" type="button">Record consent</button>
+          </div>
+          <p id="auth-status" class="status-line" role="status">Use the live production backend at carewise-api.onrender.com.</p>
+        </section>
+
+        <section class="panel backend-panel" aria-labelledby="backend-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Product foundation</p>
+              <h3 id="backend-title">Backend sync</h3>
+            </div>
+            <span id="backend-badge" class="sync-badge offline">Offline mode</span>
+          </div>
+          <div class="sync-grid">
+            <button id="check-backend" class="secondary-button" type="button">Check backend</button>
+            <button id="sync-profile" class="secondary-button" type="button">Sync profile</button>
+            <button id="sync-plan" class="secondary-button" type="button">Sync latest plan</button>
+            <button id="load-audit-events" class="secondary-button" type="button">Load consent history</button>
+          </div>
+          <p id="backend-status" class="status-line" role="status">Local browser storage is active. Start the backend to sync data.</p>
+        </section>
+
+        <section class="panel consent-panel" aria-labelledby="consent-title">
+          <div>
+            <p class="eyebrow">Privacy first</p>
+            <h3 id="consent-title">Consent and data use</h3>
+            <p>
+              This prototype stores information on this device only. It is not
+              a diagnosis, prescription, emergency service, or replacement for
+              licensed medical care.
+            </p>
+          </div>
+          <label class="check-line consent-check">
+            <input id="privacy-consent" type="checkbox" />
+            I understand and consent to using this prototype for care planning.
+          </label>
+          <p id="consent-status" class="status-line" role="status"></p>
+        </section>
+
+        <form id="patient-form" class="intake-grid">
+          <section class="panel intake-panel">
+            <h3>Patient intake</h3>
+            <label>
+              Main problem or symptoms
+              <textarea
+                id="symptoms"
+                rows="7"
+                placeholder="Example: I have high blood pressure, headaches, poor sleep, and I want help with diet."
+                required
+              ></textarea>
+            </label>
+
+            <div class="field-row">
+              <label>
+                Age
+                <input id="age" type="number" min="1" max="120" value="42" />
+              </label>
+              <label>
+                Monthly budget
+                <select id="budget">
+                  <option value="low">$20 - $49</option>
+                  <option value="mid" selected>$50 - $99</option>
+                  <option value="high">$100+</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="field-row">
+              <label>
+                City or ZIP
+                <input id="location" type="text" value="San Jose, CA" />
+              </label>
+              <label>
+                Insurance status
+                <select id="insurance">
+                  <option value="none">No insurance</option>
+                  <option value="some" selected>Have insurance</option>
+                  <option value="switching">Need better plan</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="field-row">
+              <label>
+                Eating style
+                <select id="diet-style">
+                  <option value="flexible" selected>Flexible / mixed diet</option>
+                  <option value="vegetarian">Vegetarian</option>
+                  <option value="vegan">Vegan</option>
+                  <option value="pescatarian">Fish but no meat</option>
+                  <option value="non_vegetarian">Non-vegetarian</option>
+                </select>
+              </label>
+              <label>
+                Main priority
+                <select id="priority">
+                  <option value="balanced" selected>Balanced health</option>
+                  <option value="low_cost">Low cost</option>
+                  <option value="weight">Weight management</option>
+                  <option value="heart">Heart health</option>
+                  <option value="diabetes">Blood sugar</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="field-row">
+              <label>
+                Activity level
+                <select id="activity-level">
+                  <option value="sedentary" selected>Mostly sitting</option>
+                  <option value="light">Lightly active</option>
+                  <option value="moderate">Moderately active</option>
+                  <option value="high">Very active</option>
+                </select>
+              </label>
+              <label>
+                Exercise goal
+                <select id="exercise-goal">
+                  <option value="start" selected>Start safely</option>
+                  <option value="heart">Heart health</option>
+                  <option value="weight">Weight management</option>
+                  <option value="strength">Strength and mobility</option>
+                  <option value="stress">Stress and sleep</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="field-row">
+              <label>
+                Meal-prep time
+                <select id="prep-time">
+                  <option value="ten" selected>10 minutes</option>
+                  <option value="twenty">20 minutes</option>
+                  <option value="batch">Batch cook weekly</option>
+                </select>
+              </label>
+              <label>
+                Calorie direction
+                <select id="calorie-goal">
+                  <option value="maintain" selected>Maintain energy</option>
+                  <option value="gentle_loss">Gentle weight loss</option>
+                  <option value="gain">Healthy weight gain</option>
+                  <option value="medical">Medical condition first</option>
+                </select>
+              </label>
+            </div>
+
+            <fieldset>
+              <legend>Care goals</legend>
+              <label class="check-line">
+                <input type="checkbox" name="goals" value="Medication review" checked />
+                Medication review
+              </label>
+              <label class="check-line">
+                <input type="checkbox" name="goals" value="Diet plan" checked />
+                Diet plan
+              </label>
+              <label class="check-line">
+                <input type="checkbox" name="goals" value="Doctor matching" checked />
+                Doctor matching
+              </label>
+              <label class="check-line">
+                <input type="checkbox" name="goals" value="Insurance help" />
+                Insurance help
+              </label>
+            </fieldset>
+
+            <button class="primary-button" type="submit">Generate care plan</button>
+          </section>
+
+          <section class="panel plans-panel" aria-labelledby="plans-title">
+            <h3>Patient profile</h3>
+            <div class="profile-grid">
+              <label>
+                Name
+                <input id="profile-name" type="text" placeholder="Patient name" />
+              </label>
+              <label>
+                Sex at birth
+                <select id="profile-sex">
+                  <option value="">Choose</option>
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
+                  <option value="intersex">Intersex</option>
+                  <option value="prefer_not">Prefer not to say</option>
+                </select>
+              </label>
+              <label>
+                Height
+                <input id="profile-height" type="text" placeholder="5 ft 8 in" />
+              </label>
+              <label>
+                Weight
+                <input id="profile-weight" type="text" placeholder="170 lb" />
+              </label>
+              <label>
+                Conditions
+                <textarea id="profile-conditions" rows="3" placeholder="Diabetes, high blood pressure"></textarea>
+              </label>
+              <label>
+                Medications
+                <textarea id="profile-medications" rows="3" placeholder="Name, dose, timing"></textarea>
+              </label>
+              <label>
+                Allergies
+                <textarea id="profile-allergies" rows="2" placeholder="Food or medication allergies"></textarea>
+              </label>
+            </div>
+            <button id="save-profile" class="secondary-button" type="button">Save profile</button>
+            <p id="profile-status" class="status-line" role="status"></p>
+
+            <h3 id="plans-title">Monthly subscription plans</h3>
+            <div class="plan-options">
+              <label class="plan-card">
+                <input type="radio" name="plan" value="basic" checked />
+                <span class="plan-name">Basic</span>
+                <strong>$29/mo</strong>
+                <span>Monthly summary and diet reminders</span>
+              </label>
+              <label class="plan-card">
+                <input type="radio" name="plan" value="plus" />
+                <span class="plan-name">Plus</span>
+                <strong>$79/mo</strong>
+                <span>Care plan, nurse check-in, insurance guidance</span>
+              </label>
+              <label class="plan-card">
+                <input type="radio" name="plan" value="premium" />
+                <span class="plan-name">Premium</span>
+                <strong>$149/mo</strong>
+                <span>Priority matching, weekly coaching, plan concierge</span>
+              </label>
+            </div>
+          </section>
+        </form>
+
+        <section class="panel saved-panel" aria-labelledby="saved-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Care history</p>
+              <h3 id="saved-title">Saved care plans</h3>
+            </div>
+            <button id="clear-saved" class="secondary-button compact" type="button">Clear saved</button>
+          </div>
+          <div id="saved-plans" class="saved-plans-list">
+            <p>No saved plans yet.</p>
+          </div>
+        </section>
+
+        <section class="panel medication-panel" aria-labelledby="medication-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Medication safety</p>
+              <h3 id="medication-title">Medication organizer</h3>
+            </div>
+            <button id="clear-medications" class="secondary-button compact" type="button">Clear medications</button>
+          </div>
+          <div class="med-grid">
+            <label>
+              Medication name
+              <input id="med-name" type="text" placeholder="Example: Metformin" />
+            </label>
+            <label>
+              Dose
+              <input id="med-dose" type="text" placeholder="500 mg" />
+            </label>
+            <label>
+              Timing
+              <input id="med-timing" type="text" placeholder="Morning with food" />
+            </label>
+            <label>
+              Refill date
+              <input id="med-refill" type="date" />
+            </label>
+            <label>
+              Notes / side effects
+              <textarea id="med-notes" rows="2" placeholder="Questions, side effects, allergies"></textarea>
+            </label>
+          </div>
+          <button id="save-medication" class="primary-button narrow-button" type="button">Save medication</button>
+          <p id="medication-status" class="status-line" role="status"></p>
+          <div id="medication-list" class="saved-plans-list">
+            <p>No medications saved yet.</p>
+          </div>
+        </section>
+
+        <section class="panel checkin-panel" aria-labelledby="checkin-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Weekly tracking</p>
+              <h3 id="checkin-title">Progress check-in</h3>
+            </div>
+            <button id="clear-checkins" class="secondary-button compact" type="button">Clear check-ins</button>
+          </div>
+
+          <div class="checkin-grid">
+            <label>
+              Week of
+              <input id="checkin-week" type="date" />
+            </label>
+            <label>
+              Symptoms
+              <select id="checkin-symptoms">
+                <option value="better">Better</option>
+                <option value="same" selected>Same</option>
+                <option value="worse">Worse</option>
+              </select>
+            </label>
+            <label>
+              Meals followed
+              <select id="checkin-meals">
+                <option value="0-2">0-2 days</option>
+                <option value="3-4" selected>3-4 days</option>
+                <option value="5-7">5-7 days</option>
+              </select>
+            </label>
+            <label>
+              Exercise
+              <select id="checkin-exercise">
+                <option value="0-30">0-30 min</option>
+                <option value="31-90" selected>31-90 min</option>
+                <option value="91-150">91-150 min</option>
+                <option value="150+">150+ min</option>
+              </select>
+            </label>
+            <label>
+              Sleep
+              <select id="checkin-sleep">
+                <option value="poor">Poor</option>
+                <option value="okay" selected>Okay</option>
+                <option value="good">Good</option>
+              </select>
+            </label>
+            <label>
+              Medication adherence
+              <select id="checkin-meds">
+                <option value="missed_many">Missed many</option>
+                <option value="missed_some">Missed some</option>
+                <option value="mostly" selected>Mostly on track</option>
+                <option value="all">All taken as directed</option>
+              </select>
+            </label>
+            <label>
+              Mood / energy
+              <select id="checkin-mood">
+                <option value="low">Low</option>
+                <option value="middle" selected>Middle</option>
+                <option value="good">Good</option>
+              </select>
+            </label>
+            <label>
+              Notes
+              <textarea id="checkin-notes" rows="3" placeholder="Barriers, wins, side effects, questions"></textarea>
+            </label>
+          </div>
+          <button id="save-checkin" class="primary-button narrow-button" type="button">Save check-in</button>
+          <p id="checkin-status" class="status-line" role="status"></p>
+          <div id="checkin-history" class="saved-plans-list">
+            <p>No check-ins yet.</p>
+          </div>
+        </section>
+
+        <section class="panel review-panel" aria-labelledby="review-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Clinician workflow</p>
+              <h3 id="review-title">Review queue</h3>
+            </div>
+            <button id="clear-review-queue" class="secondary-button compact" type="button">Clear queue</button>
+          </div>
+          <div id="review-queue" class="saved-plans-list">
+            <p>No review items yet.</p>
+          </div>
+          <p id="review-status" class="status-line" role="status"></p>
+          <div class="audit-block">
+            <h4>Audit trail</h4>
+            <div id="audit-trail" class="saved-plans-list">
+              <p>No audit events yet.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel export-panel" aria-labelledby="export-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Data portability</p>
+              <h3 id="export-title">Local data export</h3>
+            </div>
+            <button id="clear-all-data" class="secondary-button compact" type="button">Clear all local data</button>
+          </div>
+          <div class="export-actions">
+            <button id="export-data" class="secondary-button" type="button">Export local JSON</button>
+            <button id="copy-data" class="secondary-button" type="button">Copy local JSON</button>
+          </div>
+          <textarea id="export-output" rows="8" readonly placeholder="Exported local data appears here."></textarea>
+          <p id="export-status" class="status-line" role="status"></p>
+        </section>
+
+        <section id="results" class="results-grid" aria-live="polite">
+          <article class="result-card warning-card">
+            <h3>Start here</h3>
+            <p>
+              Fill the intake form to generate a care plan. This product should
+              support licensed clinicians, not replace emergency care or medical
+              judgment.
+            </p>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <script src="script.js?v=carewise-sync-1"></script>
+  </body>
+</html>
