@@ -179,6 +179,7 @@ let latestReportId = localStorage.getItem("carewiseLatestReportId") || "";
 let latestCheckoutUrl = localStorage.getItem("carewiseCheckoutUrl") || "";
 const defaultBackendBaseUrl = "https://carewise-api.onrender.com";
 let backendBaseUrl = localStorage.getItem("carewiseApiUrl") || defaultBackendBaseUrl;
+let backendFeatures = {};
 
 fetch("disease_precaution_diet_matrix.json")
   .then((response) => response.json())
@@ -1176,13 +1177,23 @@ async function requestJson(method, path, payload, options = {}) {
 async function checkBackend(showSuccess) {
   try {
     const health = await apiGet("/health");
+    await loadBackendFeatures();
     const authHint = authToken ? "Signed in." : "Sign in to enable protected sync.";
     setBackendStatus(true, `${health.service} is connected. ${authHint} ${backendPatientId ? "Patient link is ready." : "Sync profile to create a patient record."}`);
     if (showSuccess) updateAuthStatus(authToken ? "Backend is online and your token is ready." : "Backend is online. Sign up or log in next.");
+    renderReportHistory();
     return true;
   } catch {
     setBackendStatus(false, "Backend is offline. Local browser storage is still active.");
     return false;
+  }
+}
+
+async function loadBackendFeatures() {
+  try {
+    backendFeatures = await apiGet("/features");
+  } catch {
+    backendFeatures = {};
   }
 }
 
@@ -1341,7 +1352,7 @@ function saveReportHistory(report) {
 
 function renderReportHistory() {
   const reports = getReportHistory();
-  reportBadge.textContent = latestReportId ? "Report ready" : "Cloud storage ready";
+  reportBadge.textContent = latestReportId ? "Report ready" : reportFeatureLabel();
   reportBadge.className = `sync-badge ${latestReportId ? "online" : "offline"}`;
   if (!reports.length) {
     reportResults.innerHTML = "<p>No report analysis yet.</p>";
@@ -1358,6 +1369,12 @@ function renderReportHistory() {
       ${report.nextSteps?.length ? `<ul>${report.nextSteps.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
     </article>
   `).join("");
+}
+
+function reportFeatureLabel() {
+  if (backendFeatures.image_ocr) return "OCR ready";
+  if (backendFeatures.report_uploads) return "Cloud storage ready";
+  return "Backend check needed";
 }
 
 async function uploadReport() {
@@ -1452,7 +1469,9 @@ async function analyzeLatestReport() {
     }
     addAuditEvent("report_analyzed", `Report ${response.report_id} analyzed with ${response.risk_level} risk.`);
     renderAuditTrail();
-    reportStatus.textContent = `Analysis complete: ${response.risk_level}.`;
+    reportStatus.textContent = response.status === "needs_readable_text"
+      ? "Report stored securely. Paste OCR text or key lab values, then upload again for analysis."
+      : `Analysis complete: ${response.risk_level}.`;
   } catch (error) {
     reportStatus.textContent = error.message.includes("404") ? "Report not found. Upload again." : "Report analysis failed. Check backend status.";
   }
