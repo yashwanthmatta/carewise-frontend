@@ -1307,20 +1307,21 @@ function handleReportFileSelection() {
   const file = document.querySelector("#report-file").files?.[0];
   if (!file) return;
   document.querySelector("#report-name").value = file.name;
-  reportStatus.textContent = file.type === "text/plain"
-    ? "Reading text report from file."
-    : "File selected. Paste report text or OCR output so this MVP can analyze safely.";
   if (file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt")) {
+    reportStatus.textContent = "Reading text report from file.";
     const reader = new FileReader();
     reader.onload = () => {
       document.querySelector("#report-text").value = String(reader.result || "").slice(0, 12000);
-      reportStatus.textContent = "Text report loaded. Upload it to analyze.";
+      reportStatus.textContent = "Text report loaded. Save it to analyze.";
     };
     reader.onerror = () => {
       reportStatus.textContent = "Could not read the text file. Paste the report text manually.";
     };
     reader.readAsText(file);
+    return;
   }
+  document.querySelector("#report-file").value = "";
+  reportStatus.textContent = "MVP testing mode only accepts pasted text or .txt sample files. Do not upload real patient PDFs/images yet.";
 }
 
 function getReportHistory() {
@@ -1341,7 +1342,7 @@ function saveReportHistory(report) {
 
 function renderReportHistory() {
   const reports = getReportHistory();
-  reportBadge.textContent = latestReportId ? "Report ready" : "No report uploaded";
+  reportBadge.textContent = latestReportId ? "Report ready" : "MVP testing mode";
   reportBadge.className = `sync-badge ${latestReportId ? "online" : "offline"}`;
   if (!reports.length) {
     reportResults.innerHTML = "<p>No report analysis yet.</p>";
@@ -1373,27 +1374,18 @@ async function uploadReport() {
     const file = document.querySelector("#report-file").files?.[0];
     const fileName = document.querySelector("#report-name").value.trim() || file?.name || "carewise-report.txt";
     const reportText = document.querySelector("#report-text").value.trim();
-    if (!file && !reportText) {
-      reportStatus.textContent = "Choose a file or paste report text before uploading.";
+    if (!reportText) {
+      reportStatus.textContent = "Paste sample report text before saving. Real PDF/image uploads need durable private storage first.";
       return;
     }
-    reportStatus.textContent = "Uploading report to backend.";
-    let response;
-    if (file) {
-      const formData = new FormData();
-      formData.append("patient_id", patientId);
-      formData.append("report_text", reportText);
-      formData.append("file", file, fileName);
-      response = await apiPost("/reports/upload-file", formData);
-    } else {
-      response = await apiPost("/reports/upload", {
-        patient_id: patientId,
-        file_name: fileName,
-        content_type: "text/plain",
-        report_text: reportText,
-        storage_url: "",
-      });
-    }
+    reportStatus.textContent = "Saving sample report text to backend.";
+    const response = await apiPost("/reports/upload", {
+      patient_id: patientId,
+      file_name: fileName,
+      content_type: "text/plain",
+      report_text: reportText,
+      storage_url: "",
+    });
     latestReportId = response.id;
     localStorage.setItem("carewiseLatestReportId", latestReportId);
     saveReportHistory({

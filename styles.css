@@ -908,6 +908,27 @@ input[type="radio"] {
   line-height: 1.45;
 }
 
+.mvp-alert {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(200, 138, 22, 0.28);
+  border-radius: 8px;
+  padding: 13px;
+  background: linear-gradient(135deg, #fffaf0, #ffffff);
+}
+
+.mvp-alert strong {
+  color: var(--gold);
+}
+
+.mvp-alert span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 820;
+  line-height: 1.45;
+}
+
 .report-grid {
   display: grid;
   grid-template-columns: minmax(180px, 0.8fr) minmax(180px, 1fr);

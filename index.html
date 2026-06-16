@@ -171,30 +171,34 @@
           <div class="panel-heading-row">
             <div>
               <p class="eyebrow">Report intelligence</p>
-              <h3 id="report-title">Upload report and analyze</h3>
+              <h3 id="report-title">Analyze report text</h3>
             </div>
-            <span id="report-badge" class="sync-badge offline">No report uploaded</span>
+            <span id="report-badge" class="sync-badge offline">MVP testing mode</span>
+          </div>
+          <div class="mvp-alert">
+            <strong>Testing mode</strong>
+            <span>Paste report text or upload a .txt sample only. Do not upload real patient PDFs/images until private cloud file storage is enabled.</span>
           </div>
           <div class="report-grid">
             <label>
-              Report file
-              <input id="report-file" type="file" accept=".txt,.pdf,.png,.jpg,.jpeg,.webp,.heic" />
+              Optional text file
+              <input id="report-file" type="file" accept=".txt,text/plain" />
             </label>
             <label>
               Report name
-              <input id="report-name" type="text" placeholder="blood-work-june.pdf" />
+              <input id="report-name" type="text" placeholder="blood-work-june.txt" />
             </label>
             <label>
               Report text for analysis
-              <textarea id="report-text" rows="6" placeholder="Paste lab values, findings, symptoms, or OCR text here. PDF/image text extraction will be automated in the next backend phase."></textarea>
+              <textarea id="report-text" rows="6" placeholder="Paste sample lab values, findings, symptoms, or OCR text here. Example: LDL cholesterol elevated. A1C normal. No chest pain."></textarea>
             </label>
           </div>
           <div class="sync-grid">
-            <button id="upload-report" class="secondary-button" type="button">Upload report</button>
+            <button id="upload-report" class="secondary-button" type="button">Save sample text</button>
             <button id="analyze-report" class="primary-button narrow-button" type="button">Analyze report</button>
             <button id="load-reports" class="secondary-button" type="button">Load reports</button>
           </div>
-          <p id="report-status" class="status-line" role="status">Sign in and sync profile before uploading reports.</p>
+          <p id="report-status" class="status-line" role="status">Sign in and sync profile before saving sample report text.</p>
           <div id="report-results" class="saved-plans-list">
             <p>No report analysis yet.</p>
           </div>
