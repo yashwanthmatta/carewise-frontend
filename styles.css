@@ -553,6 +553,22 @@ p {
   background: linear-gradient(90deg, var(--teal), var(--violet));
 }
 
+.report-panel::before {
+  background: linear-gradient(90deg, var(--blue), var(--aqua), var(--gold));
+}
+
+.payment-panel::before {
+  background: linear-gradient(90deg, var(--teal), var(--gold), var(--coral));
+}
+
+.legal-panel::before {
+  background: linear-gradient(90deg, var(--teal-dark), var(--blue));
+}
+
+.mobile-panel::before {
+  background: linear-gradient(90deg, var(--coral), var(--violet), var(--aqua));
+}
+
 label,
 legend {
   display: grid;
@@ -679,6 +695,10 @@ input[type="radio"] {
 .consent-panel,
 .medication-panel,
 .review-panel,
+.report-panel,
+.payment-panel,
+.legal-panel,
+.mobile-panel,
 .export-panel {
   margin-top: 18px;
 }
@@ -792,7 +812,7 @@ input[type="radio"] {
 
 .account-grid {
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(140px, 0.55fr);
+  grid-template-columns: minmax(180px, 1.3fr) minmax(180px, 1fr) minmax(150px, 0.75fr) minmax(120px, 0.5fr);
   gap: 10px;
   margin-bottom: 12px;
 }
@@ -806,7 +826,7 @@ input[type="radio"] {
 
 .sync-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
 }
 
@@ -858,6 +878,128 @@ input[type="radio"] {
 
 .review-notes {
   margin-top: 12px;
+}
+
+.toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.session-card {
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+  border: 1px solid #d8e8e1;
+  border-radius: 8px;
+  padding: 13px;
+  background: linear-gradient(135deg, #f7fffb, #ffffff);
+}
+
+.session-card strong {
+  color: var(--teal-dark);
+}
+
+.session-card span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 820;
+  line-height: 1.45;
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(180px, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.report-grid label:last-child {
+  grid-column: 1 / -1;
+}
+
+input[type="file"] {
+  width: 100%;
+  min-height: 46px;
+  border: 1px dashed #a9c9bf;
+  border-radius: 7px;
+  padding: 10px;
+  color: var(--muted);
+  background: #fbfffd;
+}
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.dashboard-stats article,
+.payment-grid article,
+.legal-grid article {
+  display: grid;
+  gap: 5px;
+  border: 1px solid #dce8e3;
+  border-radius: 8px;
+  padding: 14px;
+  background: linear-gradient(135deg, #ffffff, #f6fbf9);
+}
+
+.dashboard-stats strong {
+  color: var(--teal-dark);
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.dashboard-stats span,
+.payment-grid span,
+.mobile-roadmap span {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 850;
+}
+
+.payment-grid,
+.legal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.legal-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 0;
+}
+
+.payment-grid strong,
+.legal-grid strong {
+  color: var(--teal-dark);
+  font-size: 1rem;
+}
+
+.payment-grid p,
+.legal-grid p {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  line-height: 1.48;
+}
+
+.mobile-roadmap {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.mobile-roadmap span {
+  min-height: 72px;
+  border: 1px solid #dce8e3;
+  border-radius: 8px;
+  padding: 13px;
+  background: #fff;
+  color: var(--teal-dark);
 }
 
 .audit-block {
@@ -1065,7 +1207,12 @@ input[type="radio"] {
   .checkin-grid,
   .med-grid,
   .account-grid,
-  .sync-grid {
+  .sync-grid,
+  .report-grid,
+  .dashboard-stats,
+  .payment-grid,
+  .legal-grid,
+  .mobile-roadmap {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -1166,9 +1313,26 @@ input[type="radio"] {
     flex-direction: column;
   }
 
+  .toolbar-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .toolbar-actions .secondary-button {
+    flex: 1 1 150px;
+  }
+
   .narrow-button,
   .secondary-button,
   .primary-button {
     width: 100%;
+  }
+
+  .report-grid,
+  .dashboard-stats,
+  .payment-grid,
+  .legal-grid,
+  .mobile-roadmap {
+    grid-template-columns: 1fr;
   }
 }

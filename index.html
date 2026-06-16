@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CareWise AI Health Planner</title>
-    <link rel="stylesheet" href="styles.css?v=carewise-brand-2" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-3" />
   </head>
   <body>
     <main class="app-shell">
@@ -78,11 +78,14 @@
         <nav class="quick-nav" aria-label="CareWise sections">
           <a href="#account-title">Account</a>
           <a href="#patient-form">Intake</a>
+          <a href="#report-title">Reports</a>
           <a href="#backend-title">Backend</a>
           <a href="#saved-title">Plans</a>
           <a href="#medication-title">Meds</a>
           <a href="#checkin-title">Check-ins</a>
           <a href="#review-title">Review</a>
+          <a href="#payment-title">Payment</a>
+          <a href="#legal-title">Legal</a>
           <a href="#results">Results</a>
         </nav>
 
@@ -121,6 +124,11 @@
             <button id="login" class="secondary-button" type="button">Login</button>
             <button id="logout" class="secondary-button" type="button">Logout</button>
             <button id="record-consent" class="secondary-button" type="button">Record consent</button>
+            <button id="password-reset" class="secondary-button" type="button">Password reset</button>
+          </div>
+          <div class="session-card">
+            <strong id="signed-in-label">Signed out</strong>
+            <span id="signed-in-detail">Protected sync is available after signup or login.</span>
           </div>
           <p id="auth-status" class="status-line" role="status">Use the live production backend at carewise-api.onrender.com.</p>
         </section>
@@ -157,6 +165,39 @@
             I understand and consent to using this prototype for care planning.
           </label>
           <p id="consent-status" class="status-line" role="status"></p>
+        </section>
+
+        <section class="panel report-panel" aria-labelledby="report-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Report intelligence</p>
+              <h3 id="report-title">Upload report and analyze</h3>
+            </div>
+            <span id="report-badge" class="sync-badge offline">No report uploaded</span>
+          </div>
+          <div class="report-grid">
+            <label>
+              Report file
+              <input id="report-file" type="file" accept=".txt,.pdf,.png,.jpg,.jpeg,.webp,.heic" />
+            </label>
+            <label>
+              Report name
+              <input id="report-name" type="text" placeholder="blood-work-june.pdf" />
+            </label>
+            <label>
+              Report text for analysis
+              <textarea id="report-text" rows="6" placeholder="Paste lab values, findings, symptoms, or OCR text here. PDF/image text extraction will be automated in the next backend phase."></textarea>
+            </label>
+          </div>
+          <div class="sync-grid">
+            <button id="upload-report" class="secondary-button" type="button">Upload report</button>
+            <button id="analyze-report" class="primary-button narrow-button" type="button">Analyze report</button>
+            <button id="load-reports" class="secondary-button" type="button">Load reports</button>
+          </div>
+          <p id="report-status" class="status-line" role="status">Sign in and sync profile before uploading reports.</p>
+          <div id="report-results" class="saved-plans-list">
+            <p>No report analysis yet.</p>
+          </div>
         </section>
 
         <form id="patient-form" class="intake-grid">
@@ -485,9 +526,19 @@
           <div class="panel-heading-row">
             <div>
               <p class="eyebrow">Clinician workflow</p>
-              <h3 id="review-title">Review queue</h3>
+              <h3 id="review-title">Clinician dashboard</h3>
             </div>
-            <button id="clear-review-queue" class="secondary-button compact" type="button">Clear queue</button>
+            <div class="toolbar-actions">
+              <button id="load-backend-review" class="secondary-button compact" type="button">Load backend queue</button>
+              <button id="load-admin-summary" class="secondary-button compact" type="button">Admin summary</button>
+              <button id="clear-review-queue" class="secondary-button compact" type="button">Clear queue</button>
+            </div>
+          </div>
+          <div class="dashboard-stats" id="dashboard-stats" aria-label="Dashboard metrics">
+            <article><strong>0</strong><span>Backend items</span></article>
+            <article><strong>0</strong><span>Local review items</span></article>
+            <article><strong>0</strong><span>Reports</span></article>
+            <article><strong>0</strong><span>Consent records</span></article>
           </div>
           <div id="review-queue" class="saved-plans-list">
             <p>No review items yet.</p>
@@ -498,6 +549,80 @@
             <div id="audit-trail" class="saved-plans-list">
               <p>No audit events yet.</p>
             </div>
+          </div>
+        </section>
+
+        <section class="panel payment-panel" aria-labelledby="payment-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Subscription</p>
+              <h3 id="payment-title">Checkout readiness</h3>
+            </div>
+            <span id="payment-badge" class="sync-badge offline">Manual checkout</span>
+          </div>
+          <div class="payment-grid">
+            <article>
+              <strong>Basic</strong>
+              <span>$29/mo</span>
+              <p>Education summaries, reminders, and local care plan export.</p>
+            </article>
+            <article>
+              <strong>Plus</strong>
+              <span>$79/mo</span>
+              <p>Care planning, insurance guidance, and monthly review workflow.</p>
+            </article>
+            <article>
+              <strong>Premium</strong>
+              <span>$149/mo</span>
+              <p>Priority navigation, weekly coaching workflow, and concierge handoff.</p>
+            </article>
+          </div>
+          <div class="sync-grid">
+            <button id="create-checkout" class="primary-button narrow-button" type="button">Create checkout</button>
+            <button id="copy-checkout" class="secondary-button" type="button">Copy checkout link</button>
+          </div>
+          <p id="payment-status" class="status-line" role="status">Stripe can replace this manual checkout placeholder later.</p>
+        </section>
+
+        <section class="panel legal-panel" aria-labelledby="legal-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Launch documents</p>
+              <h3 id="legal-title">Privacy, terms, disclaimer, deletion</h3>
+            </div>
+          </div>
+          <div class="legal-grid">
+            <article id="privacy-policy">
+              <strong>Privacy Policy</strong>
+              <p>CareWise should collect the minimum health data needed, encrypt protected fields, avoid health data in logs, and explain data use before signup.</p>
+            </article>
+            <article id="terms">
+              <strong>Terms of Service</strong>
+              <p>Users must understand this is a care-planning tool, not emergency care, diagnosis, prescription, or a replacement for licensed professionals.</p>
+            </article>
+            <article id="medical-disclaimer">
+              <strong>Medical Disclaimer</strong>
+              <p>AI output is educational and must route high-risk cases to licensed clinicians or emergency services. It should not claim to cure disease.</p>
+            </article>
+            <article id="data-deletion">
+              <strong>Data Deletion Request</strong>
+              <p>Users need a clear way to request deletion of account, report, consent, and profile records before app store review.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel mobile-panel" aria-labelledby="mobile-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Mobile app</p>
+              <h3 id="mobile-title">iOS and Android preparation</h3>
+            </div>
+          </div>
+          <div class="mobile-roadmap">
+            <span>React Native or Flutter shell</span>
+            <span>Same API URL and token login</span>
+            <span>Report upload and care dashboard</span>
+            <span>Apple Privacy and Google Data Safety forms</span>
           </div>
         </section>
 
@@ -530,6 +655,6 @@
       </section>
     </main>
 
-    <script src="script.js?v=carewise-brand-2"></script>
+    <script src="script.js?v=carewise-product-3"></script>
   </body>
 </html>

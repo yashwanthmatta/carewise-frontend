@@ -174,6 +174,9 @@ let lastGeneratedPlan = null;
 let backendPatientId = localStorage.getItem("carewiseBackendPatientId") || "";
 let backendAvailable = false;
 let authToken = localStorage.getItem("carewiseAuthToken") || "";
+let authEmail = localStorage.getItem("carewiseAuthEmail") || "";
+let latestReportId = localStorage.getItem("carewiseLatestReportId") || "";
+let latestCheckoutUrl = localStorage.getItem("carewiseCheckoutUrl") || "";
 const defaultBackendBaseUrl = "https://carewise-api.onrender.com";
 let backendBaseUrl = localStorage.getItem("carewiseApiUrl") || defaultBackendBaseUrl;
 
@@ -191,8 +194,16 @@ const results = document.querySelector("#results");
 const apiUrlInput = document.querySelector("#api-url");
 const authBadge = document.querySelector("#auth-badge");
 const authStatus = document.querySelector("#auth-status");
+const signedInLabel = document.querySelector("#signed-in-label");
+const signedInDetail = document.querySelector("#signed-in-detail");
 const backendBadge = document.querySelector("#backend-badge");
 const backendStatus = document.querySelector("#backend-status");
+const reportBadge = document.querySelector("#report-badge");
+const reportStatus = document.querySelector("#report-status");
+const reportResults = document.querySelector("#report-results");
+const paymentBadge = document.querySelector("#payment-badge");
+const paymentStatus = document.querySelector("#payment-status");
+const dashboardStats = document.querySelector("#dashboard-stats");
 const profileStatus = document.querySelector("#profile-status");
 const savedPlans = document.querySelector("#saved-plans");
 const checkinStatus = document.querySelector("#checkin-status");
@@ -213,6 +224,8 @@ renderCheckins();
 renderMedications();
 renderReviewQueue();
 renderAuditTrail();
+renderReportHistory();
+renderDashboardStats();
 initializeAccountPanel();
 checkBackend(false);
 
@@ -230,6 +243,10 @@ document.querySelector("#logout").addEventListener("click", () => {
 
 document.querySelector("#record-consent").addEventListener("click", () => {
   recordConsentToBackend(true);
+});
+
+document.querySelector("#password-reset").addEventListener("click", () => {
+  authStatus.textContent = "Password reset will connect to an email provider before launch. For now, create a new test account if needed.";
 });
 
 apiUrlInput.addEventListener("change", () => {
@@ -252,6 +269,22 @@ document.querySelector("#sync-plan").addEventListener("click", () => {
 
 document.querySelector("#load-audit-events").addEventListener("click", () => {
   loadBackendAuditEvents();
+});
+
+document.querySelector("#report-file").addEventListener("change", () => {
+  handleReportFileSelection();
+});
+
+document.querySelector("#upload-report").addEventListener("click", () => {
+  uploadReport();
+});
+
+document.querySelector("#analyze-report").addEventListener("click", () => {
+  analyzeLatestReport();
+});
+
+document.querySelector("#load-reports").addEventListener("click", () => {
+  loadReports();
 });
 
 document.querySelector("#save-profile").addEventListener("click", () => {
@@ -299,6 +332,23 @@ document.querySelector("#clear-review-queue").addEventListener("click", () => {
   addAuditEvent("review_queue_cleared", "Clinician review queue cleared locally.");
   renderReviewQueue();
   renderAuditTrail();
+  renderDashboardStats();
+});
+
+document.querySelector("#load-backend-review").addEventListener("click", () => {
+  loadBackendReviewQueue();
+});
+
+document.querySelector("#load-admin-summary").addEventListener("click", () => {
+  loadAdminSummary();
+});
+
+document.querySelector("#create-checkout").addEventListener("click", () => {
+  createCheckout();
+});
+
+document.querySelector("#copy-checkout").addEventListener("click", () => {
+  copyCheckoutLink();
 });
 
 reviewQueue.addEventListener("click", (event) => {
@@ -316,9 +366,12 @@ document.querySelector("#copy-data").addEventListener("click", () => {
 });
 
 document.querySelector("#clear-all-data").addEventListener("click", () => {
-  ["carewiseProfile", "carewiseSavedPlans", "carewiseCheckins", "carewiseMedications", "carewiseReviewQueue", "carewiseAuditEvents", "carewiseConsent", "carewiseBackendPatientId", "carewiseAuthToken"].forEach((key) => localStorage.removeItem(key));
+  ["carewiseProfile", "carewiseSavedPlans", "carewiseCheckins", "carewiseMedications", "carewiseReviewQueue", "carewiseAuditEvents", "carewiseConsent", "carewiseBackendPatientId", "carewiseAuthToken", "carewiseAuthEmail", "carewiseReports", "carewiseLatestReportId", "carewiseCheckoutUrl", "carewiseAdminSummary", "carewiseBackendReviewCount"].forEach((key) => localStorage.removeItem(key));
   backendPatientId = "";
   authToken = "";
+  authEmail = "";
+  latestReportId = "";
+  latestCheckoutUrl = "";
   updateAuthStatus();
   setProfile({});
   loadProfile();
@@ -328,6 +381,8 @@ document.querySelector("#clear-all-data").addEventListener("click", () => {
   renderMedications();
   renderReviewQueue();
   renderAuditTrail();
+  renderReportHistory();
+  renderDashboardStats();
   exportOutput.value = "";
   exportStatus.textContent = "All local prototype data cleared.";
   setBackendStatus(backendAvailable, backendAvailable ? "Backend is available. Local patient link cleared." : "All local prototype data cleared. Backend sync is offline.");
@@ -965,6 +1020,10 @@ function updateAuthStatus(message) {
   const signedIn = Boolean(authToken);
   authBadge.textContent = signedIn ? "Signed in" : "Not signed in";
   authBadge.className = `sync-badge ${signedIn ? "online" : "offline"}`;
+  signedInLabel.textContent = signedIn ? `Signed in${authEmail ? ` as ${authEmail}` : ""}` : "Signed out";
+  signedInDetail.textContent = signedIn
+    ? `Role: ${document.querySelector("#auth-role").value}. Patient link: ${backendPatientId || "not synced yet"}.`
+    : "Protected sync is available after signup or login.";
   authStatus.textContent = message || (signedIn
     ? "Account is ready. You can sync profile, consent, medications, and care plans."
     : "Create an account or log in to use the production backend.");
@@ -997,7 +1056,9 @@ function validateAuthPayload(payload, requireRole = true) {
 async function saveAuthToken(response, action) {
   authToken = response.access_token || "";
   if (!authToken) throw new Error("Missing access token");
+  authEmail = document.querySelector("#auth-email").value.trim();
   localStorage.setItem("carewiseAuthToken", authToken);
+  localStorage.setItem("carewiseAuthEmail", authEmail);
   addAuditEvent(`account_${action}`, `Production backend account ${action}.`);
   renderAuditTrail();
   updateAuthStatus(`Signed in after ${action}.`);
@@ -1031,8 +1092,10 @@ async function login() {
 
 function logout() {
   authToken = "";
+  authEmail = "";
   backendPatientId = "";
   localStorage.removeItem("carewiseAuthToken");
+  localStorage.removeItem("carewiseAuthEmail");
   localStorage.removeItem("carewiseBackendPatientId");
   addAuditEvent("account_logout", "Signed out locally and cleared backend patient link.");
   renderAuditTrail();
@@ -1238,6 +1301,281 @@ async function loadBackendAuditEvents() {
   }
 }
 
+function handleReportFileSelection() {
+  const file = document.querySelector("#report-file").files?.[0];
+  if (!file) return;
+  document.querySelector("#report-name").value = file.name;
+  reportStatus.textContent = file.type === "text/plain"
+    ? "Reading text report from file."
+    : "File selected. Paste report text or OCR output so this MVP can analyze safely.";
+  if (file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt")) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      document.querySelector("#report-text").value = String(reader.result || "").slice(0, 12000);
+      reportStatus.textContent = "Text report loaded. Upload it to analyze.";
+    };
+    reader.onerror = () => {
+      reportStatus.textContent = "Could not read the text file. Paste the report text manually.";
+    };
+    reader.readAsText(file);
+  }
+}
+
+function getReportHistory() {
+  try {
+    return JSON.parse(localStorage.getItem("carewiseReports") || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveReportHistory(report) {
+  const reports = getReportHistory();
+  reports.unshift(report);
+  localStorage.setItem("carewiseReports", JSON.stringify(reports.slice(0, 20)));
+  renderReportHistory();
+  renderDashboardStats();
+}
+
+function renderReportHistory() {
+  const reports = getReportHistory();
+  reportBadge.textContent = latestReportId ? "Report ready" : "No report uploaded";
+  reportBadge.className = `sync-badge ${latestReportId ? "online" : "offline"}`;
+  if (!reports.length) {
+    reportResults.innerHTML = "<p>No report analysis yet.</p>";
+    return;
+  }
+  reportResults.innerHTML = reports.map((report) => `
+    <article class="saved-plan-row">
+      <div>
+        <strong>${escapeHtml(report.fileName || "Untitled report")}</strong>
+        <span>${escapeHtml(report.status || "uploaded")} · ${escapeHtml(new Date(report.createdAt).toLocaleString())}</span>
+      </div>
+      ${report.riskLevel ? `<p><strong>Risk:</strong> ${escapeHtml(report.riskLevel)} · ${escapeHtml(report.message || "Report education summary generated.")}</p>` : "<p>Uploaded. Analysis not run yet.</p>"}
+      ${report.nextSteps?.length ? `<ul>${report.nextSteps.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
+    </article>
+  `).join("");
+}
+
+async function uploadReport() {
+  try {
+    if (!authToken) {
+      reportStatus.textContent = "Sign in before uploading a report.";
+      return;
+    }
+    const patientId = await ensureBackendPatient(false);
+    if (!patientId) {
+      reportStatus.textContent = "Sync profile before uploading a report.";
+      return;
+    }
+    const file = document.querySelector("#report-file").files?.[0];
+    const fileName = document.querySelector("#report-name").value.trim() || file?.name || "carewise-report.txt";
+    const reportText = document.querySelector("#report-text").value.trim();
+    if (!reportText) {
+      reportStatus.textContent = "Paste report text before uploading. PDF/image OCR automation comes next.";
+      return;
+    }
+    reportStatus.textContent = "Uploading report to backend.";
+    const response = await apiPost("/reports/upload", {
+      patient_id: patientId,
+      file_name: fileName,
+      content_type: file?.type || "text/plain",
+      report_text: reportText,
+      storage_url: "",
+    });
+    latestReportId = response.id;
+    localStorage.setItem("carewiseLatestReportId", latestReportId);
+    saveReportHistory({
+      id: response.id,
+      patientId: response.patient_id,
+      fileName: response.file_name,
+      status: response.status,
+      createdAt: new Date().toISOString(),
+    });
+    addAuditEvent("report_uploaded", `${response.file_name} uploaded to backend as ${response.id}.`);
+    renderAuditTrail();
+    reportStatus.textContent = `Report uploaded: ${response.id}. Run analysis next.`;
+  } catch (error) {
+    reportStatus.textContent = error.message.includes("401") ? "Report upload needs login again." : "Report upload failed. Check backend status.";
+  }
+}
+
+async function analyzeLatestReport() {
+  try {
+    if (!authToken) {
+      reportStatus.textContent = "Sign in before analyzing a report.";
+      return;
+    }
+    if (!latestReportId) {
+      reportStatus.textContent = "Upload a report before analysis.";
+      return;
+    }
+    reportStatus.textContent = "Analyzing report through CareWise backend.";
+    const response = await apiPost(`/reports/${latestReportId}/analyze`, {});
+    const message = response.summary?.message || "Report education summary generated.";
+    const nextSteps = response.recommendations?.next_steps || [];
+    saveReportHistory({
+      id: response.report_id,
+      analysisId: response.id,
+      patientId: response.patient_id,
+      fileName: `Analysis ${response.report_id}`,
+      status: response.status,
+      riskLevel: response.risk_level,
+      message,
+      nextSteps,
+      createdAt: new Date().toISOString(),
+    });
+    if (response.recommendations?.requires_clinician_review) {
+      addReviewQueueItem({
+        profile: getProfile(),
+        risk: {
+          label: "Report review needed",
+          reasons: [`Report analysis risk level: ${response.risk_level}`],
+        },
+        symptoms: document.querySelector("#report-text").value.trim().slice(0, 900),
+      });
+    }
+    addAuditEvent("report_analyzed", `Report ${response.report_id} analyzed with ${response.risk_level} risk.`);
+    renderAuditTrail();
+    reportStatus.textContent = `Analysis complete: ${response.risk_level}.`;
+  } catch (error) {
+    reportStatus.textContent = error.message.includes("404") ? "Report not found. Upload again." : "Report analysis failed. Check backend status.";
+  }
+}
+
+async function loadReports() {
+  try {
+    const patientId = backendPatientId || await ensureBackendPatient(false);
+    if (!authToken || !patientId) {
+      reportStatus.textContent = "Sign in and sync profile before loading reports.";
+      return;
+    }
+    const reports = await apiGet(`/reports?patient_id=${encodeURIComponent(patientId)}`);
+    localStorage.setItem("carewiseReports", JSON.stringify(reports.map((report) => ({
+      id: report.id,
+      patientId: report.patient_id,
+      fileName: report.file_name,
+      status: report.status,
+      createdAt: new Date().toISOString(),
+    }))));
+    renderReportHistory();
+    reportStatus.textContent = `Loaded ${reports.length} report${reports.length === 1 ? "" : "s"}.`;
+  } catch {
+    reportStatus.textContent = "Could not load reports from backend.";
+  }
+}
+
+async function loadBackendReviewQueue() {
+  try {
+    if (!authToken) {
+      reviewStatus.textContent = "Sign in as clinician or admin to load the backend review queue.";
+      return;
+    }
+    const response = await apiGet("/clinical-review/queue");
+    const items = response.items || [];
+    localStorage.setItem("carewiseBackendReviewCount", String(items.length));
+    if (!items.length) {
+      reviewStatus.textContent = "Backend queue is empty or your role has no visible items.";
+      renderDashboardStats();
+      return;
+    }
+    const queue = items.map((item) => ({
+      id: item.id || `backend-review-${Date.now()}`,
+      createdAt: item.created_at || new Date().toISOString(),
+      patientName: item.patient_id || "Backend patient",
+      risk: item.risk_level || "Review",
+      status: item.status || "Pending review",
+      reviewerNote: "",
+      reasons: item.emergency_flags || item.matched_conditions || ["Backend review item"],
+      symptoms: item.symptom_text || "",
+      summary: JSON.stringify(item, null, 2),
+    }));
+    localStorage.setItem("carewiseReviewQueue", JSON.stringify(queue.slice(0, 20)));
+    renderReviewQueue();
+    renderDashboardStats();
+    reviewStatus.textContent = `Loaded ${items.length} backend review item${items.length === 1 ? "" : "s"}.`;
+  } catch (error) {
+    reviewStatus.textContent = error.message.includes("403")
+      ? "Backend review queue requires clinician or admin role."
+      : "Could not load backend review queue.";
+  }
+}
+
+async function loadAdminSummary() {
+  try {
+    if (!authToken) {
+      reviewStatus.textContent = "Sign in as admin to load product summary.";
+      return;
+    }
+    const response = await apiGet("/admin/summary");
+    localStorage.setItem("carewiseAdminSummary", JSON.stringify(response));
+    renderDashboardStats();
+    reviewStatus.textContent = `Admin summary loaded: ${response.users} users, ${response.patients} patients, ${response.reports} reports.`;
+  } catch (error) {
+    reviewStatus.textContent = error.message.includes("403")
+      ? "Admin summary requires admin role."
+      : "Could not load admin summary.";
+  }
+}
+
+function renderDashboardStats() {
+  const summary = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("carewiseAdminSummary") || "{}");
+    } catch {
+      return {};
+    }
+  })();
+  const backendItems = Number(localStorage.getItem("carewiseBackendReviewCount") || 0);
+  const localItems = getReviewQueue().length;
+  const reports = summary.reports ?? getReportHistory().length;
+  const consentRecords = summary.consent_records ?? getAuditEvents().filter((event) => event.action.includes("consent")).length;
+  dashboardStats.innerHTML = `
+    <article><strong>${backendItems}</strong><span>Backend items</span></article>
+    <article><strong>${localItems}</strong><span>Local review items</span></article>
+    <article><strong>${reports}</strong><span>Reports</span></article>
+    <article><strong>${consentRecords}</strong><span>Consent records</span></article>
+  `;
+}
+
+async function createCheckout() {
+  try {
+    if (!authToken) {
+      paymentStatus.textContent = "Sign in before creating checkout.";
+      return;
+    }
+    const planCode = document.querySelector("input[name='plan']:checked")?.value || "basic";
+    paymentStatus.textContent = "Creating checkout placeholder.";
+    const response = await apiPost("/subscriptions/checkout", {
+      plan_code: planCode,
+      payment_provider: "manual",
+    });
+    latestCheckoutUrl = response.checkout_url;
+    localStorage.setItem("carewiseCheckoutUrl", latestCheckoutUrl);
+    paymentBadge.textContent = "Checkout ready";
+    paymentBadge.className = "sync-badge online";
+    paymentStatus.textContent = `${response.plan_code} checkout created: ${response.checkout_url}`;
+    addAuditEvent("checkout_created", `${response.plan_code} checkout created as ${response.id}.`);
+    renderAuditTrail();
+  } catch {
+    paymentStatus.textContent = "Checkout creation failed. Sign in with a patient account and check backend.";
+  }
+}
+
+function copyCheckoutLink() {
+  if (!latestCheckoutUrl) {
+    paymentStatus.textContent = "Create checkout first.";
+    return;
+  }
+  navigator.clipboard?.writeText(latestCheckoutUrl)
+    .then(() => {
+      paymentStatus.textContent = "Checkout link copied.";
+    })
+    .catch(() => {
+      paymentStatus.textContent = latestCheckoutUrl;
+    });
+}
+
 function createSavedPlan(context, planLabel) {
   return {
     id: `plan-${Date.now()}`,
@@ -1428,22 +1766,25 @@ function renderMedications() {
 
 function addReviewQueueItem(context) {
   const queue = getReviewQueue();
+  const profile = context.profile || getProfile();
+  const risk = context.risk || { label: "Review recommended", reasons: ["Review recommended before patient-facing follow-up."] };
   const item = {
     id: `review-${Date.now()}`,
     createdAt: new Date().toISOString(),
-    patientName: context.profile.name || "Unnamed patient",
-    risk: context.risk.label,
+    patientName: profile.name || "Unnamed patient",
+    risk: risk.label,
     status: "Pending review",
     reviewerNote: "",
-    reasons: context.risk.reasons,
+    reasons: risk.reasons || ["Review recommended before patient-facing follow-up."],
     symptoms: context.symptoms,
-    summary: buildDoctorSummary(context),
+    summary: context.rules ? buildDoctorSummary(context) : (context.summary || context.symptoms || "Review this report or care item before patient-facing follow-up."),
   };
   queue.unshift(item);
   localStorage.setItem("carewiseReviewQueue", JSON.stringify(queue.slice(0, 20)));
   addAuditEvent("review_item_created", `${item.patientName} added to clinician review queue for ${item.risk}.`);
   renderReviewQueue();
   renderAuditTrail();
+  renderDashboardStats();
 }
 
 function getReviewQueue() {
@@ -1498,6 +1839,7 @@ function updateReviewQueueItem(id, action) {
   reviewStatus.textContent = `${item.patientName} marked ${item.status}.`;
   renderReviewQueue();
   renderAuditTrail();
+  renderDashboardStats();
 }
 
 function addAuditEvent(action, message) {
