@@ -4,37 +4,75 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CareWise AI Health Planner</title>
-    <link rel="stylesheet" href="styles.css?v=carewise-sync-1" />
+    <link rel="stylesheet" href="styles.css?v=carewise-brand-2" />
   </head>
   <body>
     <main class="app-shell">
       <section class="workspace" aria-labelledby="app-title">
         <header class="topbar">
-          <div>
-            <p class="eyebrow">Care navigation workspace</p>
-            <h1 id="app-title">CareWise AI</h1>
-          </div>
+          <a class="brand-lockup" href="#app-title" aria-label="CareWise home">
+            <img class="brand-logo" src="assets/carewise-logo.svg" alt="" width="52" height="52" />
+            <span class="brand-text">
+              <strong>CareWise</strong>
+              <small>AI care navigation</small>
+            </span>
+          </a>
           <div class="topbar-actions">
-            <span class="trust-pill">Not a diagnosis</span>
-            <span class="live-pill">Local MVP</span>
+            <span class="trust-pill">Clinician safety first</span>
+            <span class="live-pill">Live prototype</span>
           </div>
         </header>
 
         <section class="hero-panel">
           <div class="hero-copy">
-            <h2>Build safer monthly care plans with one guided workspace.</h2>
+            <p class="eyebrow">Care navigation workspace</p>
+            <h1 id="app-title">CareWise AI</h1>
+            <h2>Turn confusing health needs into a safer monthly action plan.</h2>
             <p>
               Screen symptoms, organize patient details, plan food and activity,
               prepare doctor notes, and route complex cases into clinician
               review.
             </p>
+            <div class="hero-actions" aria-label="Primary actions">
+              <a class="primary-link" href="#patient-form">Start intake</a>
+              <a class="secondary-link" href="#account-title">Connect account</a>
+            </div>
           </div>
-          <div class="hero-meter" aria-label="Care categories">
-            <span><strong>Safety</strong><small>Red-flag routing</small></span>
-            <span><strong>Nutrition</strong><small>Diet and meals</small></span>
-            <span><strong>Medication</strong><small>Organizer</small></span>
-            <span><strong>Review</strong><small>Clinician queue</small></span>
+          <div class="hero-visual" aria-label="CareWise care loop">
+            <div class="care-loop-card">
+              <span class="loop-status">Live care loop</span>
+              <div class="signal-ring" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <div class="loop-steps">
+                <span><strong>01</strong> Intake</span>
+                <span><strong>02</strong> Review</span>
+                <span><strong>03</strong> Plan</span>
+                <span><strong>04</strong> Follow-up</span>
+              </div>
+            </div>
           </div>
+        </section>
+
+        <section class="overview-strip" aria-label="Product status">
+          <article>
+            <strong>Safety</strong>
+            <span>Red-flag routing and clinical review queue</span>
+          </article>
+          <article>
+            <strong>Nutrition</strong>
+            <span>Diet style, calories, meal prep, and variety</span>
+          </article>
+          <article>
+            <strong>Medication</strong>
+            <span>Organizer, refill dates, and adherence check-ins</span>
+          </article>
+          <article>
+            <strong>Backend</strong>
+            <span>Auth, consent history, audit trail, and sync</span>
+          </article>
         </section>
 
         <nav class="quick-nav" aria-label="CareWise sections">
@@ -492,6 +530,6 @@
       </section>
     </main>
 
-    <script src="script.js?v=carewise-sync-1"></script>
+    <script src="script.js?v=carewise-brand-2"></script>
   </body>
 </html>

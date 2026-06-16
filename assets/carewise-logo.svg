@@ -1,0 +1,13 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">CareWise logo</title>
+  <desc id="desc">A rounded CareWise health navigation mark with a medical cross and connected care dots.</desc>
+  <rect x="18" y="18" width="220" height="220" rx="44" fill="#F7FFFC"/>
+  <rect x="18" y="18" width="220" height="220" rx="44" stroke="#08766E" stroke-width="10"/>
+  <path d="M128 45C82.16 45 45 82.16 45 128C45 173.84 82.16 211 128 211C173.84 211 211 173.84 211 128" stroke="#17B8AE" stroke-width="18" stroke-linecap="round"/>
+  <path d="M211 128C211 90.22 185.76 58.36 151.22 48.32" stroke="#F46F5F" stroke-width="18" stroke-linecap="round"/>
+  <path d="M128 81V175" stroke="#053F3C" stroke-width="22" stroke-linecap="round"/>
+  <path d="M81 128H175" stroke="#053F3C" stroke-width="22" stroke-linecap="round"/>
+  <circle cx="67" cy="179" r="15" fill="#246FE5" stroke="#FFFFFF" stroke-width="8"/>
+  <circle cx="190" cy="80" r="15" fill="#C88A16" stroke="#FFFFFF" stroke-width="8"/>
+  <circle cx="201" cy="146" r="15" fill="#F46F5F" stroke="#FFFFFF" stroke-width="8"/>
+</svg>
