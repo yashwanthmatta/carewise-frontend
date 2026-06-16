@@ -1138,14 +1138,16 @@ async function apiPut(path, payload) {
 }
 
 async function requestJson(method, path, payload, options = {}) {
-  const headers = { "Content-Type": "application/json" };
+  const isFormData = typeof FormData !== "undefined" && payload instanceof FormData;
+  const headers = isFormData ? {} : { "Content-Type": "application/json" };
   if (authToken && !options.skipAuth) headers.Authorization = `Bearer ${authToken}`;
+  const body = isFormData ? payload : (payload ? JSON.stringify(payload) : undefined);
 
   if (typeof fetch === "function") {
     const response = await fetch(`${backendBaseUrl}${path}`, {
       method,
       headers,
-      body: payload ? JSON.stringify(payload) : undefined,
+      body,
     });
     if (!response.ok) throw new Error(`Backend returned ${response.status}`);
     return response.json();
@@ -1167,7 +1169,7 @@ async function requestJson(method, path, payload, options = {}) {
       }
     };
     request.onerror = () => reject(new Error("Backend request failed"));
-    request.send(payload ? JSON.stringify(payload) : undefined);
+    request.send(body);
   });
 }
 
@@ -1371,18 +1373,27 @@ async function uploadReport() {
     const file = document.querySelector("#report-file").files?.[0];
     const fileName = document.querySelector("#report-name").value.trim() || file?.name || "carewise-report.txt";
     const reportText = document.querySelector("#report-text").value.trim();
-    if (!reportText) {
-      reportStatus.textContent = "Paste report text before uploading. PDF/image OCR automation comes next.";
+    if (!file && !reportText) {
+      reportStatus.textContent = "Choose a file or paste report text before uploading.";
       return;
     }
     reportStatus.textContent = "Uploading report to backend.";
-    const response = await apiPost("/reports/upload", {
-      patient_id: patientId,
-      file_name: fileName,
-      content_type: file?.type || "text/plain",
-      report_text: reportText,
-      storage_url: "",
-    });
+    let response;
+    if (file) {
+      const formData = new FormData();
+      formData.append("patient_id", patientId);
+      formData.append("report_text", reportText);
+      formData.append("file", file, fileName);
+      response = await apiPost("/reports/upload-file", formData);
+    } else {
+      response = await apiPost("/reports/upload", {
+        patient_id: patientId,
+        file_name: fileName,
+        content_type: "text/plain",
+        report_text: reportText,
+        storage_url: "",
+      });
+    }
     latestReportId = response.id;
     localStorage.setItem("carewiseLatestReportId", latestReportId);
     saveReportHistory({
