@@ -1320,8 +1320,7 @@ function handleReportFileSelection() {
     reader.readAsText(file);
     return;
   }
-  document.querySelector("#report-file").value = "";
-  reportStatus.textContent = "MVP testing mode only accepts pasted text or .txt sample files. Do not upload real patient PDFs/images yet.";
+  reportStatus.textContent = "File selected. Add pasted/OCR text if you want a stronger analysis, then upload securely.";
 }
 
 function getReportHistory() {
@@ -1342,7 +1341,7 @@ function saveReportHistory(report) {
 
 function renderReportHistory() {
   const reports = getReportHistory();
-  reportBadge.textContent = latestReportId ? "Report ready" : "MVP testing mode";
+  reportBadge.textContent = latestReportId ? "Report ready" : "Cloud storage ready";
   reportBadge.className = `sync-badge ${latestReportId ? "online" : "offline"}`;
   if (!reports.length) {
     reportResults.innerHTML = "<p>No report analysis yet.</p>";
@@ -1354,6 +1353,7 @@ function renderReportHistory() {
         <strong>${escapeHtml(report.fileName || "Untitled report")}</strong>
         <span>${escapeHtml(report.status || "uploaded")} · ${escapeHtml(new Date(report.createdAt).toLocaleString())}</span>
       </div>
+      ${report.storageUrl ? `<p><strong>Storage:</strong> ${escapeHtml(report.storageUrl.startsWith("s3://") ? "Private cloud storage" : "Backend storage")} ${report.fileSizeBytes ? `· ${Math.round(Number(report.fileSizeBytes) / 1024) || 1} KB` : ""}</p>` : ""}
       ${report.riskLevel ? `<p><strong>Risk:</strong> ${escapeHtml(report.riskLevel)} · ${escapeHtml(report.message || "Report education summary generated.")}</p>` : "<p>Uploaded. Analysis not run yet.</p>"}
       ${report.nextSteps?.length ? `<ul>${report.nextSteps.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
     </article>
@@ -1374,18 +1374,20 @@ async function uploadReport() {
     const file = document.querySelector("#report-file").files?.[0];
     const fileName = document.querySelector("#report-name").value.trim() || file?.name || "carewise-report.txt";
     const reportText = document.querySelector("#report-text").value.trim();
-    if (!reportText) {
-      reportStatus.textContent = "Paste sample report text before saving. Real PDF/image uploads need durable private storage first.";
+    if (!file && !reportText) {
+      reportStatus.textContent = "Choose a report file or paste report text before uploading.";
       return;
     }
-    reportStatus.textContent = "Saving sample report text to backend.";
-    const response = await apiPost("/reports/upload", {
-      patient_id: patientId,
-      file_name: fileName,
-      content_type: "text/plain",
-      report_text: reportText,
-      storage_url: "",
-    });
+    reportStatus.textContent = file ? "Uploading report file to private cloud storage." : "Saving report text to backend.";
+    const response = file
+      ? await uploadReportFile(patientId, file, reportText)
+      : await apiPost("/reports/upload", {
+          patient_id: patientId,
+          file_name: fileName,
+          content_type: "text/plain",
+          report_text: reportText,
+          storage_url: "",
+        });
     latestReportId = response.id;
     localStorage.setItem("carewiseLatestReportId", latestReportId);
     saveReportHistory({
@@ -1393,14 +1395,24 @@ async function uploadReport() {
       patientId: response.patient_id,
       fileName: response.file_name,
       status: response.status,
+      storageUrl: response.storage_url,
+      fileSizeBytes: response.file_size_bytes,
       createdAt: new Date().toISOString(),
     });
     addAuditEvent("report_uploaded", `${response.file_name} uploaded to backend as ${response.id}.`);
     renderAuditTrail();
-    reportStatus.textContent = `Report uploaded: ${response.id}. Run analysis next.`;
+    reportStatus.textContent = `Report uploaded securely: ${response.id}. Run analysis next.`;
   } catch (error) {
-    reportStatus.textContent = error.message.includes("401") ? "Report upload needs login again." : "Report upload failed. Check backend status.";
+    reportStatus.textContent = error.message.includes("401") ? "Report upload needs login again." : `Report upload failed. ${error.message || "Check backend status."}`;
   }
+}
+
+async function uploadReportFile(patientId, file, reportText) {
+  const formData = new FormData();
+  formData.append("patient_id", patientId);
+  formData.append("report_text", reportText || "");
+  formData.append("file", file);
+  return apiPost("/reports/upload-file", formData);
 }
 
 async function analyzeLatestReport() {
@@ -1459,6 +1471,8 @@ async function loadReports() {
       patientId: report.patient_id,
       fileName: report.file_name,
       status: report.status,
+      storageUrl: report.storage_url,
+      fileSizeBytes: report.file_size_bytes,
       createdAt: new Date().toISOString(),
     }))));
     renderReportHistory();
