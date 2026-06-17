@@ -2449,3 +2449,11 @@ function escapeHtml(value) {
     }[char];
   });
 }
+
+function registerCareWiseServiceWorker() {
+  if (!("serviceWorker" in navigator)) return;
+  if (!["http:", "https:"].includes(window.location.protocol)) return;
+  navigator.serviceWorker.register("/sw.js").catch(() => {});
+}
+
+registerCareWiseServiceWorker();
