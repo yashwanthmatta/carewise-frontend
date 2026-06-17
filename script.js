@@ -1023,7 +1023,22 @@ function setBackendStatus(isOnline, message) {
 
 function initializeAccountPanel() {
   apiUrlInput.value = backendBaseUrl;
+  handleCheckoutReturn();
   updateAuthStatus();
+}
+
+function handleCheckoutReturn() {
+  const checkoutStatus = new URLSearchParams(window.location.search).get("checkout");
+  if (checkoutStatus === "success") {
+    paymentBadge.textContent = "Checkout returned";
+    paymentBadge.className = "sync-badge online";
+    paymentStatus.textContent = "Stripe returned successfully. Webhook confirmation should activate the subscription later.";
+  }
+  if (checkoutStatus === "cancelled") {
+    paymentBadge.textContent = "Checkout cancelled";
+    paymentBadge.className = "sync-badge offline";
+    paymentStatus.textContent = "Checkout was cancelled. No subscription change was made.";
+  }
 }
 
 function updateAuthStatus(message) {
@@ -1202,9 +1217,21 @@ async function checkBackend(showSuccess) {
 async function loadBackendFeatures() {
   try {
     backendFeatures = await apiGet("/features");
+    renderPaymentReadiness();
   } catch {
     backendFeatures = {};
   }
+}
+
+function renderPaymentReadiness() {
+  if (backendFeatures.stripe_checkout) {
+    paymentBadge.textContent = "Stripe ready";
+    paymentBadge.className = "sync-badge online";
+    paymentStatus.textContent = "Stripe Checkout is configured. Creating checkout will redirect to Stripe.";
+    return;
+  }
+  paymentBadge.textContent = "Manual checkout";
+  paymentBadge.className = "sync-badge offline";
 }
 
 async function loadSubscriptionPlans() {
@@ -1636,6 +1663,11 @@ async function createCheckout() {
     localStorage.setItem("carewiseCheckoutUrl", latestCheckoutUrl);
     paymentBadge.textContent = "Checkout ready";
     paymentBadge.className = "sync-badge online";
+    if (latestCheckoutUrl.startsWith("https://checkout.stripe.com/")) {
+      paymentStatus.textContent = "Redirecting to Stripe Checkout.";
+      window.location.assign(latestCheckoutUrl);
+      return;
+    }
     paymentStatus.textContent = `${response.plan_code} checkout record created. Stripe keys can replace this manual URL later.`;
     addAuditEvent("checkout_created", `${response.plan_code} checkout created as ${response.id}.`);
     renderAuditTrail();
