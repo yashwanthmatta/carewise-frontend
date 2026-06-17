@@ -175,6 +175,7 @@ let backendPatientId = localStorage.getItem("carewiseBackendPatientId") || "";
 let backendAvailable = false;
 let authToken = localStorage.getItem("carewiseAuthToken") || "";
 let authEmail = localStorage.getItem("carewiseAuthEmail") || "";
+let authRole = localStorage.getItem("carewiseAuthRole") || document.querySelector?.("#auth-role")?.value || "patient";
 let latestReportId = localStorage.getItem("carewiseLatestReportId") || "";
 let latestCheckoutUrl = localStorage.getItem("carewiseCheckoutUrl") || "";
 const defaultBackendBaseUrl = "https://carewise-api.onrender.com";
@@ -1059,7 +1060,7 @@ function updateAuthStatus(message) {
   authBadge.className = `sync-badge ${signedIn ? "online" : "offline"}`;
   signedInLabel.textContent = signedIn ? `Signed in${authEmail ? ` as ${authEmail}` : ""}` : "Signed out";
   signedInDetail.textContent = signedIn
-    ? `Role: ${document.querySelector("#auth-role").value}. Patient link: ${backendPatientId || "not synced yet"}.`
+    ? `Role: ${authRole || document.querySelector("#auth-role").value}. Patient link: ${backendPatientId || "not synced yet"}.`
     : "Protected sync is available after signup or login.";
   authStatus.textContent = message || (signedIn
     ? "Account is ready. You can sync profile, consent, medications, and care plans."
@@ -1094,8 +1095,10 @@ async function saveAuthToken(response, action) {
   authToken = response.access_token || "";
   if (!authToken) throw new Error("Missing access token");
   authEmail = document.querySelector("#auth-email").value.trim();
+  authRole = document.querySelector("#auth-role").value;
   localStorage.setItem("carewiseAuthToken", authToken);
   localStorage.setItem("carewiseAuthEmail", authEmail);
+  localStorage.setItem("carewiseAuthRole", authRole);
   addAuditEvent(`account_${action}`, `Production backend account ${action}.`);
   renderAuditTrail();
   updateAuthStatus(`Signed in after ${action}.`);
@@ -1174,16 +1177,22 @@ async function confirmPasswordReset() {
 }
 
 function logout() {
-  authToken = "";
-  authEmail = "";
-  backendPatientId = "";
-  localStorage.removeItem("carewiseAuthToken");
-  localStorage.removeItem("carewiseAuthEmail");
-  localStorage.removeItem("carewiseBackendPatientId");
+  clearAuthSession();
   addAuditEvent("account_logout", "Signed out locally and cleared backend patient link.");
   renderAuditTrail();
   updateAuthStatus("Signed out. Local prototype data is still on this device.");
   setBackendStatus(backendAvailable, backendAvailable ? "Backend is available. Sign in again to sync." : "Signed out. Backend is offline.");
+}
+
+function clearAuthSession() {
+  authToken = "";
+  authEmail = "";
+  authRole = "";
+  backendPatientId = "";
+  localStorage.removeItem("carewiseAuthToken");
+  localStorage.removeItem("carewiseAuthEmail");
+  localStorage.removeItem("carewiseAuthRole");
+  localStorage.removeItem("carewiseBackendPatientId");
 }
 
 async function recordConsentToBackend(showStatus = true) {
@@ -1259,15 +1268,35 @@ async function requestJson(method, path, payload, options = {}) {
 async function checkBackend(showSuccess) {
   try {
     const health = await apiGet("/health");
+    const sessionOk = await verifyCurrentSession();
     await loadBackendFeatures();
     await loadSubscriptionPlans();
-    const authHint = authToken ? "Signed in." : "Sign in to enable protected sync.";
+    const authHint = authToken && sessionOk ? "Signed in and verified." : "Sign in to enable protected sync.";
     setBackendStatus(true, `${health.service} is connected. ${authHint} ${backendPatientId ? "Patient link is ready." : "Sync profile to create a patient record."}`);
-    if (showSuccess) updateAuthStatus(authToken ? "Backend is online and your token is ready." : "Backend is online. Sign up or log in next.");
+    if (showSuccess) updateAuthStatus(authToken ? "Backend verified your session." : "Backend is online. Sign up or log in next.");
     renderReportHistory();
     return true;
   } catch {
     setBackendStatus(false, "Backend is offline. Local browser storage is still active.");
+    return false;
+  }
+}
+
+async function verifyCurrentSession() {
+  if (!authToken) return false;
+  try {
+    const session = await apiGet("/auth/me");
+    authEmail = session.email || authEmail;
+    authRole = session.role || authRole;
+    localStorage.setItem("carewiseAuthEmail", authEmail);
+    localStorage.setItem("carewiseAuthRole", authRole);
+    document.querySelector("#auth-email").value = authEmail;
+    document.querySelector("#auth-role").value = authRole;
+    updateAuthStatus("Session verified with backend.");
+    return true;
+  } catch {
+    clearAuthSession();
+    updateAuthStatus("Session expired. Log in again to sync protected data.");
     return false;
   }
 }
