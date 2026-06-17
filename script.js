@@ -220,6 +220,7 @@ const reviewStatus = document.querySelector("#review-status");
 const auditTrail = document.querySelector("#audit-trail");
 const exportStatus = document.querySelector("#export-status");
 const exportOutput = document.querySelector("#export-output");
+const securityReadiness = document.querySelector("#security-readiness");
 
 loadProfile();
 loadConsent();
@@ -1393,9 +1394,31 @@ async function loadBackendFeatures() {
   try {
     backendFeatures = await apiGet("/features");
     renderPaymentReadiness();
+    renderSecurityReadiness();
   } catch {
     backendFeatures = {};
+    renderSecurityReadiness();
   }
+}
+
+function renderSecurityReadiness() {
+  if (!securityReadiness) return;
+  const items = [
+    ["Auth session", backendFeatures.auth_session, "Backend verifies saved login tokens."],
+    ["Refresh tokens", backendFeatures.refresh_tokens, "Longer sessions rotate safely."],
+    ["Rate limits", backendFeatures.auth_rate_limit, "Signup, login, and reset abuse protection."],
+    ["Email verify", backendFeatures.email_verification, "Users can prove email ownership."],
+    ["Password reset", backendFeatures.password_reset, "Users can recover accounts."],
+    ["Email delivery", backendFeatures.email_delivery, "SMTP provider connected."],
+    ["Private storage", backendFeatures.report_uploads, "Reports upload through backend storage."],
+    ["Image OCR", backendFeatures.image_ocr, "OpenAI OCR key connected."],
+  ];
+  securityReadiness.innerHTML = items.map(([label, ready, description]) => `
+    <article class="${ready ? "ready" : "pending"}">
+      <strong>${escapeHtml(label)}</strong>
+      <span>${ready ? "Ready" : "Needs setup"} · ${escapeHtml(description)}</span>
+    </article>
+  `).join("");
 }
 
 function renderPaymentReadiness() {
