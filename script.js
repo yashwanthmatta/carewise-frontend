@@ -174,6 +174,7 @@ let lastGeneratedPlan = null;
 let backendPatientId = localStorage.getItem("carewiseBackendPatientId") || "";
 let backendAvailable = false;
 let authToken = localStorage.getItem("carewiseAuthToken") || "";
+let refreshToken = localStorage.getItem("carewiseRefreshToken") || "";
 let authEmail = localStorage.getItem("carewiseAuthEmail") || "";
 let authRole = localStorage.getItem("carewiseAuthRole") || document.querySelector?.("#auth-role")?.value || "patient";
 let latestReportId = localStorage.getItem("carewiseLatestReportId") || "";
@@ -1094,9 +1095,11 @@ function validateAuthPayload(payload, requireRole = true) {
 async function saveAuthToken(response, action) {
   authToken = response.access_token || "";
   if (!authToken) throw new Error("Missing access token");
+  refreshToken = response.refresh_token || refreshToken;
   authEmail = document.querySelector("#auth-email").value.trim();
   authRole = document.querySelector("#auth-role").value;
   localStorage.setItem("carewiseAuthToken", authToken);
+  if (refreshToken) localStorage.setItem("carewiseRefreshToken", refreshToken);
   localStorage.setItem("carewiseAuthEmail", authEmail);
   localStorage.setItem("carewiseAuthRole", authRole);
   addAuditEvent(`account_${action}`, `Production backend account ${action}.`);
@@ -1177,7 +1180,11 @@ async function confirmPasswordReset() {
 }
 
 function logout() {
+  const tokenToRevoke = refreshToken;
   clearAuthSession();
+  if (tokenToRevoke) {
+    apiPost("/auth/logout", { refresh_token: tokenToRevoke }, { skipAuth: true }).catch(() => {});
+  }
   addAuditEvent("account_logout", "Signed out locally and cleared backend patient link.");
   renderAuditTrail();
   updateAuthStatus("Signed out. Local prototype data is still on this device.");
@@ -1186,10 +1193,12 @@ function logout() {
 
 function clearAuthSession() {
   authToken = "";
+  refreshToken = "";
   authEmail = "";
   authRole = "";
   backendPatientId = "";
   localStorage.removeItem("carewiseAuthToken");
+  localStorage.removeItem("carewiseRefreshToken");
   localStorage.removeItem("carewiseAuthEmail");
   localStorage.removeItem("carewiseAuthRole");
   localStorage.removeItem("carewiseBackendPatientId");
@@ -1295,8 +1304,25 @@ async function verifyCurrentSession() {
     updateAuthStatus("Session verified with backend.");
     return true;
   } catch {
+    const refreshed = await refreshAuthSession();
+    if (refreshed) return verifyCurrentSession();
     clearAuthSession();
     updateAuthStatus("Session expired. Log in again to sync protected data.");
+    return false;
+  }
+}
+
+async function refreshAuthSession() {
+  if (!refreshToken) return false;
+  try {
+    const response = await apiPost("/auth/refresh", { refresh_token: refreshToken }, { skipAuth: true });
+    authToken = response.access_token || "";
+    refreshToken = response.refresh_token || "";
+    if (!authToken || !refreshToken) return false;
+    localStorage.setItem("carewiseAuthToken", authToken);
+    localStorage.setItem("carewiseRefreshToken", refreshToken);
+    return true;
+  } catch {
     return false;
   }
 }
