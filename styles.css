@@ -684,6 +684,11 @@ input[type="radio"] {
   font-size: 0.84rem;
 }
 
+.field-button {
+  width: 100%;
+  margin-top: 2px;
+}
+
 .profile-grid {
   display: grid;
   gap: 12px;

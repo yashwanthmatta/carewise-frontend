@@ -248,7 +248,11 @@ document.querySelector("#record-consent").addEventListener("click", () => {
 });
 
 document.querySelector("#password-reset").addEventListener("click", () => {
-  authStatus.textContent = "Password reset will connect to an email provider before launch. For now, create a new test account if needed.";
+  requestPasswordReset();
+});
+
+document.querySelector("#confirm-password-reset").addEventListener("click", () => {
+  confirmPasswordReset();
 });
 
 apiUrlInput.addEventListener("change", () => {
@@ -1112,6 +1116,50 @@ async function login() {
     await saveAuthToken(response, "login");
   } catch {
     updateAuthStatus("Login failed. Check email, password, and backend status.");
+  }
+}
+
+async function requestPasswordReset() {
+  const email = document.querySelector("#auth-email").value.trim();
+  if (!email) {
+    updateAuthStatus("Enter your email first, then request a reset.");
+    return;
+  }
+  try {
+    const response = await apiPost("/auth/password-reset/request", { email }, { skipAuth: true });
+    if (response.reset_token) {
+      document.querySelector("#reset-token").value = response.reset_token;
+      updateAuthStatus("Reset token created for local testing. Enter a new password and set it.");
+      return;
+    }
+    updateAuthStatus("Reset requested. Email delivery is the next provider setup before public launch.");
+  } catch {
+    updateAuthStatus("Password reset request failed. Check backend status and try again.");
+  }
+}
+
+async function confirmPasswordReset() {
+  const token = document.querySelector("#reset-token").value.trim();
+  const newPassword = document.querySelector("#reset-password").value;
+  if (!token) {
+    updateAuthStatus("Paste the reset token first.");
+    return;
+  }
+  if (newPassword.length < 12) {
+    updateAuthStatus("New password must be at least 12 characters.");
+    return;
+  }
+  try {
+    const response = await apiPost("/auth/password-reset/confirm", {
+      token,
+      new_password: newPassword,
+    }, { skipAuth: true });
+    document.querySelector("#auth-password").value = newPassword;
+    document.querySelector("#reset-token").value = "";
+    document.querySelector("#reset-password").value = "";
+    await saveAuthToken(response, "password_reset");
+  } catch {
+    updateAuthStatus("Password reset failed. The token may be expired or already used.");
   }
 }
 

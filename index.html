@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CareWise AI Health Planner</title>
-    <link rel="stylesheet" href="styles.css?v=carewise-product-10" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-11" />
   </head>
   <body>
     <main class="app-shell">
@@ -124,7 +124,21 @@
             <button id="login" class="secondary-button" type="button">Login</button>
             <button id="logout" class="secondary-button" type="button">Logout</button>
             <button id="record-consent" class="secondary-button" type="button">Record consent</button>
-            <button id="password-reset" class="secondary-button" type="button">Password reset</button>
+            <button id="password-reset" class="secondary-button" type="button">Request reset</button>
+          </div>
+          <div class="account-grid">
+            <label>
+              Reset token
+              <input id="reset-token" type="text" placeholder="Paste reset token from email" autocomplete="one-time-code" />
+            </label>
+            <label>
+              New password
+              <input id="reset-password" type="password" placeholder="At least 12 characters" />
+            </label>
+            <label>
+              Reset action
+              <button id="confirm-password-reset" class="secondary-button field-button" type="button">Set new password</button>
+            </label>
           </div>
           <div class="session-card">
             <strong id="signed-in-label">Signed out</strong>
@@ -697,6 +711,6 @@
       </section>
     </main>
 
-    <script src="script.js?v=carewise-product-10"></script>
+    <script src="script.js?v=carewise-product-11"></script>
   </body>
 </html>
