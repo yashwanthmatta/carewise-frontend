@@ -180,6 +180,7 @@ let latestCheckoutUrl = localStorage.getItem("carewiseCheckoutUrl") || "";
 const defaultBackendBaseUrl = "https://carewise-api.onrender.com";
 let backendBaseUrl = localStorage.getItem("carewiseApiUrl") || defaultBackendBaseUrl;
 let backendFeatures = {};
+let subscriptionPlans = [];
 
 fetch("disease_precaution_diet_matrix.json")
   .then((response) => response.json())
@@ -1186,6 +1187,7 @@ async function checkBackend(showSuccess) {
   try {
     const health = await apiGet("/health");
     await loadBackendFeatures();
+    await loadSubscriptionPlans();
     const authHint = authToken ? "Signed in." : "Sign in to enable protected sync.";
     setBackendStatus(true, `${health.service} is connected. ${authHint} ${backendPatientId ? "Patient link is ready." : "Sync profile to create a patient record."}`);
     if (showSuccess) updateAuthStatus(authToken ? "Backend is online and your token is ready." : "Backend is online. Sign up or log in next.");
@@ -1203,6 +1205,37 @@ async function loadBackendFeatures() {
   } catch {
     backendFeatures = {};
   }
+}
+
+async function loadSubscriptionPlans() {
+  try {
+    subscriptionPlans = await apiGet("/subscriptions/plans");
+    renderSubscriptionPlans();
+  } catch {
+    subscriptionPlans = [];
+  }
+}
+
+function renderSubscriptionPlans() {
+  if (!subscriptionPlans.length) return;
+  const selectedPlan = document.querySelector("input[name='plan']:checked")?.value || "basic";
+  const planOptions = document.querySelector(".plan-options");
+  const paymentGrid = document.querySelector(".payment-grid");
+  planOptions.innerHTML = subscriptionPlans.map((plan) => `
+    <label class="plan-card">
+      <input type="radio" name="plan" value="${escapeHtml(plan.plan_code)}" ${plan.plan_code === selectedPlan ? "checked" : ""} />
+      <span class="plan-name">${escapeHtml(plan.name)}</span>
+      <strong>$${Number(plan.monthly_price_usd)}/mo</strong>
+      <span>${escapeHtml(plan.summary)}</span>
+    </label>
+  `).join("");
+  paymentGrid.innerHTML = subscriptionPlans.map((plan) => `
+    <article>
+      <strong>${escapeHtml(plan.name)}</strong>
+      <span>$${Number(plan.monthly_price_usd)}/mo</span>
+      <p>${escapeHtml(plan.summary)}</p>
+    </article>
+  `).join("");
 }
 
 function profileToBackendPayload(profile) {
@@ -1594,7 +1627,7 @@ async function createCheckout() {
       return;
     }
     const planCode = document.querySelector("input[name='plan']:checked")?.value || "basic";
-    paymentStatus.textContent = "Creating checkout placeholder.";
+    paymentStatus.textContent = "Creating manual checkout record.";
     const response = await apiPost("/subscriptions/checkout", {
       plan_code: planCode,
       payment_provider: "manual",
@@ -1603,7 +1636,7 @@ async function createCheckout() {
     localStorage.setItem("carewiseCheckoutUrl", latestCheckoutUrl);
     paymentBadge.textContent = "Checkout ready";
     paymentBadge.className = "sync-badge online";
-    paymentStatus.textContent = `${response.plan_code} checkout created: ${response.checkout_url}`;
+    paymentStatus.textContent = `${response.plan_code} checkout record created. Stripe keys can replace this manual URL later.`;
     addAuditEvent("checkout_created", `${response.plan_code} checkout created as ${response.id}.`);
     renderAuditTrail();
   } catch {
