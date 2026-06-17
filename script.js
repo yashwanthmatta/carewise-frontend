@@ -183,6 +183,7 @@ let latestCheckoutUrl = localStorage.getItem("carewiseCheckoutUrl") || "";
 const defaultBackendBaseUrl = "https://carewise-api.onrender.com";
 let backendBaseUrl = localStorage.getItem("carewiseApiUrl") || defaultBackendBaseUrl;
 let backendFeatures = {};
+let backendReadiness = {};
 let subscriptionPlans = [];
 
 fetch("disease_precaution_diet_matrix.json")
@@ -1338,6 +1339,7 @@ async function requestJson(method, path, payload, options = {}) {
 async function checkBackend(showSuccess) {
   try {
     const health = await apiGet("/health");
+    await loadBackendReadiness();
     const sessionOk = await verifyCurrentSession();
     await loadBackendFeatures();
     await loadSubscriptionPlans();
@@ -1348,6 +1350,8 @@ async function checkBackend(showSuccess) {
     return true;
   } catch {
     setBackendStatus(false, "Backend is offline. Local browser storage is still active.");
+    backendReadiness = {};
+    renderSecurityReadiness();
     return false;
   }
 }
@@ -1401,9 +1405,21 @@ async function loadBackendFeatures() {
   }
 }
 
+async function loadBackendReadiness() {
+  try {
+    backendReadiness = await apiGet("/ready");
+  } catch {
+    backendReadiness = {};
+  }
+}
+
 function renderSecurityReadiness() {
   if (!securityReadiness) return;
+  const checks = backendReadiness.checks || {};
   const items = [
+    ["Database", checks.database, "PostgreSQL is reachable."],
+    ["Configuration", checks.configuration, "Production settings passed startup checks."],
+    ["Storage mode", checks.storage, "Report storage configuration is valid."],
     ["Auth session", backendFeatures.auth_session, "Backend verifies saved login tokens."],
     ["Refresh tokens", backendFeatures.refresh_tokens, "Longer sessions rotate safely."],
     ["Rate limits", backendFeatures.auth_rate_limit, "Signup, login, and reset abuse protection."],
