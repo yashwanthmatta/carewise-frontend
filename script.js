@@ -1442,6 +1442,11 @@ async function analyzeLatestReport() {
       reportStatus.textContent = "Upload a report before analysis.";
       return;
     }
+    const reportText = document.querySelector("#report-text").value.trim();
+    if (reportText) {
+      reportStatus.textContent = "Saving readable report text before analysis.";
+      await apiPut(`/reports/${latestReportId}/text`, { report_text: reportText });
+    }
     reportStatus.textContent = "Analyzing report through CareWise backend.";
     const response = await apiPost(`/reports/${latestReportId}/analyze`, {});
     const message = response.summary?.message || "Report education summary generated.";
@@ -1470,7 +1475,7 @@ async function analyzeLatestReport() {
     addAuditEvent("report_analyzed", `Report ${response.report_id} analyzed with ${response.risk_level} risk.`);
     renderAuditTrail();
     reportStatus.textContent = response.status === "needs_readable_text"
-      ? "Report stored securely. Paste OCR text or key lab values, then upload again for analysis."
+      ? "Report stored securely. Paste OCR text or key lab values here, then click Analyze report again."
       : `Analysis complete: ${response.risk_level}.`;
   } catch (error) {
     reportStatus.textContent = error.message.includes("404") ? "Report not found. Upload again." : "Report analysis failed. Check backend status.";
