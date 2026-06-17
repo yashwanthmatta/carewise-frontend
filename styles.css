@@ -569,6 +569,10 @@ p {
   background: linear-gradient(90deg, var(--coral), var(--violet), var(--aqua));
 }
 
+.launch-panel::before {
+  background: linear-gradient(90deg, var(--blue), var(--teal), var(--gold));
+}
+
 label,
 legend {
   display: grid;
@@ -699,6 +703,7 @@ input[type="radio"] {
 .payment-panel,
 .legal-panel,
 .mobile-panel,
+.launch-panel,
 .export-panel {
   margin-top: 18px;
 }
@@ -1014,6 +1019,33 @@ input[type="file"] {
   gap: 10px;
 }
 
+.launch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.launch-grid article {
+  border: 1px solid #dce8e3;
+  border-radius: 8px;
+  padding: 14px;
+  background: #fff;
+}
+
+.launch-grid strong {
+  display: block;
+  color: var(--teal-dark);
+  margin-bottom: 8px;
+}
+
+.launch-grid ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.55;
+  font-size: 0.92rem;
+}
+
 .mobile-roadmap span {
   min-height: 72px;
   border: 1px solid #dce8e3;
@@ -1233,6 +1265,7 @@ input[type="file"] {
   .dashboard-stats,
   .payment-grid,
   .legal-grid,
+  .launch-grid,
   .mobile-roadmap {
     grid-template-columns: 1fr 1fr;
   }
@@ -1353,6 +1386,7 @@ input[type="file"] {
   .dashboard-stats,
   .payment-grid,
   .legal-grid,
+  .launch-grid,
   .mobile-roadmap {
     grid-template-columns: 1fr;
   }
