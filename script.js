@@ -177,6 +177,7 @@ let authToken = localStorage.getItem("carewiseAuthToken") || "";
 let refreshToken = localStorage.getItem("carewiseRefreshToken") || "";
 let authEmail = localStorage.getItem("carewiseAuthEmail") || "";
 let authRole = localStorage.getItem("carewiseAuthRole") || document.querySelector?.("#auth-role")?.value || "patient";
+let emailVerified = localStorage.getItem("carewiseEmailVerified") === "true";
 let latestReportId = localStorage.getItem("carewiseLatestReportId") || "";
 let latestCheckoutUrl = localStorage.getItem("carewiseCheckoutUrl") || "";
 const defaultBackendBaseUrl = "https://carewise-api.onrender.com";
@@ -247,6 +248,14 @@ document.querySelector("#logout").addEventListener("click", () => {
 
 document.querySelector("#record-consent").addEventListener("click", () => {
   recordConsentToBackend(true);
+});
+
+document.querySelector("#request-email-verification").addEventListener("click", () => {
+  requestEmailVerification();
+});
+
+document.querySelector("#confirm-email-verification").addEventListener("click", () => {
+  confirmEmailVerification();
 });
 
 document.querySelector("#password-reset").addEventListener("click", () => {
@@ -1031,6 +1040,7 @@ function initializeAccountPanel() {
   apiUrlInput.value = backendBaseUrl;
   handleCheckoutReturn();
   handlePasswordResetToken();
+  handleEmailVerificationToken();
   updateAuthStatus();
 }
 
@@ -1055,13 +1065,20 @@ function handlePasswordResetToken() {
   authStatus.textContent = "Reset token loaded. Enter a new password, then set it.";
 }
 
+function handleEmailVerificationToken() {
+  const verifyToken = new URLSearchParams(window.location.search).get("verify_token");
+  if (!verifyToken) return;
+  document.querySelector("#verify-token").value = verifyToken;
+  authStatus.textContent = "Verification token loaded. Confirm your email.";
+}
+
 function updateAuthStatus(message) {
   const signedIn = Boolean(authToken);
-  authBadge.textContent = signedIn ? "Signed in" : "Not signed in";
-  authBadge.className = `sync-badge ${signedIn ? "online" : "offline"}`;
+  authBadge.textContent = signedIn ? (emailVerified ? "Verified" : "Verify email") : "Not signed in";
+  authBadge.className = `sync-badge ${signedIn && emailVerified ? "online" : "offline"}`;
   signedInLabel.textContent = signedIn ? `Signed in${authEmail ? ` as ${authEmail}` : ""}` : "Signed out";
   signedInDetail.textContent = signedIn
-    ? `Role: ${authRole || document.querySelector("#auth-role").value}. Patient link: ${backendPatientId || "not synced yet"}.`
+    ? `Role: ${authRole || document.querySelector("#auth-role").value}. Email: ${emailVerified ? "verified" : "not verified"}. Patient link: ${backendPatientId || "not synced yet"}.`
     : "Protected sync is available after signup or login.";
   authStatus.textContent = message || (signedIn
     ? "Account is ready. You can sync profile, consent, medications, and care plans."
@@ -1154,6 +1171,47 @@ async function requestPasswordReset() {
   }
 }
 
+async function requestEmailVerification() {
+  if (!authToken) {
+    updateAuthStatus("Sign in before requesting email verification.");
+    return;
+  }
+  try {
+    const response = await apiPost("/auth/email-verification/request", {});
+    if (response.verification_token) {
+      document.querySelector("#verify-token").value = response.verification_token;
+      updateAuthStatus("Verification token created for local testing. Confirm your email.");
+      return;
+    }
+    updateAuthStatus(response.delivery_status === "already_verified"
+      ? "Email is already verified."
+      : "Verification email queued. Check your inbox for the link.");
+  } catch {
+    updateAuthStatus("Email verification request failed. Check backend status.");
+  }
+}
+
+async function confirmEmailVerification() {
+  const token = document.querySelector("#verify-token").value.trim();
+  if (!token) {
+    updateAuthStatus("Paste the email verification token first.");
+    return;
+  }
+  try {
+    const session = await apiPost("/auth/email-verification/confirm", { token }, { skipAuth: true });
+    emailVerified = Boolean(session.email_verified);
+    if (session.email) authEmail = session.email;
+    if (session.role) authRole = session.role;
+    localStorage.setItem("carewiseEmailVerified", String(emailVerified));
+    localStorage.setItem("carewiseAuthEmail", authEmail);
+    localStorage.setItem("carewiseAuthRole", authRole);
+    document.querySelector("#verify-token").value = "";
+    updateAuthStatus("Email verified.");
+  } catch {
+    updateAuthStatus("Email verification failed. The token may be expired or already used.");
+  }
+}
+
 async function confirmPasswordReset() {
   const token = document.querySelector("#reset-token").value.trim();
   const newPassword = document.querySelector("#reset-password").value;
@@ -1196,11 +1254,13 @@ function clearAuthSession() {
   refreshToken = "";
   authEmail = "";
   authRole = "";
+  emailVerified = false;
   backendPatientId = "";
   localStorage.removeItem("carewiseAuthToken");
   localStorage.removeItem("carewiseRefreshToken");
   localStorage.removeItem("carewiseAuthEmail");
   localStorage.removeItem("carewiseAuthRole");
+  localStorage.removeItem("carewiseEmailVerified");
   localStorage.removeItem("carewiseBackendPatientId");
 }
 
@@ -1297,8 +1357,10 @@ async function verifyCurrentSession() {
     const session = await apiGet("/auth/me");
     authEmail = session.email || authEmail;
     authRole = session.role || authRole;
+    emailVerified = Boolean(session.email_verified);
     localStorage.setItem("carewiseAuthEmail", authEmail);
     localStorage.setItem("carewiseAuthRole", authRole);
+    localStorage.setItem("carewiseEmailVerified", String(emailVerified));
     document.querySelector("#auth-email").value = authEmail;
     document.querySelector("#auth-role").value = authRole;
     updateAuthStatus("Session verified with backend.");

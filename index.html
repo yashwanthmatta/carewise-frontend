@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CareWise AI Health Planner</title>
-    <link rel="stylesheet" href="styles.css?v=carewise-product-14" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-15" />
   </head>
   <body>
     <main class="app-shell">
@@ -124,9 +124,18 @@
             <button id="login" class="secondary-button" type="button">Login</button>
             <button id="logout" class="secondary-button" type="button">Logout</button>
             <button id="record-consent" class="secondary-button" type="button">Record consent</button>
+            <button id="request-email-verification" class="secondary-button" type="button">Verify email</button>
             <button id="password-reset" class="secondary-button" type="button">Request reset</button>
           </div>
           <div class="account-grid">
+            <label>
+              Verification token
+              <input id="verify-token" type="text" placeholder="Paste verification token from email" autocomplete="one-time-code" />
+            </label>
+            <label>
+              Verify action
+              <button id="confirm-email-verification" class="secondary-button field-button" type="button">Confirm email</button>
+            </label>
             <label>
               Reset token
               <input id="reset-token" type="text" placeholder="Paste reset token from email" autocomplete="one-time-code" />
@@ -711,6 +720,6 @@
       </section>
     </main>
 
-    <script src="script.js?v=carewise-product-14"></script>
+    <script src="script.js?v=carewise-product-15"></script>
   </body>
 </html>
