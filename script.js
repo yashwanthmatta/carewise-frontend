@@ -1028,6 +1028,7 @@ function setBackendStatus(isOnline, message) {
 function initializeAccountPanel() {
   apiUrlInput.value = backendBaseUrl;
   handleCheckoutReturn();
+  handlePasswordResetToken();
   updateAuthStatus();
 }
 
@@ -1043,6 +1044,13 @@ function handleCheckoutReturn() {
     paymentBadge.className = "sync-badge offline";
     paymentStatus.textContent = "Checkout was cancelled. No subscription change was made.";
   }
+}
+
+function handlePasswordResetToken() {
+  const resetToken = new URLSearchParams(window.location.search).get("reset_token");
+  if (!resetToken) return;
+  document.querySelector("#reset-token").value = resetToken;
+  authStatus.textContent = "Reset token loaded. Enter a new password, then set it.";
 }
 
 function updateAuthStatus(message) {
@@ -1132,7 +1140,9 @@ async function requestPasswordReset() {
       updateAuthStatus("Reset token created for local testing. Enter a new password and set it.");
       return;
     }
-    updateAuthStatus("Reset requested. Email delivery is the next provider setup before public launch.");
+    updateAuthStatus(response.delivery_status === "email_queued"
+      ? "Reset email queued. Check your inbox for the reset link."
+      : "Reset requested. Email delivery is the next provider setup before public launch.");
   } catch {
     updateAuthStatus("Password reset request failed. Check backend status and try again.");
   }
