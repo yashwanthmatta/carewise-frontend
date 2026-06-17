@@ -366,6 +366,14 @@ document.querySelector("#copy-data").addEventListener("click", () => {
   exportLocalData(true);
 });
 
+document.querySelector("#export-backend-data").addEventListener("click", () => {
+  exportBackendData();
+});
+
+document.querySelector("#request-delete-data").addEventListener("click", () => {
+  requestBackendDataDeletion();
+});
+
 document.querySelector("#clear-all-data").addEventListener("click", () => {
   ["carewiseProfile", "carewiseSavedPlans", "carewiseCheckins", "carewiseMedications", "carewiseReviewQueue", "carewiseAuditEvents", "carewiseConsent", "carewiseBackendPatientId", "carewiseAuthToken", "carewiseAuthEmail", "carewiseReports", "carewiseLatestReportId", "carewiseCheckoutUrl", "carewiseAdminSummary", "carewiseBackendReviewCount"].forEach((key) => localStorage.removeItem(key));
   backendPatientId = "";
@@ -1951,6 +1959,44 @@ function exportLocalData(copyToClipboard) {
       .catch(() => {
         exportStatus.textContent = "Copy unavailable. Export is shown in the text box.";
       });
+  }
+}
+
+async function exportBackendData() {
+  try {
+    if (!authToken) {
+      exportStatus.textContent = "Sign in before exporting backend data.";
+      return;
+    }
+    const payload = await apiGet("/privacy/me/export");
+    exportOutput.value = JSON.stringify(payload, null, 2);
+    exportStatus.textContent = "Backend data export loaded.";
+    addAuditEvent("backend_data_exported", "Backend privacy export loaded in the app.");
+    renderAuditTrail();
+  } catch {
+    exportStatus.textContent = "Backend export failed. Check login and backend status.";
+  }
+}
+
+async function requestBackendDataDeletion() {
+  try {
+    if (!authToken) {
+      exportStatus.textContent = "Sign in before requesting backend deletion.";
+      return;
+    }
+    const confirmed = window.confirm("Submit a backend data deletion request for this signed-in account?");
+    if (!confirmed) {
+      exportStatus.textContent = "Deletion request cancelled.";
+      return;
+    }
+    const response = await apiPost("/privacy/me/delete-request", {
+      reason: "User requested deletion from CareWise web app.",
+    });
+    exportStatus.textContent = `Deletion request submitted: ${response.id}.`;
+    addAuditEvent("backend_deletion_requested", `Backend deletion request submitted: ${response.id}.`);
+    renderAuditTrail();
+  } catch {
+    exportStatus.textContent = "Deletion request failed. Check login and backend status.";
   }
 }
 
