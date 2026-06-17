@@ -1224,14 +1224,21 @@ async function loadBackendFeatures() {
 }
 
 function renderPaymentReadiness() {
-  if (backendFeatures.stripe_checkout) {
-    paymentBadge.textContent = "Stripe ready";
+  if (backendFeatures.stripe_checkout && backendFeatures.stripe_webhook) {
+    paymentBadge.textContent = "Stripe live";
     paymentBadge.className = "sync-badge online";
-    paymentStatus.textContent = "Stripe Checkout is configured. Creating checkout will redirect to Stripe.";
+    paymentStatus.textContent = "Stripe Checkout and webhook automation are configured.";
+    return;
+  }
+  if (backendFeatures.stripe_checkout) {
+    paymentBadge.textContent = "Checkout ready";
+    paymentBadge.className = "sync-badge online";
+    paymentStatus.textContent = "Stripe Checkout is configured. Add the webhook secret to activate subscription status updates.";
     return;
   }
   paymentBadge.textContent = "Manual checkout";
   paymentBadge.className = "sync-badge offline";
+  paymentStatus.textContent = "Add Stripe keys in Render to replace this manual checkout placeholder.";
 }
 
 async function loadSubscriptionPlans() {
