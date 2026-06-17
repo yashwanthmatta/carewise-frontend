@@ -222,6 +222,9 @@ const auditTrail = document.querySelector("#audit-trail");
 const exportStatus = document.querySelector("#export-status");
 const exportOutput = document.querySelector("#export-output");
 const securityReadiness = document.querySelector("#security-readiness");
+const networkStatus = document.querySelector("#network-status");
+const installAppButton = document.querySelector("#install-app");
+let deferredInstallPrompt = null;
 
 loadProfile();
 loadConsent();
@@ -234,6 +237,7 @@ renderAuditTrail();
 renderReportHistory();
 renderDashboardStats();
 initializeAccountPanel();
+initializeInstallAndNetworkStatus();
 checkBackend(false);
 
 document.querySelector("#signup").addEventListener("click", () => {
@@ -280,6 +284,10 @@ document.querySelector("#check-backend").addEventListener("click", () => {
 
 document.querySelector("#sync-profile").addEventListener("click", () => {
   syncProfileToBackend();
+});
+
+installAppButton?.addEventListener("click", () => {
+  installCareWiseApp();
 });
 
 document.querySelector("#sync-plan").addEventListener("click", () => {
@@ -1044,6 +1052,43 @@ function initializeAccountPanel() {
   handlePasswordResetToken();
   handleEmailVerificationToken();
   updateAuthStatus();
+}
+
+function initializeInstallAndNetworkStatus() {
+  updateNetworkStatus();
+  window.addEventListener("online", updateNetworkStatus);
+  window.addEventListener("offline", updateNetworkStatus);
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    if (installAppButton) installAppButton.hidden = false;
+  });
+  window.addEventListener("appinstalled", () => {
+    deferredInstallPrompt = null;
+    if (installAppButton) installAppButton.hidden = true;
+    if (networkStatus) {
+      networkStatus.textContent = "Installed";
+      networkStatus.className = "network-pill";
+    }
+  });
+}
+
+function updateNetworkStatus() {
+  if (!networkStatus) return;
+  const online = navigator.onLine !== false;
+  networkStatus.textContent = online ? "Online" : "Offline shell";
+  networkStatus.className = `network-pill ${online ? "" : "offline"}`.trim();
+}
+
+async function installCareWiseApp() {
+  if (!deferredInstallPrompt) {
+    if (networkStatus) networkStatus.textContent = "Use browser install";
+    return;
+  }
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice.catch(() => null);
+  deferredInstallPrompt = null;
+  if (installAppButton) installAppButton.hidden = true;
 }
 
 function handleCheckoutReturn() {

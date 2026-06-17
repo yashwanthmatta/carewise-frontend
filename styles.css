@@ -213,7 +213,9 @@ p {
 }
 
 .trust-pill,
-.live-pill {
+.live-pill,
+.network-pill,
+.install-button {
   display: inline-flex;
   align-items: center;
   min-height: 38px;
@@ -233,6 +235,28 @@ p {
 .live-pill {
   border: 1px solid rgba(32, 184, 176, 0.34);
   color: var(--teal);
+}
+
+.network-pill {
+  border: 1px solid rgba(36, 111, 229, 0.28);
+  color: var(--blue);
+}
+
+.network-pill.offline {
+  border-color: rgba(249, 115, 91, 0.35);
+  color: var(--coral-dark);
+  background: #fff7f5;
+}
+
+.install-button {
+  border: 1px solid rgba(15, 118, 110, 0.34);
+  color: #fff;
+  background: var(--teal);
+  cursor: pointer;
+}
+
+.install-button:hover {
+  background: var(--teal-dark);
 }
 
 .hero-panel {
