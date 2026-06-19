@@ -319,6 +319,17 @@ p {
   background: rgba(255, 255, 255, 0.88);
 }
 
+.inline-link {
+  color: var(--teal);
+  font-size: 0.88rem;
+  font-weight: 950;
+  text-decoration: none;
+}
+
+.inline-link:hover {
+  text-decoration: underline;
+}
+
 .hero-visual {
   display: grid;
   align-items: center;
@@ -1046,6 +1057,40 @@ input[type="file"] {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
+}
+
+.legal-document {
+  display: grid;
+  gap: 16px;
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.legal-document .panel {
+  padding: 28px;
+}
+
+.legal-document h1 {
+  margin-bottom: 8px;
+  font-size: clamp(2.1rem, 6vw, 4.4rem);
+  line-height: 0.95;
+}
+
+.legal-document h2 {
+  margin: 22px 0 8px;
+  color: var(--teal-dark);
+  font-size: 1.25rem;
+  line-height: 1.15;
+}
+
+.legal-document ul {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.legal-document .document-meta {
+  color: var(--muted);
+  font-weight: 850;
 }
 
 .launch-grid {
