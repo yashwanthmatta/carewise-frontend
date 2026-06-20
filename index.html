@@ -3,13 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CareWise AI Health Planner</title>
+    <title>CareWise AI Report Explainer</title>
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-20" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-91" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-20" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-91" />
   </head>
   <body>
     <main class="app-shell">
@@ -19,12 +19,12 @@
             <img class="brand-logo" src="assets/carewise-logo.svg" alt="" width="52" height="52" />
             <span class="brand-text">
               <strong>CareWise</strong>
-              <small>AI care navigation</small>
+              <small>AI report explainer</small>
             </span>
           </a>
           <div class="topbar-actions">
-            <span class="trust-pill">Clinician safety first</span>
-            <span class="live-pill">Live prototype</span>
+            <span class="trust-pill">Educational health report explainer</span>
+            <span class="live-pill">Private beta</span>
             <span id="network-status" class="network-pill">Checking network</span>
             <button id="install-app" class="install-button" type="button" hidden>Install</button>
           </div>
@@ -32,32 +32,41 @@
 
         <section class="hero-panel">
           <div class="hero-copy">
-            <p class="eyebrow">Care navigation workspace</p>
+            <p class="eyebrow">CareWise AI</p>
             <h1 id="app-title">CareWise AI</h1>
-            <h2>Turn confusing health needs into a safer monthly action plan.</h2>
+            <h2>Understand your health reports in simple English.</h2>
             <p>
-              Screen symptoms, organize patient details, plan food and activity,
-              prepare doctor notes, and route complex cases into clinician
-              review.
+              Upload blood tests, get plain-language AI explanations, see a
+              health score, and leave with wellness suggestions and questions
+              to ask your doctor.
             </p>
             <div class="hero-actions" aria-label="Primary actions">
-              <a class="primary-link" href="#patient-form">Start intake</a>
-              <a class="secondary-link" href="#account-title">Connect account</a>
+              <a class="primary-link" href="#report-title">Upload report</a>
+              <a class="secondary-link" href="#saved-title">View history</a>
             </div>
           </div>
-          <div class="hero-visual" aria-label="CareWise care loop">
-            <div class="care-loop-card">
-              <span class="loop-status">Live care loop</span>
-              <div class="signal-ring" aria-hidden="true">
-                <span></span>
-                <span></span>
-                <span></span>
+          <div class="hero-visual" aria-label="CareWise report preview">
+            <div class="report-preview-card">
+              <div class="preview-topline">
+                <span>Sample report</span>
+                <strong>73/100</strong>
               </div>
-              <div class="loop-steps">
-                <span><strong>01</strong> Intake</span>
-                <span><strong>02</strong> Review</span>
-                <span><strong>03</strong> Plan</span>
-                <span><strong>04</strong> Follow-up</span>
+              <div class="preview-score-ring" aria-hidden="true">
+                <span>Health Score</span>
+              </div>
+              <div class="preview-finding-list">
+                <article>
+                  <span>LDL cholesterol</span>
+                  <strong>Needs attention</strong>
+                </article>
+                <article>
+                  <span>A1C</span>
+                  <strong>Discuss prevention</strong>
+                </article>
+                <article>
+                  <span>Next step</span>
+                  <strong>Ask your doctor 3 questions</strong>
+                </article>
               </div>
             </div>
           </div>
@@ -65,50 +74,90 @@
 
         <section class="overview-strip" aria-label="Product status">
           <article>
-            <strong>Safety</strong>
-            <span>Red-flag routing and clinical review queue</span>
+            <strong>Upload</strong>
+            <span>PDF, image, or pasted lab text</span>
           </article>
           <article>
-            <strong>Nutrition</strong>
-            <span>Diet style, calories, meal prep, and variety</span>
+            <strong>Explain</strong>
+            <span>Simple English, no diagnosis claims</span>
           </article>
           <article>
-            <strong>Medication</strong>
-            <span>Organizer, refill dates, and adherence check-ins</span>
+            <strong>Score</strong>
+            <span>Health score and risk areas</span>
           </article>
           <article>
-            <strong>Backend</strong>
-            <span>Auth, consent history, audit trail, and sync</span>
+            <strong>History</strong>
+            <span>Compare reports over time</span>
           </article>
         </section>
 
-        <nav class="quick-nav" aria-label="CareWise sections">
-          <a href="#account-title">Account</a>
-          <a href="#patient-form">Intake</a>
-          <a href="#report-title">Reports</a>
-          <a href="#backend-title">Backend</a>
-          <a href="#saved-title">Plans</a>
-          <a href="#medication-title">Meds</a>
-          <a href="#checkin-title">Check-ins</a>
-          <a href="#review-title">Review</a>
-          <a href="#payment-title">Payment</a>
-          <a href="#legal-title">Legal</a>
-          <a href="#results">Results</a>
+        <nav class="quick-nav patient-nav" aria-label="CareWise patient flow">
+          <a href="#app-title">Home</a>
+          <a href="#report-title">Upload</a>
+          <a href="#saved-title">History</a>
+          <a href="#account-title">Profile</a>
         </nav>
+
+        <section class="progress-rail" aria-label="CareWise progress">
+          <a href="#account-title"><strong>1</strong><span>Account</span></a>
+          <a href="#consent-title"><strong>2</strong><span>Consent</span></a>
+          <a href="#report-title"><strong>3</strong><span>Report</span></a>
+          <a href="#patient-form"><strong>4</strong><span>Intake</span></a>
+          <a href="#results"><strong>5</strong><span>Plan</span></a>
+        </section>
+
+        <section class="panel home-panel" aria-labelledby="home-title">
+          <div class="home-grid">
+            <div>
+              <p class="eyebrow">Version 1 focus</p>
+              <h3 id="home-title">One clear place for lab reports</h3>
+              <p>
+                CareWise V1 is intentionally simple: upload or paste a health
+                report, get a plain-English explanation, see a health score,
+                and save the result for your next visit.
+              </p>
+              <div class="hero-actions">
+                <a class="primary-link" href="#report-title">Upload report</a>
+                <button id="run-demo-flow" class="secondary-button narrow-button" type="button">Run sample report</button>
+              </div>
+              <div id="home-readiness" class="home-readiness" aria-label="CareWise live readiness">
+                <article><strong>API</strong><span>Checking</span></article>
+                <article><strong>Database</strong><span>Checking</span></article>
+                <article><strong>Storage</strong><span>Checking</span></article>
+              </div>
+            </div>
+            <div class="flow-steps" aria-label="CareWise patient flow">
+              <article><strong>01</strong><span>Upload</span><small>PDF, image, or pasted lab text</small></article>
+              <article><strong>02</strong><span>Explain</span><small>Values translated into plain English</small></article>
+              <article><strong>03</strong><span>Score</span><small>Simple score plus risk areas</small></article>
+              <article><strong>04</strong><span>Prepare</span><small>Questions for a licensed professional</small></article>
+            </div>
+          </div>
+        </section>
+
+        <details class="team-tools">
+          <summary>Team tools and launch setup</summary>
+          <nav class="team-nav" aria-label="CareWise team tools">
+            <a href="#backend-title">Backend</a>
+            <a href="#review-title">Clinician review</a>
+            <a href="#support-title">Support</a>
+            <a href="#qa-title">QA</a>
+            <a href="#legal-title">Legal</a>
+            <a href="#launch-title">Launch</a>
+            <a href="#export-title">Export</a>
+          </nav>
+        </details>
 
         <section class="panel account-panel" aria-labelledby="account-title">
           <div class="panel-heading-row">
             <div>
-              <p class="eyebrow">Production account</p>
-              <h3 id="account-title">Sign in or create account</h3>
+              <p class="eyebrow">Profile</p>
+              <h3 id="account-title">Save reports securely</h3>
+              <p class="panel-intro">Create an account when you are ready to keep report history synced across devices.</p>
             </div>
             <span id="auth-badge" class="sync-badge offline">Not signed in</span>
           </div>
           <div class="account-grid">
-            <label>
-              API URL
-              <input id="api-url" type="text" value="https://carewise-api.onrender.com" />
-            </label>
             <label>
               Email
               <input id="auth-email" type="email" value="patient@example.com" />
@@ -126,40 +175,63 @@
               </select>
             </label>
           </div>
-          <div class="sync-grid">
-            <button id="signup" class="secondary-button" type="button">Create account</button>
+          <div class="primary-action-row">
+            <button id="signup" class="primary-button narrow-button" type="button">Create account</button>
             <button id="login" class="secondary-button" type="button">Login</button>
-            <button id="logout" class="secondary-button" type="button">Logout</button>
-            <button id="record-consent" class="secondary-button" type="button">Record consent</button>
-            <button id="request-email-verification" class="secondary-button" type="button">Verify email</button>
-            <button id="password-reset" class="secondary-button" type="button">Request reset</button>
-          </div>
-          <div class="account-grid">
-            <label>
-              Verification token
-              <input id="verify-token" type="text" placeholder="Paste verification token from email" autocomplete="one-time-code" />
-            </label>
-            <label>
-              Verify action
-              <button id="confirm-email-verification" class="secondary-button field-button" type="button">Confirm email</button>
-            </label>
-            <label>
-              Reset token
-              <input id="reset-token" type="text" placeholder="Paste reset token from email" autocomplete="one-time-code" />
-            </label>
-            <label>
-              New password
-              <input id="reset-password" type="password" placeholder="At least 12 characters" />
-            </label>
-            <label>
-              Reset action
-              <button id="confirm-password-reset" class="secondary-button field-button" type="button">Set new password</button>
-            </label>
+            <a class="secondary-link inline-action" href="#report-title">Try demo first</a>
           </div>
           <div class="session-card">
             <strong id="signed-in-label">Signed out</strong>
-            <span id="signed-in-detail">Protected sync is available after signup or login.</span>
+            <span id="signed-in-detail">You can test report analysis without an account. Sign in when you want cloud sync.</span>
           </div>
+          <div class="team-account-card">
+            <div>
+              <strong>Team review account</strong>
+              <span>Use this when testing clinician/admin queue access. Create the account once, then log in anytime.</span>
+            </div>
+            <div class="team-account-actions">
+              <button id="fill-clinician-account" class="secondary-button compact" type="button">Clinician test</button>
+              <button id="fill-admin-account" class="secondary-button compact" type="button">Admin test</button>
+            </div>
+          </div>
+          <details class="advanced-actions">
+            <summary>Account recovery and verification</summary>
+            <div class="sync-grid secondary-actions">
+              <button id="logout" class="secondary-button" type="button">Logout</button>
+              <button id="record-consent" class="secondary-button" type="button">Record consent</button>
+              <button id="request-email-verification" class="secondary-button" type="button">Verify email</button>
+              <button id="password-reset" class="secondary-button" type="button">Request reset</button>
+            </div>
+            <div class="account-grid">
+              <label>
+                Verification token
+                <input id="verify-token" type="text" placeholder="Paste verification token from email" autocomplete="one-time-code" />
+              </label>
+              <label>
+                Verify action
+                <button id="confirm-email-verification" class="secondary-button field-button" type="button">Confirm email</button>
+              </label>
+              <label>
+                Reset token
+                <input id="reset-token" type="text" placeholder="Paste reset token from email" autocomplete="one-time-code" />
+              </label>
+              <label>
+                New password
+                <input id="reset-password" type="password" placeholder="At least 12 characters" />
+              </label>
+              <label>
+                Reset action
+                <button id="confirm-password-reset" class="secondary-button field-button" type="button">Set new password</button>
+              </label>
+            </div>
+          </details>
+          <details class="connection-settings">
+            <summary>Connection settings</summary>
+            <label>
+              API URL
+              <input id="api-url" type="text" value="https://carewise-api.onrender.com" />
+            </label>
+          </details>
           <p id="auth-status" class="status-line" role="status">Use the live production backend at carewise-api.onrender.com.</p>
         </section>
 
@@ -182,36 +254,56 @@
 
         <section class="panel consent-panel" aria-labelledby="consent-title">
           <div>
-            <p class="eyebrow">Privacy first</p>
-            <h3 id="consent-title">Consent and data use</h3>
+            <p class="eyebrow">Step 2</p>
+            <h3 id="consent-title">Consent and medical limits</h3>
             <p>
-              This prototype stores information on this device only. It is not
-              a diagnosis, prescription, emergency service, or replacement for
+              CareWise is for education and care planning. It is not a
+              diagnosis, prescription, emergency service, or replacement for
               licensed medical care.
             </p>
           </div>
-          <label class="check-line consent-check">
-            <input id="privacy-consent" type="checkbox" />
-            I understand and consent to using this prototype for care planning.
-          </label>
-          <p id="consent-status" class="status-line" role="status"></p>
+          <div class="consent-action-card">
+            <label class="check-line consent-check">
+              <input id="privacy-consent" type="checkbox" />
+              I understand and consent to using CareWise for care planning.
+            </label>
+            <a class="primary-link" href="#patient-form">Continue to intake</a>
+            <p id="consent-status" class="status-line" role="status"></p>
+          </div>
         </section>
 
         <section class="panel report-panel" aria-labelledby="report-title">
           <div class="panel-heading-row">
             <div>
-              <p class="eyebrow">Report intelligence</p>
-              <h3 id="report-title">Upload and analyze report</h3>
+              <p class="eyebrow">Upload</p>
+              <h3 id="report-title">Analyze a report in seconds</h3>
+              <p class="panel-intro">Upload a PDF/image or paste lab text. CareWise explains readable values in plain English, adds a health score, and suggests questions to ask a licensed professional.</p>
             </div>
             <span id="report-badge" class="sync-badge offline">Cloud storage ready</span>
           </div>
           <div class="mvp-alert">
-            <strong>Private upload</strong>
-            <span>Reports are saved through the backend into private Cloudflare R2 storage. Add pasted/OCR text when possible so analysis has readable lab values.</span>
+            <strong>Safe by design</strong>
+            <span>CareWise explains reports for education only. It does not diagnose, prescribe, or replace a licensed clinician.</span>
+          </div>
+          <div class="report-spotlight" aria-label="Report analysis benefits">
+            <article>
+              <strong>1. Upload</strong>
+              <span>Blood test PDF, image, or pasted lab text.</span>
+            </article>
+            <article>
+              <strong>2. Understand</strong>
+              <span>AI explains values in simple English.</span>
+            </article>
+            <article>
+              <strong>3. Improve</strong>
+              <span>See score, trends, and wellness suggestions.</span>
+            </article>
           </div>
           <div class="report-grid">
-            <label>
-              Report file
+            <label class="file-input-card">
+              <span>Report file</span>
+              <strong>Drop in a PDF, image, or text report</strong>
+              <small>Private upload when signed in. Paste text below for instant demo analysis.</small>
               <input id="report-file" type="file" accept=".pdf,image/*,.txt,text/plain" />
             </label>
             <label>
@@ -224,13 +316,151 @@
             </label>
           </div>
           <div class="sync-grid">
+            <button id="sample-report-text" class="secondary-button" type="button">Try sample report</button>
             <button id="upload-report" class="secondary-button" type="button">Upload report</button>
             <button id="analyze-report" class="primary-button narrow-button" type="button">Analyze report</button>
-            <button id="load-reports" class="secondary-button" type="button">Load reports</button>
+            <button id="load-reports" class="secondary-button v1-secondary-control" type="button">Load cloud reports</button>
           </div>
-          <p id="report-status" class="status-line" role="status">Sign in and sync profile before uploading a report.</p>
+          <p id="report-status" class="status-line" role="status">Try the sample report, paste lab text, or upload a file when signed in.</p>
           <div id="report-results" class="saved-plans-list">
-            <p>No report analysis yet.</p>
+            <article class="empty-result-card">
+              <strong>Your explanation will appear here</strong>
+              <span>Use the sample report or paste lab text to generate a health score, findings, wellness suggestions, and questions for your doctor.</span>
+            </article>
+          </div>
+          <div class="privacy-assurance" aria-label="CareWise privacy and safety notes">
+            <article><strong>Private by default</strong><span>Demo analysis can run locally before cloud sync.</span></article>
+            <article><strong>No diagnosis claims</strong><span>Educational explanations only, with clinician follow-up prompts.</span></article>
+            <article><strong>Built for history</strong><span>Save reports so changes are easier to discuss over time.</span></article>
+          </div>
+          <div class="v1-report-dashboard" aria-label="CareWise sample report result">
+            <article class="health-score-card">
+              <span>Health Score</span>
+              <strong>82/100</strong>
+              <p>Sample result only. A licensed professional should interpret reports with your full history.</p>
+            </article>
+            <article>
+              <span>Heart Health</span>
+              <strong>Medium Risk</strong>
+              <p>LDL cholesterol is a discussion point.</p>
+            </article>
+            <article>
+              <span>Diabetes</span>
+              <strong>Low Risk</strong>
+              <p>A1C sample is in range.</p>
+            </article>
+            <article>
+              <span>Vitamin Levels</span>
+              <strong>Needs Attention</strong>
+              <p>Vitamin D should be discussed if low.</p>
+            </article>
+          </div>
+          <div class="v1-chart-grid" aria-label="Sample health trend charts">
+            <article>
+              <strong>Cholesterol trend</strong>
+              <div class="trend-bars"><span style="height: 74%"></span><span style="height: 64%"></span><span style="height: 52%"></span></div>
+              <p>LDL improving across saved reports.</p>
+            </article>
+            <article>
+              <strong>A1C trend</strong>
+              <div class="trend-bars blue"><span style="height: 45%"></span><span style="height: 42%"></span><span style="height: 40%"></span></div>
+              <p>Blood sugar marker appears stable in sample.</p>
+            </article>
+            <article>
+              <strong>Blood pressure</strong>
+              <div class="trend-bars teal"><span style="height: 58%"></span><span style="height: 55%"></span><span style="height: 48%"></span></div>
+              <p>Track repeated readings over time.</p>
+            </article>
+          </div>
+          <div class="v1-chat-card" aria-labelledby="v1-chat-title">
+            <div>
+              <p class="eyebrow">Ask CareWise</p>
+              <h4 id="v1-chat-title">Ask a question about this report</h4>
+              <p>CareWise answers in simple, non-diagnostic language and suggests what to ask a licensed professional.</p>
+            </div>
+            <label>
+              Question
+              <input id="report-question" type="text" placeholder="Example: Why is my LDL high?" />
+            </label>
+            <button id="ask-report-question" class="secondary-button" type="button">Ask</button>
+            <p id="report-answer" class="status-line" role="status">Try: "What should I ask my doctor?"</p>
+          </div>
+          <div class="report-eval-card" aria-label="Report safety evaluation">
+            <div>
+              <strong>Report safety evaluation</strong>
+              <span>Run sample cases to check red-flag routing and non-diagnostic language before demos.</span>
+            </div>
+            <div class="report-eval-actions">
+              <button id="run-report-eval" class="secondary-button compact" type="button">Run eval</button>
+              <button id="copy-report-eval" class="secondary-button compact" type="button">Copy report</button>
+            </div>
+          </div>
+          <div id="report-eval-results" class="report-eval-results" aria-live="polite">
+            <article class="pending"><strong>Evaluation</strong><span>Not run yet</span></article>
+          </div>
+          <p id="report-eval-status" class="status-line" role="status">Evaluation is a safety check, not a guarantee of clinical accuracy.</p>
+        </section>
+
+        <section class="panel lab-trend-panel" aria-labelledby="lab-trend-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Report follow-up</p>
+              <h3 id="lab-trend-title">Lab value tracker</h3>
+              <p class="panel-intro">Save key lab values from reports so trends are easier to discuss. Ranges vary by lab, age, pregnancy, medicines, and medical history, so a licensed clinician should interpret results.</p>
+            </div>
+            <button id="clear-lab-trends" class="secondary-button compact" type="button">Clear labs</button>
+          </div>
+          <div class="lab-trend-grid">
+            <label>
+              Test
+              <select id="lab-test">
+                <option value="A1C">A1C</option>
+                <option value="Fasting glucose">Fasting glucose</option>
+                <option value="LDL cholesterol">LDL cholesterol</option>
+                <option value="HDL cholesterol">HDL cholesterol</option>
+                <option value="Triglycerides">Triglycerides</option>
+                <option value="Blood pressure">Blood pressure</option>
+                <option value="Vitamin D">Vitamin D</option>
+                <option value="Creatinine/eGFR">Creatinine/eGFR</option>
+                <option value="TSH">TSH</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+            <label>
+              Value
+              <input id="lab-value" type="text" placeholder="Example: 128 or 6.1" />
+            </label>
+            <label>
+              Unit
+              <input id="lab-unit" type="text" placeholder="mg/dL, %, mmHg" />
+            </label>
+            <label>
+              Date
+              <input id="lab-date" type="date" />
+            </label>
+            <label>
+              Flag
+              <select id="lab-flag">
+                <option value="Not sure" selected>Not sure</option>
+                <option value="In range">In range</option>
+                <option value="High">High</option>
+                <option value="Low">Low</option>
+                <option value="Needs clinician review">Needs clinician review</option>
+              </select>
+            </label>
+            <label class="lab-trend-wide">
+              Notes
+              <textarea id="lab-notes" rows="3" placeholder="Reference range, fasting status, symptoms, medications, or question for clinician."></textarea>
+            </label>
+          </div>
+          <div class="primary-action-row">
+            <button id="sample-lab-trend" class="secondary-button" type="button">Use sample labs</button>
+            <button id="save-lab-trend" class="primary-button narrow-button" type="button">Save lab</button>
+            <button id="copy-lab-trends" class="secondary-button" type="button">Copy lab summary</button>
+          </div>
+          <p id="lab-trend-status" class="status-line" role="status">Save values from reports before building a visit brief.</p>
+          <div id="lab-trend-list" class="lab-trend-list">
+            <p>No lab values saved yet.</p>
           </div>
         </section>
 
@@ -362,7 +592,10 @@
               </label>
             </fieldset>
 
-            <button class="primary-button" type="submit">Generate care plan</button>
+            <div class="primary-action-row">
+              <button id="sample-intake" class="secondary-button" type="button">Use sample intake</button>
+              <button class="primary-button narrow-button" type="submit">Generate care plan</button>
+            </div>
           </section>
 
           <section class="panel plans-panel" aria-labelledby="plans-title">
@@ -430,13 +663,95 @@
           </section>
         </form>
 
+        <section class="panel meal-planner-panel" aria-labelledby="meal-planner-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Food planning</p>
+              <h3 id="meal-planner-title">Meal and grocery planner</h3>
+              <p class="panel-intro">Build a realistic food plan for busy weeks using diet style, budget, prep time, and health focus. Food guidance should be checked with a clinician or dietitian for allergies, pregnancy, kidney disease, diabetes, eating disorders, or complex conditions.</p>
+            </div>
+            <button id="clear-meal-plans" class="secondary-button compact" type="button">Clear meals</button>
+          </div>
+          <div class="meal-planner-grid">
+            <label>
+              Eating style
+              <select id="meal-diet-style">
+                <option value="flexible" selected>Flexible / mixed diet</option>
+                <option value="vegetarian">Vegetarian</option>
+                <option value="vegan">Vegan</option>
+                <option value="pescatarian">Fish but no meat</option>
+                <option value="non_vegetarian">Non-vegetarian</option>
+              </select>
+            </label>
+            <label>
+              Health focus
+              <select id="meal-priority">
+                <option value="balanced" selected>Balanced health</option>
+                <option value="low_cost">Low cost</option>
+                <option value="weight">Weight management</option>
+                <option value="heart">Heart health</option>
+                <option value="diabetes">Blood sugar</option>
+              </select>
+            </label>
+            <label>
+              Prep time
+              <select id="meal-prep-time">
+                <option value="ten" selected>10 minutes</option>
+                <option value="twenty">20 minutes</option>
+                <option value="batch">Batch cook weekly</option>
+              </select>
+            </label>
+            <label>
+              Budget
+              <select id="meal-budget">
+                <option value="low">Low cost</option>
+                <option value="mid" selected>Moderate</option>
+                <option value="high">More flexible</option>
+              </select>
+            </label>
+            <label>
+              Calorie direction
+              <select id="meal-calorie-goal">
+                <option value="maintain" selected>Maintain energy</option>
+                <option value="gentle_loss">Gentle weight loss</option>
+                <option value="gain">Healthy weight gain</option>
+                <option value="medical">Medical condition first</option>
+              </select>
+            </label>
+            <label class="meal-planner-wide">
+              Preferences, allergies, or barriers
+              <textarea id="meal-notes" rows="3" placeholder="Example: no peanuts, vegetarian, microwave at work, 15 minutes at night, budget meals."></textarea>
+            </label>
+          </div>
+          <div class="primary-action-row">
+            <button id="sample-meal-plan" class="secondary-button" type="button">Use sample preferences</button>
+            <button id="build-meal-plan" class="primary-button narrow-button" type="button">Build meal plan</button>
+            <button id="copy-meal-plan" class="secondary-button" type="button">Copy meal plan</button>
+          </div>
+          <p id="meal-planner-status" class="status-line" role="status">Create a weekly meal plan after choosing a diet style and prep time.</p>
+          <div id="meal-plan-list" class="meal-plan-list">
+            <p>No meal plans saved yet.</p>
+          </div>
+        </section>
+
         <section class="panel saved-panel" aria-labelledby="saved-title">
           <div class="panel-heading-row">
             <div>
-              <p class="eyebrow">Care history</p>
-              <h3 id="saved-title">Saved care plans</h3>
+              <p class="eyebrow">Report history</p>
+              <h3 id="saved-title">Previous reports</h3>
+              <p class="panel-intro">Compare report summaries and health score changes over time.</p>
             </div>
-            <button id="clear-saved" class="secondary-button compact" type="button">Clear saved</button>
+            <button id="clear-saved" class="secondary-button compact" type="button">Clear history</button>
+          </div>
+          <div class="v1-history-list" aria-label="Sample report history">
+            <article>
+              <div><strong>June Report</strong><span>Health Score 74</span></div>
+              <p>High LDL · Vitamin D needs attention · Suggested doctor questions saved.</p>
+            </article>
+            <article>
+              <div><strong>September Report</strong><span>Health Score 82</span></div>
+              <p>Cholesterol improved · A1C stable · Vitamin D marked improved in sample.</p>
+            </article>
           </div>
           <div id="saved-plans" class="saved-plans-list">
             <p>No saved plans yet.</p>
@@ -473,10 +788,85 @@
               <textarea id="med-notes" rows="2" placeholder="Questions, side effects, allergies"></textarea>
             </label>
           </div>
-          <button id="save-medication" class="primary-button narrow-button" type="button">Save medication</button>
+          <div class="primary-action-row">
+            <button id="sample-medication" class="secondary-button" type="button">Use sample medication</button>
+            <button id="save-medication" class="primary-button narrow-button" type="button">Save medication</button>
+          </div>
           <p id="medication-status" class="status-line" role="status"></p>
           <div id="medication-list" class="saved-plans-list">
             <p>No medications saved yet.</p>
+          </div>
+        </section>
+
+        <section class="panel safety-check-panel" aria-labelledby="safety-check-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Pre-visit safety</p>
+              <h3 id="safety-check-title">Medication, allergy, and food safety checklist</h3>
+              <p class="panel-intro">Scan saved medications, allergies, symptoms, lab values, and food plans for questions to bring to a clinician, pharmacist, or dietitian. This does not detect all interactions or replace professional review.</p>
+            </div>
+            <button id="clear-safety-checks" class="secondary-button compact" type="button">Clear checks</button>
+          </div>
+          <div class="primary-action-row">
+            <button id="sample-safety-check" class="secondary-button" type="button">Add sample safety data</button>
+            <button id="run-safety-check" class="primary-button narrow-button" type="button">Run safety check</button>
+            <button id="copy-safety-check" class="secondary-button" type="button">Copy safety checklist</button>
+          </div>
+          <p id="safety-check-status" class="status-line" role="status">Run this before sharing a meal plan, medication list, lab summary, or visit brief.</p>
+          <div id="safety-check-list" class="safety-check-list">
+            <p>No safety checklist generated yet.</p>
+          </div>
+        </section>
+
+        <section class="panel symptom-panel" aria-labelledby="symptom-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Symptom context</p>
+              <h3 id="symptom-title">Symptom timeline</h3>
+              <p class="panel-intro">Log what changed and when so care conversations are clearer. Severe, new, or fast-worsening symptoms should use urgent care, emergency services, or a licensed clinician.</p>
+            </div>
+            <button id="clear-symptoms" class="secondary-button compact" type="button">Clear timeline</button>
+          </div>
+          <div class="symptom-grid">
+            <label>
+              Date
+              <input id="symptom-date" type="date" />
+            </label>
+            <label>
+              Symptom or concern
+              <input id="symptom-name" type="text" placeholder="Headache, fatigue, chest pressure" />
+            </label>
+            <label>
+              Change
+              <select id="symptom-change">
+                <option value="New">New</option>
+                <option value="Better">Better</option>
+                <option value="Same" selected>Same</option>
+                <option value="Worse">Worse</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+            </label>
+            <label>
+              Severity
+              <select id="symptom-severity">
+                <option value="Mild">Mild</option>
+                <option value="Moderate" selected>Moderate</option>
+                <option value="Severe">Severe</option>
+              </select>
+            </label>
+            <label class="symptom-wide">
+              Notes
+              <textarea id="symptom-notes" rows="3" placeholder="Start time, triggers, what helped, related medicines, questions for care team."></textarea>
+            </label>
+          </div>
+          <div class="primary-action-row">
+            <button id="sample-symptom" class="secondary-button" type="button">Use sample symptom</button>
+            <button id="save-symptom" class="primary-button narrow-button" type="button">Save symptom</button>
+            <button id="copy-symptoms" class="secondary-button" type="button">Copy timeline</button>
+          </div>
+          <p id="symptom-status" class="status-line" role="status">Save symptom changes before check-ins or care visits.</p>
+          <div id="symptom-list" class="symptom-list">
+            <p>No symptom timeline entries yet.</p>
           </div>
         </section>
 
@@ -549,10 +939,479 @@
               <textarea id="checkin-notes" rows="3" placeholder="Barriers, wins, side effects, questions"></textarea>
             </label>
           </div>
-          <button id="save-checkin" class="primary-button narrow-button" type="button">Save check-in</button>
+          <div class="primary-action-row">
+            <button id="sample-checkin" class="secondary-button" type="button">Use sample check-in</button>
+            <button id="save-checkin" class="primary-button narrow-button" type="button">Save check-in</button>
+          </div>
           <p id="checkin-status" class="status-line" role="status"></p>
           <div id="checkin-history" class="saved-plans-list">
             <p>No check-ins yet.</p>
+          </div>
+        </section>
+
+        <section class="panel goals-panel" aria-labelledby="goals-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Weekly goals</p>
+              <h3 id="goals-title">Care goal tracker</h3>
+              <p class="panel-intro">Turn care plans into small weekly goals. This tracker supports habits and questions, not medical orders or treatment changes.</p>
+            </div>
+            <button id="clear-goals" class="secondary-button compact" type="button">Clear goals</button>
+          </div>
+          <div class="goal-grid">
+            <label>
+              Goal
+              <input id="goal-title-input" type="text" placeholder="Walk after dinner 3 days" />
+            </label>
+            <label>
+              Category
+              <select id="goal-category">
+                <option value="Food">Food</option>
+                <option value="Movement">Movement</option>
+                <option value="Sleep">Sleep</option>
+                <option value="Medication question">Medication question</option>
+                <option value="Appointment prep">Appointment prep</option>
+                <option value="Report follow-up">Report follow-up</option>
+              </select>
+            </label>
+            <label>
+              Target
+              <input id="goal-target" type="text" placeholder="3 times this week" />
+            </label>
+            <label>
+              Progress
+              <select id="goal-progress">
+                <option value="Not started">Not started</option>
+                <option value="Started" selected>Started</option>
+                <option value="On track">On track</option>
+                <option value="Blocked">Blocked</option>
+                <option value="Done">Done</option>
+              </select>
+            </label>
+            <label>
+              Priority
+              <select id="goal-priority">
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+              </select>
+            </label>
+            <label class="goal-wide">
+              Notes
+              <textarea id="goal-notes" rows="3" placeholder="Barrier, support needed, question for clinician or nutritionist."></textarea>
+            </label>
+          </div>
+          <div class="primary-action-row">
+            <button id="sample-goal" class="secondary-button" type="button">Use sample goal</button>
+            <button id="save-goal" class="primary-button narrow-button" type="button">Save goal</button>
+            <button id="copy-goals" class="secondary-button" type="button">Copy goals</button>
+          </div>
+          <p id="goal-status" class="status-line" role="status">Save small weekly goals after generating a care plan.</p>
+          <div id="goal-list" class="goal-list">
+            <p>No weekly goals saved yet.</p>
+          </div>
+        </section>
+
+        <section class="panel barriers-panel" aria-labelledby="barriers-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Real-life blockers</p>
+              <h3 id="barriers-title">Barrier support tracker</h3>
+              <p class="panel-intro">Capture what makes a goal hard, then plan a safer support step. This tracker does not replace professional, emergency, financial, or insurance advice.</p>
+            </div>
+            <button id="clear-barriers" class="secondary-button compact" type="button">Clear barriers</button>
+          </div>
+          <div class="barrier-grid">
+            <label>
+              Barrier type
+              <select id="barrier-type">
+                <option value="Time">Time</option>
+                <option value="Cost">Cost</option>
+                <option value="Food access">Food access</option>
+                <option value="Transportation">Transportation</option>
+                <option value="Medication concern">Medication concern</option>
+                <option value="Side effects">Side effects</option>
+                <option value="Motivation or stress">Motivation or stress</option>
+                <option value="Technology issue">Technology issue</option>
+              </select>
+            </label>
+            <label>
+              Impact
+              <select id="barrier-impact">
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+              </select>
+            </label>
+            <label>
+              Related goal
+              <input id="barrier-goal" type="text" placeholder="Walk after dinner 3 days" />
+            </label>
+            <label>
+              Support step
+              <input id="barrier-step" type="text" placeholder="Ask family to walk together twice" />
+            </label>
+            <label class="barrier-wide">
+              Notes
+              <textarea id="barrier-notes" rows="3" placeholder="What got in the way? What would make this easier next week?"></textarea>
+            </label>
+          </div>
+          <div class="primary-action-row">
+            <button id="sample-barrier" class="secondary-button" type="button">Use sample barrier</button>
+            <button id="save-barrier" class="primary-button narrow-button" type="button">Save barrier</button>
+            <button id="copy-barriers" class="secondary-button" type="button">Copy barriers</button>
+          </div>
+          <p id="barrier-status" class="status-line" role="status">Save barriers so the next care plan can be more realistic.</p>
+          <div id="barrier-list" class="barrier-list">
+            <p>No barriers saved yet.</p>
+          </div>
+        </section>
+
+        <section class="panel reminder-panel" aria-labelledby="reminder-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Follow-up rhythm</p>
+              <h3 id="reminder-title">Reminder planner</h3>
+              <p class="panel-intro">Plan check-ins, medication refills, report reviews, and clinician follow-ups. This MVP stores reminders locally and does not send push, email, or SMS yet.</p>
+            </div>
+            <button id="clear-reminders" class="secondary-button compact" type="button">Clear reminders</button>
+          </div>
+          <div class="reminder-grid">
+            <label>
+              Reminder
+              <input id="reminder-title-input" type="text" placeholder="Weekly CareWise check-in" />
+            </label>
+            <label>
+              Type
+              <select id="reminder-type">
+                <option value="Check-in">Check-in</option>
+                <option value="Medication refill">Medication refill</option>
+                <option value="Report review">Report review</option>
+                <option value="Clinician follow-up">Clinician follow-up</option>
+                <option value="Meal prep">Meal prep</option>
+              </select>
+            </label>
+            <label>
+              Frequency
+              <select id="reminder-frequency">
+                <option value="Daily">Daily</option>
+                <option value="Weekly" selected>Weekly</option>
+                <option value="Monthly">Monthly</option>
+                <option value="One-time">One-time</option>
+              </select>
+            </label>
+            <label>
+              Start date
+              <input id="reminder-date" type="date" />
+            </label>
+            <label class="reminder-wide">
+              Notes
+              <textarea id="reminder-notes" rows="3" placeholder="What should the user prepare or ask?"></textarea>
+            </label>
+          </div>
+          <div class="primary-action-row">
+            <button id="sample-reminder" class="secondary-button" type="button">Use sample reminder</button>
+            <button id="save-reminder" class="primary-button narrow-button" type="button">Save reminder</button>
+            <button id="copy-reminders" class="secondary-button" type="button">Copy reminder plan</button>
+          </div>
+          <p id="reminder-status" class="status-line" role="status">Save a reminder plan before connecting real notifications.</p>
+          <div id="reminder-list" class="reminder-list">
+            <p>No reminders planned yet.</p>
+          </div>
+        </section>
+
+        <section class="panel monthly-calendar-panel" aria-labelledby="monthly-calendar-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Monthly rhythm</p>
+              <h3 id="monthly-calendar-title">4-week care calendar</h3>
+              <p class="panel-intro">Turn goals, medications, labs, meal plans, safety checks, and visit prep into a simple monthly schedule. This is planning support only, not treatment instructions.</p>
+            </div>
+            <button id="clear-monthly-calendar" class="secondary-button compact" type="button">Clear calendar</button>
+          </div>
+          <div class="monthly-calendar-grid">
+            <label>
+              Start date
+              <input id="monthly-calendar-start" type="date" />
+            </label>
+            <label>
+              Main focus
+              <select id="monthly-calendar-focus">
+                <option value="Balanced follow-up" selected>Balanced follow-up</option>
+                <option value="Report follow-up">Report follow-up</option>
+                <option value="Medication review">Medication review</option>
+                <option value="Food and movement">Food and movement</option>
+                <option value="Visit preparation">Visit preparation</option>
+              </select>
+            </label>
+            <label>
+              Check-in day
+              <select id="monthly-calendar-day">
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday" selected>Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+              </select>
+            </label>
+            <label class="monthly-calendar-wide">
+              Notes
+              <textarea id="monthly-calendar-notes" rows="3" placeholder="Appointment date, work schedule, family support, labs to repeat, refill needs, or food-prep barriers."></textarea>
+            </label>
+          </div>
+          <div class="primary-action-row">
+            <button id="sample-monthly-calendar" class="secondary-button" type="button">Use sample month</button>
+            <button id="build-monthly-calendar" class="primary-button narrow-button" type="button">Build calendar</button>
+            <button id="copy-monthly-calendar" class="secondary-button" type="button">Copy calendar</button>
+          </div>
+          <p id="monthly-calendar-status" class="status-line" role="status">Build a calendar after saving goals, meal plans, labs, or visit-prep items.</p>
+          <div id="monthly-calendar-list" class="monthly-calendar-list">
+            <p>No monthly calendar generated yet.</p>
+          </div>
+        </section>
+
+        <section class="panel navigation-panel" aria-labelledby="navigation-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Care navigation</p>
+              <h3 id="navigation-title">Doctor and insurance prep</h3>
+              <p class="panel-intro">Create a safe appointment-search checklist. This MVP does not verify live provider availability, coverage, or prices yet.</p>
+            </div>
+            <button id="clear-navigation" class="secondary-button compact" type="button">Clear prep</button>
+          </div>
+          <div class="navigation-grid">
+            <label>
+              Care need
+              <select id="navigation-need">
+                <option value="Primary care">Primary care</option>
+                <option value="Dietitian/nutrition">Dietitian/nutrition</option>
+                <option value="Cardiology">Cardiology</option>
+                <option value="Endocrinology">Endocrinology</option>
+                <option value="Mental health">Mental health</option>
+                <option value="Urgent care">Urgent care</option>
+              </select>
+            </label>
+            <label>
+              Insurance status
+              <select id="navigation-insurance">
+                <option value="Current insurance">Current insurance</option>
+                <option value="No insurance">No insurance</option>
+                <option value="Comparing plans">Comparing plans</option>
+              </select>
+            </label>
+            <label>
+              Location
+              <input id="navigation-location" type="text" placeholder="City or ZIP" />
+            </label>
+            <label>
+              Timing
+              <select id="navigation-timing">
+                <option value="Routine">Routine</option>
+                <option value="This week">This week</option>
+                <option value="Urgent today">Urgent today</option>
+              </select>
+            </label>
+            <label class="navigation-wide">
+              Notes
+              <textarea id="navigation-notes" rows="3" placeholder="Symptoms to mention, insurance questions, language preference, accessibility needs, referral questions."></textarea>
+            </label>
+          </div>
+          <div class="primary-action-row">
+            <button id="sample-navigation" class="secondary-button" type="button">Use sample prep</button>
+            <button id="save-navigation" class="primary-button narrow-button" type="button">Save prep</button>
+            <button id="copy-navigation" class="secondary-button" type="button">Copy prep</button>
+          </div>
+          <p id="navigation-status" class="status-line" role="status">Use this to prepare questions before calling a clinic or insurance plan.</p>
+          <div id="navigation-list" class="navigation-list">
+            <p>No care navigation prep saved yet.</p>
+          </div>
+        </section>
+
+        <section class="panel care-team-panel" aria-labelledby="care-team-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Care team</p>
+              <h3 id="care-team-title">Contact and question organizer</h3>
+              <p class="panel-intro">Keep care contacts, roles, and questions in one place before visits. CareWise does not verify provider credentials, availability, insurance network, or medical appropriateness.</p>
+            </div>
+            <button id="clear-care-team" class="secondary-button compact" type="button">Clear contacts</button>
+          </div>
+          <div class="care-team-grid">
+            <label>
+              Name or clinic
+              <input id="care-team-name" type="text" placeholder="Primary care clinic" />
+            </label>
+            <label>
+              Role
+              <select id="care-team-role">
+                <option value="Primary care">Primary care</option>
+                <option value="Specialist">Specialist</option>
+                <option value="Dietitian/nutritionist">Dietitian/nutritionist</option>
+                <option value="Pharmacist">Pharmacist</option>
+                <option value="Insurance/member services">Insurance/member services</option>
+                <option value="Support person">Support person</option>
+              </select>
+            </label>
+            <label>
+              Contact method
+              <input id="care-team-contact" type="text" placeholder="Phone, portal, email, or address" />
+            </label>
+            <label>
+              Next action
+              <select id="care-team-action">
+                <option value="Call to schedule">Call to schedule</option>
+                <option value="Ask coverage question">Ask coverage question</option>
+                <option value="Prepare visit questions">Prepare visit questions</option>
+                <option value="Medication question">Medication question</option>
+                <option value="Report follow-up">Report follow-up</option>
+                <option value="Share CareWise summary">Share CareWise summary</option>
+              </select>
+            </label>
+            <label class="care-team-wide">
+              Questions / notes
+              <textarea id="care-team-notes" rows="3" placeholder="What should be asked? What records, medications, allergies, or reports should be prepared?"></textarea>
+            </label>
+          </div>
+          <div class="primary-action-row">
+            <button id="sample-care-team" class="secondary-button" type="button">Use sample contact</button>
+            <button id="save-care-team" class="primary-button narrow-button" type="button">Save contact</button>
+            <button id="copy-care-team" class="secondary-button" type="button">Copy contacts</button>
+          </div>
+          <p id="care-team-status" class="status-line" role="status">Save contacts and questions before care visits or insurance calls.</p>
+          <div id="care-team-list" class="care-team-list">
+            <p>No care team contacts saved yet.</p>
+          </div>
+        </section>
+
+        <section class="panel visit-brief-panel" aria-labelledby="visit-brief-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Visit preparation</p>
+              <h3 id="visit-brief-title">Clinician visit brief</h3>
+              <p class="panel-intro">Create a copyable summary from saved symptoms, reports, medications, goals, barriers, and care-team questions. This is preparation support only and should be reviewed with a licensed professional.</p>
+            </div>
+            <button id="clear-visit-briefs" class="secondary-button compact" type="button">Clear briefs</button>
+          </div>
+          <div id="visit-brief-readiness" class="visit-brief-readiness" aria-label="Visit brief readiness">
+            <article><strong>Symptoms</strong><span>Checking</span></article>
+            <article><strong>Reports</strong><span>Checking</span></article>
+            <article><strong>Meds</strong><span>Checking</span></article>
+            <article><strong>Questions</strong><span>Checking</span></article>
+          </div>
+          <div class="primary-action-row">
+            <button id="sample-visit-brief" class="secondary-button" type="button">Add sample visit data</button>
+            <button id="build-visit-brief" class="primary-button narrow-button" type="button">Build visit brief</button>
+            <button id="copy-visit-brief" class="secondary-button" type="button">Copy brief</button>
+          </div>
+          <p id="visit-brief-status" class="status-line" role="status">Build this before calling a clinic, meeting a clinician, or asking for nutrition guidance.</p>
+          <div id="visit-brief-list" class="visit-brief-list">
+            <p>No visit brief generated yet.</p>
+          </div>
+          <textarea id="visit-brief-output" class="visit-brief-output" rows="12" readonly placeholder="Click Build visit brief to generate a clinician-ready summary."></textarea>
+        </section>
+
+        <section class="panel care-packet-panel" aria-labelledby="care-packet-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Share packet</p>
+              <h3 id="care-packet-title">Care packet builder</h3>
+              <p class="panel-intro">Combine the visit brief, safety checklist, lab values, medications, meal plan, monthly calendar, goals, barriers, and care-team notes into one copyable handoff. Review before sharing health information.</p>
+            </div>
+            <button id="clear-care-packets" class="secondary-button compact" type="button">Clear packets</button>
+          </div>
+          <div id="care-packet-readiness" class="care-packet-readiness" aria-label="Care packet readiness">
+            <article><strong>Visit brief</strong><span>Checking</span></article>
+            <article><strong>Safety</strong><span>Checking</span></article>
+            <article><strong>Calendar</strong><span>Checking</span></article>
+            <article><strong>Data</strong><span>Checking</span></article>
+          </div>
+          <div class="primary-action-row">
+            <button id="sample-care-packet" class="secondary-button" type="button">Add sample packet data</button>
+            <button id="build-care-packet" class="primary-button narrow-button" type="button">Build care packet</button>
+            <button id="copy-care-packet" class="secondary-button" type="button">Copy packet</button>
+          </div>
+          <p id="care-packet-status" class="status-line" role="status">Build this before sharing CareWise notes with a clinician, care team, or support person.</p>
+          <div id="care-packet-list" class="care-packet-list">
+            <p>No care packet generated yet.</p>
+          </div>
+          <textarea id="care-packet-output" class="care-packet-output" rows="14" readonly placeholder="Click Build care packet to generate the full handoff packet."></textarea>
+        </section>
+
+        <section class="panel support-panel" aria-labelledby="support-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Support operations</p>
+              <h3 id="support-title">User support inbox</h3>
+              <p class="panel-intro">Track prototype support requests before connecting a real help desk. CareWise does not handle emergencies in this inbox.</p>
+            </div>
+            <button id="clear-support" class="secondary-button compact" type="button">Clear inbox</button>
+          </div>
+          <div class="support-grid">
+            <label>
+              Request type
+              <select id="support-type">
+                <option value="Technical issue">Technical issue</option>
+                <option value="Report upload concern">Report upload concern</option>
+                <option value="Care plan feedback">Care plan feedback</option>
+                <option value="Privacy or deletion">Privacy or deletion</option>
+                <option value="Billing question">Billing question</option>
+                <option value="Clinician review request">Clinician review request</option>
+              </select>
+            </label>
+            <label>
+              Priority
+              <select id="support-priority">
+                <option value="Normal">Normal</option>
+                <option value="High">High</option>
+                <option value="Privacy-sensitive">Privacy-sensitive</option>
+                <option value="Needs clinician review">Needs clinician review</option>
+              </select>
+            </label>
+            <label>
+              Contact email
+              <input id="support-email" type="email" placeholder="user@example.com" />
+            </label>
+            <label>
+              Consent to contact
+              <select id="support-contact">
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </label>
+            <label class="support-wide">
+              Request details
+              <textarea id="support-notes" rows="3" placeholder="Describe what happened, what the user expected, and any safe next step. Do not paste sensitive records into prototype notes."></textarea>
+            </label>
+          </div>
+          <div class="primary-action-row">
+            <button id="sample-support" class="secondary-button" type="button">Use sample request</button>
+            <button id="save-support" class="primary-button narrow-button" type="button">Save request</button>
+            <button id="copy-support" class="secondary-button" type="button">Copy inbox</button>
+          </div>
+          <p id="support-status" class="status-line" role="status">For severe or fast-worsening symptoms, use emergency services instead of this prototype inbox.</p>
+          <div id="support-list" class="support-list">
+            <p>No support requests saved yet.</p>
+          </div>
+        </section>
+
+        <section class="panel qa-panel" aria-labelledby="qa-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Quality checks</p>
+              <h3 id="qa-title">MVP test checklist</h3>
+              <p class="panel-intro">Run a local readiness check for the patient flow, backend sync, safety wording, privacy controls, review queue, and support operations.</p>
+            </div>
+            <button id="clear-qa" class="secondary-button compact" type="button">Clear QA</button>
+          </div>
+          <div class="qa-actions">
+            <button id="run-qa-checklist" class="primary-button compact" type="button">Run QA checklist</button>
+            <button id="copy-qa-report" class="secondary-button compact" type="button">Copy QA report</button>
+          </div>
+          <p id="qa-status" class="status-line" role="status">Run this after changing the app or before a demo.</p>
+          <div id="qa-results" class="qa-results" aria-live="polite">
+            <p>No QA report generated yet.</p>
           </div>
         </section>
 
@@ -563,6 +1422,7 @@
               <h3 id="review-title">Clinician dashboard</h3>
             </div>
             <div class="toolbar-actions">
+              <button id="sample-review-item" class="secondary-button compact" type="button">Sample item</button>
               <button id="load-backend-review" class="secondary-button compact" type="button">Load backend queue</button>
               <button id="load-admin-summary" class="secondary-button compact" type="button">Admin summary</button>
               <button id="clear-review-queue" class="secondary-button compact" type="button">Clear queue</button>
@@ -573,6 +1433,62 @@
             <article><strong>0</strong><span>Local review items</span></article>
             <article><strong>0</strong><span>Reports</span></article>
             <article><strong>0</strong><span>Consent records</span></article>
+          </div>
+          <div class="review-pipeline" aria-label="Clinician review pipeline">
+            <article><strong>1</strong><span>Flagged by plan or report</span></article>
+            <article><strong>2</strong><span>Clinician reviews context</span></article>
+            <article><strong>3</strong><span>Approve or request changes</span></article>
+            <article><strong>4</strong><span>Audit trail records action</span></article>
+          </div>
+          <div id="review-sync-summary" class="review-sync-summary" aria-label="Review sync summary">
+            <article><strong>Local</strong><span>0 queued</span></article>
+            <article><strong>Backend</strong><span>0 synced</span></article>
+            <article><strong>Role</strong><span>Not signed in</span></article>
+          </div>
+          <div class="review-demo-card" aria-label="End-to-end review demo">
+            <div>
+              <strong>End-to-end review demo</strong>
+              <span id="review-demo-status">Fill a team role, create a high-risk sample plan, sync it, then load the backend queue.</span>
+            </div>
+            <div class="review-demo-actions">
+              <button id="review-demo-run-all" class="primary-button compact" type="button">Run demo</button>
+              <button id="review-demo-team" class="secondary-button compact" type="button">Team role</button>
+              <button id="review-demo-session" class="secondary-button compact" type="button">Create/Login</button>
+              <button id="review-demo-profile" class="secondary-button compact" type="button">Sync profile</button>
+              <button id="review-demo-plan" class="secondary-button compact" type="button">High-risk plan</button>
+              <button id="review-demo-sync" class="secondary-button compact" type="button">Sync plan</button>
+              <button id="review-demo-load" class="secondary-button compact" type="button">Load queue</button>
+              <button id="review-demo-approve" class="secondary-button compact" type="button">Approve demo</button>
+            </div>
+          </div>
+          <div id="review-demo-checklist" class="review-demo-checklist" aria-label="Review demo checklist">
+            <article><strong>1</strong><span>Choose team role</span></article>
+            <article><strong>2</strong><span>Create/Login</span></article>
+            <article><strong>3</strong><span>Sync profile</span></article>
+            <article><strong>4</strong><span>Generate review plan</span></article>
+            <article><strong>5</strong><span>Sync backend ID</span></article>
+            <article><strong>6</strong><span>Load clinician queue</span></article>
+            <article><strong>7</strong><span>Approve review</span></article>
+          </div>
+          <div id="review-demo-guidance" class="review-demo-guidance" aria-label="Review demo guidance">
+            <strong>Next required step</strong>
+            <span>Use the buttons above from left to right.</span>
+          </div>
+          <div id="review-demo-outcome" class="review-demo-outcome" aria-label="Review demo outcome">
+            <strong>Demo outcome</strong>
+            <span>Run or approve a review to see the backend decision receipt.</span>
+          </div>
+          <div id="review-demo-timeline" class="review-demo-timeline" aria-label="Review proof timeline">
+            <article><strong>Account</strong><span>Waiting</span></article>
+            <article><strong>Patient</strong><span>Waiting</span></article>
+            <article><strong>Plan</strong><span>Waiting</span></article>
+            <article><strong>Decision</strong><span>Waiting</span></article>
+          </div>
+          <div class="review-filter-bar" aria-label="Review queue filters">
+            <button class="review-filter active" type="button" data-review-filter="all">All</button>
+            <button class="review-filter" type="button" data-review-filter="pending">Pending</button>
+            <button class="review-filter" type="button" data-review-filter="changes">Needs changes</button>
+            <button class="review-filter" type="button" data-review-filter="approved">Approved</button>
           </div>
           <div id="review-queue" class="saved-plans-list">
             <p>No review items yet.</p>
@@ -599,17 +1515,36 @@
               <strong>Basic</strong>
               <span>$29/mo</span>
               <p>Education summaries, reminders, and local care plan export.</p>
+              <ul>
+                <li>Monthly plan summary</li>
+                <li>Food and habit reminders</li>
+                <li>Saved care history</li>
+              </ul>
             </article>
             <article>
               <strong>Plus</strong>
               <span>$79/mo</span>
               <p>Care planning, insurance guidance, and monthly review workflow.</p>
+              <ul>
+                <li>Report-informed care plan</li>
+                <li>Monthly check-in workflow</li>
+                <li>Insurance and doctor prep</li>
+              </ul>
             </article>
             <article>
               <strong>Premium</strong>
               <span>$149/mo</span>
               <p>Priority navigation, weekly coaching workflow, and concierge handoff.</p>
+              <ul>
+                <li>Weekly follow-up workflow</li>
+                <li>Priority clinician review queue</li>
+                <li>Concierge care navigation</li>
+              </ul>
             </article>
+          </div>
+          <div class="payment-note">
+            <strong>Launch-safe checkout</strong>
+            <span>Subscriptions are represented safely for MVP demos. Real charging should begin only after Stripe keys, webhooks, refund policy, terms, and clinical/legal review are complete.</span>
           </div>
           <div class="sync-grid">
             <button id="create-checkout" class="primary-button narrow-button" type="button">Create checkout</button>
@@ -627,25 +1562,37 @@
           </div>
           <div class="legal-grid">
             <article id="privacy-policy">
+              <span>Draft ready</span>
               <strong>Privacy Policy</strong>
               <p>CareWise should collect the minimum health data needed, encrypt protected fields, avoid health data in logs, and explain data use before signup.</p>
               <a class="inline-link" href="legal/privacy.html">Open privacy policy</a>
             </article>
             <article id="terms">
+              <span>Draft ready</span>
               <strong>Terms of Service</strong>
               <p>Users must understand this is a care-planning tool, not emergency care, diagnosis, prescription, or a replacement for licensed professionals.</p>
               <a class="inline-link" href="legal/terms.html">Open terms</a>
             </article>
             <article id="medical-disclaimer">
+              <span>Required</span>
               <strong>Medical Disclaimer</strong>
               <p>AI output is educational and must route high-risk cases to licensed clinicians or emergency services. It should not claim to cure disease.</p>
               <a class="inline-link" href="legal/disclaimer.html">Open disclaimer</a>
             </article>
             <article id="data-deletion">
+              <span>Required</span>
               <strong>Data Deletion Request</strong>
               <p>Users need a clear way to request deletion of account, report, consent, and profile records before app store review.</p>
               <a class="inline-link" href="legal/data-deletion.html">Open deletion page</a>
             </article>
+          </div>
+          <div class="legal-checklist">
+            <strong>Before public launch</strong>
+            <span>Licensed clinical review</span>
+            <span>Attorney review</span>
+            <span>HIPAA/security review</span>
+            <span>Apple Privacy details</span>
+            <span>Google Data Safety form</span>
           </div>
         </section>
 
@@ -657,11 +1604,26 @@
             </div>
           </div>
           <div class="mobile-roadmap">
-            <span>React Native or Flutter shell</span>
-            <span>Same API URL and token login</span>
-            <span>Report upload and care dashboard</span>
-            <span>Apple Privacy and Google Data Safety forms</span>
+            <article><strong>Reusable now</strong><span>Backend API, auth flow, report upload, saved plans, check-ins, and medication organizer.</span></article>
+            <article><strong>Build next</strong><span>Native React Native screens for Account, Consent, Reports, Results, Saved, Meds, and Check-ins.</span></article>
+            <article><strong>App stores</strong><span>Apple Developer, Google Play Console, privacy labels, data safety form, screenshots, and review notes.</span></article>
+            <article><strong>Testing</strong><span>TestFlight, Android internal testing, doctor/nutritionist review, and real-user feedback.</span></article>
           </div>
+          <div class="store-disclosure-card" aria-label="App store privacy disclosure draft">
+            <div>
+              <strong>App store privacy draft</strong>
+              <span>Use this as a starting checklist for Apple Privacy details and Google Play Data Safety. Final answers still need legal and security review.</span>
+            </div>
+            <button id="copy-store-disclosure" class="secondary-button compact" type="button">Copy draft</button>
+          </div>
+          <div id="store-disclosure" class="store-disclosure-grid">
+            <article><strong>Data collected</strong><span>Account email, consent history, intake answers, report uploads, care plans, check-ins, medications, subscription status.</span></article>
+            <article><strong>Purpose</strong><span>Account management, care-plan education, report organization, reminders, clinical review workflow, support, and safety audit trail.</span></article>
+            <article><strong>Security</strong><span>Backend auth, encrypted patient fields, private report storage, audit records, and no health data in analytics logs.</span></article>
+            <article><strong>User controls</strong><span>Export local data, request backend export, request deletion, revoke demo data locally, and review consent before care planning.</span></article>
+          </div>
+          <textarea id="store-disclosure-output" class="store-disclosure-output" rows="8" readonly placeholder="Click Copy draft to generate the app-store privacy draft here."></textarea>
+          <p id="store-disclosure-status" class="status-line" role="status">Draft is not legal advice. Review before submitting app-store forms.</p>
         </section>
 
         <section class="panel launch-panel" aria-labelledby="launch-title">
@@ -672,6 +1634,106 @@
             </div>
             <span class="sync-badge online">MVP active</span>
           </div>
+          <div class="launch-metrics" aria-label="CareWise launch metrics">
+            <article><strong>Live</strong><span>Frontend + API</span></article>
+            <article><strong>Private</strong><span>R2 report storage</span></article>
+            <article><strong>Safe MVP</strong><span>No diagnosis claims</span></article>
+            <article><strong>Next</strong><span>Clinical review</span></article>
+          </div>
+          <div id="launch-proof" class="launch-proof" aria-label="CareWise launch proof">
+            <article><strong>Backend</strong><span>Checking</span></article>
+            <article><strong>Review proof</strong><span>Waiting</span></article>
+            <article><strong>Data safety</strong><span>Checking</span></article>
+            <article><strong>Launch posture</strong><span>MVP</span></article>
+          </div>
+          <div class="launch-proof-actions">
+            <button id="copy-launch-proof" class="secondary-button compact" type="button">Copy launch proof</button>
+            <button id="refresh-launch-proof" class="secondary-button compact" type="button">Refresh proof</button>
+          </div>
+          <p id="launch-proof-status" class="status-line" role="status">Launch proof summarizes live readiness for demos.</p>
+          <div class="preflight-card" aria-label="CareWise launch preflight">
+            <div>
+              <strong>Launch preflight</strong>
+              <span>Run this before showing the app to a user, clinician, or investor.</span>
+            </div>
+            <button id="run-preflight" class="primary-button compact" type="button">Run preflight</button>
+          </div>
+          <div id="preflight-report" class="preflight-report" aria-live="polite">
+            <article class="pending"><strong>Preflight</strong><span>Not run yet</span></article>
+          </div>
+          <p id="preflight-status" class="status-line" role="status">Preflight checks API, database, storage, account session, patient sync, review proof, and safe wording.</p>
+          <div class="demo-script">
+            <div class="demo-script-heading">
+              <div>
+                <strong>Demo walkthrough builder</strong>
+                <span>Generate a safe step-by-step script before showing CareWise to an advisor, clinician, investor, or tester.</span>
+              </div>
+              <div class="demo-script-actions">
+                <button id="build-demo-script" class="primary-button compact" type="button">Build script</button>
+                <button id="copy-demo-script" class="secondary-button compact" type="button">Copy script</button>
+              </div>
+            </div>
+            <div id="demo-script-results" class="demo-script-results" aria-live="polite">
+              <article><strong>Not built yet</strong><span>Run the builder to see the recommended demo path.</span></article>
+            </div>
+            <p id="demo-script-status" class="status-line" role="status">Use this to keep demos focused and safe.</p>
+          </div>
+          <div class="investor-brief-card" aria-label="Investor brief generator">
+            <div>
+              <strong>Investor one-page brief</strong>
+              <span>Generate a safe, copyable summary for advisor, clinician, or investor conversations.</span>
+            </div>
+            <button id="generate-investor-brief" class="secondary-button compact" type="button">Generate brief</button>
+          </div>
+          <textarea id="investor-brief-output" class="investor-brief-output" rows="9" readonly placeholder="Click Generate brief to create a one-page CareWise AI summary."></textarea>
+          <p id="investor-brief-status" class="status-line" role="status">Brief stays non-diagnostic and should be reviewed before sharing externally.</p>
+          <div class="pilot-card" aria-label="Pilot interest tracker">
+            <div>
+              <strong>Pilot interest tracker</strong>
+              <span>Capture early users, clinician advisors, and investor follow-ups locally before using a CRM.</span>
+            </div>
+            <button id="add-sample-pilot" class="secondary-button compact" type="button">Sample lead</button>
+          </div>
+          <div class="pilot-grid">
+            <label>
+              Name
+              <input id="pilot-name" type="text" placeholder="Dr. Patel or Maya R." />
+            </label>
+            <label>
+              Email
+              <input id="pilot-email" type="email" placeholder="name@example.com" />
+            </label>
+            <label>
+              Role
+              <select id="pilot-role">
+                <option value="Early user">Early user</option>
+                <option value="Clinician advisor">Clinician advisor</option>
+                <option value="Nutrition advisor">Nutrition advisor</option>
+                <option value="Privacy/security advisor">Privacy/security advisor</option>
+                <option value="Investor/advisor">Investor/advisor</option>
+              </select>
+            </label>
+            <label>
+              Follow-up
+              <select id="pilot-followup">
+                <option value="This week">This week</option>
+                <option value="Next week">Next week</option>
+                <option value="After MVP review">After MVP review</option>
+              </select>
+            </label>
+            <label class="pilot-wide">
+              Notes
+              <textarea id="pilot-notes" rows="3" placeholder="What they care about, safety concerns, pilot fit, next action."></textarea>
+            </label>
+          </div>
+          <div class="launch-proof-actions">
+            <button id="save-pilot-lead" class="primary-button compact" type="button">Save lead</button>
+            <button id="copy-pilot-list" class="secondary-button compact" type="button">Copy list</button>
+          </div>
+          <div id="pilot-leads" class="pilot-leads" aria-live="polite">
+            <p>No pilot leads saved yet.</p>
+          </div>
+          <p id="pilot-status" class="status-line" role="status">Pilot leads are stored locally in this browser until a CRM/backend workflow is added.</p>
           <div class="launch-grid">
             <article>
               <strong>Ready now</strong>
@@ -707,9 +1769,15 @@
           <div class="panel-heading-row">
             <div>
               <p class="eyebrow">Data portability</p>
-              <h3 id="export-title">Local data export</h3>
+              <h3 id="export-title">Data controls</h3>
+              <p class="panel-intro">Export local demo data, copy it for review, request backend export, or submit a deletion request.</p>
             </div>
             <button id="clear-all-data" class="secondary-button compact" type="button">Clear all local data</button>
+          </div>
+          <div class="data-control-grid">
+            <article><strong>Local export</strong><span>Browser-only profile, plans, check-ins, meds, and reports.</span></article>
+            <article><strong>Backend export</strong><span>Requires login and asks the production API for account data.</span></article>
+            <article><strong>Deletion request</strong><span>Creates a backend request for account/report deletion review.</span></article>
           </div>
           <div class="export-actions">
             <button id="export-data" class="secondary-button" type="button">Export local JSON</button>
@@ -722,18 +1790,23 @@
         </section>
 
         <section id="results" class="results-grid" aria-live="polite">
-          <article class="result-card warning-card">
-            <h3>Start here</h3>
+          <article class="result-card warning-card empty-results-card">
+            <span class="badge blue">Ready when you are</span>
+            <h3>No care plan generated yet</h3>
             <p>
-              Fill the intake form to generate a care plan. This product should
-              support licensed clinicians, not replace emergency care or medical
-              judgment.
+              Complete consent, add symptoms or report text, then generate a
+              plan. CareWise gives educational guidance only and should support,
+              not replace, licensed medical care.
             </p>
+            <div class="hero-actions">
+              <a class="primary-link" href="#patient-form">Start intake</a>
+              <a class="secondary-link" href="#report-title">Upload report</a>
+            </div>
           </article>
         </section>
       </section>
     </main>
 
-    <script src="script.js?v=carewise-product-20"></script>
+    <script src="script.js?v=carewise-product-91"></script>
   </body>
 </html>
