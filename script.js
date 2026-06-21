@@ -206,6 +206,7 @@ const backendBadge = document.querySelector("#backend-badge");
 const backendStatus = document.querySelector("#backend-status");
 const reportBadge = document.querySelector("#report-badge");
 const reportStatus = document.querySelector("#report-status");
+const ocrStatus = document.querySelector("#ocr-status");
 const reportResults = document.querySelector("#report-results");
 const reportQuestion = document.querySelector("#report-question");
 const reportAnswer = document.querySelector("#report-answer");
@@ -2272,9 +2273,11 @@ async function loadBackendFeatures() {
     backendFeatures = await apiGet("/features");
     renderPaymentReadiness();
     renderSecurityReadiness();
+    renderOcrReadiness();
   } catch {
     backendFeatures = {};
     renderSecurityReadiness();
+    renderOcrReadiness();
   }
 }
 
@@ -3010,7 +3013,13 @@ function handleReportFileSelection() {
     reader.readAsText(file);
     return;
   }
-  reportStatus.textContent = "File selected. Add pasted/OCR text if you want a stronger analysis, then upload securely.";
+  const isImage = file.type.startsWith("image/");
+  const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+  if ((isImage || isPdf) && !backendFeatures.image_ocr) {
+    reportStatus.textContent = "File selected. It will upload privately, but paste readable lab text too because live OCR is not enabled yet.";
+    return;
+  }
+  reportStatus.textContent = "File selected. CareWise will use readable text when available, then upload securely.";
 }
 
 function getReportHistory() {
@@ -3077,6 +3086,19 @@ function reportFeatureLabel() {
   if (backendFeatures.image_ocr) return "OCR ready";
   if (backendFeatures.report_uploads) return "Cloud storage ready";
   return "Backend check needed";
+}
+
+function renderOcrReadiness() {
+  if (!ocrStatus) return;
+  if (backendFeatures.image_ocr) {
+    ocrStatus.textContent = `Image OCR is enabled${backendFeatures.ocr_model ? ` with ${backendFeatures.ocr_model}` : ""}. Still review the original report with a licensed professional.`;
+    return;
+  }
+  if (backendFeatures.report_uploads) {
+    ocrStatus.textContent = "Private upload is ready. Image/scanned PDF OCR is not enabled yet, so paste readable lab values for the clearest explanation.";
+    return;
+  }
+  ocrStatus.textContent = "Backend feature check pending. You can still paste report text for local educational analysis.";
 }
 
 function getReportEvaluationSamples() {
