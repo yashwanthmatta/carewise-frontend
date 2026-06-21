@@ -266,6 +266,7 @@ const reviewDemoTimeline = document.querySelector("#review-demo-timeline");
 const auditTrail = document.querySelector("#audit-trail");
 const exportStatus = document.querySelector("#export-status");
 const exportOutput = document.querySelector("#export-output");
+const exportSummary = document.querySelector("#export-summary");
 const securityReadiness = document.querySelector("#security-readiness");
 const networkStatus = document.querySelector("#network-status");
 const installAppButton = document.querySelector("#install-app");
@@ -2380,6 +2381,7 @@ function getStoreDisclosureText() {
     "- Consent history and privacy choices",
     "- Health-related intake answers typed by the user",
     "- User-uploaded report files or pasted report text",
+    "- Saved educational report explanations and recommendations",
     "- Educational care plans, check-ins, medication organizer entries, and clinical review workflow records",
     "- Subscription status when payments are enabled",
     "",
@@ -4975,12 +4977,29 @@ async function exportBackendData() {
     }
     const payload = await apiGet("/privacy/me/export");
     exportOutput.value = JSON.stringify(payload, null, 2);
-    exportStatus.textContent = "Backend data export loaded.";
+    renderBackendExportSummary(payload);
+    exportStatus.textContent = `Backend export loaded with ${payload.report_analyses?.length || 0} saved report explanation${(payload.report_analyses?.length || 0) === 1 ? "" : "s"}.`;
     addAuditEvent("backend_data_exported", "Backend privacy export loaded in the app.");
     renderAuditTrail();
   } catch {
     exportStatus.textContent = "Backend export failed. Check login and backend status.";
   }
+}
+
+function renderBackendExportSummary(payload) {
+  if (!exportSummary) return;
+  const items = [
+    ["Patients", payload.patients?.length || 0, "Profile records"],
+    ["Reports", payload.reports?.length || 0, "Report metadata only"],
+    ["Explanations", payload.report_analyses?.length || 0, "Saved report analyses"],
+    ["Consent", payload.consent_records?.length || 0, "Consent history"],
+  ];
+  exportSummary.innerHTML = items.map(([label, count, detail]) => `
+    <article class="${Number(count) ? "complete" : "pending"}">
+      <strong>${escapeHtml(String(count))}</strong>
+      <span>${escapeHtml(label)} · ${escapeHtml(detail)}</span>
+    </article>
+  `).join("");
 }
 
 async function requestBackendDataDeletion() {
