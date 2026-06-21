@@ -1,0 +1,25 @@
+name: Live Frontend Smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Live CareWise frontend URL
+        required: true
+        default: https://carewise-frontend.onrender.com
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run live frontend smoke test
+        run: node scripts/smoke_frontend.mjs --base-url "${{ inputs.base_url }}"
