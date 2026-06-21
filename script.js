@@ -442,6 +442,7 @@ document.querySelector("#ask-report-question")?.addEventListener("click", () => 
 reportResults?.addEventListener("click", (event) => {
   const action = event.target.closest("[data-report-action]")?.dataset.reportAction;
   if (action === "copy-summary") copyReportSummary();
+  if (action === "share-summary") shareReportSummary();
   if (action === "copy-questions") copyReportQuestions();
   if (action === "open-history") openReportHistoryItem(event.target.closest("[data-report-id]")?.dataset.reportId || "");
 });
@@ -3597,7 +3598,10 @@ function renderLocalReportAnalysis(analysis) {
           <span>CareWise explanation</span>
           <div class="section-heading-action">
             <strong>Plain-English report summary</strong>
-            <button class="secondary-button compact" type="button" data-report-action="copy-summary">Copy summary</button>
+            <div class="inline-action-group">
+              <button class="secondary-button compact" type="button" data-report-action="copy-summary">Copy summary</button>
+              <button class="secondary-button compact" type="button" data-report-action="share-summary">Share summary</button>
+            </div>
           </div>
           <p>CareWise found ${escapeHtml(String(analysis.findings.length))} discussion point${analysis.findings.length === 1 ? "" : "s"} in the readable report text.</p>
         </div>
@@ -3730,6 +3734,31 @@ function copyReportSummary() {
       if (reportAnswer) reportAnswer.textContent = latestReportSummaryPack;
       reportStatus.textContent = "Copy unavailable. Summary is shown in the report answer box.";
     });
+}
+
+async function shareReportSummary() {
+  if (!latestReportSummaryPack) {
+    const text = getLocalReportText();
+    if (text) latestReportSummaryPack = buildReportSummaryPack(analyzeReportTextLocally(text));
+  }
+  if (!latestReportSummaryPack) {
+    reportStatus.textContent = "Analyze or reopen a report before sharing the summary.";
+    return;
+  }
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "CareWise AI report summary",
+        text: latestReportSummaryPack,
+      });
+      reportStatus.textContent = "Report summary shared. Review it with the original report before relying on it.";
+      return;
+    } catch {
+      reportStatus.textContent = "Share cancelled. You can still copy the summary.";
+      return;
+    }
+  }
+  copyReportSummary();
 }
 
 function copyReportQuestions() {

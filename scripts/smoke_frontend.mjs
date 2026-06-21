@@ -73,7 +73,9 @@ async function main() {
   assertIncludes("script.js", script, "/privacy/me/export-summary");
   assertIncludes("script.js", script, "Backend summary is not live yet.");
   assertIncludes("script.js", script, "data-report-action=\"copy-summary\"");
+  assertIncludes("script.js", script, "data-report-action=\"share-summary\"");
   assertIncludes("script.js", script, "buildReportSummaryPack");
+  assertIncludes("script.js", script, "navigator.share");
   assertIncludes("script.js", script, "CareWise AI report summary");
   assertIncludes("script.js", script, "data-report-action=\"copy-questions\"");
   assertIncludes("script.js", script, "Educational prep only. Review the original report with a licensed professional.");
@@ -87,7 +89,9 @@ async function main() {
   assertIncludes("script.js", script, "reportHistoryList?.addEventListener");
   assertIncludes("script.js", script, "openReportHistoryItem");
   assertIncludes("script.js", script, "renderReportHistoryResult");
-  assertIncludes("styles.css", await readAsset("styles.css", baseUrl), ".section-heading-action");
+  const styles = await readAsset("styles.css", baseUrl);
+  assertIncludes("styles.css", styles, ".section-heading-action");
+  assertIncludes("styles.css", styles, ".inline-action-group");
   assertIncludes("sw.js", serviceWorker, "/legal/privacy.html");
   assertIncludes("sw.js", serviceWorker, "/legal/data-deletion.html");
   assertIncludes("sw.js", serviceWorker, "/legal/app-store-disclosures.html");

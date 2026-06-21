@@ -1036,6 +1036,13 @@ body::before {
   margin: 0;
 }
 
+.inline-action-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .result-sections ul {
   display: grid;
   gap: 8px;
