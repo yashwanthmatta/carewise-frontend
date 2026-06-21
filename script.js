@@ -875,6 +875,10 @@ document.querySelector("#copy-data").addEventListener("click", () => {
   exportLocalData(true);
 });
 
+document.querySelector("#check-backend-data").addEventListener("click", () => {
+  checkBackendDataSummary();
+});
+
 document.querySelector("#export-backend-data").addEventListener("click", () => {
   exportBackendData();
 });
@@ -4986,16 +4990,49 @@ async function exportBackendData() {
   }
 }
 
+async function checkBackendDataSummary() {
+  try {
+    if (!authToken) {
+      exportStatus.textContent = "Sign in before checking backend data.";
+      return;
+    }
+    const payload = await apiGet("/privacy/me/export-summary");
+    exportOutput.value = "";
+    renderBackendExportSummary(payload);
+    const counts = payload.counts || {};
+    exportStatus.textContent = `Safe backend summary loaded: ${counts.reports || 0} report${(counts.reports || 0) === 1 ? "" : "s"}, ${counts.report_analyses || 0} explanation${(counts.report_analyses || 0) === 1 ? "" : "s"}, and ${counts.care_plans || 0} care plan${(counts.care_plans || 0) === 1 ? "" : "s"}.`;
+    addAuditEvent("backend_export_summary_checked", "Backend privacy export summary counts loaded in the app.");
+    renderAuditTrail();
+  } catch {
+    exportStatus.textContent = "Backend data summary failed. Check login and backend status.";
+  }
+}
+
 function renderBackendExportSummary(payload) {
   if (!exportSummary) return;
+  const counts = payload.counts || {
+    patients: payload.patients?.length || 0,
+    reports: payload.reports?.length || 0,
+    report_analyses: payload.report_analyses?.length || 0,
+    medications: payload.medications?.length || 0,
+    intakes: payload.intakes?.length || 0,
+    care_plans: payload.care_plans?.length || 0,
+    consent_records: payload.consent_records?.length || 0,
+    subscriptions: payload.subscriptions?.length || 0,
+    notifications: payload.notifications?.length || 0,
+    audit_events: payload.audit_events?.length || 0,
+  };
   const items = [
-    ["Patients", payload.patients?.length || 0, "Profile records"],
-    ["Reports", payload.reports?.length || 0, "Report metadata only"],
-    ["Explanations", payload.report_analyses?.length || 0, "Saved report analyses"],
-    ["Medications", payload.medications?.length || 0, "Medication notes"],
-    ["Intakes", payload.intakes?.length || 0, "Health intake records"],
-    ["Care plans", payload.care_plans?.length || 0, "Educational care plans"],
-    ["Consent", payload.consent_records?.length || 0, "Consent history"],
+    ["Patients", counts.patients || 0, "Profile records"],
+    ["Reports", counts.reports || 0, "Report metadata only"],
+    ["Explanations", counts.report_analyses || 0, "Saved report analyses"],
+    ["Medications", counts.medications || 0, "Medication notes"],
+    ["Intakes", counts.intakes || 0, "Health intake records"],
+    ["Care plans", counts.care_plans || 0, "Educational care plans"],
+    ["Consent", counts.consent_records || 0, "Consent history"],
+    ["Subscriptions", counts.subscriptions || 0, "Subscription records"],
+    ["Notifications", counts.notifications || 0, "Notification choices"],
+    ["Audit", counts.audit_events || 0, "Recent audit events"],
   ];
   exportSummary.innerHTML = items.map(([label, count, detail]) => `
     <article class="${Number(count) ? "complete" : "pending"}">
