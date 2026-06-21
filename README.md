@@ -22,6 +22,23 @@ Open:
 http://localhost:4173
 ```
 
+## Frontend Smoke Test
+
+Check local files before a demo or deploy:
+
+```bash
+node scripts/smoke_frontend.mjs
+```
+
+Check the Render site after deploy:
+
+```bash
+node scripts/smoke_frontend.mjs --base-url https://carewise-frontend.onrender.com
+```
+
+The smoke test verifies the app shell cache version, PWA manifest, legal pages,
+and safe non-diagnostic wording.
+
 ## GitHub Upload
 
 ```bash
