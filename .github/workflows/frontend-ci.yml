@@ -1,0 +1,31 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check script.js
+          node --check sw.js
+
+      - name: Check app shell cache version
+        run: |
+          test "$(grep -o 'carewise-product-[0-9][0-9]*' index.html | sort -u | wc -l | tr -d ' ')" = "1"
+          test "$(grep -o 'carewise-product-[0-9][0-9]*' sw.js | sort -u | wc -l | tr -d ' ')" = "1"
+          test "$(grep -o 'carewise-product-[0-9][0-9]*' index.html | sort -u)" = "$(grep -o 'carewise-product-[0-9][0-9]*' sw.js | sort -u)"
