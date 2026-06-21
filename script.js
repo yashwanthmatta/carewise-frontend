@@ -217,6 +217,7 @@ const paymentBadge = document.querySelector("#payment-badge");
 const paymentStatus = document.querySelector("#payment-status");
 const dashboardStats = document.querySelector("#dashboard-stats");
 const profileStatus = document.querySelector("#profile-status");
+const reportHistoryList = document.querySelector(".v1-history-list");
 const savedPlans = document.querySelector("#saved-plans");
 const mealPlannerStatus = document.querySelector("#meal-planner-status");
 const mealPlanList = document.querySelector("#meal-plan-list");
@@ -709,8 +710,12 @@ document.querySelector("#save-profile").addEventListener("click", () => {
 });
 
 document.querySelector("#clear-saved").addEventListener("click", () => {
-  localStorage.removeItem("carewiseSavedPlans");
-  renderSavedPlans();
+  localStorage.removeItem("carewiseReports");
+  localStorage.removeItem("carewiseLatestReportId");
+  latestReportId = "";
+  renderReportHistory();
+  renderDashboardStats();
+  reportStatus.textContent = "Report history cleared on this device.";
 });
 
 document.querySelector("#save-checkin").addEventListener("click", () => {
@@ -3017,8 +3022,11 @@ function getReportHistory() {
 }
 
 function saveReportHistory(report) {
-  const reports = getReportHistory();
-  reports.unshift(report);
+  const reports = getReportHistory().filter((item) => item.id !== report.id);
+  reports.unshift({
+    ...report,
+    updatedAt: new Date().toISOString(),
+  });
   localStorage.setItem("carewiseReports", JSON.stringify(reports.slice(0, 20)));
   renderReportHistory();
   renderDashboardStats();
@@ -3030,19 +3038,39 @@ function renderReportHistory() {
   reportBadge.className = `sync-badge ${latestReportId ? "online" : "offline"}`;
   if (!reports.length) {
     reportResults.innerHTML = "<p>No report analysis yet.</p>";
+    if (reportHistoryList) {
+      reportHistoryList.innerHTML = `
+        <article>
+          <div><strong>No reports saved yet</strong><span>Upload first</span></div>
+          <p>Upload a PDF, image, or pasted lab text to see plain-English explanations here.</p>
+        </article>
+      `;
+    }
     return;
   }
-  reportResults.innerHTML = reports.map((report) => `
+  const reportCards = reports.map((report) => `
     <article class="saved-plan-row">
       <div>
         <strong>${escapeHtml(report.fileName || "Untitled report")}</strong>
-        <span>${escapeHtml(report.status || "uploaded")} · ${escapeHtml(new Date(report.createdAt).toLocaleString())}</span>
+        <span>${escapeHtml(report.status || "uploaded")} · ${escapeHtml(new Date(report.createdAt || report.updatedAt || Date.now()).toLocaleString())}</span>
       </div>
       ${report.storageUrl ? `<p><strong>Storage:</strong> ${escapeHtml(report.storageUrl.startsWith("s3://") ? "Private cloud storage" : "Backend storage")} ${report.fileSizeBytes ? `· ${Math.round(Number(report.fileSizeBytes) / 1024) || 1} KB` : ""}</p>` : ""}
       ${report.riskLevel ? `<p><strong>Risk:</strong> ${escapeHtml(report.riskLevel)} · ${escapeHtml(report.message || "Report education summary generated.")}</p>` : "<p>Uploaded. Analysis not run yet.</p>"}
       ${report.nextSteps?.length ? `<ul>${report.nextSteps.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
     </article>
   `).join("");
+  reportResults.innerHTML = reportCards;
+  if (reportHistoryList) {
+    reportHistoryList.innerHTML = reports.slice(0, 4).map((report) => `
+      <article>
+        <div>
+          <strong>${escapeHtml(report.fileName || "Untitled report")}</strong>
+          <span>${escapeHtml(report.riskLevel ? `Risk: ${report.riskLevel}` : report.status || "uploaded")}</span>
+        </div>
+        <p>${escapeHtml(report.message || "Saved report. Run or load analysis to see a plain-English explanation.")}</p>
+      </article>
+    `).join("");
+  }
 }
 
 function reportFeatureLabel() {
@@ -3636,16 +3664,19 @@ async function analyzeLatestReport() {
     const response = await apiPost(`/reports/${latestReportId}/analyze`, {});
     const message = response.summary?.message || "Report education summary generated.";
     const nextSteps = response.recommendations?.next_steps || [];
+    const existingReport = getReportHistory().find((report) => report.id === response.report_id);
     saveReportHistory({
       id: response.report_id,
       analysisId: response.id,
       patientId: response.patient_id,
-      fileName: `Analysis ${response.report_id}`,
+      fileName: existingReport?.fileName || `Analysis ${response.report_id}`,
+      storageUrl: existingReport?.storageUrl || "",
+      fileSizeBytes: existingReport?.fileSizeBytes || 0,
       status: response.status,
       riskLevel: response.risk_level,
       message,
       nextSteps,
-      createdAt: new Date().toISOString(),
+      createdAt: existingReport?.createdAt || new Date().toISOString(),
     });
     if (response.recommendations?.requires_clinician_review) {
       addReviewQueueItem({
@@ -3681,17 +3712,32 @@ async function loadReports() {
       return;
     }
     const reports = await apiGet(`/reports?patient_id=${encodeURIComponent(patientId)}`);
-    localStorage.setItem("carewiseReports", JSON.stringify(reports.map((report) => ({
-      id: report.id,
-      patientId: report.patient_id,
-      fileName: report.file_name,
-      status: report.status,
-      storageUrl: report.storage_url,
-      fileSizeBytes: report.file_size_bytes,
-      createdAt: new Date().toISOString(),
-    }))));
+    const enrichedReports = await Promise.all(reports.map(async (report) => {
+      let latestAnalysis = null;
+      try {
+        const analyses = await apiGet(`/reports/${report.id}/analyses`);
+        latestAnalysis = analyses[0] || null;
+      } catch {
+        latestAnalysis = null;
+      }
+      return {
+        id: report.id,
+        analysisId: latestAnalysis?.id || "",
+        patientId: report.patient_id,
+        fileName: report.file_name,
+        status: latestAnalysis?.status || report.status,
+        riskLevel: latestAnalysis?.risk_level || "",
+        message: latestAnalysis?.summary?.message || "",
+        nextSteps: latestAnalysis?.recommendations?.next_steps || [],
+        storageUrl: report.storage_url,
+        fileSizeBytes: report.file_size_bytes,
+        createdAt: new Date().toISOString(),
+      };
+    }));
+    localStorage.setItem("carewiseReports", JSON.stringify(enrichedReports));
     renderReportHistory();
-    reportStatus.textContent = `Loaded ${reports.length} report${reports.length === 1 ? "" : "s"}.`;
+    const analyzedCount = enrichedReports.filter((report) => report.analysisId).length;
+    reportStatus.textContent = `Loaded ${reports.length} report${reports.length === 1 ? "" : "s"} with ${analyzedCount} saved explanation${analyzedCount === 1 ? "" : "s"}.`;
   } catch {
     reportStatus.textContent = "Could not load reports from backend.";
   }
