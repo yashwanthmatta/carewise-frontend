@@ -441,6 +441,7 @@ document.querySelector("#ask-report-question")?.addEventListener("click", () => 
 reportResults?.addEventListener("click", (event) => {
   const action = event.target.closest("[data-report-action]")?.dataset.reportAction;
   if (action === "copy-questions") copyReportQuestions();
+  if (action === "open-history") openReportHistoryItem(event.target.closest("[data-report-id]")?.dataset.reportId || "");
 });
 
 document.querySelector("#run-report-eval").addEventListener("click", () => {
@@ -3081,6 +3082,7 @@ function renderReportHistory() {
       ${report.storageUrl ? `<p><strong>Storage:</strong> ${escapeHtml(report.storageUrl.startsWith("s3://") ? "Private cloud storage" : "Backend storage")} ${report.fileSizeBytes ? `· ${Math.round(Number(report.fileSizeBytes) / 1024) || 1} KB` : ""}</p>` : ""}
       ${report.riskLevel ? `<p><strong>Risk:</strong> ${escapeHtml(report.riskLevel)} · ${escapeHtml(report.message || "Report education summary generated.")}</p>` : "<p>Uploaded. Analysis not run yet.</p>"}
       ${report.nextSteps?.length ? `<ul>${report.nextSteps.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
+      <button class="secondary-button compact" type="button" data-report-action="open-history" data-report-id="${escapeHtml(report.id)}">Open result</button>
       ${report.questions?.length ? `<details class="saved-plan-summary"><summary>Saved doctor questions</summary><pre>${escapeHtml(report.questions.slice(0, 5).map((item, index) => `${index + 1}. ${item}`).join("\n"))}</pre></details>` : ""}
     </article>
   `).join("");
@@ -3097,6 +3099,43 @@ function renderReportHistory() {
       </article>
     `).join("");
   }
+}
+
+function openReportHistoryItem(reportId) {
+  const report = getReportHistory().find((item) => item.id === reportId);
+  if (!report) {
+    reportStatus.textContent = "Saved report could not be reopened.";
+    return;
+  }
+  renderReportHistoryResult(report);
+  latestReportId = report.id;
+  localStorage.setItem("carewiseLatestReportId", latestReportId);
+  reportStatus.textContent = `${report.fileName || "Saved report"} reopened from history. Review with the original report.`;
+  window.showCareWiseSection?.("report-title", false);
+}
+
+function renderReportHistoryResult(report) {
+  const questions = report.questions?.length ? report.questions : report.nextSteps || [];
+  const analysis = {
+    id: report.analysisId || report.id,
+    score: report.score || 72,
+    riskLevel: report.riskLevel === "emergency" ? "urgent" : report.riskLevel === "clinician_review" ? "needs_review" : report.riskLevel || "attention",
+    findings: [
+      {
+        label: report.fileName || "Saved report",
+        level: report.riskLevel || report.status || "Saved",
+        detail: report.message || "Saved report summary restored from history.",
+      },
+    ],
+    suggestions: report.nextSteps?.length ? report.nextSteps : ["Review this saved report with a licensed professional before changing care decisions."],
+    questions: questions.length ? questions : ["Which result from this report matters most for my next visit?"],
+    riskAreas: {
+      heart: report.riskLevel || "Review report",
+      diabetes: "Review report",
+      vitamins: "Review report",
+    },
+  };
+  renderLocalReportAnalysis(analysis);
 }
 
 function reportFeatureLabel() {
