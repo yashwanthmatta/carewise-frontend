@@ -74,6 +74,8 @@ async function main() {
   assertIncludes("script.js", script, "Backend summary is not live yet.");
   assertIncludes("script.js", script, "data-report-action=\"copy-questions\"");
   assertIncludes("script.js", script, "Educational prep only. Review the original report with a licensed professional.");
+  assertIncludes("script.js", script, "buildBackendReportDisplayAnalysis");
+  assertIncludes("script.js", script, "renderLocalReportAnalysis(buildBackendReportDisplayAnalysis(response, reportText))");
   assertIncludes("styles.css", await readAsset("styles.css", baseUrl), ".section-heading-action");
   assertIncludes("sw.js", serviceWorker, "/legal/privacy.html");
   assertIncludes("sw.js", serviceWorker, "/legal/data-deletion.html");

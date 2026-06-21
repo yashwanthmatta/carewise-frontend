@@ -3580,6 +3580,48 @@ function renderLocalReportAnalysis(analysis) {
   if (dashboardCards[3]) dashboardCards[3].querySelector("strong").textContent = analysis.riskAreas.vitamins;
 }
 
+function buildBackendReportDisplayAnalysis(response, reportText) {
+  if (reportText?.trim()) {
+    const localAnalysis = analyzeReportTextLocally(reportText);
+    return {
+      ...localAnalysis,
+      id: response.id || localAnalysis.id,
+      riskLevel: response.risk_level === "emergency" ? "urgent" : localAnalysis.riskLevel,
+      suggestions: [
+        ...(response.recommendations?.next_steps || []),
+        ...localAnalysis.suggestions,
+      ].filter(Boolean).filter((item, index, list) => list.indexOf(item) === index).slice(0, 5),
+    };
+  }
+
+  return {
+    id: response.id || `backend-analysis-${Date.now()}`,
+    score: 68,
+    riskLevel: "needs_review",
+    findings: [
+      {
+        label: "Readable report text",
+        level: "Needed",
+        detail: response.summary?.message || "CareWise stored the report but needs readable values before explaining it.",
+      },
+    ],
+    suggestions: response.recommendations?.next_steps || [
+      "Paste OCR text or key lab values before using report analysis.",
+      "Ask a licensed professional to review the original report.",
+    ],
+    questions: [
+      "Which values from my original report should I focus on first?",
+      "Should any lab values be repeated or reviewed with more health history?",
+      "Would primary care, a dietitian, pharmacist, or specialist be the right next step?",
+    ],
+    riskAreas: {
+      heart: "Needs readable values",
+      diabetes: "Needs readable values",
+      vitamins: "Needs readable values",
+    },
+  };
+}
+
 function buildReportQuestionPack(analysis) {
   return [
     "CareWise AI report questions",
@@ -3763,6 +3805,7 @@ async function analyzeLatestReport() {
     }
     addAuditEvent("report_analyzed", `Report ${response.report_id} analyzed with ${response.risk_level} risk.`);
     renderAuditTrail();
+    renderLocalReportAnalysis(buildBackendReportDisplayAnalysis(response, reportText));
     reportStatus.textContent = response.status === "needs_readable_text"
       ? "Report stored securely. Paste OCR text or key lab values here, then click Analyze report again."
       : `Analysis complete: ${response.risk_level}.`;
