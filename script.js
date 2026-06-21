@@ -444,6 +444,11 @@ reportResults?.addEventListener("click", (event) => {
   if (action === "open-history") openReportHistoryItem(event.target.closest("[data-report-id]")?.dataset.reportId || "");
 });
 
+reportHistoryList?.addEventListener("click", (event) => {
+  const action = event.target.closest("[data-report-action]")?.dataset.reportAction;
+  if (action === "open-history") openReportHistoryItem(event.target.closest("[data-report-id]")?.dataset.reportId || "");
+});
+
 document.querySelector("#run-report-eval").addEventListener("click", () => {
   runReportSafetyEvaluation();
 });
@@ -3096,6 +3101,7 @@ function renderReportHistory() {
         </div>
         <p>${escapeHtml(report.message || "Saved report. Run or load analysis to see a plain-English explanation.")}</p>
         ${report.questions?.length ? `<p><strong>Doctor question:</strong> ${escapeHtml(report.questions[0])}</p>` : ""}
+        <button class="secondary-button compact" type="button" data-report-action="open-history" data-report-id="${escapeHtml(report.id)}">Open result</button>
       </article>
     `).join("");
   }

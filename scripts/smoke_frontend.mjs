@@ -81,6 +81,7 @@ async function main() {
   assertIncludes("script.js", script, "Doctor question:");
   assertIncludes("script.js", script, "Health Score ${report.score}");
   assertIncludes("script.js", script, "data-report-action=\"open-history\"");
+  assertIncludes("script.js", script, "reportHistoryList?.addEventListener");
   assertIncludes("script.js", script, "openReportHistoryItem");
   assertIncludes("script.js", script, "renderReportHistoryResult");
   assertIncludes("styles.css", await readAsset("styles.css", baseUrl), ".section-heading-action");
