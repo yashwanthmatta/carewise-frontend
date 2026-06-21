@@ -37,7 +37,7 @@ node scripts/smoke_frontend.mjs --base-url https://carewise-frontend.onrender.co
 ```
 
 The smoke test verifies the app shell cache version, PWA manifest, legal pages,
-and safe non-diagnostic wording.
+the app-store disclosure draft, and safe non-diagnostic wording.
 
 ## GitHub Upload
 

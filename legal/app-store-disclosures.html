@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CareWise App Store Privacy Draft</title>
+    <meta name="theme-color" content="#0f766e" />
+    <link rel="stylesheet" href="../styles.css?v=carewise-product-94" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <article class="legal-document">
+        <a class="inline-link" href="../index.html#mobile-title">Back to CareWise</a>
+        <section class="panel">
+          <p class="eyebrow">App Store Disclosures</p>
+          <h1>CareWise App Store Privacy Draft</h1>
+          <p class="document-meta">Last updated: June 21, 2026</p>
+          <p>
+            This draft helps prepare Apple App Privacy and Google Play Data Safety
+            answers for CareWise AI. It is not legal advice. Final answers should
+            be reviewed by legal, privacy, security, and clinical advisors before
+            public app-store submission.
+          </p>
+
+          <h2>Product Positioning</h2>
+          <p>
+            CareWise AI is an educational health report explainer and care
+            preparation tool. It does not provide diagnosis, prescription,
+            emergency care, insurance verification, or a replacement for licensed
+            medical judgment.
+          </p>
+
+          <h2>Data Types Expected</h2>
+          <ul>
+            <li>Account information: email, role, verification state, login sessions, refresh tokens, and password reset or email verification records.</li>
+            <li>Health and fitness information: patient profile, conditions, allergies, medication notes, intake answers, goals, diet style, activity level, report text, uploaded report metadata, AI explanation records, care plans, check-ins, and clinician review records.</li>
+            <li>User content: files or text the user chooses to upload or paste, support requests, visit briefs, care packets, and local export data.</li>
+            <li>Identifiers: backend user ID, patient ID, report IDs, audit IDs, notification device token, and subscription IDs.</li>
+            <li>Purchase information: subscription status and checkout records when payment processing is enabled.</li>
+            <li>Diagnostics and security records: audit events, consent history, deletion/export requests, and operational events needed to protect the service.</li>
+          </ul>
+
+          <h2>Purposes</h2>
+          <ul>
+            <li>App functionality: account login, protected sync, report upload, educational explanations, saved history, data export, and deletion requests.</li>
+            <li>Health education: plain-language report summaries, wellness suggestions, habit planning, and questions to ask licensed professionals.</li>
+            <li>Safety and compliance: consent history, audit trail, high-risk review routing, privacy requests, abuse prevention, and account security.</li>
+            <li>Communications: password reset, email verification, notifications, and support responses when configured.</li>
+            <li>Payments: subscription checkout and subscription state when Stripe or another provider is enabled.</li>
+          </ul>
+
+          <h2>Sharing And Selling</h2>
+          <p>
+            CareWise should not sell health data. Any sharing with infrastructure,
+            storage, payment, email, AI/OCR, or monitoring providers should be
+            limited to operating the service and governed by appropriate
+            contracts, privacy review, and security review.
+          </p>
+
+          <h2>Security Controls To Confirm</h2>
+          <ul>
+            <li>Encrypted transport for all production traffic.</li>
+            <li>Private report storage with protected download URLs.</li>
+            <li>Encrypted sensitive patient fields in the backend database.</li>
+            <li>No health data in analytics logs.</li>
+            <li>Consent history and audit trail for protected actions.</li>
+            <li>Data export and deletion request workflow.</li>
+          </ul>
+
+          <h2>Store Submission Notes</h2>
+          <ul>
+            <li>Do not describe CareWise as diagnosing, curing, prescribing, or replacing a clinician.</li>
+            <li>Explain that report interpretation must be reviewed with licensed healthcare professionals.</li>
+            <li>Disclose that uploaded reports may contain sensitive health information.</li>
+            <li>Confirm whether OCR, payments, notifications, and email delivery are enabled before final answers.</li>
+            <li>Use screenshots and app review notes that show the educational disclaimer clearly.</li>
+          </ul>
+        </section>
+      </article>
+    </main>
+  </body>
+</html>

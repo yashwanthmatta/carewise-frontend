@@ -44,9 +44,13 @@ async function main() {
   const serviceWorker = await readAsset("sw.js", baseUrl);
   const manifest = JSON.parse(await readAsset("manifest.webmanifest", baseUrl));
   const legalPages = await Promise.all(
-    ["legal/privacy.html", "legal/terms.html", "legal/disclaimer.html", "legal/data-deletion.html"].map(
-      (asset) => readAsset(asset, baseUrl),
-    ),
+    [
+      "legal/privacy.html",
+      "legal/terms.html",
+      "legal/disclaimer.html",
+      "legal/data-deletion.html",
+      "legal/app-store-disclosures.html",
+    ].map((asset) => readAsset(asset, baseUrl)),
   );
 
   const htmlVersion = assertSingleVersion("index.html", html);
@@ -62,8 +66,10 @@ async function main() {
   assertIncludes("index.html", html, "legal/terms.html");
   assertIncludes("index.html", html, "legal/disclaimer.html");
   assertIncludes("index.html", html, "legal/data-deletion.html");
+  assertIncludes("index.html", html, "legal/app-store-disclosures.html");
   assertIncludes("sw.js", serviceWorker, "/legal/privacy.html");
   assertIncludes("sw.js", serviceWorker, "/legal/data-deletion.html");
+  assertIncludes("sw.js", serviceWorker, "/legal/app-store-disclosures.html");
 
   if (manifest.name !== "CareWise AI") {
     throw new Error(`manifest.webmanifest name should be CareWise AI, found ${manifest.name || "empty"}`);
