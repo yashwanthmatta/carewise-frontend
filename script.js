@@ -180,6 +180,7 @@ let authRole = localStorage.getItem("carewiseAuthRole") || document.querySelecto
 let emailVerified = localStorage.getItem("carewiseEmailVerified") === "true";
 let latestReportId = localStorage.getItem("carewiseLatestReportId") || "";
 let latestCheckoutUrl = localStorage.getItem("carewiseCheckoutUrl") || "";
+let latestReportQuestionPack = "";
 const defaultBackendBaseUrl = "https://carewise-api.onrender.com";
 let backendBaseUrl = localStorage.getItem("carewiseApiUrl") || defaultBackendBaseUrl;
 let backendFeatures = {};
@@ -435,6 +436,11 @@ document.querySelector("#load-reports").addEventListener("click", () => {
 
 document.querySelector("#ask-report-question")?.addEventListener("click", () => {
   answerReportQuestion();
+});
+
+reportResults?.addEventListener("click", (event) => {
+  const action = event.target.closest("[data-report-action]")?.dataset.reportAction;
+  if (action === "copy-questions") copyReportQuestions();
 });
 
 document.querySelector("#run-report-eval").addEventListener("click", () => {
@@ -3522,6 +3528,7 @@ function analyzeReportTextLocally(text) {
 
 function renderLocalReportAnalysis(analysis) {
   if (!reportResults) return;
+  latestReportQuestionPack = buildReportQuestionPack(analysis);
   const riskLabel = analysis.riskLevel === "urgent"
     ? "Urgent review"
     : analysis.riskLevel === "needs_review"
@@ -3554,7 +3561,10 @@ function renderLocalReportAnalysis(analysis) {
           <ul>${analysis.suggestions.map((item) => `<li><strong>Next step</strong><span>${escapeHtml(item)}</span></li>`).join("")}</ul>
         </section>
         <section>
-          <h4>Questions to ask your doctor</h4>
+          <div class="section-heading-action">
+            <h4>Questions to ask your doctor</h4>
+            <button class="secondary-button compact" type="button" data-report-action="copy-questions">Copy questions</button>
+          </div>
           <ul>${analysis.questions.map((item) => `<li><strong>Ask</strong><span>${escapeHtml(item)}</span></li>`).join("")}</ul>
         </section>
       </div>
@@ -3568,6 +3578,40 @@ function renderLocalReportAnalysis(analysis) {
   if (dashboardCards[1]) dashboardCards[1].querySelector("strong").textContent = analysis.riskAreas.heart;
   if (dashboardCards[2]) dashboardCards[2].querySelector("strong").textContent = analysis.riskAreas.diabetes;
   if (dashboardCards[3]) dashboardCards[3].querySelector("strong").textContent = analysis.riskAreas.vitamins;
+}
+
+function buildReportQuestionPack(analysis) {
+  return [
+    "CareWise AI report questions",
+    "Educational prep only. Review the original report with a licensed professional.",
+    "",
+    ...analysis.questions.map((question, index) => `${index + 1}. ${question}`),
+  ].join("\n");
+}
+
+function copyReportQuestions() {
+  if (!latestReportQuestionPack) {
+    const text = getLocalReportText();
+    if (text) latestReportQuestionPack = buildReportQuestionPack(analyzeReportTextLocally(text));
+  }
+  if (!latestReportQuestionPack) {
+    reportStatus.textContent = "Analyze a report before copying doctor questions.";
+    return;
+  }
+  if (!navigator.clipboard) {
+    if (reportAnswer) reportAnswer.textContent = latestReportQuestionPack;
+    reportStatus.textContent = "Copy unavailable. Questions are shown in the report answer box.";
+    return;
+  }
+  navigator.clipboard.writeText(latestReportQuestionPack)
+    .then(() => {
+      reportStatus.textContent = "Doctor questions copied. Review them with your original report before sharing.";
+      if (reportAnswer) reportAnswer.textContent = "Questions copied for your clinician visit.";
+    })
+    .catch(() => {
+      if (reportAnswer) reportAnswer.textContent = latestReportQuestionPack;
+      reportStatus.textContent = "Copy unavailable. Questions are shown in the report answer box.";
+    });
 }
 
 function runLocalReportAnalysis() {

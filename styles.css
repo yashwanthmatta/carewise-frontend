@@ -1024,6 +1024,18 @@ body::before {
   color: #0f172a;
 }
 
+.section-heading-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.section-heading-action h4 {
+  margin: 0;
+}
+
 .result-sections ul {
   display: grid;
   gap: 8px;

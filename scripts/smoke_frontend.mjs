@@ -72,6 +72,9 @@ async function main() {
   const script = await readAsset("script.js", baseUrl);
   assertIncludes("script.js", script, "/privacy/me/export-summary");
   assertIncludes("script.js", script, "Backend summary is not live yet.");
+  assertIncludes("script.js", script, "data-report-action=\"copy-questions\"");
+  assertIncludes("script.js", script, "Educational prep only. Review the original report with a licensed professional.");
+  assertIncludes("styles.css", await readAsset("styles.css", baseUrl), ".section-heading-action");
   assertIncludes("sw.js", serviceWorker, "/legal/privacy.html");
   assertIncludes("sw.js", serviceWorker, "/legal/data-deletion.html");
   assertIncludes("sw.js", serviceWorker, "/legal/app-store-disclosures.html");
