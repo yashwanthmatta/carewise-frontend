@@ -3138,6 +3138,7 @@ function renderReportHistoryResult(report) {
     ],
     suggestions: report.nextSteps?.length ? report.nextSteps : ["Review this saved report with a licensed professional before changing care decisions."],
     questions: questions.length ? questions : ["Which result from this report matters most for my next visit?"],
+    labValues: report.labValues || [],
     riskAreas: {
       heart: report.riskLevel || "Review report",
       diabetes: "Review report",
@@ -3455,6 +3456,17 @@ function readReportNumber(text, patterns) {
   return null;
 }
 
+function buildDetectedReportValues({ ldl, totalCholesterol, triglycerides, a1c, vitaminD, systolic, diastolic }) {
+  return [
+    ldl !== null ? { label: "LDL cholesterol", value: ldl, unit: "mg/dL", flag: ldl >= 160 ? "High" : ldl >= 130 ? "Needs attention" : "In range discussion" } : null,
+    totalCholesterol !== null ? { label: "Total cholesterol", value: totalCholesterol, unit: "mg/dL", flag: totalCholesterol >= 200 ? "Above common target" : "In range discussion" } : null,
+    triglycerides !== null ? { label: "Triglycerides", value: triglycerides, unit: "mg/dL", flag: triglycerides >= 150 ? "Needs attention" : "In range discussion" } : null,
+    a1c !== null ? { label: "A1C", value: a1c, unit: "%", flag: a1c >= 6.5 ? "Clinician review" : a1c >= 5.7 ? "Needs attention" : "In range discussion" } : null,
+    vitaminD !== null ? { label: "Vitamin D", value: vitaminD, unit: "ng/mL", flag: vitaminD < 30 ? "Needs attention" : "In range discussion" } : null,
+    systolic !== null ? { label: "Blood pressure", value: `${systolic}/${diastolic || "?"}`, unit: "mmHg", flag: systolic >= 180 ? "Urgent if confirmed" : systolic >= 130 ? "Needs tracking" : "In range discussion" } : null,
+  ].filter(Boolean);
+}
+
 function getNonNegatedEmergencyMatches(text) {
   return findEmergencyTerms(text).filter((term) => {
     const index = text.indexOf(term);
@@ -3474,6 +3486,8 @@ function analyzeReportTextLocally(text) {
   const a1c = readReportNumber(lower, [/(?:hemoglobin\s*)?a1c\D{0,24}(\d+(?:\.\d+)?)/i]);
   const vitaminD = readReportNumber(lower, [/vitamin d\D{0,24}(\d+(?:\.\d+)?)/i]);
   const systolic = readReportNumber(lower, [/blood pressure\D{0,60}(\d{2,3})\s*\/\s*\d{2,3}/i]);
+  const diastolic = readReportNumber(lower, [/blood pressure\D{0,60}\d{2,3}\s*\/\s*(\d{2,3})/i]);
+  const labValues = buildDetectedReportValues({ ldl, totalCholesterol, triglycerides, a1c, vitaminD, systolic, diastolic });
 
   const findings = [];
   const suggestions = [];
@@ -3576,6 +3590,7 @@ function analyzeReportTextLocally(text) {
     suggestions: [...new Set(suggestions)].slice(0, 5),
     questions: [...new Set(questions)].slice(0, 5),
     riskAreas,
+    labValues,
   };
 }
 
@@ -3612,6 +3627,20 @@ function renderLocalReportAnalysis(analysis) {
         </div>
       </div>
       <div class="result-sections">
+        ${analysis.labValues?.length ? `
+        <section>
+          <h4>Detected values</h4>
+          <div class="detected-values-grid">
+            ${analysis.labValues.map((item) => `
+              <article>
+                <strong>${escapeHtml(item.label)}</strong>
+                <span>${escapeHtml(String(item.value))} ${escapeHtml(item.unit)}</span>
+                <small>${escapeHtml(item.flag)}</small>
+              </article>
+            `).join("")}
+          </div>
+        </section>
+        ` : ""}
         <section>
           <h4>Key findings</h4>
           <ul>${analysis.findings.map((item) => `<li><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.level)}. ${escapeHtml(item.detail)}</span></li>`).join("")}</ul>
@@ -3689,6 +3718,11 @@ function buildReportSummaryPack(analysis) {
     `Health Score: ${analysis.score}/100`,
     `Follow-up level: ${analysis.riskLevel}`,
     "",
+    ...(analysis.labValues?.length ? [
+      "Detected values:",
+      ...analysis.labValues.map((item) => `- ${item.label}: ${item.value} ${item.unit} (${item.flag})`),
+      "",
+    ] : []),
     "Key findings:",
     ...analysis.findings.map((item) => `- ${item.label}: ${item.level}. ${item.detail}`),
     "",
@@ -3802,6 +3836,7 @@ function runLocalReportAnalysis() {
     message: `Health Score ${analysis.score}/100. ${analysis.findings[0]?.label || "Report text reviewed"}.`,
     nextSteps: analysis.questions.slice(0, 3),
     questions: analysis.questions,
+    labValues: analysis.labValues,
     createdAt: new Date().toISOString(),
   });
   renderLocalReportAnalysis(analysis);
@@ -3925,6 +3960,7 @@ async function analyzeLatestReport() {
       message,
       nextSteps,
       questions: displayAnalysis.questions,
+      labValues: displayAnalysis.labValues,
       createdAt: existingReport?.createdAt || new Date().toISOString(),
     });
     if (response.recommendations?.requires_clinician_review) {

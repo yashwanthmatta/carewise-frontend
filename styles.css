@@ -1043,6 +1043,37 @@ body::before {
   flex-wrap: wrap;
 }
 
+.detected-values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 0.7rem;
+}
+
+.detected-values-grid article {
+  display: grid;
+  gap: 0.25rem;
+  border: 1px solid #d8e8e1;
+  border-radius: 8px;
+  padding: 0.85rem;
+  background: #ffffff;
+}
+
+.detected-values-grid strong {
+  color: #0f172a;
+  font-size: 0.88rem;
+}
+
+.detected-values-grid span {
+  color: #0f766e;
+  font-size: 1rem;
+  font-weight: 950;
+}
+
+.detected-values-grid small {
+  color: #64748b;
+  font-weight: 850;
+}
+
 .result-sections ul {
   display: grid;
   gap: 8px;

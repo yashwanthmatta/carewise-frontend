@@ -75,6 +75,10 @@ async function main() {
   assertIncludes("script.js", script, "data-report-action=\"copy-summary\"");
   assertIncludes("script.js", script, "data-report-action=\"share-summary\"");
   assertIncludes("script.js", script, "buildReportSummaryPack");
+  assertIncludes("script.js", script, "buildDetectedReportValues");
+  assertIncludes("script.js", script, "Detected values");
+  assertIncludes("script.js", script, "labValues: analysis.labValues");
+  assertIncludes("script.js", script, "labValues: report.labValues || []");
   assertIncludes("script.js", script, "navigator.share");
   assertIncludes("script.js", script, "CareWise AI report summary");
   assertIncludes("script.js", script, "data-report-action=\"copy-questions\"");
@@ -92,6 +96,7 @@ async function main() {
   const styles = await readAsset("styles.css", baseUrl);
   assertIncludes("styles.css", styles, ".section-heading-action");
   assertIncludes("styles.css", styles, ".inline-action-group");
+  assertIncludes("styles.css", styles, ".detected-values-grid");
   assertIncludes("sw.js", serviceWorker, "/legal/privacy.html");
   assertIncludes("sw.js", serviceWorker, "/legal/data-deletion.html");
   assertIncludes("sw.js", serviceWorker, "/legal/app-store-disclosures.html");
