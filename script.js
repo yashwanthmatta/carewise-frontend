@@ -3071,13 +3071,17 @@ function renderReportHistory() {
   }
   const reportCards = reports.map((report) => `
     <article class="saved-plan-row">
-      <div>
-        <strong>${escapeHtml(report.fileName || "Untitled report")}</strong>
-        <span>${escapeHtml(report.status || "uploaded")} · ${escapeHtml(new Date(report.createdAt || report.updatedAt || Date.now()).toLocaleString())}</span>
+      <div class="saved-plan-top">
+        <div>
+          <strong>${escapeHtml(report.fileName || "Untitled report")}</strong>
+          <span>${escapeHtml(report.status || "uploaded")} · ${escapeHtml(new Date(report.createdAt || report.updatedAt || Date.now()).toLocaleString())}</span>
+        </div>
+        ${report.score ? `<b>${escapeHtml(String(report.score))}/100</b>` : ""}
       </div>
       ${report.storageUrl ? `<p><strong>Storage:</strong> ${escapeHtml(report.storageUrl.startsWith("s3://") ? "Private cloud storage" : "Backend storage")} ${report.fileSizeBytes ? `· ${Math.round(Number(report.fileSizeBytes) / 1024) || 1} KB` : ""}</p>` : ""}
       ${report.riskLevel ? `<p><strong>Risk:</strong> ${escapeHtml(report.riskLevel)} · ${escapeHtml(report.message || "Report education summary generated.")}</p>` : "<p>Uploaded. Analysis not run yet.</p>"}
       ${report.nextSteps?.length ? `<ul>${report.nextSteps.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
+      ${report.questions?.length ? `<details class="saved-plan-summary"><summary>Saved doctor questions</summary><pre>${escapeHtml(report.questions.slice(0, 5).map((item, index) => `${index + 1}. ${item}`).join("\n"))}</pre></details>` : ""}
     </article>
   `).join("");
   reportResults.innerHTML = reportCards;
@@ -3086,9 +3090,10 @@ function renderReportHistory() {
       <article>
         <div>
           <strong>${escapeHtml(report.fileName || "Untitled report")}</strong>
-          <span>${escapeHtml(report.riskLevel ? `Risk: ${report.riskLevel}` : report.status || "uploaded")}</span>
+          <span>${escapeHtml(report.score ? `Health Score ${report.score}` : report.riskLevel ? `Risk: ${report.riskLevel}` : report.status || "uploaded")}</span>
         </div>
         <p>${escapeHtml(report.message || "Saved report. Run or load analysis to see a plain-English explanation.")}</p>
+        ${report.questions?.length ? `<p><strong>Doctor question:</strong> ${escapeHtml(report.questions[0])}</p>` : ""}
       </article>
     `).join("");
   }
@@ -3668,8 +3673,10 @@ function runLocalReportAnalysis() {
     fileName: document.querySelector("#report-name")?.value.trim() || "Local report analysis",
     status: "analyzed locally",
     riskLevel: analysis.riskLevel,
+    score: analysis.score,
     message: `Health Score ${analysis.score}/100. ${analysis.findings[0]?.label || "Report text reviewed"}.`,
     nextSteps: analysis.questions.slice(0, 3),
+    questions: analysis.questions,
     createdAt: new Date().toISOString(),
   });
   renderLocalReportAnalysis(analysis);
@@ -3776,6 +3783,7 @@ async function analyzeLatestReport() {
     }
     reportStatus.textContent = "Analyzing report through CareWise backend.";
     const response = await apiPost(`/reports/${latestReportId}/analyze`, {});
+    const displayAnalysis = buildBackendReportDisplayAnalysis(response, reportText);
     const message = response.summary?.message || "Report education summary generated.";
     const nextSteps = response.recommendations?.next_steps || [];
     const existingReport = getReportHistory().find((report) => report.id === response.report_id);
@@ -3788,8 +3796,10 @@ async function analyzeLatestReport() {
       fileSizeBytes: existingReport?.fileSizeBytes || 0,
       status: response.status,
       riskLevel: response.risk_level,
+      score: displayAnalysis.score,
       message,
       nextSteps,
+      questions: displayAnalysis.questions,
       createdAt: existingReport?.createdAt || new Date().toISOString(),
     });
     if (response.recommendations?.requires_clinician_review) {
@@ -3805,7 +3815,7 @@ async function analyzeLatestReport() {
     }
     addAuditEvent("report_analyzed", `Report ${response.report_id} analyzed with ${response.risk_level} risk.`);
     renderAuditTrail();
-    renderLocalReportAnalysis(buildBackendReportDisplayAnalysis(response, reportText));
+    renderLocalReportAnalysis(displayAnalysis);
     reportStatus.textContent = response.status === "needs_readable_text"
       ? "Report stored securely. Paste OCR text or key lab values here, then click Analyze report again."
       : `Analysis complete: ${response.risk_level}.`;

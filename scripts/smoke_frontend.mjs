@@ -75,7 +75,11 @@ async function main() {
   assertIncludes("script.js", script, "data-report-action=\"copy-questions\"");
   assertIncludes("script.js", script, "Educational prep only. Review the original report with a licensed professional.");
   assertIncludes("script.js", script, "buildBackendReportDisplayAnalysis");
-  assertIncludes("script.js", script, "renderLocalReportAnalysis(buildBackendReportDisplayAnalysis(response, reportText))");
+  assertIncludes("script.js", script, "const displayAnalysis = buildBackendReportDisplayAnalysis(response, reportText)");
+  assertIncludes("script.js", script, "renderLocalReportAnalysis(displayAnalysis)");
+  assertIncludes("script.js", script, "Saved doctor questions");
+  assertIncludes("script.js", script, "Doctor question:");
+  assertIncludes("script.js", script, "Health Score ${report.score}");
   assertIncludes("styles.css", await readAsset("styles.css", baseUrl), ".section-heading-action");
   assertIncludes("sw.js", serviceWorker, "/legal/privacy.html");
   assertIncludes("sw.js", serviceWorker, "/legal/data-deletion.html");
