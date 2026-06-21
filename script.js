@@ -4978,7 +4978,7 @@ async function exportBackendData() {
     const payload = await apiGet("/privacy/me/export");
     exportOutput.value = JSON.stringify(payload, null, 2);
     renderBackendExportSummary(payload);
-    exportStatus.textContent = `Backend export loaded with ${payload.report_analyses?.length || 0} saved report explanation${(payload.report_analyses?.length || 0) === 1 ? "" : "s"}.`;
+    exportStatus.textContent = `Backend export loaded with ${payload.report_analyses?.length || 0} report explanation${(payload.report_analyses?.length || 0) === 1 ? "" : "s"}, ${payload.medications?.length || 0} medication${(payload.medications?.length || 0) === 1 ? "" : "s"}, and ${payload.care_plans?.length || 0} care plan${(payload.care_plans?.length || 0) === 1 ? "" : "s"}.`;
     addAuditEvent("backend_data_exported", "Backend privacy export loaded in the app.");
     renderAuditTrail();
   } catch {
@@ -4992,6 +4992,9 @@ function renderBackendExportSummary(payload) {
     ["Patients", payload.patients?.length || 0, "Profile records"],
     ["Reports", payload.reports?.length || 0, "Report metadata only"],
     ["Explanations", payload.report_analyses?.length || 0, "Saved report analyses"],
+    ["Medications", payload.medications?.length || 0, "Medication notes"],
+    ["Intakes", payload.intakes?.length || 0, "Health intake records"],
+    ["Care plans", payload.care_plans?.length || 0, "Educational care plans"],
     ["Consent", payload.consent_records?.length || 0, "Consent history"],
   ];
   exportSummary.innerHTML = items.map(([label, count, detail]) => `
