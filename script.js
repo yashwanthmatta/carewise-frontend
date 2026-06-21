@@ -181,6 +181,7 @@ let emailVerified = localStorage.getItem("carewiseEmailVerified") === "true";
 let latestReportId = localStorage.getItem("carewiseLatestReportId") || "";
 let latestCheckoutUrl = localStorage.getItem("carewiseCheckoutUrl") || "";
 let latestReportQuestionPack = "";
+let latestReportSummaryPack = "";
 const defaultBackendBaseUrl = "https://carewise-api.onrender.com";
 let backendBaseUrl = localStorage.getItem("carewiseApiUrl") || defaultBackendBaseUrl;
 let backendFeatures = {};
@@ -440,6 +441,7 @@ document.querySelector("#ask-report-question")?.addEventListener("click", () => 
 
 reportResults?.addEventListener("click", (event) => {
   const action = event.target.closest("[data-report-action]")?.dataset.reportAction;
+  if (action === "copy-summary") copyReportSummary();
   if (action === "copy-questions") copyReportQuestions();
   if (action === "open-history") openReportHistoryItem(event.target.closest("[data-report-id]")?.dataset.reportId || "");
 });
@@ -3579,6 +3581,7 @@ function analyzeReportTextLocally(text) {
 function renderLocalReportAnalysis(analysis) {
   if (!reportResults) return;
   latestReportQuestionPack = buildReportQuestionPack(analysis);
+  latestReportSummaryPack = buildReportSummaryPack(analysis);
   const riskLabel = analysis.riskLevel === "urgent"
     ? "Urgent review"
     : analysis.riskLevel === "needs_review"
@@ -3592,7 +3595,10 @@ function renderLocalReportAnalysis(analysis) {
       <div class="result-hero">
         <div>
           <span>CareWise explanation</span>
-          <strong>Plain-English report summary</strong>
+          <div class="section-heading-action">
+            <strong>Plain-English report summary</strong>
+            <button class="secondary-button compact" type="button" data-report-action="copy-summary">Copy summary</button>
+          </div>
           <p>CareWise found ${escapeHtml(String(analysis.findings.length))} discussion point${analysis.findings.length === 1 ? "" : "s"} in the readable report text.</p>
         </div>
         <div class="result-score">
@@ -3672,6 +3678,26 @@ function buildBackendReportDisplayAnalysis(response, reportText) {
   };
 }
 
+function buildReportSummaryPack(analysis) {
+  return [
+    "CareWise AI report summary",
+    "Educational prep only. This is not a diagnosis or treatment plan.",
+    `Health Score: ${analysis.score}/100`,
+    `Follow-up level: ${analysis.riskLevel}`,
+    "",
+    "Key findings:",
+    ...analysis.findings.map((item) => `- ${item.label}: ${item.level}. ${item.detail}`),
+    "",
+    "Wellness suggestions:",
+    ...analysis.suggestions.map((item) => `- ${item}`),
+    "",
+    "Questions for a licensed professional:",
+    ...analysis.questions.map((item, index) => `${index + 1}. ${item}`),
+    "",
+    "Review the original report with a licensed professional before making care decisions.",
+  ].join("\n");
+}
+
 function buildReportQuestionPack(analysis) {
   return [
     "CareWise AI report questions",
@@ -3679,6 +3705,31 @@ function buildReportQuestionPack(analysis) {
     "",
     ...analysis.questions.map((question, index) => `${index + 1}. ${question}`),
   ].join("\n");
+}
+
+function copyReportSummary() {
+  if (!latestReportSummaryPack) {
+    const text = getLocalReportText();
+    if (text) latestReportSummaryPack = buildReportSummaryPack(analyzeReportTextLocally(text));
+  }
+  if (!latestReportSummaryPack) {
+    reportStatus.textContent = "Analyze or reopen a report before copying the summary.";
+    return;
+  }
+  if (!navigator.clipboard) {
+    if (reportAnswer) reportAnswer.textContent = latestReportSummaryPack;
+    reportStatus.textContent = "Copy unavailable. Summary is shown in the report answer box.";
+    return;
+  }
+  navigator.clipboard.writeText(latestReportSummaryPack)
+    .then(() => {
+      reportStatus.textContent = "Report summary copied. Review it with the original report before sharing.";
+      if (reportAnswer) reportAnswer.textContent = "Report summary copied for your visit prep.";
+    })
+    .catch(() => {
+      if (reportAnswer) reportAnswer.textContent = latestReportSummaryPack;
+      reportStatus.textContent = "Copy unavailable. Summary is shown in the report answer box.";
+    });
 }
 
 function copyReportQuestions() {
