@@ -5003,9 +5003,17 @@ async function checkBackendDataSummary() {
     exportStatus.textContent = `Safe backend summary loaded: ${counts.reports || 0} report${(counts.reports || 0) === 1 ? "" : "s"}, ${counts.report_analyses || 0} explanation${(counts.report_analyses || 0) === 1 ? "" : "s"}, and ${counts.care_plans || 0} care plan${(counts.care_plans || 0) === 1 ? "" : "s"}.`;
     addAuditEvent("backend_export_summary_checked", "Backend privacy export summary counts loaded in the app.");
     renderAuditTrail();
-  } catch {
-    exportStatus.textContent = "Backend data summary failed. Check login and backend status.";
+  } catch (error) {
+    const status = getBackendErrorStatus(error);
+    exportStatus.textContent = status === 404
+      ? "Backend summary is not live yet. Wait for Render to finish deploying, then try again."
+      : "Backend data summary failed. Check login and backend status.";
   }
+}
+
+function getBackendErrorStatus(error) {
+  const match = String(error?.message || "").match(/Backend returned (\d+)/);
+  return match ? Number(match[1]) : 0;
 }
 
 function renderBackendExportSummary(payload) {

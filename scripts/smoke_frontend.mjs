@@ -69,7 +69,9 @@ async function main() {
   assertIncludes("index.html", html, "legal/app-store-disclosures.html");
   assertIncludes("index.html", html, "check-backend-data");
   assertIncludes("index.html", html, "Check backend data");
-  assertIncludes("script.js", await readAsset("script.js", baseUrl), "/privacy/me/export-summary");
+  const script = await readAsset("script.js", baseUrl);
+  assertIncludes("script.js", script, "/privacy/me/export-summary");
+  assertIncludes("script.js", script, "Backend summary is not live yet.");
   assertIncludes("sw.js", serviceWorker, "/legal/privacy.html");
   assertIncludes("sw.js", serviceWorker, "/legal/data-deletion.html");
   assertIncludes("sw.js", serviceWorker, "/legal/app-store-disclosures.html");
