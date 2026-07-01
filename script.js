@@ -444,6 +444,7 @@ reportResults?.addEventListener("click", (event) => {
   if (action === "copy-summary") copyReportSummary();
   if (action === "share-summary") shareReportSummary();
   if (action === "copy-questions") copyReportQuestions();
+  if (action === "save-detected-values") saveDetectedValuesToTrends();
   if (action === "open-history") openReportHistoryItem(event.target.closest("[data-report-id]")?.dataset.reportId || "");
 });
 
@@ -3629,7 +3630,10 @@ function renderLocalReportAnalysis(analysis) {
       <div class="result-sections">
         ${analysis.labValues?.length ? `
         <section>
-          <h4>Detected values</h4>
+          <div class="section-heading-action">
+            <h4>Detected values</h4>
+            <button class="secondary-button compact" type="button" data-report-action="save-detected-values">Save to trends</button>
+          </div>
           <div class="detected-values-grid">
             ${analysis.labValues.map((item) => `
               <article>
@@ -3736,6 +3740,39 @@ function buildReportSummaryPack(analysis) {
   ].join("\n");
 }
 
+function normalizeDetectedValueFlag(flag) {
+  if (flag === "High" || flag === "Urgent if confirmed" || flag === "Clinician review") return "Needs clinician review";
+  if (flag === "Needs attention" || flag === "Needs tracking" || flag === "Above common target") return "High";
+  if (flag === "In range discussion") return "In range";
+  return "Not sure";
+}
+
+function saveDetectedValuesToTrends() {
+  const report = getReportHistory().find((item) => item.id === latestReportId);
+  let labValues = report?.labValues || [];
+  if (!labValues.length && getLocalReportText()) labValues = analyzeReportTextLocally(getLocalReportText()).labValues || [];
+  if (!labValues.length) {
+    reportStatus.textContent = "No detected values are ready to save. Paste readable lab values and analyze first.";
+    return;
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  labValues.forEach((item, index) => addLabTrendEntry({
+    id: `lab-${Date.now()}-${index}`,
+    test: item.label,
+    value: String(item.value),
+    unit: item.unit,
+    date: today,
+    flag: normalizeDetectedValueFlag(item.flag),
+    notes: "Saved from CareWise detected report values. Verify against the original report and reference range.",
+    createdAt: new Date().toISOString(),
+  }));
+  renderLabTrends();
+  renderVisitBriefs();
+  addAuditEvent("detected_report_values_saved", `${labValues.length} detected report value${labValues.length === 1 ? "" : "s"} saved to lab trends.`);
+  renderAuditTrail();
+  reportStatus.textContent = `${labValues.length} detected value${labValues.length === 1 ? "" : "s"} saved to lab trends. Verify with the original report.`;
+}
+
 function buildReportQuestionPack(analysis) {
   return [
     "CareWise AI report questions",
@@ -3827,6 +3864,8 @@ function runLocalReportAnalysis() {
     return null;
   }
   const analysis = analyzeReportTextLocally(text);
+  latestReportId = analysis.id;
+  localStorage.setItem("carewiseLatestReportId", latestReportId);
   saveReportHistory({
     id: analysis.id,
     fileName: document.querySelector("#report-name")?.value.trim() || "Local report analysis",
