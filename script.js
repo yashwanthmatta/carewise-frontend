@@ -3313,6 +3313,34 @@ function addLabTrendEntry(entry) {
   localStorage.setItem("carewiseLabTrends", JSON.stringify(labs.slice(0, 60)));
 }
 
+function labTrendToBackendPayload(entry, patientId, reportId = "") {
+  return {
+    patient_id: patientId,
+    report_id: reportId && reportId.startsWith("report_") ? reportId : null,
+    test_name: entry.test || "Other",
+    value: String(entry.value || ""),
+    unit: entry.unit || "",
+    observed_on: entry.date || new Date().toISOString().slice(0, 10),
+    flag: String(entry.flag || "not_sure").toLowerCase().replaceAll(" ", "_"),
+    notes: entry.notes || "",
+    source: entry.source || "manual",
+  };
+}
+
+async function syncLabTrendToBackend(entry, patientId, reportId = "", showStatus = false) {
+  try {
+    if (!authToken || !patientId) return false;
+    const response = await apiPost("/lab-trends", labTrendToBackendPayload(entry, patientId, reportId));
+    entry.backendLabTrendId = response.id;
+    entry.backendSynced = true;
+    if (showStatus) labTrendStatus.textContent = `${entry.test} synced to backend lab trends.`;
+    return true;
+  } catch {
+    if (showStatus) labTrendStatus.textContent = `${entry.test} saved locally. Backend trend sync failed.`;
+    return false;
+  }
+}
+
 function fillSampleLabTrends() {
   const today = new Date().toISOString().slice(0, 10);
   const lastMonth = new Date();
@@ -3352,16 +3380,25 @@ function fillSampleLabTrends() {
   renderAuditTrail();
 }
 
-function saveLabTrend() {
+async function saveLabTrend() {
   const entry = getLabTrendForm();
   if (!entry.value && !entry.notes) {
     labTrendStatus.textContent = "Add a lab value or note before saving.";
     return;
   }
+  entry.source = "manual";
   addLabTrendEntry(entry);
+  const patientId = authToken ? await ensureBackendPatient(false) : "";
+  if (patientId) {
+    const synced = await syncLabTrendToBackend(entry, patientId, "", true);
+    if (synced) {
+      const labs = getLabTrends().map((item) => item.id === entry.id ? entry : item);
+      localStorage.setItem("carewiseLabTrends", JSON.stringify(labs.slice(0, 60)));
+    }
+  }
   document.querySelector("#lab-value").value = "";
   document.querySelector("#lab-notes").value = "";
-  labTrendStatus.textContent = `${entry.test} saved. Bring the original report for clinician interpretation.`;
+  if (!entry.backendSynced) labTrendStatus.textContent = `${entry.test} saved locally. Bring the original report for clinician interpretation.`;
   addAuditEvent("lab_trend_saved", `${entry.test} lab value saved with ${entry.flag.toLowerCase()} flag.`);
   renderLabTrends();
   renderVisitBriefs();
@@ -3747,7 +3784,7 @@ function normalizeDetectedValueFlag(flag) {
   return "Not sure";
 }
 
-function saveDetectedValuesToTrends() {
+async function saveDetectedValuesToTrends() {
   const report = getReportHistory().find((item) => item.id === latestReportId);
   let labValues = report?.labValues || [];
   if (!labValues.length && getLocalReportText()) labValues = analyzeReportTextLocally(getLocalReportText()).labValues || [];
@@ -3756,7 +3793,7 @@ function saveDetectedValuesToTrends() {
     return;
   }
   const today = new Date().toISOString().slice(0, 10);
-  labValues.forEach((item, index) => addLabTrendEntry({
+  const entries = labValues.map((item, index) => ({
     id: `lab-${Date.now()}-${index}`,
     test: item.label,
     value: String(item.value),
@@ -3764,13 +3801,27 @@ function saveDetectedValuesToTrends() {
     date: today,
     flag: normalizeDetectedValueFlag(item.flag),
     notes: "Saved from CareWise detected report values. Verify against the original report and reference range.",
+    source: "detected_report_value",
     createdAt: new Date().toISOString(),
   }));
+  entries.forEach((entry) => addLabTrendEntry(entry));
+  let syncedCount = 0;
+  const patientId = authToken ? (report?.patientId || backendPatientId || await ensureBackendPatient(false)) : "";
+  if (patientId) {
+    const reportId = report?.id || latestReportId;
+    const results = await Promise.all(entries.map((entry) => syncLabTrendToBackend(entry, patientId, reportId)));
+    syncedCount = results.filter(Boolean).length;
+    if (syncedCount) {
+      const syncedById = new Map(entries.map((entry) => [entry.id, entry]));
+      const labs = getLabTrends().map((item) => syncedById.get(item.id) || item);
+      localStorage.setItem("carewiseLabTrends", JSON.stringify(labs.slice(0, 60)));
+    }
+  }
   renderLabTrends();
   renderVisitBriefs();
-  addAuditEvent("detected_report_values_saved", `${labValues.length} detected report value${labValues.length === 1 ? "" : "s"} saved to lab trends.`);
+  addAuditEvent("detected_report_values_saved", `${labValues.length} detected report value${labValues.length === 1 ? "" : "s"} saved to lab trends${syncedCount ? `; ${syncedCount} synced to backend` : ""}.`);
   renderAuditTrail();
-  reportStatus.textContent = `${labValues.length} detected value${labValues.length === 1 ? "" : "s"} saved to lab trends. Verify with the original report.`;
+  reportStatus.textContent = `${labValues.length} detected value${labValues.length === 1 ? "" : "s"} saved to lab trends${syncedCount ? ` and ${syncedCount} synced to backend` : ""}. Verify with the original report.`;
 }
 
 function buildReportQuestionPack(analysis) {

@@ -80,6 +80,10 @@ async function main() {
   assertIncludes("script.js", script, "data-report-action=\"save-detected-values\"");
   assertIncludes("script.js", script, "saveDetectedValuesToTrends");
   assertIncludes("script.js", script, "normalizeDetectedValueFlag");
+  assertIncludes("script.js", script, "syncLabTrendToBackend");
+  assertIncludes("script.js", script, "labTrendToBackendPayload");
+  assertIncludes("script.js", script, "/lab-trends");
+  assertIncludes("script.js", script, "detected_report_value");
   assertIncludes("script.js", script, "labValues: analysis.labValues");
   assertIncludes("script.js", script, "labValues: report.labValues || []");
   assertIncludes("script.js", script, "navigator.share");
