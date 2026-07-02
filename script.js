@@ -473,6 +473,10 @@ document.querySelector("#copy-lab-trends").addEventListener("click", () => {
   copyLabTrends();
 });
 
+document.querySelector("#load-lab-trends").addEventListener("click", () => {
+  loadLabTrendsFromBackend();
+});
+
 document.querySelector("#clear-lab-trends").addEventListener("click", () => {
   localStorage.removeItem("carewiseLabTrends");
   renderLabTrends();
@@ -3313,6 +3317,32 @@ function addLabTrendEntry(entry) {
   localStorage.setItem("carewiseLabTrends", JSON.stringify(labs.slice(0, 60)));
 }
 
+function normalizeBackendLabTrendFlag(flag) {
+  const normalized = String(flag || "not_sure").replaceAll("_", " ").toLowerCase();
+  if (normalized.includes("clinician")) return "Needs clinician review";
+  if (normalized === "high") return "High";
+  if (normalized === "low") return "Low";
+  if (normalized.includes("range")) return "In range";
+  return "Not sure";
+}
+
+function backendLabTrendToLocal(entry) {
+  return {
+    id: entry.backendLabTrendId || entry.id || `lab-${Date.now()}`,
+    backendLabTrendId: entry.id || entry.backendLabTrendId || "",
+    backendSynced: true,
+    reportId: entry.report_id || "",
+    test: entry.test_name || entry.test || "Other",
+    value: String(entry.value || ""),
+    unit: entry.unit || "",
+    date: entry.observed_on || entry.date || "",
+    flag: normalizeBackendLabTrendFlag(entry.flag),
+    notes: entry.notes || "",
+    source: entry.source || "backend",
+    createdAt: entry.created_at || entry.createdAt || new Date().toISOString(),
+  };
+}
+
 function labTrendToBackendPayload(entry, patientId, reportId = "") {
   return {
     patient_id: patientId,
@@ -3338,6 +3368,34 @@ async function syncLabTrendToBackend(entry, patientId, reportId = "", showStatus
   } catch {
     if (showStatus) labTrendStatus.textContent = `${entry.test} saved locally. Backend trend sync failed.`;
     return false;
+  }
+}
+
+async function loadLabTrendsFromBackend() {
+  try {
+    if (!authToken) {
+      labTrendStatus.textContent = "Sign in before loading cloud lab trends.";
+      return;
+    }
+    const patientId = backendPatientId || await ensureBackendPatient(false);
+    if (!patientId) {
+      labTrendStatus.textContent = "Sync profile before loading cloud lab trends.";
+      return;
+    }
+    const response = await apiGet(`/lab-trends?patient_id=${encodeURIComponent(patientId)}`);
+    const cloudEntries = response.map(backendLabTrendToLocal);
+    const merged = [
+      ...cloudEntries,
+      ...getLabTrends().filter((item) => !cloudEntries.some((cloud) => cloud.backendLabTrendId && cloud.backendLabTrendId === item.backendLabTrendId)),
+    ];
+    localStorage.setItem("carewiseLabTrends", JSON.stringify(merged.slice(0, 60)));
+    renderLabTrends();
+    renderVisitBriefs();
+    addAuditEvent("backend_lab_trends_loaded", `${cloudEntries.length} backend lab trend${cloudEntries.length === 1 ? "" : "s"} loaded.`);
+    renderAuditTrail();
+    labTrendStatus.textContent = `Loaded ${cloudEntries.length} cloud lab value${cloudEntries.length === 1 ? "" : "s"}. Review with the original reports before making care decisions.`;
+  } catch {
+    labTrendStatus.textContent = "Could not load cloud lab trends. Local lab values are still available.";
   }
 }
 

@@ -7,9 +7,9 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-108" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-109" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-108" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-109" />
   </head>
   <body>
     <main class="app-shell">
@@ -409,7 +409,10 @@
               <h3 id="lab-trend-title">Lab value tracker</h3>
               <p class="panel-intro">Save key lab values from reports so trends are easier to discuss. Ranges vary by lab, age, pregnancy, medicines, and medical history, so a licensed clinician should interpret results.</p>
             </div>
-            <button id="clear-lab-trends" class="secondary-button compact" type="button">Clear labs</button>
+            <div class="inline-action-group">
+              <button id="load-lab-trends" class="secondary-button compact" type="button">Load cloud labs</button>
+              <button id="clear-lab-trends" class="secondary-button compact" type="button">Clear labs</button>
+            </div>
           </div>
           <div class="lab-trend-grid">
             <label>
@@ -1818,6 +1821,6 @@
       </section>
     </main>
 
-    <script src="script.js?v=carewise-product-108"></script>
+    <script src="script.js?v=carewise-product-109"></script>
   </body>
 </html>
