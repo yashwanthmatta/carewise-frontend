@@ -69,6 +69,9 @@ async function main() {
   assertIncludes("index.html", html, "legal/app-store-disclosures.html");
   assertIncludes("index.html", html, "check-backend-data");
   assertIncludes("index.html", html, "Check backend data");
+  assertIncludes("index.html", html, "Mobile GitHub push");
+  assertIncludes("index.html", html, "workflow permission");
+  assertIncludes("index.html", html, "Run production smoke with synthetic data");
   const script = await readAsset("script.js", baseUrl);
   assertIncludes("script.js", script, "/privacy/me/export-summary");
   assertIncludes("script.js", script, "Backend summary is not live yet.");
@@ -108,6 +111,7 @@ async function main() {
   assertIncludes("styles.css", styles, ".section-heading-action");
   assertIncludes("styles.css", styles, ".inline-action-group");
   assertIncludes("styles.css", styles, ".detected-values-grid");
+  assertIncludes("styles.css", styles, ".launch-blockers");
   assertIncludes("sw.js", serviceWorker, "/legal/privacy.html");
   assertIncludes("sw.js", serviceWorker, "/legal/data-deletion.html");
   assertIncludes("sw.js", serviceWorker, "/legal/app-store-disclosures.html");

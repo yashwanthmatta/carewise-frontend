@@ -7,9 +7,9 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-109" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-110" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-109" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-110" />
   </head>
   <body>
     <main class="app-shell">
@@ -1650,6 +1650,20 @@
             <article><strong>Safe MVP</strong><span>No diagnosis claims</span></article>
             <article><strong>Next</strong><span>Clinical review</span></article>
           </div>
+          <div class="launch-blockers" aria-label="CareWise launch blockers">
+            <article class="blocked">
+              <strong>Mobile GitHub push</strong>
+              <span>Blocked until the GitHub token includes workflow permission.</span>
+            </article>
+            <article class="blocked">
+              <strong>Backend smoke</strong>
+              <span>Run production smoke with synthetic data before real patient use.</span>
+            </article>
+            <article class="blocked">
+              <strong>Human reviews</strong>
+              <span>Legal, privacy, security, and licensed-clinician review are required.</span>
+            </article>
+          </div>
           <div id="launch-proof" class="launch-proof" aria-label="CareWise launch proof">
             <article><strong>Backend</strong><span>Checking</span></article>
             <article><strong>Review proof</strong><span>Waiting</span></article>
@@ -1821,6 +1835,6 @@
       </section>
     </main>
 
-    <script src="script.js?v=carewise-product-109"></script>
+    <script src="script.js?v=carewise-product-110"></script>
   </body>
 </html>
