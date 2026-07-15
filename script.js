@@ -7098,7 +7098,7 @@ function getQaChecks() {
     },
     {
       label: "Privacy controls",
-      ready: Boolean(document.querySelector("#export-data") && document.querySelector("#request-deletion")),
+      ready: Boolean(document.querySelector("#export-data") && document.querySelector("#request-delete-data")),
       detail: "Local export, backend export, local clear, and deletion request controls are present.",
     },
   ];

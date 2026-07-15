@@ -27,7 +27,10 @@ http://localhost:4173
 Check local files before a demo or deploy:
 
 ```bash
+node scripts/frontend_reference_audit.mjs
 node scripts/smoke_frontend.mjs
+node --check script.js
+node --check sw.js
 ```
 
 Check the Render site after deploy:
@@ -36,8 +39,14 @@ Check the Render site after deploy:
 node scripts/smoke_frontend.mjs --base-url https://carewise-frontend.onrender.com
 ```
 
-The smoke test verifies the app shell cache version, PWA manifest, legal pages,
-the app-store disclosure draft, and safe non-diagnostic wording.
+The reference audit verifies JavaScript DOM ids, service-worker cached assets,
+and cache-version consistency. The smoke test verifies the app shell cache
+version, PWA manifest, legal pages, app-store disclosure draft, backend data
+controls, report-history actions, and safe non-diagnostic wording.
+
+When `index.html`, `script.js`, `styles.css`, or `sw.js` changes, bump the
+`carewise-product-*` and `carewise-shell-*` versions together so returning
+users receive the newest website.
 
 ## GitHub Upload
 
