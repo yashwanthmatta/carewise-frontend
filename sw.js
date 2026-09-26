@@ -1,10 +1,10 @@
-const CAREWISE_CACHE = "carewise-shell-v114";
+const CAREWISE_CACHE = "carewise-shell-v115";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
-  "/styles.css?v=carewise-product-114",
-  "/script.js?v=carewise-product-114",
-  "/manifest.webmanifest?v=carewise-product-114",
+  "/styles.css?v=carewise-product-115",
+  "/script.js?v=carewise-product-115",
+  "/manifest.webmanifest?v=carewise-product-115",
   "/legal/privacy.html",
   "/legal/terms.html",
   "/legal/disclaimer.html",

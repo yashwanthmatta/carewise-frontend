@@ -183,6 +183,111 @@ let latestCheckoutUrl = localStorage.getItem("carewiseCheckoutUrl") || "";
 let latestReportQuestionPack = "";
 let latestReportSummaryPack = "";
 let latestReportAnalysis = null;
+const REPORT_LANGUAGES = { en: "English", es: "Español" };
+let reportLanguage = REPORT_LANGUAGES[localStorage.getItem("carewiseReportLanguage")] ? localStorage.getItem("carewiseReportLanguage") : "en";
+const REPORT_TRANSLATIONS = {
+  es: {
+    ui: {
+      eyebrow: "Explicación de CareWise",
+      title: "Resumen del informe en lenguaje sencillo",
+      found: (count) => `CareWise encontró ${count} punto${count === 1 ? "" : "s"} para comentar en el texto del informe.`,
+      detectedValues: "Valores detectados",
+      keyFindings: "Hallazgos principales",
+      suggestions: "Sugerencias de bienestar",
+      questions: "Preguntas para su médico",
+      nextStep: "Siguiente paso",
+      ask: "Pregunte",
+      safetyTitle: "Nota de seguridad",
+      safetyText: "Esto no es un diagnóstico ni un plan de tratamiento. Un profesional de salud autorizado debe interpretar su informe original junto con su historial completo.",
+      copySummary: "Copiar resumen",
+      shareSummary: "Compartir resumen",
+      doctorBrief: "Resumen para el médico",
+      saveToTrends: "Guardar en tendencias",
+      copyQuestions: "Copiar preguntas",
+      draftNotice: "Traducción preliminar, pendiente de revisión por un profesional de salud y un traductor médico. El resumen para el médico se genera en inglés.",
+    },
+    phrases: {
+      "LDL cholesterol": "Colesterol LDL",
+      "Total cholesterol": "Colesterol total",
+      "Triglycerides": "Triglicéridos",
+      "Blood pressure": "Presión arterial",
+      "Vitamin D": "Vitamina D",
+      "Possible urgent symptom": "Posible síntoma urgente",
+      "Readable values": "Valores legibles",
+      "Readable report text": "Texto legible del informe",
+      "Needs immediate attention": "Necesita atención inmediata",
+      "High": "Alto",
+      "Needs attention": "Necesita atención",
+      "In a better range": "En un rango más favorable",
+      "Above common reference target": "Por encima del objetivo de referencia habitual",
+      "Above common target": "Por encima del objetivo habitual",
+      "Clinician review important": "Es importante que lo revise un profesional",
+      "Prediabetes range in many guidelines": "Rango de prediabetes según muchas guías",
+      "Often considered in range": "Suele considerarse dentro del rango",
+      "Urgent if confirmed with symptoms": "Urgente si se confirma con síntomas",
+      "Urgent if confirmed": "Urgente si se confirma",
+      "Needs tracking": "Necesita seguimiento",
+      "No obvious issue in pasted text": "Sin problemas evidentes en el texto",
+      "Mentioned": "Mencionado",
+      "Not enough structured data": "No hay suficientes datos estructurados",
+      "Needed": "Necesario",
+      "In range discussion": "Dentro del rango, para comentar",
+      "Clinician review": "Revisión profesional",
+      "Urgent review": "Revisión urgente",
+      "Routine follow-up": "Seguimiento de rutina",
+      "The report text includes symptoms that should not wait for routine AI guidance.": "El texto del informe incluye síntomas que no deben esperar a una orientación de rutina.",
+      "Vitamin D appears in the report text, but CareWise could not confidently read the value.": "La vitamina D aparece en el informe, pero CareWise no pudo leer el valor con seguridad.",
+      "CareWise needs pasted lab values or OCR text to explain specific markers.": "CareWise necesita los valores del laboratorio o el texto escaneado para explicar marcadores específicos.",
+      "If these symptoms are happening now, seek emergency care or call local emergency services.": "Si estos síntomas están ocurriendo ahora, busque atención de emergencia o llame a los servicios de emergencia locales.",
+      "Discuss heart-risk context, diet pattern, exercise, family history, and follow-up timing with a clinician.": "Hable con un profesional de salud sobre su riesgo cardíaco, su alimentación, el ejercicio, sus antecedentes familiares y cuándo hacer seguimiento.",
+      "Ask whether fasting status, alcohol, refined carbs, medicines, or thyroid/metabolic factors could affect triglycerides.": "Pregunte si el ayuno, el alcohol, los carbohidratos refinados, los medicamentos o factores tiroideos o metabólicos podrían afectar sus triglicéridos.",
+      "Track home blood pressure with time, position, cuff size, and symptoms before your visit.": "Antes de su consulta, registre su presión arterial en casa con la hora, la posición, el tamaño del brazalete y los síntomas.",
+      "Paste key lab rows, values, units, and reference flags from the report.": "Pegue las filas principales del informe: valores, unidades e indicadores de referencia.",
+      "Build meals around vegetables, fiber-rich carbs, lean protein, and unsaturated fats unless your clinician gave different advice.": "Base sus comidas en verduras, carbohidratos ricos en fibra, proteínas magras y grasas insaturadas, salvo que su profesional de salud le haya indicado otra cosa.",
+      "Aim for consistent walking or movement you can repeat most days, adjusted for your clinician's guidance.": "Procure caminar o moverse de forma constante la mayoría de los días, según las indicaciones de su profesional de salud.",
+      "Paste OCR text or key lab values before using report analysis.": "Pegue el texto escaneado o los valores principales antes de usar el análisis del informe.",
+      "Ask a licensed professional to review the original report.": "Pida a un profesional de salud autorizado que revise el informe original.",
+      "What LDL goal is appropriate for me based on my age, family history, blood pressure, and other risks?": "¿Qué meta de LDL es adecuada para mí según mi edad, mis antecedentes familiares, mi presión arterial y otros riesgos?",
+      "Does my A1C need repeat testing or a diabetes care plan?": "¿Necesito repetir la prueba de A1C o un plan de atención para la diabetes?",
+      "What changes would help lower my A1C safely over the next 3 months?": "¿Qué cambios me ayudarían a bajar mi A1C de forma segura en los próximos 3 meses?",
+      "Should I repeat Vitamin D testing or discuss supplementation dose and duration?": "¿Debo repetir la prueba de vitamina D o hablar sobre la dosis y la duración de un suplemento?",
+      "Which results matter most for me, and when should I repeat labs?": "¿Qué resultados son más importantes para mí y cuándo debo repetir los análisis?",
+      "Should I see primary care, a dietitian, or a specialist based on these results?": "Según estos resultados, ¿debo ver a mi médico de cabecera, a un nutricionista o a un especialista?",
+      "Which values from my original report should I focus on first?": "¿En qué valores de mi informe original debo fijarme primero?",
+      "Should any lab values be repeated or reviewed with more health history?": "¿Se debe repetir algún valor o revisarlo con más antecedentes de salud?",
+      "Would primary care, a dietitian, pharmacist, or specialist be the right next step?": "¿El siguiente paso adecuado sería mi médico de cabecera, un nutricionista, un farmacéutico o un especialista?",
+    },
+    patterns: [
+      [/^LDL appears around (.+) mg\/dL\.$/, "El LDL aparece alrededor de $1 mg/dL."],
+      [/^Total cholesterol appears around (.+) mg\/dL\.$/, "El colesterol total aparece alrededor de $1 mg/dL."],
+      [/^Triglycerides appear around (.+) mg\/dL\.$/, "Los triglicéridos aparecen alrededor de $1 mg/dL."],
+      [/^A1C appears around (.+)%\.$/, "La A1C aparece alrededor de $1 %."],
+      [/^Systolic blood pressure appears around (.+)\.$/, "La presión arterial sistólica aparece alrededor de $1."],
+      [/^Vitamin D appears around (.+)\.$/, "La vitamina D aparece alrededor de $1."],
+    ],
+  },
+};
+
+const REPORT_UI_EN = {
+  eyebrow: "CareWise explanation",
+  title: "Plain-English report summary",
+  found: (count) => `CareWise found ${count} discussion point${count === 1 ? "" : "s"} in the readable report text.`,
+  detectedValues: "Detected values",
+  keyFindings: "Key findings",
+  suggestions: "Wellness suggestions",
+  questions: "Questions to ask your doctor",
+  nextStep: "Next step",
+  ask: "Ask",
+  safetyTitle: "Safety note",
+  safetyText: "This is not a diagnosis or treatment plan. A licensed professional should interpret your original report with your full history.",
+  copySummary: "Copy summary",
+  shareSummary: "Share summary",
+  doctorBrief: "Doctor brief",
+  saveToTrends: "Save to trends",
+  copyQuestions: "Copy questions",
+  draftNotice: "",
+};
+
 const defaultBackendBaseUrl = "https://carewise-api.onrender.com";
 let backendBaseUrl = localStorage.getItem("carewiseApiUrl") || defaultBackendBaseUrl;
 let backendFeatures = {};
@@ -438,6 +543,10 @@ document.querySelector("#load-reports").addEventListener("click", () => {
 
 document.querySelector("#ask-report-question")?.addEventListener("click", () => {
   answerReportQuestion();
+});
+
+reportResults?.addEventListener("change", (event) => {
+  if (event.target.matches("[data-report-language]")) setReportLanguage(event.target.value);
 });
 
 reportResults?.addEventListener("click", (event) => {
@@ -1791,7 +1900,7 @@ function fillSampleReportText() {
     "Blood pressure readings at home often around 138/86.",
     "No chest pain, no shortness of breath, no fainting.",
     "Patient wants simple food, walking, sleep, and follow-up guidance.",
-  ].join("\\n");
+  ].join("\n");
   reportStatus.textContent = "Sample report text added. Click Analyze report to see the V1 explanation.";
   window.showCareWiseSection?.("report-title", false);
   updateProgressRail();
@@ -2405,7 +2514,7 @@ function getLaunchProofText() {
     ...proofItems,
     outcome ? `Clinical review receipt: ${outcome.status} for ${outcome.carePlanId}` : "Clinical review receipt: not generated yet",
     "Safety posture: educational care planning only; no diagnosis, cure, prescription, or emergency replacement claims.",
-  ].join("\\n");
+  ].join("\n");
 }
 
 function copyLaunchProof() {
@@ -2461,7 +2570,7 @@ function getStoreDisclosureText() {
     "- High-risk symptoms should route to emergency care or licensed clinician review",
     "",
     "Review note: final Apple Privacy details and Google Play Data Safety answers must be reviewed by legal, security, and clinical advisors before public launch.",
-  ].join("\\n");
+  ].join("\n");
 }
 
 function copyStoreDisclosure() {
@@ -2589,7 +2698,7 @@ function renderDemoScript() {
 
 function getDemoScriptText() {
   const script = getLatestDemoScript();
-  if (!script) return "CareWise AI demo walkthrough\\nNo demo script built yet.";
+  if (!script) return "CareWise AI demo walkthrough\nNo demo script built yet.";
   return [
     "CareWise AI demo walkthrough",
     `Generated: ${new Date(script.createdAt).toLocaleString()}`,
@@ -2602,8 +2711,8 @@ function getDemoScriptText() {
       `State: ${step.ready ? "Ready" : "Prep needed"}`,
       `Section: #${step.anchor}`,
       `Talking point: ${step.detail}`,
-    ].join("\\n")),
-  ].join("\\n\\n");
+    ].join("\n")),
+  ].join("\n\n");
 }
 
 function copyDemoScript() {
@@ -2668,7 +2777,7 @@ function getInvestorBriefText() {
     "",
     "Ask:",
     "Seeking feedback from healthcare operators, licensed clinicians, privacy/security advisors, and early users before fundraising or public launch.",
-  ].join("\\n");
+  ].join("\n");
 }
 
 function generateInvestorBrief() {
@@ -2744,7 +2853,7 @@ function fillSamplePilotLead() {
 
 function getPilotListText() {
   const leads = getPilotLeads();
-  if (!leads.length) return "CareWise AI pilot leads\\nNo pilot leads saved yet.";
+  if (!leads.length) return "CareWise AI pilot leads\nNo pilot leads saved yet.";
   return [
     "CareWise AI pilot leads",
     `Generated: ${new Date().toLocaleString()}`,
@@ -2755,8 +2864,8 @@ function getPilotListText() {
       `Follow-up: ${lead.followup}`,
       `Notes: ${lead.notes || "No notes saved."}`,
       `Saved: ${new Date(lead.createdAt).toLocaleString()}`,
-    ].join("\\n")),
-  ].join("\\n\\n");
+    ].join("\n")),
+  ].join("\n\n");
 }
 
 function copyPilotList() {
@@ -3282,7 +3391,7 @@ function runReportSafetyEvaluation() {
 
 function getReportEvaluationText() {
   const results = getLatestReportEvaluation();
-  if (!results.length) return "CareWise AI report safety evaluation\\nNo evaluation run yet.";
+  if (!results.length) return "CareWise AI report safety evaluation\nNo evaluation run yet.";
   const passed = results.filter((item) => item.passed).length;
   return [
     "CareWise AI report safety evaluation",
@@ -3297,8 +3406,8 @@ function getReportEvaluationText() {
       `Status: ${item.passed ? "passed" : "review needed"}`,
       `Reason: ${item.reason}`,
       `Flags: ${item.matches?.length ? item.matches.join(", ") : "none"}`,
-    ].join("\\n")),
-  ].join("\\n\\n");
+    ].join("\n")),
+  ].join("\n\n");
 }
 
 function copyReportEvaluation() {
@@ -3539,7 +3648,7 @@ function renderLabTrends() {
 
 function getLabTrendsText() {
   const labs = getLabTrends();
-  if (!labs.length) return "CareWise AI lab value tracker\\nNo lab values saved yet.";
+  if (!labs.length) return "CareWise AI lab value tracker\nNo lab values saved yet.";
   return [
     "CareWise AI lab value tracker",
     `Generated: ${new Date().toLocaleString()}`,
@@ -3552,8 +3661,8 @@ function getLabTrendsText() {
       `Flag: ${lab.flag}`,
       `Notes: ${lab.notes || "No notes saved."}`,
       `Discussion prompt: ${getLabTrendSuggestion(lab)}`,
-    ].join("\\n")),
-  ].join("\\n\\n");
+    ].join("\n")),
+  ].join("\n\n");
 }
 
 function copyLabTrends() {
@@ -3717,11 +3826,54 @@ function analyzeReportTextLocally(text) {
   };
 }
 
+// Spanish draft translations of the fixed report sentences. Values are
+// inserted unchanged; anything not listed here stays in English.
+
+function translateReportText(text, language = reportLanguage) {
+  const table = REPORT_TRANSLATIONS[language];
+  if (!table || typeof text !== "string") return text;
+  if (table.phrases[text]) return table.phrases[text];
+  const pattern = table.patterns.find(([regex]) => regex.test(text));
+  return pattern ? text.replace(pattern[0], pattern[1]) : text;
+}
+
+function translateReportAnalysis(analysis, language = reportLanguage) {
+  if (!REPORT_TRANSLATIONS[language]) return analysis;
+  return {
+    ...analysis,
+    findings: analysis.findings.map((item) => ({
+      label: translateReportText(item.label, language),
+      level: translateReportText(item.level, language),
+      detail: translateReportText(item.detail, language),
+    })),
+    suggestions: analysis.suggestions.map((item) => translateReportText(item, language)),
+    questions: analysis.questions.map((item) => translateReportText(item, language)),
+    labValues: (analysis.labValues || []).map((item) => ({
+      ...item,
+      label: translateReportText(item.label, language),
+      flag: translateReportText(item.flag, language),
+    })),
+  };
+}
+
+function reportUiText(language = reportLanguage) {
+  return REPORT_TRANSLATIONS[language]?.ui || REPORT_UI_EN;
+}
+
+function setReportLanguage(language) {
+  if (!REPORT_LANGUAGES[language]) return;
+  reportLanguage = language;
+  try { localStorage.setItem("carewiseReportLanguage", language); } catch {}
+  if (latestReportAnalysis) renderLocalReportAnalysis(latestReportAnalysis);
+}
+
 function renderLocalReportAnalysis(analysis) {
   if (!reportResults) return;
   latestReportQuestionPack = buildReportQuestionPack(analysis);
   latestReportSummaryPack = buildReportSummaryPack(analysis);
   latestReportAnalysis = analysis;
+  const view = translateReportAnalysis(analysis);
+  const ui = reportUiText();
   const riskLabel = analysis.riskLevel === "urgent"
     ? "Urgent review"
     : analysis.riskLevel === "needs_review"
@@ -3729,37 +3881,40 @@ function renderLocalReportAnalysis(analysis) {
       : analysis.riskLevel === "attention"
         ? "Needs attention"
         : "Routine follow-up";
+  const riskLabelText = translateReportText(riskLabel);
 
   reportResults.innerHTML = `
     <article class="saved-plan-row v1-result-card">
       <div class="result-hero">
         <div>
-          <span>CareWise explanation</span>
+          <span>${escapeHtml(ui.eyebrow)}</span>
           <div class="section-heading-action">
-            <strong>Plain-English report summary</strong>
+            <strong>${escapeHtml(ui.title)}</strong>
             <div class="inline-action-group">
-              <button class="secondary-button compact" type="button" data-report-action="copy-summary">Copy summary</button>
-              <button class="secondary-button compact" type="button" data-report-action="share-summary">Share summary</button>
-              <button class="primary-button compact" type="button" data-report-action="doctor-brief">Doctor brief</button>
+              <button class="secondary-button compact" type="button" data-report-action="copy-summary">${escapeHtml(ui.copySummary)}</button>
+              <button class="secondary-button compact" type="button" data-report-action="share-summary">${escapeHtml(ui.shareSummary)}</button>
+              <button class="primary-button compact" type="button" data-report-action="doctor-brief">${escapeHtml(ui.doctorBrief)}</button>
+              <select data-report-language aria-label="Report language">${Object.entries(REPORT_LANGUAGES).map(([code, name]) => `<option value="${code}"${code === reportLanguage ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
             </div>
           </div>
-          <p>CareWise found ${escapeHtml(String(analysis.findings.length))} discussion point${analysis.findings.length === 1 ? "" : "s"} in the readable report text.</p>
+          <p>${escapeHtml(ui.found(view.findings.length))}</p>
+          ${ui.draftNotice ? `<p class="status-line" role="note">${escapeHtml(ui.draftNotice)}</p>` : ""}
         </div>
         <div class="result-score">
           <strong>${escapeHtml(String(analysis.score))}</strong>
           <span>/100</span>
-          <small>${escapeHtml(riskLabel)}</small>
+          <small>${escapeHtml(riskLabelText)}</small>
         </div>
       </div>
       <div class="result-sections">
-        ${analysis.labValues?.length ? `
+        ${view.labValues?.length ? `
         <section>
           <div class="section-heading-action">
-            <h4>Detected values</h4>
-            <button class="secondary-button compact" type="button" data-report-action="save-detected-values">Save to trends</button>
+            <h4>${escapeHtml(ui.detectedValues)}</h4>
+            <button class="secondary-button compact" type="button" data-report-action="save-detected-values">${escapeHtml(ui.saveToTrends)}</button>
           </div>
           <div class="detected-values-grid">
-            ${analysis.labValues.map((item) => `
+            ${view.labValues.map((item) => `
               <article>
                 <strong>${escapeHtml(item.label)}</strong>
                 <span>${escapeHtml(String(item.value))} ${escapeHtml(item.unit)}</span>
@@ -3770,22 +3925,22 @@ function renderLocalReportAnalysis(analysis) {
         </section>
         ` : ""}
         <section>
-          <h4>Key findings</h4>
-          <ul>${analysis.findings.map((item) => `<li><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.level)}. ${escapeHtml(item.detail)}</span></li>`).join("")}</ul>
+          <h4>${escapeHtml(ui.keyFindings)}</h4>
+          <ul>${view.findings.map((item) => `<li><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.level)}. ${escapeHtml(item.detail)}</span></li>`).join("")}</ul>
         </section>
         <section>
-          <h4>Wellness suggestions</h4>
-          <ul>${analysis.suggestions.map((item) => `<li><strong>Next step</strong><span>${escapeHtml(item)}</span></li>`).join("")}</ul>
+          <h4>${escapeHtml(ui.suggestions)}</h4>
+          <ul>${view.suggestions.map((item) => `<li><strong>${escapeHtml(ui.nextStep)}</strong><span>${escapeHtml(item)}</span></li>`).join("")}</ul>
         </section>
         <section>
           <div class="section-heading-action">
-            <h4>Questions to ask your doctor</h4>
-            <button class="secondary-button compact" type="button" data-report-action="copy-questions">Copy questions</button>
+            <h4>${escapeHtml(ui.questions)}</h4>
+            <button class="secondary-button compact" type="button" data-report-action="copy-questions">${escapeHtml(ui.copyQuestions)}</button>
           </div>
-          <ul>${analysis.questions.map((item) => `<li><strong>Ask</strong><span>${escapeHtml(item)}</span></li>`).join("")}</ul>
+          <ul>${view.questions.map((item) => `<li><strong>${escapeHtml(ui.ask)}</strong><span>${escapeHtml(item)}</span></li>`).join("")}</ul>
         </section>
       </div>
-      <div class="safety-note"><strong>Safety note</strong><span>This is not a diagnosis or treatment plan. A licensed professional should interpret your original report with your full history.</span></div>
+      <div class="safety-note"><strong>${escapeHtml(ui.safetyTitle)}</strong><span>${escapeHtml(ui.safetyText)}</span></div>
     </article>
   `;
 
@@ -4477,7 +4632,7 @@ function getReviewDemoReceiptText() {
       `Role: ${authRole || document.querySelector("#auth-role")?.value || "not signed in"}`,
       `Pending backend queue count: ${localStorage.getItem("carewiseBackendReviewCount") || "0"}`,
       "Safety: CareWise provides educational care planning support and routes high-risk items to clinician review.",
-    ].join("\\n");
+    ].join("\n");
   } catch {
     return "";
   }
@@ -5132,7 +5287,7 @@ function renderSafetyChecks() {
 
 function getSafetyCheckText() {
   const latest = getLatestSafetyCheck();
-  if (!latest) return "CareWise AI safety checklist\\nNo safety checklist generated yet.";
+  if (!latest) return "CareWise AI safety checklist\nNo safety checklist generated yet.";
   return [
     "CareWise AI medication, allergy, and food safety checklist",
     `Generated: ${new Date(latest.createdAt).toLocaleString()}`,
@@ -5652,7 +5807,7 @@ function renderSymptomTimeline() {
 
 function getSymptomTimelineText() {
   const timeline = getSymptomTimeline();
-  if (!timeline.length) return "CareWise AI symptom timeline\\nNo symptom timeline entries yet.";
+  if (!timeline.length) return "CareWise AI symptom timeline\nNo symptom timeline entries yet.";
   return [
     "CareWise AI symptom timeline",
     `Generated: ${new Date().toLocaleString()}`,
@@ -5665,8 +5820,8 @@ function getSymptomTimelineText() {
       `Severity: ${entry.severity}`,
       `Notes: ${entry.notes || "No notes saved."}`,
       `Next step: ${getSymptomNextStep(entry)}`,
-    ].join("\\n")),
-  ].join("\\n\\n");
+    ].join("\n")),
+  ].join("\n\n");
 }
 
 function copySymptomTimeline() {
@@ -5871,7 +6026,7 @@ function renderGoals() {
 
 function getGoalPlanText() {
   const goals = getGoals();
-  if (!goals.length) return "CareWise AI weekly goals\\nNo weekly goals saved yet.";
+  if (!goals.length) return "CareWise AI weekly goals\nNo weekly goals saved yet.";
   return [
     "CareWise AI weekly goals",
     `Generated: ${new Date().toLocaleString()}`,
@@ -5885,8 +6040,8 @@ function getGoalPlanText() {
       `Priority: ${goal.priority}`,
       `Notes: ${goal.notes || "No notes saved."}`,
       `Next step: ${getGoalNextStep(goal)}`,
-    ].join("\\n")),
-  ].join("\\n\\n");
+    ].join("\n")),
+  ].join("\n\n");
 }
 
 function copyGoals() {
@@ -5987,7 +6142,7 @@ function renderBarriers() {
 
 function getBarrierPlanText() {
   const barriers = getBarriers();
-  if (!barriers.length) return "CareWise AI barriers\\nNo barriers saved yet.";
+  if (!barriers.length) return "CareWise AI barriers\nNo barriers saved yet.";
   return [
     "CareWise AI barrier support tracker",
     `Generated: ${new Date().toLocaleString()}`,
@@ -6000,8 +6155,8 @@ function getBarrierPlanText() {
       `Support step: ${barrier.supportStep || "No support step saved."}`,
       `Notes: ${barrier.notes || "No notes saved."}`,
       `Suggested next step: ${getBarrierSupportSuggestion(barrier)}`,
-    ].join("\\n")),
-  ].join("\\n\\n");
+    ].join("\n")),
+  ].join("\n\n");
 }
 
 function copyBarriers() {
@@ -6084,7 +6239,7 @@ function renderReminders() {
 
 function getReminderPlanText() {
   const reminders = getReminders();
-  if (!reminders.length) return "CareWise AI reminder plan\\nNo reminders planned yet.";
+  if (!reminders.length) return "CareWise AI reminder plan\nNo reminders planned yet.";
   return [
     "CareWise AI reminder plan",
     `Generated: ${new Date().toLocaleString()}`,
@@ -6096,8 +6251,8 @@ function getReminderPlanText() {
       `Frequency: ${reminder.frequency}`,
       `Start date: ${reminder.startDate}`,
       `Notes: ${reminder.notes || "No notes saved."}`,
-    ].join("\\n")),
-  ].join("\\n\\n");
+    ].join("\n")),
+  ].join("\n\n");
 }
 
 function copyReminders() {
@@ -6243,7 +6398,7 @@ function renderMonthlyCalendars() {
 
 function getMonthlyCalendarText() {
   const calendar = getMonthlyCalendars()[0];
-  if (!calendar) return "CareWise AI monthly care calendar\\nNo monthly calendar generated yet.";
+  if (!calendar) return "CareWise AI monthly care calendar\nNo monthly calendar generated yet.";
   return [
     "CareWise AI 4-week care calendar",
     `Generated: ${new Date(calendar.createdAt).toLocaleString()}`,
@@ -6345,7 +6500,7 @@ function renderNavigationPrep() {
 
 function getNavigationPrepText() {
   const items = getNavigationPrepItems();
-  if (!items.length) return "CareWise AI care navigation prep\\nNo care navigation prep saved yet.";
+  if (!items.length) return "CareWise AI care navigation prep\nNo care navigation prep saved yet.";
   return [
     "CareWise AI care navigation prep",
     `Generated: ${new Date().toLocaleString()}`,
@@ -6359,8 +6514,8 @@ function getNavigationPrepText() {
       `Notes: ${item.notes || "No notes saved."}`,
       "Checklist:",
       ...getNavigationPrepChecklist(item).map((task) => `- ${task}`),
-    ].join("\\n")),
-  ].join("\\n\\n");
+    ].join("\n")),
+  ].join("\n\n");
 }
 
 function copyNavigationPrep() {
@@ -6458,7 +6613,7 @@ function renderCareTeamContacts() {
 
 function getCareTeamText() {
   const contacts = getCareTeamContacts();
-  if (!contacts.length) return "CareWise AI care team contacts\\nNo care team contacts saved yet.";
+  if (!contacts.length) return "CareWise AI care team contacts\nNo care team contacts saved yet.";
   return [
     "CareWise AI care team contacts",
     `Generated: ${new Date().toLocaleString()}`,
@@ -6471,8 +6626,8 @@ function getCareTeamText() {
       `Next action: ${contact.action}`,
       `Questions/notes: ${contact.notes || "No notes saved."}`,
       `Suggested next step: ${getCareTeamNextStep(contact)}`,
-    ].join("\\n")),
-  ].join("\\n\\n");
+    ].join("\n")),
+  ].join("\n\n");
 }
 
 function copyCareTeamContacts() {
@@ -6735,7 +6890,7 @@ function buildVisitBriefText(snapshot) {
     ...getVisitBriefQuestions(snapshot).map((question) => `- ${question}`),
     "",
     "Bring: original reports, medication bottles/list, allergy list, symptom timeline, insurance card if available, and this summary.",
-  ].join("\\n");
+  ].join("\n");
 }
 
 function buildVisitBrief() {
@@ -7045,7 +7200,7 @@ function renderSupportRequests() {
 
 function getSupportRequestsText() {
   const requests = getSupportRequests();
-  if (!requests.length) return "CareWise AI support inbox\\nNo support requests saved yet.";
+  if (!requests.length) return "CareWise AI support inbox\nNo support requests saved yet.";
   return [
     "CareWise AI support inbox",
     `Generated: ${new Date().toLocaleString()}`,
@@ -7060,8 +7215,8 @@ function getSupportRequestsText() {
       `Notes: ${item.notes || "No notes saved."}`,
       "Next steps:",
       ...getSupportNextSteps(item).map((step) => `- ${step}`),
-    ].join("\\n")),
-  ].join("\\n\\n");
+    ].join("\n")),
+  ].join("\n\n");
 }
 
 function copySupportRequests() {
@@ -7227,7 +7382,7 @@ function renderQaReport() {
 
 function getQaReportText() {
   const report = getLatestQaReport();
-  if (!report) return "CareWise AI QA report\\nNo QA report generated yet.";
+  if (!report) return "CareWise AI QA report\nNo QA report generated yet.";
   return [
     "CareWise AI MVP QA report",
     `Generated: ${new Date(report.createdAt).toLocaleString()}`,
@@ -7236,7 +7391,7 @@ function getQaReportText() {
     "Safety scope: educational planning support only; not diagnosis, cure, prescription, insurance verification, or emergency care.",
     "",
     ...report.checks.map((item) => `${item.ready ? "[READY]" : "[NEEDS WORK]"} ${item.label}: ${item.detail}`),
-  ].join("\\n");
+  ].join("\n");
 }
 
 function copyQaReport() {
