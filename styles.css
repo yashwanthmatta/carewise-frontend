@@ -5186,3 +5186,31 @@ body::before {
     font-size: 2.1rem !important;
   }
 }
+
+.how-it-works {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.how-it-works strong {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.how-it-works .step-num {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--cw-teal);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .how-it-works {
+    grid-template-columns: 1fr;
+  }
+}
