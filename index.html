@@ -7,12 +7,12 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-122" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-123" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-122" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-123" />
   </head>
   <body>
     <main class="app-shell">
@@ -98,6 +98,7 @@
           <a href="#app-title">Home</a>
           <a href="#report-title">Upload</a>
           <a href="#saved-title">History</a>
+          <a href="#record-title">Record</a>
           <a href="#account-title">Profile</a>
         </nav>
 
@@ -774,6 +775,81 @@
           <div id="saved-plans" class="saved-plans-list">
             <p>No saved plans yet.</p>
           </div>
+        </section>
+
+        <section class="panel record-panel" aria-labelledby="record-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Lifetime health record</p>
+              <h3 id="record-title">My health record</h3>
+              <p class="panel-intro">Keep past conditions, medicines, what did not suit you, and habits in one timeline, as far back as you remember. Saved on this device.</p>
+            </div>
+            <label class="history-person-filter">
+              Record for
+              <select id="record-person-filter"><option value="Me">Me</option></select>
+            </label>
+          </div>
+          <div id="record-summary" class="record-summary" aria-live="polite"></div>
+          <form id="record-form" class="record-form">
+            <label>
+              What is it?
+              <select id="record-type">
+                <option value="condition">Condition or diagnosis</option>
+                <option value="medicine">Medicine</option>
+                <option value="reaction">Did not suit me (reaction or allergy)</option>
+                <option value="habit">Habit</option>
+                <option value="procedure">Surgery, hospital stay or visit</option>
+              </select>
+            </label>
+            <label>
+              Name
+              <input id="record-name" type="text" maxlength="80" required placeholder="Example: High blood pressure" />
+            </label>
+            <label>
+              Whose record
+              <input id="record-person" type="text" maxlength="40" list="report-people" placeholder="Me, Mom, Dad" />
+            </label>
+            <label>
+              Started
+              <input id="record-start" type="month" min="1920-01" />
+            </label>
+            <label>
+              Ended
+              <input id="record-end" type="month" min="1920-01" />
+            </label>
+            <label class="record-ongoing">
+              <input id="record-ongoing" type="checkbox" checked />
+              Still ongoing
+            </label>
+            <label class="record-notes">
+              Notes
+              <textarea id="record-notes" rows="2" maxlength="400" placeholder="Dose, what happened, which doctor, why it stopped"></textarea>
+            </label>
+            <div class="primary-action-row">
+              <button id="record-sample" class="secondary-button" type="button">Add sample 20-year history</button>
+              <button id="record-save" class="primary-button narrow-button" type="submit">Save to record</button>
+            </div>
+          </form>
+          <p id="record-status" class="status-line" role="status">CareWise keeps what you enter. It does not check medicine interactions or give medical advice.</p>
+          <div class="record-toolbar">
+            <label>
+              Show
+              <select id="record-type-filter">
+                <option value="">Everything</option>
+                <option value="condition">Conditions</option>
+                <option value="medicine">Medicines</option>
+                <option value="reaction">Did not suit me</option>
+                <option value="habit">Habits</option>
+                <option value="procedure">Surgery and visits</option>
+              </select>
+            </label>
+            <button id="record-export" class="secondary-button compact" type="button">Download backup</button>
+            <label class="secondary-button compact record-import">
+              Restore backup
+              <input id="record-import" type="file" accept="application/json,.json" hidden />
+            </label>
+          </div>
+          <div id="record-timeline" class="record-timeline"></div>
         </section>
 
         <section class="panel medication-panel" aria-labelledby="medication-title">
@@ -1849,6 +1925,6 @@
       </section>
     </main>
 
-    <script src="script.js?v=carewise-product-122"></script>
+    <script src="script.js?v=carewise-product-123"></script>
   </body>
 </html>

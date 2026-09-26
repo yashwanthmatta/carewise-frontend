@@ -4160,6 +4160,7 @@ function buildDoctorBriefHtml(analysis, person = "Me") {
 <p>${person === "Me" ? "Prepared by the patient with CareWise AI from their own report text." : `Prepared by a family caregiver for ${escapeHtml(person)} with CareWise AI from the report text.`} Health score ${escapeHtml(String(analysis.score))}/100 (educational estimate).</p>
 ${rows ? `<h2>Values detected in the report</h2><table><tr><th>Test</th><th>Value</th><th>CareWise note</th></tr>${rows}</table>` : ""}
 <h2>Discussion points</h2><ul>${findings}</ul>
+${buildHealthHistoryBriefSection(person)}
 <h2>Patient questions</h2><ol>${questions}</ol>
 <h2>Clinician notes</h2><div class="notes-box"></div>
 <p class="note">Educational summary only, not a diagnosis. Values were read automatically from pasted report text; please confirm them against the original report.</p>
@@ -7626,6 +7627,259 @@ function escapeHtml(value) {
     }[char];
   });
 }
+
+const HEALTH_RECORD_KEY = "carewiseHealthRecord";
+const HEALTH_RECORD_TYPES = {
+  condition: { label: "Condition", plural: "Ongoing conditions" },
+  medicine: { label: "Medicine", plural: "Current medicines" },
+  reaction: { label: "Did not suit me", plural: "Did not suit me" },
+  habit: { label: "Habit", plural: "Current habits" },
+  procedure: { label: "Surgery or visit", plural: "Surgery and visits" },
+};
+
+function getHealthRecord() {
+  try {
+    const items = JSON.parse(localStorage.getItem(HEALTH_RECORD_KEY) || "[]");
+    return Array.isArray(items) ? items.filter((item) => item && HEALTH_RECORD_TYPES[item.type] && item.name) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHealthRecord(items) {
+  try {
+    localStorage.setItem(HEALTH_RECORD_KEY, JSON.stringify(items));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isRecordItemCurrent(item) {
+  return item.type === "reaction" || Boolean(item.ongoing) || !item.end;
+}
+
+function formatRecordMonth(value) {
+  if (!/^\d{4}-\d{2}$/.test(value || "")) return "";
+  const [year, month] = value.split("-").map(Number);
+  return new Date(year, month - 1, 1).toLocaleDateString(undefined, { month: "short", year: "numeric" });
+}
+
+function formatRecordRange(item) {
+  const start = formatRecordMonth(item.start);
+  if (item.type === "reaction") return start ? `Noted ${start}` : "Date not recorded";
+  const end = item.ongoing || !item.end ? "now" : formatRecordMonth(item.end);
+  return start ? `${start} to ${end}` : end === "now" ? "Ongoing" : `Until ${end}`;
+}
+
+function getHealthRecordPeople(items = getHealthRecord()) {
+  const people = new Set(getReportPeople());
+  items.forEach((item) => people.add(normalizeReportPerson(item.person)));
+  return ["Me", ...[...people].filter((person) => person !== "Me")];
+}
+
+function getHealthRecordFor(person) {
+  return getHealthRecord().filter((item) => normalizeReportPerson(item.person) === person);
+}
+
+function buildHealthRecordSummary(items) {
+  return {
+    conditions: items.filter((item) => item.type === "condition" && isRecordItemCurrent(item)),
+    medicines: items.filter((item) => item.type === "medicine" && isRecordItemCurrent(item)),
+    reactions: items.filter((item) => item.type === "reaction"),
+  };
+}
+
+function renderHealthRecord(preferredPerson = "") {
+  const timeline = document.querySelector("#record-timeline");
+  if (!timeline) return;
+  const personSelect = document.querySelector("#record-person-filter");
+  const people = getHealthRecordPeople();
+  const wanted = typeof preferredPerson === "string" && preferredPerson ? preferredPerson : personSelect.value;
+  const person = people.includes(wanted) ? wanted : "Me";
+  personSelect.innerHTML = people.map((name) => `<option value="${escapeHtml(name)}"${name === person ? " selected" : ""}>${escapeHtml(name)}</option>`).join("");
+
+  const items = getHealthRecordFor(person);
+  const summary = buildHealthRecordSummary(items);
+  const card = (title, list, empty) => `
+    <article class="record-summary-card${title === "Did not suit me" && list.length ? " record-summary-warn" : ""}">
+      <strong>${escapeHtml(title)}</strong>
+      ${list.length ? `<ul>${list.map((item) => `<li>${escapeHtml(item.name)}${item.notes ? ` <span>${escapeHtml(item.notes)}</span>` : ""}</li>`).join("")}</ul>` : `<p>${escapeHtml(empty)}</p>`}
+    </article>`;
+  document.querySelector("#record-summary").innerHTML = [
+    card("Ongoing conditions", summary.conditions, "None recorded"),
+    card("Current medicines", summary.medicines, "None recorded"),
+    card("Did not suit me", summary.reactions, "None recorded"),
+  ].join("");
+
+  const typeFilter = document.querySelector("#record-type-filter").value;
+  const shown = items
+    .filter((item) => !typeFilter || item.type === typeFilter)
+    .sort((a, b) => String(b.start || "").localeCompare(String(a.start || "")));
+  if (!shown.length) {
+    timeline.innerHTML = `<p class="record-empty">${items.length ? "Nothing of this type yet." : `No health history saved for ${escapeHtml(person)} yet. Add an entry above, or try the sample 20-year history.`}</p>`;
+    return;
+  }
+  const groups = new Map();
+  shown.forEach((item) => {
+    const year = /^\d{4}/.test(item.start || "") ? item.start.slice(0, 4) : "Date not recorded";
+    if (!groups.has(year)) groups.set(year, []);
+    groups.get(year).push(item);
+  });
+  timeline.innerHTML = [...groups].map(([year, list]) => `
+    <div class="record-year">
+      <h4>${escapeHtml(year)}</h4>
+      ${list.map((item) => `
+        <article class="record-item record-${escapeHtml(item.type)}">
+          <div>
+            <span class="record-chip">${escapeHtml(HEALTH_RECORD_TYPES[item.type].label)}</span>
+            <strong>${escapeHtml(item.name)}</strong>
+            <small>${escapeHtml(formatRecordRange(item))}</small>
+            ${item.notes ? `<p>${escapeHtml(item.notes)}</p>` : ""}
+          </div>
+          <button class="secondary-button compact" type="button" data-record-delete="${escapeHtml(item.id)}" aria-label="Remove ${escapeHtml(item.name)}">Remove</button>
+        </article>`).join("")}
+    </div>`).join("");
+}
+
+function addHealthRecordItem(item) {
+  const items = getHealthRecord();
+  items.push({ id: `rec-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, createdAt: new Date().toISOString(), ...item });
+  return saveHealthRecord(items);
+}
+
+function saveHealthRecordFromForm(event) {
+  event.preventDefault();
+  const status = document.querySelector("#record-status");
+  const name = document.querySelector("#record-name").value.trim();
+  if (!name) {
+    status.textContent = "Add a name first, for example the condition or medicine.";
+    return;
+  }
+  const type = document.querySelector("#record-type").value;
+  const start = document.querySelector("#record-start").value;
+  const ongoing = document.querySelector("#record-ongoing").checked;
+  const end = ongoing ? "" : document.querySelector("#record-end").value;
+  if (start && end && end < start) {
+    status.textContent = "The end date is before the start date. Please check the dates.";
+    return;
+  }
+  const person = normalizeReportPerson(document.querySelector("#record-person").value);
+  const saved = addHealthRecordItem({ type, name, person, start, end, ongoing: type === "reaction" ? false : ongoing, notes: document.querySelector("#record-notes").value.trim().slice(0, 400) });
+  if (!saved) {
+    status.textContent = "This browser could not save the record. Check that site storage is allowed.";
+    return;
+  }
+  document.querySelector("#record-name").value = "";
+  document.querySelector("#record-notes").value = "";
+  document.querySelector("#record-end").value = "";
+  status.textContent = `Saved "${name}" to ${person === "Me" ? "your" : `${person}'s`} health record.`;
+  renderHealthRecord(person);
+}
+
+function getSampleHealthHistory() {
+  // Synthetic example for demos; not a real person.
+  return [
+    { type: "procedure", name: "Appendix removed (appendectomy)", start: "2006-03", end: "2006-03", ongoing: false, notes: "Two nights in hospital, recovered fully." },
+    { type: "reaction", name: "Penicillin", start: "2009-07", notes: "Itchy rash after 2 days. Doctor advised avoiding penicillin." },
+    { type: "habit", name: "Smoking, about 10 a day", start: "2008-01", end: "2018-06", ongoing: false, notes: "Quit in 2018." },
+    { type: "condition", name: "High blood pressure", start: "2015-02", ongoing: true, notes: "Checked every 6 months." },
+    { type: "medicine", name: "Lisinopril 10 mg", start: "2015-02", end: "2016-01", ongoing: false, notes: "Stopped because of a dry cough." },
+    { type: "reaction", name: "Lisinopril", start: "2016-01", notes: "Dry cough that went away after stopping." },
+    { type: "medicine", name: "Amlodipine 5 mg, once a day", start: "2016-01", ongoing: true, notes: "Morning, with food." },
+    { type: "habit", name: "Walking 30 minutes, 5 days a week", start: "2019-04", ongoing: true, notes: "" },
+    { type: "condition", name: "Prediabetes (A1C 5.9%)", start: "2021-09", ongoing: true, notes: "Repeat A1C every year." },
+    { type: "procedure", name: "Colonoscopy screening", start: "2024-05", end: "2024-05", ongoing: false, notes: "Normal result. Next in 10 years." },
+  ];
+}
+
+function addSampleHealthHistory() {
+  const person = normalizeReportPerson(document.querySelector("#record-person").value);
+  const items = getHealthRecord().filter((item) => !(item.sample && normalizeReportPerson(item.person) === person));
+  const stamp = Date.now();
+  getSampleHealthHistory().forEach((item, index) => items.push({ id: `rec-sample-${stamp}-${index}`, createdAt: new Date().toISOString(), person, sample: true, ...item }));
+  saveHealthRecord(items);
+  document.querySelector("#record-status").textContent = `Added a sample 20-year history for ${person}. It is made-up example data.`;
+  renderHealthRecord(person);
+}
+
+function deleteHealthRecordItem(id) {
+  saveHealthRecord(getHealthRecord().filter((item) => item.id !== id));
+  renderHealthRecord();
+}
+
+function exportHealthRecord() {
+  const blob = new Blob([JSON.stringify({ app: "CareWise", kind: "health-record", version: 1, exportedAt: new Date().toISOString(), items: getHealthRecord() }, null, 2)], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `carewise-health-record-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  document.querySelector("#record-status").textContent = "Backup downloaded. Keep it somewhere safe; it contains your health history.";
+}
+
+async function importHealthRecord(file) {
+  const status = document.querySelector("#record-status");
+  try {
+    const data = JSON.parse(await file.text());
+    const incoming = (Array.isArray(data) ? data : data.items || []).filter((item) => item && HEALTH_RECORD_TYPES[item.type] && item.name && item.id);
+    const items = getHealthRecord();
+    const known = new Set(items.map((item) => item.id));
+    const added = incoming.filter((item) => !known.has(item.id)).map((item) => ({
+      id: String(item.id).slice(0, 80),
+      type: item.type,
+      name: String(item.name).slice(0, 80),
+      person: normalizeReportPerson(item.person),
+      start: /^\d{4}-\d{2}$/.test(item.start || "") ? item.start : "",
+      end: /^\d{4}-\d{2}$/.test(item.end || "") ? item.end : "",
+      ongoing: Boolean(item.ongoing),
+      notes: String(item.notes || "").slice(0, 400),
+      sample: Boolean(item.sample),
+      createdAt: String(item.createdAt || ""),
+    }));
+    saveHealthRecord([...items, ...added]);
+    status.textContent = `Restored ${added.length} ${added.length === 1 ? "entry" : "entries"} from the backup.`;
+    renderHealthRecord();
+  } catch {
+    status.textContent = "That file is not a CareWise health record backup.";
+  }
+}
+
+function buildHealthHistoryBriefSection(person) {
+  const summary = buildHealthRecordSummary(getHealthRecordFor(person));
+  if (!summary.conditions.length && !summary.medicines.length && !summary.reactions.length) return "";
+  const list = (items) => items.length ? `<ul>${items.map((item) => `<li>${escapeHtml(item.name)}${item.start ? ` (since ${escapeHtml(formatRecordMonth(item.start))})` : ""}${item.notes ? `: ${escapeHtml(item.notes)}` : ""}</li>`).join("")}</ul>` : "<p>None recorded.</p>";
+  return `<h2>Health history (entered by the patient)</h2>
+<table><tr><th>Ongoing conditions</th><th>Current medicines</th><th>Did not suit me</th></tr>
+<tr><td>${list(summary.conditions)}</td><td>${list(summary.medicines)}</td><td>${list(summary.reactions)}</td></tr></table>`;
+}
+
+document.querySelector("#record-form")?.addEventListener("submit", saveHealthRecordFromForm);
+document.querySelector("#record-sample")?.addEventListener("click", addSampleHealthHistory);
+document.querySelector("#record-export")?.addEventListener("click", exportHealthRecord);
+document.querySelector("#record-person-filter")?.addEventListener("change", () => renderHealthRecord());
+document.querySelector("#record-type-filter")?.addEventListener("change", () => renderHealthRecord());
+document.querySelector("#record-import")?.addEventListener("change", (event) => {
+  const file = event.target.files?.[0];
+  if (file) importHealthRecord(file);
+  event.target.value = "";
+});
+document.querySelector("#record-ongoing")?.addEventListener("change", (event) => {
+  document.querySelector("#record-end").disabled = event.target.checked;
+});
+document.querySelector("#record-type")?.addEventListener("change", (event) => {
+  const reaction = event.target.value === "reaction";
+  document.querySelector("#record-ongoing").closest("label").hidden = reaction;
+  document.querySelector("#record-end").closest("label").hidden = reaction;
+});
+document.querySelector("#record-timeline")?.addEventListener("click", (event) => {
+  const id = event.target.closest("[data-record-delete]")?.dataset.recordDelete;
+  if (id) deleteHealthRecordItem(id);
+});
+if (document.querySelector("#record-end")) document.querySelector("#record-end").disabled = true;
+renderHealthRecord();
 
 function registerCareWiseServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
