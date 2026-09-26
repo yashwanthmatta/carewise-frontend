@@ -7,9 +7,9 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-116" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-117" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-116" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-117" />
   </head>
   <body>
     <main class="app-shell">
@@ -306,10 +306,17 @@
               <small>Text PDFs are read on your device. Nothing is uploaded unless you sign in and choose Upload report.</small>
               <input id="report-file" type="file" accept=".pdf,image/*,.txt,text/plain" />
             </label>
-            <label>
-              Report name
-              <input id="report-name" type="text" placeholder="blood-work-june.pdf" />
-            </label>
+            <div class="report-meta-fields">
+              <label>
+                Report name
+                <input id="report-name" type="text" placeholder="blood-work-june.pdf" />
+              </label>
+              <label>
+                Whose report is this?
+                <input id="report-person" type="text" list="report-people" maxlength="40" placeholder="Me, Mom, Dad, or a child's name" />
+                <datalist id="report-people"></datalist>
+              </label>
+            </div>
             <label>
               Optional report text for analysis
               <textarea id="report-text" rows="6" placeholder="Paste OCR text, lab values, findings, or symptoms here. Example: LDL cholesterol elevated. A1C normal. No chest pain."></textarea>
@@ -747,6 +754,10 @@
             </div>
             <button id="clear-saved" class="secondary-button compact" type="button">Clear history</button>
           </div>
+          <label class="history-person-filter">
+            Show reports for
+            <select id="history-person-filter"><option value="">Everyone</option></select>
+          </label>
           <div class="v1-history-list" aria-label="Sample report history">
             <article>
               <div><strong>June Report</strong><span>Health Score 74</span></div>
@@ -1835,6 +1846,6 @@
       </section>
     </main>
 
-    <script src="script.js?v=carewise-product-116"></script>
+    <script src="script.js?v=carewise-product-117"></script>
   </body>
 </html>

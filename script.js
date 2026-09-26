@@ -183,6 +183,7 @@ let latestCheckoutUrl = localStorage.getItem("carewiseCheckoutUrl") || "";
 let latestReportQuestionPack = "";
 let latestReportSummaryPack = "";
 let latestReportAnalysis = null;
+let latestReportPerson = "Me";
 const REPORT_LANGUAGES = { en: "English", es: "Español" };
 let reportLanguage = REPORT_LANGUAGES[localStorage.getItem("carewiseReportLanguage")] ? localStorage.getItem("carewiseReportLanguage") : "en";
 const REPORT_TRANSLATIONS = {
@@ -531,6 +532,10 @@ document.querySelector("#copy-pilot-list").addEventListener("click", () => {
 
 document.querySelector("#upload-report").addEventListener("click", () => {
   uploadReport();
+});
+
+document.querySelector("#history-person-filter")?.addEventListener("change", () => {
+  renderReportHistory();
 });
 
 document.querySelector("#report-file")?.addEventListener("change", () => {
@@ -3254,11 +3259,35 @@ function saveReportHistory(report) {
   renderDashboardStats();
 }
 
+// Caregiver mode: each report records who it is for ("Me" by default).
+function normalizeReportPerson(value) {
+  const person = String(value || "").trim().slice(0, 40);
+  return person && person.toLowerCase() !== "me" ? person : "Me";
+}
+
+function getReportPeople(reports = getReportHistory()) {
+  return ["Me", ...new Set(reports.map((report) => normalizeReportPerson(report.person)).filter((person) => person !== "Me"))];
+}
+
+function renderReportPeopleOptions(reports) {
+  const people = getReportPeople(reports);
+  const datalist = document.querySelector("#report-people");
+  if (datalist) datalist.innerHTML = people.map((person) => `<option value="${escapeHtml(person)}"></option>`).join("");
+  const filter = document.querySelector("#history-person-filter");
+  if (filter) {
+    const selected = people.includes(filter.value) ? filter.value : "";
+    filter.innerHTML = `<option value="">Everyone</option>${people.map((person) => `<option value="${escapeHtml(person)}"${person === selected ? " selected" : ""}>${escapeHtml(person)}</option>`).join("")}`;
+  }
+}
+
 function renderReportHistory() {
-  const reports = getReportHistory();
+  const allReports = getReportHistory();
+  renderReportPeopleOptions(allReports);
+  const personFilter = document.querySelector("#history-person-filter")?.value || "";
+  const reports = personFilter ? allReports.filter((report) => normalizeReportPerson(report.person) === personFilter) : allReports;
   reportBadge.textContent = latestReportId ? "Report ready" : reportFeatureLabel();
   reportBadge.className = `sync-badge ${latestReportId ? "online" : "offline"}`;
-  if (!reports.length) {
+  if (!allReports.length) {
     reportResults.innerHTML = "<p>No report analysis yet.</p>";
     if (reportHistoryList) {
       reportHistoryList.innerHTML = `
@@ -3287,12 +3316,14 @@ function renderReportHistory() {
     </article>
   `).join("");
   reportResults.innerHTML = reportCards;
-  if (reportHistoryList) {
+  if (reportHistoryList && !reports.length) {
+    reportHistoryList.innerHTML = `<article><div><strong>No reports for ${escapeHtml(personFilter)} yet</strong></div></article>`;
+  } else if (reportHistoryList) {
     reportHistoryList.innerHTML = reports.slice(0, 4).map((report) => `
       <article>
         <div>
           <strong>${escapeHtml(report.fileName || "Untitled report")}</strong>
-          <span>${escapeHtml(report.score ? `Health Score ${report.score}` : report.riskLevel ? `Risk: ${report.riskLevel}` : report.status || "uploaded")}</span>
+          <span>${escapeHtml(`For ${normalizeReportPerson(report.person)} · `)}${escapeHtml(report.score ? `Health Score ${report.score}` : report.riskLevel ? `Risk: ${report.riskLevel}` : report.status || "uploaded")}</span>
         </div>
         <p>${escapeHtml(report.message || "Saved report. Run or load analysis to see a plain-English explanation.")}</p>
         ${report.questions?.length ? `<p><strong>Doctor question:</strong> ${escapeHtml(report.questions[0])}</p>` : ""}
@@ -3308,6 +3339,7 @@ function openReportHistoryItem(reportId) {
     reportStatus.textContent = "Saved report could not be reopened.";
     return;
   }
+  latestReportPerson = normalizeReportPerson(report.person);
   renderReportHistoryResult(report);
   latestReportId = report.id;
   localStorage.setItem("carewiseLatestReportId", latestReportId);
@@ -4047,7 +4079,7 @@ function buildBackendReportDisplayAnalysis(response, reportText) {
 }
 
 // A one-page, printable summary a patient can hand to their clinician.
-function buildDoctorBriefHtml(analysis) {
+function buildDoctorBriefHtml(analysis, person = "Me") {
   const today = new Date().toLocaleDateString();
   const rows = (analysis.labValues || []).map((item) => `
     <tr><td>${escapeHtml(item.label)}</td><td>${escapeHtml(String(item.value))} ${escapeHtml(item.unit)}</td><td>${escapeHtml(item.flag)}</td></tr>`).join("");
@@ -4067,8 +4099,8 @@ function buildDoctorBriefHtml(analysis) {
   button { margin-top: 16px; padding: 8px 16px; background: #0f766e; color: #fff; border: 0; border-radius: 6px; font-size: 14px; cursor: pointer; }
   @media print { button { display: none; } body { margin: 0 auto; } }
 </style></head><body>
-<header><h1>Patient lab summary for clinician review</h1><span>${escapeHtml(today)}</span></header>
-<p>Prepared by the patient with CareWise AI from their own report text. Health score ${escapeHtml(String(analysis.score))}/100 (educational estimate).</p>
+<header><h1>${person === "Me" ? "Patient lab summary for clinician review" : `Lab summary for clinician review: ${escapeHtml(person)}`}</h1><span>${escapeHtml(today)}</span></header>
+<p>${person === "Me" ? "Prepared by the patient with CareWise AI from their own report text." : `Prepared by a family caregiver for ${escapeHtml(person)} with CareWise AI from the report text.`} Health score ${escapeHtml(String(analysis.score))}/100 (educational estimate).</p>
 ${rows ? `<h2>Values detected in the report</h2><table><tr><th>Test</th><th>Value</th><th>CareWise note</th></tr>${rows}</table>` : ""}
 <h2>Discussion points</h2><ul>${findings}</ul>
 <h2>Patient questions</h2><ol>${questions}</ol>
@@ -4088,7 +4120,7 @@ function openDoctorBrief() {
     reportStatus.textContent = "Allow pop-ups for CareWise to open the doctor brief.";
     return;
   }
-  briefWindow.document.write(buildDoctorBriefHtml(latestReportAnalysis));
+  briefWindow.document.write(buildDoctorBriefHtml(latestReportAnalysis, latestReportPerson));
   briefWindow.document.close();
   reportStatus.textContent = "Doctor brief opened in a new tab. Print it or save it as a PDF for your visit.";
 }
@@ -4257,9 +4289,11 @@ function runLocalReportAnalysis() {
   }
   const analysis = analyzeReportTextLocally(text);
   latestReportId = analysis.id;
+  latestReportPerson = normalizeReportPerson(document.querySelector("#report-person")?.value);
   localStorage.setItem("carewiseLatestReportId", latestReportId);
   saveReportHistory({
     id: analysis.id,
+    person: latestReportPerson,
     fileName: document.querySelector("#report-name")?.value.trim() || "Local report analysis",
     status: "analyzed locally",
     riskLevel: analysis.riskLevel,

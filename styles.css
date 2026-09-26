@@ -2539,6 +2539,23 @@ input[type="radio"] {
   grid-column: 1 / -1;
 }
 
+.report-meta-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-person-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.history-person-filter select {
+  width: auto;
+}
+
 input[type="file"] {
   width: 100%;
   min-height: 46px;
