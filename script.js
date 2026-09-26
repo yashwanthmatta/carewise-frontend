@@ -7668,6 +7668,7 @@ function formatRecordMonth(value) {
 function formatRecordRange(item) {
   const start = formatRecordMonth(item.start);
   if (item.type === "reaction") return start ? `Noted ${start}` : "Date not recorded";
+  if (start && !item.ongoing && item.end === item.start) return start;
   const end = item.ongoing || !item.end ? "now" : formatRecordMonth(item.end);
   return start ? `${start} to ${end}` : end === "now" ? "Ongoing" : `Until ${end}`;
 }
