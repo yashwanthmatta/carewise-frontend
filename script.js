@@ -2029,8 +2029,20 @@ async function signup() {
     const response = await apiPost("/auth/signup", payload, { skipAuth: true });
     await saveAuthToken(response, "signup");
   } catch (error) {
-    updateAuthStatus(error.message.includes("400") ? "Account may already exist. Try Log in." : "Signup failed. Check backend logs and try again.");
+    updateAuthStatus(authErrorMessage(error, "Account may already exist. Try Log in."));
   }
+}
+
+// requestJson throws "Backend returned <status>" for HTTP errors; anything
+// else means the server could not be reached.
+function authErrorMessage(error, rejectedMessage) {
+  const message = String(error?.message || "");
+  if (!message.startsWith("Backend returned")) {
+    return "The CareWise server is not reachable right now. You can still try the sample report; results stay in this browser.";
+  }
+  if (message.includes("429")) return "Too many sign-in attempts. Wait a few minutes and try again.";
+  if (/Backend returned 4\d\d/.test(message)) return rejectedMessage;
+  return "The CareWise server had a problem. Please try again in a moment.";
 }
 
 async function login() {
@@ -2042,8 +2054,8 @@ async function login() {
       password: payload.password,
     }, { skipAuth: true });
     await saveAuthToken(response, "login");
-  } catch {
-    updateAuthStatus("Login failed. Check email, password, and backend status.");
+  } catch (error) {
+    updateAuthStatus(authErrorMessage(error, "Email or password is incorrect."));
   }
 }
 
