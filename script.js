@@ -533,6 +533,10 @@ document.querySelector("#upload-report").addEventListener("click", () => {
   uploadReport();
 });
 
+document.querySelector("#report-file")?.addEventListener("change", () => {
+  handleReportFileSelection();
+});
+
 document.querySelector("#analyze-report").addEventListener("click", () => {
   analyzeLatestReport();
 });
@@ -3166,7 +3170,7 @@ function handleReportFileSelection() {
     const reader = new FileReader();
     reader.onload = () => {
       document.querySelector("#report-text").value = String(reader.result || "").slice(0, 12000);
-      reportStatus.textContent = "Text report loaded. Save it to analyze.";
+      reportStatus.textContent = "Text report loaded. Press Analyze report.";
       updateProgressRail();
     };
     reader.onerror = () => {
@@ -3177,11 +3181,58 @@ function handleReportFileSelection() {
   }
   const isImage = file.type.startsWith("image/");
   const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
-  if ((isImage || isPdf) && !backendFeatures.image_ocr) {
+  if (isPdf) {
+    readPdfTextLocally(file);
+    return;
+  }
+  if (isImage && !backendFeatures.image_ocr) {
     reportStatus.textContent = "File selected. It will upload privately, but paste readable lab text too because live OCR is not enabled yet.";
     return;
   }
   reportStatus.textContent = "File selected. CareWise will use readable text when available, then upload securely.";
+}
+
+// Text-based PDFs are read in the browser, so the file never leaves the
+// device and analysis works without an account or the API.
+const PDFJS_VERSION = "6.3.289";
+const PDFJS_BASE_URL = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build`;
+
+async function extractPdfText(file, maxPages = 10) {
+  const pdfjs = await import(`${PDFJS_BASE_URL}/pdf.min.mjs`);
+  pdfjs.GlobalWorkerOptions.workerSrc = `${PDFJS_BASE_URL}/pdf.worker.min.mjs`;
+  const pdf = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+  const pages = [];
+  for (let number = 1; number <= Math.min(pdf.numPages, maxPages); number += 1) {
+    const content = await (await pdf.getPage(number)).getTextContent();
+    const lines = new Map();
+    content.items.forEach((item) => {
+      if (!item.str?.trim()) return;
+      const y = Math.round(item.transform[5]);
+      if (!lines.has(y)) lines.set(y, []);
+      lines.get(y).push({ x: item.transform[4], text: item.str.trim() });
+    });
+    pages.push([...lines.entries()]
+      .sort((a, b) => b[0] - a[0])
+      .map(([, parts]) => parts.sort((a, b) => a.x - b.x).map((part) => part.text).join(" "))
+      .join("\n"));
+  }
+  return pages.join("\n").trim();
+}
+
+async function readPdfTextLocally(file) {
+  reportStatus.textContent = "Reading your PDF on this device. Nothing is uploaded.";
+  try {
+    const text = await extractPdfText(file);
+    if (text.replace(/\s/g, "").length < 20) {
+      reportStatus.textContent = "This PDF looks like a scanned image, so CareWise cannot read its text yet. Type or paste the lab values below.";
+      return;
+    }
+    document.querySelector("#report-text").value = text.slice(0, 12000);
+    reportStatus.textContent = "PDF read on this device. Nothing was uploaded. Press Analyze report.";
+    updateProgressRail();
+  } catch {
+    reportStatus.textContent = "CareWise could not read this PDF. Paste the lab values as text below.";
+  }
 }
 
 function getReportHistory() {
@@ -3712,11 +3763,12 @@ function analyzeReportTextLocally(text) {
   const urgentMatches = getNonNegatedEmergencyMatches(lower);
   if (hasHypertensiveCrisis(lower)) urgentMatches.push("blood pressure over 180/120");
 
-  const ldl = readReportNumber(lower, [/ldl(?: cholesterol)?\D{0,24}(\d+(?:\.\d+)?)/i]);
-  const totalCholesterol = readReportNumber(lower, [/total cholesterol\D{0,24}(\d+(?:\.\d+)?)/i]);
+  const ldl = readReportNumber(lower, [/\bldl(?: cholesterol)?\D{0,24}(\d+(?:\.\d+)?)/i]);
+  const totalCholesterol = readReportNumber(lower, [/(?:total cholesterol|cholesterol,?\s*total)\D{0,24}(\d+(?:\.\d+)?)/i]);
   const triglycerides = readReportNumber(lower, [/triglycerides\D{0,24}(\d+(?:\.\d+)?)/i]);
   const a1c = readReportNumber(lower, [/(?:hemoglobin\s*)?a1c\D{0,24}(\d+(?:\.\d+)?)/i]);
-  const vitaminD = readReportNumber(lower, [/vitamin d\D{0,24}(\d+(?:\.\d+)?)/i]);
+  // Skip the "25-hydroxy" / "25-OH" in the test name so it is not read as the value.
+  const vitaminD = readReportNumber(lower, [/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?\D{0,24}(\d+(?:\.\d+)?)/i]);
   const systolic = readReportNumber(lower, [/blood pressure\D{0,60}(\d{2,3})\s*\/\s*\d{2,3}/i]);
   const diastolic = readReportNumber(lower, [/blood pressure\D{0,60}\d{2,3}\s*\/\s*(\d{2,3})/i]);
   const labValues = buildDetectedReportValues({ ldl, totalCholesterol, triglycerides, a1c, vitaminD, systolic, diastolic });
