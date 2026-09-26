@@ -1043,6 +1043,14 @@ body::before {
   flex-wrap: wrap;
 }
 
+.inline-action-group .primary-button,
+.inline-action-group select {
+  width: auto;
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 0.84rem;
+}
+
 .detected-values-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
@@ -2529,6 +2537,23 @@ input[type="radio"] {
 
 .report-grid label:last-child {
   grid-column: 1 / -1;
+}
+
+.report-meta-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-person-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.history-person-filter select {
+  width: auto;
 }
 
 input[type="file"] {
@@ -4970,5 +4995,222 @@ body::before {
 
   body::before {
     display: none;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Premium polish layer: brand type (matches the pitch deck), calmer
+   weights, softer surfaces. Loaded last so it overrides the base
+   styles above without changing any markup the app scripts use.
+   --------------------------------------------------------------- */
+:root {
+  --cw-ink: #14302c;
+  --cw-ink-soft: #3e5450;
+  --cw-deep: #0b3b36;
+  --cw-teal: #0f766e;
+  --cw-line: #d5e5e1;
+  --cw-surface: #ffffff;
+  --cw-mist: #f4f8f6;
+  --cw-font: "DM Sans", "Segoe UI", Arial, sans-serif;
+  --cw-display: "Domine", Georgia, serif;
+}
+
+body {
+  font-family: var(--cw-font) !important;
+  color: var(--cw-ink);
+  background: linear-gradient(180deg, #f4f8f6 0%, #eef6f3 100%);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-shell :is(button, input, select, textarea) {
+  font-family: var(--cw-font) !important;
+}
+
+/* Calmer weights: text reads as text, emphasis stays meaningful. */
+.app-shell :is(p, span, small, li, label, td, dd, pre) {
+  font-weight: 450 !important;
+}
+
+.app-shell :is(strong, b, h3, h4, th, legend, summary) {
+  font-weight: 650 !important;
+}
+
+.app-shell :is(button, .primary-link, .secondary-link, .install-button) {
+  font-weight: 600 !important;
+  letter-spacing: 0;
+}
+
+.app-shell :is(h1, h2) {
+  font-family: var(--cw-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+  color: var(--cw-deep);
+}
+
+.eyebrow {
+  font-weight: 700 !important;
+  letter-spacing: 0.14em;
+  color: var(--cw-teal) !important;
+}
+
+/* The floating "CareWise V1" build badge is internal, not for users. */
+body::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* Header */
+.topbar {
+  border-color: var(--cw-line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: saturate(160%) blur(12px);
+  box-shadow: 0 8px 24px rgba(11, 59, 54, 0.06);
+}
+
+.trust-pill {
+  border: 1px solid var(--cw-line) !important;
+  background: var(--cw-mist) !important;
+  color: var(--cw-ink-soft) !important;
+}
+
+/* Hero */
+.hero-panel {
+  border-color: var(--cw-line);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(15, 118, 110, 0.1), transparent 45%),
+    linear-gradient(160deg, #ffffff 0%, #f1f8f5 100%);
+  box-shadow: 0 24px 60px rgba(11, 59, 54, 0.08);
+}
+
+.hero-copy h1 {
+  font-size: clamp(2.3rem, 4.4vw, 4rem) !important;
+  line-height: 1.08 !important;
+  max-width: 13ch;
+  margin: 8px 0 18px;
+}
+
+.hero-copy > p:not(.eyebrow) {
+  font-size: 1.12rem;
+  line-height: 1.6;
+  color: var(--cw-ink-soft);
+  max-width: 34rem;
+}
+
+.hero-assurances {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--cw-ink-soft);
+  font-size: 0.92rem;
+}
+
+.hero-assurances li::before {
+  content: "✓";
+  margin-right: 6px;
+  color: var(--cw-teal);
+  font-weight: 700;
+}
+
+.report-preview-card {
+  border-color: var(--cw-line);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(11, 59, 54, 0.12);
+}
+
+.preview-score-ring {
+  width: min(220px, 100%);
+}
+
+.preview-score-ring::before {
+  font-family: var(--cw-display);
+  font-weight: 700;
+}
+
+/* Buttons */
+.primary-link,
+.primary-button {
+  border-radius: 12px !important;
+  box-shadow: 0 10px 22px rgba(15, 118, 110, 0.22);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.primary-link:hover,
+.primary-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(15, 118, 110, 0.28);
+}
+
+.secondary-link,
+.secondary-button {
+  border-radius: 12px !important;
+  border-color: var(--cw-line) !important;
+}
+
+/* Surfaces */
+.panel,
+.saved-plan-row,
+.detected-values-grid article {
+  border-color: var(--cw-line);
+  border-radius: 18px;
+}
+
+.panel {
+  box-shadow: 0 12px 32px rgba(11, 59, 54, 0.05);
+}
+
+.detected-values-grid article strong {
+  color: var(--cw-deep);
+}
+
+/* Keep section titles clear of the sticky header when jumped to. */
+.app-shell :is(.panel, #report-results, [id$="-title"]) {
+  scroll-margin-top: 150px;
+}
+
+@media (max-width: 560px) {
+  .trust-pill,
+  .live-pill {
+    display: none !important;
+  }
+
+  .preview-score-ring {
+    width: min(170px, 100%);
+  }
+
+  .hero-copy h1 {
+    font-size: 2.1rem !important;
+  }
+}
+
+.how-it-works {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.how-it-works strong {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.how-it-works .step-num {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--cw-teal);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .how-it-works {
+    grid-template-columns: 1fr;
   }
 }

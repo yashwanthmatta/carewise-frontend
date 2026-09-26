@@ -7,9 +7,12 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-111" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-120" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-111" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-120" />
   </head>
   <body>
     <main class="app-shell">
@@ -33,17 +36,21 @@
         <section class="hero-panel">
           <div class="hero-copy">
             <p class="eyebrow">CareWise AI</p>
-            <h1 id="app-title">CareWise AI</h1>
-            <h2>Understand your health reports in simple English.</h2>
+            <h1 id="app-title">Understand your health reports in simple English.</h1>
             <p>
-              Upload blood tests, get plain-language AI explanations, see a
-              health score, and leave with wellness suggestions and questions
-              to ask your doctor.
+              Add a blood test report. CareWise explains each result in plain
+              words, shows what to watch, and gives you questions for your
+              doctor.
             </p>
             <div class="hero-actions" aria-label="Primary actions">
               <a class="primary-link" href="#report-title">Upload report</a>
               <a class="secondary-link" href="#saved-title">View history</a>
             </div>
+            <ul class="hero-assurances" aria-label="How CareWise handles your report">
+              <li>Read on your device</li>
+              <li>English and Español</li>
+              <li>Educational, not a diagnosis</li>
+            </ul>
           </div>
           <div class="hero-visual" aria-label="CareWise report preview">
             <div class="report-preview-card">
@@ -72,22 +79,18 @@
           </div>
         </section>
 
-        <section class="overview-strip" aria-label="Product status">
+        <section class="overview-strip how-it-works" aria-label="How CareWise works">
           <article>
-            <strong>Upload</strong>
-            <span>PDF, image, or pasted lab text</span>
+            <strong><b class="step-num">1</b>Add your report</strong>
+            <span>Drop in a lab PDF or type the numbers.</span>
           </article>
           <article>
-            <strong>Explain</strong>
-            <span>Simple English, no diagnosis claims</span>
+            <strong><b class="step-num">2</b>Read it simply</strong>
+            <span>Each result in plain English or Spanish, and what to watch.</span>
           </article>
           <article>
-            <strong>Score</strong>
-            <span>Health score and risk areas</span>
-          </article>
-          <article>
-            <strong>History</strong>
-            <span>Compare reports over time</span>
+            <strong><b class="step-num">3</b>Talk to your doctor</strong>
+            <span>Take the questions and a one-page brief to your visit.</span>
           </article>
         </section>
 
@@ -303,13 +306,20 @@
             <label class="file-input-card">
               <span>Report file</span>
               <strong>Drop in a PDF, image, or text report</strong>
-              <small>Private upload when signed in. Paste text below for instant demo analysis.</small>
+              <small>Text PDFs are read on your device. Nothing is uploaded unless you sign in and choose Upload report.</small>
               <input id="report-file" type="file" accept=".pdf,image/*,.txt,text/plain" />
             </label>
-            <label>
-              Report name
-              <input id="report-name" type="text" placeholder="blood-work-june.pdf" />
-            </label>
+            <div class="report-meta-fields">
+              <label>
+                Report name
+                <input id="report-name" type="text" placeholder="blood-work-june.pdf" />
+              </label>
+              <label>
+                Whose report is this?
+                <input id="report-person" type="text" list="report-people" maxlength="40" placeholder="Me, Mom, Dad, or a child's name" />
+                <datalist id="report-people"></datalist>
+              </label>
+            </div>
             <label>
               Optional report text for analysis
               <textarea id="report-text" rows="6" placeholder="Paste OCR text, lab values, findings, or symptoms here. Example: LDL cholesterol elevated. A1C normal. No chest pain."></textarea>
@@ -322,7 +332,7 @@
             <button id="load-reports" class="secondary-button v1-secondary-control" type="button">Load cloud reports</button>
           </div>
           <p id="report-status" class="status-line" role="status">Try the sample report, paste lab text, or upload a file when signed in.</p>
-          <p id="ocr-status" class="status-line" role="status">Checking image/PDF text reading support.</p>
+          <p id="ocr-status" class="status-line" role="status">Text PDFs are read on your device. For a photo or scanned page, type the numbers in the box above.</p>
           <div id="report-results" class="saved-plans-list">
             <article class="empty-result-card">
               <strong>Your explanation will appear here</strong>
@@ -337,23 +347,23 @@
           <div class="v1-report-dashboard" aria-label="CareWise sample report result">
             <article class="health-score-card">
               <span>Health Score</span>
-              <strong>82/100</strong>
+              <strong>73/100</strong>
               <p>Sample result only. A licensed professional should interpret reports with your full history.</p>
             </article>
             <article>
               <span>Heart Health</span>
-              <strong>Medium Risk</strong>
+              <strong>Needs Attention</strong>
               <p>LDL cholesterol is a discussion point.</p>
             </article>
             <article>
               <span>Diabetes</span>
-              <strong>Low Risk</strong>
-              <p>A1C sample is in range.</p>
+              <strong>Needs Attention</strong>
+              <p>The sample A1C of 5.8% is worth discussing.</p>
             </article>
             <article>
               <span>Vitamin Levels</span>
-              <strong>Needs Attention</strong>
-              <p>Vitamin D should be discussed if low.</p>
+              <strong>No clear issue</strong>
+              <p>The sample report has no Vitamin D result.</p>
             </article>
           </div>
           <div class="v1-chart-grid" aria-label="Sample health trend charts">
@@ -747,6 +757,10 @@
             </div>
             <button id="clear-saved" class="secondary-button compact" type="button">Clear history</button>
           </div>
+          <label class="history-person-filter">
+            Show reports for
+            <select id="history-person-filter"><option value="">Everyone</option></select>
+          </label>
           <div class="v1-history-list" aria-label="Sample report history">
             <article>
               <div><strong>June Report</strong><span>Health Score 74</span></div>
@@ -1835,6 +1849,6 @@
       </section>
     </main>
 
-    <script src="script.js?v=carewise-product-111"></script>
+    <script src="script.js?v=carewise-product-120"></script>
   </body>
 </html>
