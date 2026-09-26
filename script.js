@@ -324,7 +324,7 @@ renderPilotLeads();
 initializeAccountPanel();
 initializeInstallAndNetworkStatus();
 initializeWorkspaceNavigation();
-checkBackend(false);
+wakeBackendOnLoad();
 
 document.querySelector("#signup").addEventListener("click", () => {
   signup();
@@ -2255,6 +2255,19 @@ async function checkBackend(showSuccess) {
   }
 }
 
+// The hosted API sleeps when idle and can take about a minute to wake,
+// so keep retrying on page load instead of reporting it offline at once.
+async function wakeBackendOnLoad(attempts = 12, delayMs = 8000) {
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    if (await checkBackend(false)) return true;
+    if (attempt === attempts) break;
+    renderHomeReadiness(false, true);
+    setBackendStatus(false, "Waking up the CareWise server. This can take up to a minute.");
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+  }
+  return false;
+}
+
 async function verifyCurrentSession() {
   if (!authToken) return false;
   try {
@@ -2316,11 +2329,11 @@ async function loadBackendReadiness() {
   }
 }
 
-function renderHomeReadiness(apiOnline = backendAvailable) {
+function renderHomeReadiness(apiOnline = backendAvailable, waking = false) {
   if (!homeReadiness) return;
   const checks = backendReadiness.checks || {};
   const items = [
-    ["API", apiOnline, apiOnline ? "Online" : "Offline"],
+    ["API", apiOnline, apiOnline ? "Online" : waking ? "Waking up" : "Offline"],
     ["Database", checks.database, checks.database ? "Ready" : "Pending"],
     ["Storage", checks.storage, checks.storage ? "Ready" : "Pending"],
   ];
