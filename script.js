@@ -3381,14 +3381,14 @@ function reportFeatureLabel() {
 function renderOcrReadiness() {
   if (!ocrStatus) return;
   if (backendFeatures.image_ocr) {
-    ocrStatus.textContent = `Image OCR is enabled${backendFeatures.ocr_model ? ` with ${backendFeatures.ocr_model}` : ""}. Still review the original report with a licensed professional.`;
+    ocrStatus.textContent = "Photos and PDFs can be read. Always check the values against your original report.";
     return;
   }
   if (backendFeatures.report_uploads) {
-    ocrStatus.textContent = "Private upload is ready. Image/scanned PDF OCR is not enabled yet, so paste readable lab values for the clearest explanation.";
+    ocrStatus.textContent = "Text PDFs are read on your device. For a photo or scanned page, type the numbers in the box above.";
     return;
   }
-  ocrStatus.textContent = "Backend feature check pending. You can still paste report text for local educational analysis.";
+  ocrStatus.textContent = "Text PDFs are read on your device. For a photo or scanned page, type the numbers in the box above.";
 }
 
 function getReportEvaluationSamples() {
