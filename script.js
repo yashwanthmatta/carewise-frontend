@@ -182,6 +182,7 @@ let latestReportId = localStorage.getItem("carewiseLatestReportId") || "";
 let latestCheckoutUrl = localStorage.getItem("carewiseCheckoutUrl") || "";
 let latestReportQuestionPack = "";
 let latestReportSummaryPack = "";
+let latestReportAnalysis = null;
 const defaultBackendBaseUrl = "https://carewise-api.onrender.com";
 let backendBaseUrl = localStorage.getItem("carewiseApiUrl") || defaultBackendBaseUrl;
 let backendFeatures = {};
@@ -444,6 +445,7 @@ reportResults?.addEventListener("click", (event) => {
   if (action === "copy-summary") copyReportSummary();
   if (action === "share-summary") shareReportSummary();
   if (action === "copy-questions") copyReportQuestions();
+  if (action === "doctor-brief") openDoctorBrief();
   if (action === "save-detected-values") saveDetectedValuesToTrends();
   if (action === "open-history") openReportHistoryItem(event.target.closest("[data-report-id]")?.dataset.reportId || "");
 });
@@ -3719,6 +3721,7 @@ function renderLocalReportAnalysis(analysis) {
   if (!reportResults) return;
   latestReportQuestionPack = buildReportQuestionPack(analysis);
   latestReportSummaryPack = buildReportSummaryPack(analysis);
+  latestReportAnalysis = analysis;
   const riskLabel = analysis.riskLevel === "urgent"
     ? "Urgent review"
     : analysis.riskLevel === "needs_review"
@@ -3737,6 +3740,7 @@ function renderLocalReportAnalysis(analysis) {
             <div class="inline-action-group">
               <button class="secondary-button compact" type="button" data-report-action="copy-summary">Copy summary</button>
               <button class="secondary-button compact" type="button" data-report-action="share-summary">Share summary</button>
+              <button class="primary-button compact" type="button" data-report-action="doctor-brief">Doctor brief</button>
             </div>
           </div>
           <p>CareWise found ${escapeHtml(String(analysis.findings.length))} discussion point${analysis.findings.length === 1 ? "" : "s"} in the readable report text.</p>
@@ -3833,6 +3837,53 @@ function buildBackendReportDisplayAnalysis(response, reportText) {
       vitamins: "Needs readable values",
     },
   };
+}
+
+// A one-page, printable summary a patient can hand to their clinician.
+function buildDoctorBriefHtml(analysis) {
+  const today = new Date().toLocaleDateString();
+  const rows = (analysis.labValues || []).map((item) => `
+    <tr><td>${escapeHtml(item.label)}</td><td>${escapeHtml(String(item.value))} ${escapeHtml(item.unit)}</td><td>${escapeHtml(item.flag)}</td></tr>`).join("");
+  const findings = analysis.findings.map((item) => `<li><b>${escapeHtml(item.label)}:</b> ${escapeHtml(item.level)}. ${escapeHtml(item.detail)}</li>`).join("");
+  const questions = analysis.questions.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  return `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CareWise doctor brief</title>
+<style>
+  body { font-family: Arial, sans-serif; color: #14302c; max-width: 760px; margin: 32px auto; padding: 0 20px; line-height: 1.45; }
+  header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 3px solid #0f766e; padding-bottom: 8px; }
+  h1 { font-size: 22px; margin: 0; } h2 { font-size: 16px; margin: 22px 0 6px; color: #0f766e; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; } td, th { border: 1px solid #d5e5e1; padding: 6px 8px; text-align: left; }
+  th { background: #e6f1ee; } ul, ol { margin: 0; padding-left: 20px; font-size: 14px; }
+  .note { margin-top: 24px; font-size: 12px; color: #3e5450; border-top: 1px solid #d5e5e1; padding-top: 8px; }
+  .notes-box { border: 1px solid #d5e5e1; min-height: 70px; margin-top: 6px; }
+  button { margin-top: 16px; padding: 8px 16px; background: #0f766e; color: #fff; border: 0; border-radius: 6px; font-size: 14px; cursor: pointer; }
+  @media print { button { display: none; } body { margin: 0 auto; } }
+</style></head><body>
+<header><h1>Patient lab summary for clinician review</h1><span>${escapeHtml(today)}</span></header>
+<p>Prepared by the patient with CareWise AI from their own report text. Health score ${escapeHtml(String(analysis.score))}/100 (educational estimate).</p>
+${rows ? `<h2>Values detected in the report</h2><table><tr><th>Test</th><th>Value</th><th>CareWise note</th></tr>${rows}</table>` : ""}
+<h2>Discussion points</h2><ul>${findings}</ul>
+<h2>Patient questions</h2><ol>${questions}</ol>
+<h2>Clinician notes</h2><div class="notes-box"></div>
+<p class="note">Educational summary only, not a diagnosis. Values were read automatically from pasted report text; please confirm them against the original report.</p>
+<button type="button" onclick="window.print()">Print or save as PDF</button>
+</body></html>`;
+}
+
+function openDoctorBrief() {
+  if (!latestReportAnalysis) {
+    reportStatus.textContent = "Analyze a report first, then open the doctor brief.";
+    return;
+  }
+  const briefWindow = window.open("", "_blank");
+  if (!briefWindow) {
+    reportStatus.textContent = "Allow pop-ups for CareWise to open the doctor brief.";
+    return;
+  }
+  briefWindow.document.write(buildDoctorBriefHtml(latestReportAnalysis));
+  briefWindow.document.close();
+  reportStatus.textContent = "Doctor brief opened in a new tab. Print it or save it as a PDF for your visit.";
 }
 
 function buildReportSummaryPack(analysis) {
