@@ -1086,8 +1086,26 @@ document.querySelector("#report-file")?.addEventListener("change", () => {
 });
 
 document.querySelector("#analyze-report").addEventListener("click", () => {
-  analyzeLatestReport();
+  analyzeAndShowReport();
 });
+
+// Runs the analysis and brings the result into view, so people see the
+// explanation without hunting for it below the form.
+async function analyzeAndShowReport() {
+  await analyzeLatestReport();
+  scrollBelowHeader(document.querySelector("#report-results .v1-result-card"));
+}
+
+// Scrolls an element to just below the sticky header and tab bar, which would otherwise cover its heading.
+function scrollBelowHeader(element) {
+  if (!element) return;
+  const header = [".topbar", ".quick-nav"].reduce((height, selector) => {
+    const bar = document.querySelector(selector);
+    const style = bar && getComputedStyle(bar);
+    return style && style.position === "sticky" && bar.offsetHeight ? Math.max(height, (parseFloat(style.top) || 0) + bar.offsetHeight) : height;
+  }, 0);
+  window.scrollTo({ top: Math.max(0, element.getBoundingClientRect().top + window.scrollY - header - 16), behavior: "smooth" });
+}
 
 document.querySelector("#load-reports").addEventListener("click", () => {
   loadReports();
@@ -1383,6 +1401,7 @@ document.querySelector("#run-demo-flow").addEventListener("click", () => {
 
 document.querySelector("#sample-report-text").addEventListener("click", () => {
   fillSampleReportText();
+  analyzeAndShowReport();
 });
 
 document.querySelector("#sample-intake").addEventListener("click", () => {
@@ -3719,8 +3738,8 @@ function handleReportFileSelection() {
     const reader = new FileReader();
     reader.onload = () => {
       document.querySelector("#report-text").value = String(reader.result || "").slice(0, 12000);
-      reportStatus.textContent = "Text report loaded. Press Analyze report.";
       updateProgressRail();
+      analyzeAndShowReport();
     };
     reader.onerror = () => {
       reportStatus.textContent = "Could not read the text file. Paste the report text manually.";
@@ -3743,8 +3762,31 @@ function handleReportFileSelection() {
 
 // Text-based PDFs are read in the browser, so the file never leaves the
 // device and analysis works without an account or the API.
+// PDF.js is served from this site (vendor/pdfjs, Apache-2.0) so a network that
+// blocks the CDN cannot break PDF reading; the CDN is only a fallback.
 const PDFJS_VERSION = "6.3.289";
-const PDFJS_BASE_URL = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build`;
+const PDFJS_SOURCES = [
+  { module: "vendor/pdfjs/pdf.min.js", worker: "vendor/pdfjs/pdf.worker.min.js" },
+  { module: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build/pdf.min.mjs`, worker: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build/pdf.worker.min.mjs` },
+];
+let pdfjsLoading = null;
+
+function loadPdfjs() {
+  pdfjsLoading ??= (async () => {
+    for (const source of PDFJS_SOURCES) {
+      try {
+        const pdfjs = await import(new URL(source.module, document.baseURI).href);
+        pdfjs.GlobalWorkerOptions.workerSrc = new URL(source.worker, document.baseURI).href;
+        return pdfjs;
+      } catch {
+        // Try the next source.
+      }
+    }
+    pdfjsLoading = null;
+    throw new Error("PDF reader unavailable");
+  })();
+  return pdfjsLoading;
+}
 
 // Rebuilds text lines from positioned PDF text. Items within half a line height
 // of each other belong to one row, so a table cell nudged by a superscript
@@ -3768,8 +3810,7 @@ function groupPdfTextRows(items) {
 }
 
 async function extractPdfText(file, maxPages = 10) {
-  const pdfjs = await import(`${PDFJS_BASE_URL}/pdf.min.mjs`);
-  pdfjs.GlobalWorkerOptions.workerSrc = `${PDFJS_BASE_URL}/pdf.worker.min.mjs`;
+  const pdfjs = await loadPdfjs();
   const loadingTask = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
   const pdf = await loadingTask.promise;
   const pages = [];
@@ -3794,8 +3835,9 @@ async function readPdfTextLocally(file) {
       return;
     }
     document.querySelector("#report-text").value = text.slice(0, 12000);
-    reportStatus.textContent = "PDF read on this device. Nothing was uploaded. Press Analyze report.";
     updateProgressRail();
+    await analyzeAndShowReport();
+    reportStatus.textContent = `PDF read on this device. Nothing was uploaded. ${reportStatus.textContent}`;
   } catch {
     reportStatus.textContent = "CareWise could not read this PDF. Paste the lab values as text below.";
   }
@@ -8757,14 +8799,7 @@ function tourSetLanguage(language) {
 function tourScrollTo(selector) {
   const element = document.querySelector(selector);
   if (!element) return;
-  // Land below the sticky header and tab bar, which would otherwise cover the section's heading.
-  const header = [".topbar", ".quick-nav"].reduce((height, headerSelector) => {
-    const bar = document.querySelector(headerSelector);
-    const style = bar && getComputedStyle(bar);
-    return style && style.position === "sticky" && bar.offsetHeight ? Math.max(height, (parseFloat(style.top) || 0) + bar.offsetHeight) : height;
-  }, 0);
-  const top = element.getBoundingClientRect().top + window.scrollY - header - 16;
-  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  scrollBelowHeader(element);
   element.classList.remove("tour-spotlight");
   void element.offsetWidth;
   element.classList.add("tour-spotlight");
