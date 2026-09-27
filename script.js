@@ -1401,6 +1401,7 @@ document.querySelector("#run-demo-flow").addEventListener("click", () => {
 
 document.querySelector("#sample-report-text").addEventListener("click", () => {
   fillSampleReportText();
+  latestReportId = "";
   analyzeAndShowReport();
 });
 
@@ -3731,6 +3732,7 @@ async function loadBackendAuditEvents() {
 function handleReportFileSelection() {
   const file = document.querySelector("#report-file").files?.[0];
   if (!file) return;
+  latestReportId = "";
   document.querySelector("#report-name").value = file.name;
   updateProgressRail();
   if (file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt")) {
@@ -5243,7 +5245,9 @@ async function analyzeLatestReport() {
       runLocalReportAnalysis();
       return;
     }
-    if (!latestReportId) {
+    // Reports read on this device (sample, PDF, typed text) are explained right here;
+    // only a report uploaded to the server is analyzed there.
+    if (!latestReportId || latestReportId.startsWith("local-")) {
       runLocalReportAnalysis();
       return;
     }
@@ -8899,7 +8903,15 @@ window.addEventListener("hashchange", () => {
 function registerCareWiseServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   if (!["http:", "https:"].includes(window.location.protocol)) return;
-  navigator.serviceWorker.register("/sw.js").catch(() => {});
+  // When an updated service worker takes over, reload once so the new version shows.
+  const hadController = Boolean(navigator.serviceWorker.controller);
+  let reloading = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController || reloading || tourStep >= 0) return;
+    reloading = true;
+    window.location.reload();
+  });
+  navigator.serviceWorker.register("/sw.js").then((registration) => registration.update()).catch(() => {});
 }
 
 registerCareWiseServiceWorker();
