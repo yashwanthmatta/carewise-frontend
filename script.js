@@ -205,6 +205,7 @@ const REPORT_TRANSLATIONS = {
       doctorBrief: "Resumen para el médico",
       saveToTrends: "Guardar en tendencias",
       copyQuestions: "Copiar preguntas",
+      copyPlan: "Copiar plan",
       draftNotice: "Traducción preliminar, pendiente de revisión por un profesional de salud y un traductor médico. El resumen para el médico se genera en inglés.",
     },
     phrases: {
@@ -238,7 +239,7 @@ const REPORT_TRANSLATIONS = {
       "Routine follow-up": "Seguimiento de rutina",
       "The report text includes symptoms that should not wait for routine AI guidance.": "El texto del informe incluye síntomas que no deben esperar a una orientación de rutina.",
       "Vitamin D appears in the report text, but CareWise could not confidently read the value.": "La vitamina D aparece en el informe, pero CareWise no pudo leer el valor con seguridad.",
-      "CareWise needs pasted lab values or OCR text to explain specific markers.": "CareWise necesita los valores del laboratorio o el texto escaneado para explicar marcadores específicos.",
+      "CareWise needs typed or pasted lab values to explain specific results.": "CareWise necesita los valores del laboratorio escritos o pegados para explicar resultados específicos.",
       "If these symptoms are happening now, seek emergency care or call local emergency services.": "Si estos síntomas están ocurriendo ahora, busque atención de emergencia o llame a los servicios de emergencia locales.",
       "Discuss heart-risk context, diet pattern, exercise, family history, and follow-up timing with a clinician.": "Hable con un profesional de salud sobre su riesgo cardíaco, su alimentación, el ejercicio, sus antecedentes familiares y cuándo hacer seguimiento.",
       "Ask whether fasting status, alcohol, refined carbs, medicines, or thyroid/metabolic factors could affect triglycerides.": "Pregunte si el ayuno, el alcohol, los carbohidratos refinados, los medicamentos o factores tiroideos o metabólicos podrían afectar sus triglicéridos.",
@@ -246,7 +247,7 @@ const REPORT_TRANSLATIONS = {
       "Paste key lab rows, values, units, and reference flags from the report.": "Pegue las filas principales del informe: valores, unidades e indicadores de referencia.",
       "Build meals around vegetables, fiber-rich carbs, lean protein, and unsaturated fats unless your clinician gave different advice.": "Base sus comidas en verduras, carbohidratos ricos en fibra, proteínas magras y grasas insaturadas, salvo que su profesional de salud le haya indicado otra cosa.",
       "Aim for consistent walking or movement you can repeat most days, adjusted for your clinician's guidance.": "Procure caminar o moverse de forma constante la mayoría de los días, según las indicaciones de su profesional de salud.",
-      "Paste OCR text or key lab values before using report analysis.": "Pegue el texto escaneado o los valores principales antes de usar el análisis del informe.",
+      "Type or paste your lab results first, or press Try sample report.": "Escriba o pegue primero sus resultados, o pulse «Try sample report».",
       "Ask a licensed professional to review the original report.": "Pida a un profesional de salud autorizado que revise el informe original.",
       "What LDL goal is appropriate for me based on my age, family history, blood pressure, and other risks?": "¿Qué meta de LDL es adecuada para mí según mi edad, mis antecedentes familiares, mi presión arterial y otros riesgos?",
       "Does my A1C need repeat testing or a diabetes care plan?": "¿Necesito repetir la prueba de A1C o un plan de atención para la diabetes?",
@@ -286,8 +287,189 @@ const REPORT_UI_EN = {
   doctorBrief: "Doctor brief",
   saveToTrends: "Save to trends",
   copyQuestions: "Copy questions",
+  copyPlan: "Copy plan",
   draftNotice: "",
 };
+
+// Personal plan built from a person's own report values, using published public
+// guidelines. Education only: it never names medicines or doses, and it gives
+// no exercise plan when the report suggests urgent care.
+// Generated from carewise-mobile-app/src/personalPlan.ts; keep the two identical.
+const PLAN_TEXT = {
+    en: {
+        title: "Your plan for the next 4 weeks",
+        whyLabel: "Why",
+        sourceLabel: "Source",
+        food: "Food",
+        move: "Movement",
+        track: "Track",
+        safety: "Before you start",
+        heartFat: "Swap saturated fats: use olive or canola oil instead of butter, and choose fish, beans, skinless poultry or low-fat dairy more often than fatty red or processed meat.",
+        heartFiber: "Add soluble fiber every day: oats, beans, lentils, barley, apples or citrus fruit.",
+        heartFish: "Eat fish such as salmon or sardines about twice a week.",
+        trigSugar: "Cut back on sugary drinks, sweets and white bread, rice or pasta; choose whole grains instead.",
+        trigAlcohol: "Limit alcohol, which can raise triglycerides.",
+        a1cPlate: "Use the plate method: half non-starchy vegetables, a quarter lean protein and a quarter whole grains or starchy food.",
+        a1cDrinks: "Drink water or unsweetened tea or coffee instead of soda and juice.",
+        a1cWeight: "If you are overweight, losing 5 to 7% of your body weight can lower your chance of type 2 diabetes.",
+        bpDash: "Follow a DASH-style eating pattern: plenty of fruit, vegetables, beans, nuts, whole grains and low-fat dairy.",
+        bpSalt: "Keep salt (sodium) under 2,300 mg a day; check labels on bread, soups, sauces and restaurant food.",
+        vitdFood: "Include vitamin D foods such as fatty fish, eggs, and fortified milk or cereal.",
+        balanced: "Keep a balanced pattern: vegetables and fruit at most meals, whole grains, and protein from fish, beans, nuts or poultry.",
+        move150: "Aim for 150 minutes a week of moderate activity, such as brisk walking for 30 minutes on 5 days.",
+        moveStrength: "Add muscle-strengthening activity, like bodyweight exercises or resistance bands, on 2 days a week.",
+        moveStart: "If you are not active now, start with 10 minutes a day and add a few minutes each week.",
+        moveMeals: "A short walk after meals can help keep blood sugar steadier.",
+        moveAsk: "Ask your clinician what level of activity is safe for you, especially if you have chest pain, dizziness or heart disease.",
+        urgentMove: "Do not start a new exercise plan now. The report mentions urgent symptoms or very high blood pressure: get medical care first.",
+        trackBp: "Check your blood pressure at home a few times a week and bring the readings to your visit.",
+        trackA1c: "Ask your doctor when to repeat your A1C test.",
+        trackLipids: "Ask your doctor when to repeat your cholesterol test.",
+        trackDiary: "Write down what you eat and how much you move for one week before your next visit.",
+        safetyAsk: "If you take medicines, are pregnant, or have kidney disease, diabetes or an eating disorder, ask your clinician before changing your diet or exercise.",
+        safetyVitd: "Ask your clinician before starting a vitamin D supplement or choosing a dose.",
+        safetyGeneral: "This plan is general education based on public guidelines, not a prescription.",
+        reactions: (names) => `Your health record says these did not suit you: ${names}. Check new foods and supplements against it.`,
+        whyLdl: (v) => `Your LDL is ${v} mg/dL (130 or higher).`,
+        whyTotal: (v) => `Your total cholesterol is ${v} mg/dL (200 or higher).`,
+        whyTrig: (v) => `Your triglycerides are ${v} mg/dL (150 or higher).`,
+        whyA1c: (v) => `Your A1C is ${v}% (${v >= 6.5 ? "6.5" : "5.7"}% or higher).`,
+        whyBp: (v) => `Your blood pressure is ${v} (130/80 or higher).`,
+        whyVitd: (v) => `Your vitamin D is ${v} ng/mL (below 30).`,
+        whyAdults: "Recommended for most adults."
+    },
+    es: {
+        title: "Su plan para las próximas 4 semanas",
+        whyLabel: "Por qué",
+        sourceLabel: "Fuente",
+        food: "Comida",
+        move: "Actividad física",
+        track: "Seguimiento",
+        safety: "Antes de empezar",
+        heartFat: "Cambie las grasas saturadas: use aceite de oliva o de canola en vez de mantequilla, y elija pescado, frijoles, pollo sin piel o lácteos bajos en grasa más a menudo que carnes rojas grasas o procesadas.",
+        heartFiber: "Añada fibra soluble cada día: avena, frijoles, lentejas, cebada, manzanas o cítricos.",
+        heartFish: "Coma pescado, como salmón o sardinas, unas dos veces por semana.",
+        trigSugar: "Reduzca las bebidas azucaradas, los dulces y el pan, arroz o pasta blancos; elija granos integrales.",
+        trigAlcohol: "Limite el alcohol, que puede subir los triglicéridos.",
+        a1cPlate: "Use el método del plato: la mitad verduras sin almidón, un cuarto proteína magra y un cuarto granos integrales o alimentos con almidón.",
+        a1cDrinks: "Tome agua, o té o café sin azúcar, en lugar de refrescos y jugos.",
+        a1cWeight: "Si tiene sobrepeso, perder del 5 al 7 % de su peso puede reducir la probabilidad de diabetes tipo 2.",
+        bpDash: "Siga un patrón de alimentación tipo DASH: muchas frutas, verduras, frijoles, nueces, granos integrales y lácteos bajos en grasa.",
+        bpSalt: "Mantenga la sal (sodio) por debajo de 2,300 mg al día; revise las etiquetas del pan, sopas, salsas y comida de restaurante.",
+        vitdFood: "Incluya alimentos con vitamina D, como pescado graso, huevos y leche o cereal fortificados.",
+        balanced: "Mantenga un patrón equilibrado: verduras y fruta en la mayoría de las comidas, granos integrales y proteína de pescado, frijoles, nueces o pollo.",
+        move150: "Intente hacer 150 minutos a la semana de actividad moderada, como caminar a paso rápido 30 minutos 5 días.",
+        moveStrength: "Añada ejercicios para fortalecer los músculos, con su propio peso o bandas elásticas, 2 días a la semana.",
+        moveStart: "Si ahora no hace actividad, empiece con 10 minutos al día y añada unos minutos cada semana.",
+        moveMeals: "Una caminata corta después de comer puede ayudar a mantener el azúcar en sangre más estable.",
+        moveAsk: "Pregunte a su profesional de salud qué nivel de actividad es seguro para usted, sobre todo si tiene dolor en el pecho, mareos o enfermedad del corazón.",
+        urgentMove: "No empiece ahora un nuevo plan de ejercicio. El informe menciona síntomas urgentes o presión arterial muy alta: busque atención médica primero.",
+        trackBp: "Mida su presión arterial en casa algunas veces por semana y lleve las lecturas a su cita.",
+        trackA1c: "Pregunte a su médico cuándo repetir su prueba de A1C.",
+        trackLipids: "Pregunte a su médico cuándo repetir su prueba de colesterol.",
+        trackDiary: "Anote lo que come y cuánto se mueve durante una semana antes de su próxima cita.",
+        safetyAsk: "Si toma medicamentos, está embarazada o tiene enfermedad renal, diabetes o un trastorno alimentario, consulte a su profesional de salud antes de cambiar su dieta o ejercicio.",
+        safetyVitd: "Consulte a su profesional de salud antes de empezar un suplemento de vitamina D o elegir una dosis.",
+        safetyGeneral: "Este plan es educación general basada en guías públicas, no una receta médica.",
+        reactions: (names) => `Su historial dice que esto no le sentó bien: ${names}. Revise los alimentos y suplementos nuevos con esa lista.`,
+        whyLdl: (v) => `Su LDL es ${v} mg/dL (130 o más).`,
+        whyTotal: (v) => `Su colesterol total es ${v} mg/dL (200 o más).`,
+        whyTrig: (v) => `Sus triglicéridos son ${v} mg/dL (150 o más).`,
+        whyA1c: (v) => `Su A1C es ${v} % (${v >= 6.5 ? "6.5" : "5.7"} % o más).`,
+        whyBp: (v) => `Su presión arterial es ${v} (130/80 o más).`,
+        whyVitd: (v) => `Su vitamina D es ${v} ng/mL (menos de 30).`,
+        whyAdults: "Recomendado para la mayoría de los adultos."
+    }
+};
+const SOURCES = {
+    aha: "American Heart Association",
+    ada: "American Diabetes Association",
+    cdcDpp: "CDC National Diabetes Prevention Program",
+    dash: "NHLBI DASH eating plan",
+    nih: "NIH Office of Dietary Supplements",
+    dga: "Dietary Guidelines for Americans",
+    cdcActivity: "CDC Physical Activity Guidelines"
+};
+function planNumber(values, label) {
+    const found = values.find((item) => item.label === label);
+    const value = found ? Number(found.value) : NaN;
+    return Number.isFinite(value) ? value : null;
+}
+function buildPersonalPlan(analysis, language = "en", reactions = []) {
+    const t = PLAN_TEXT[language] || PLAN_TEXT.en;
+    const values = analysis.labValues || [];
+    const ldl = planNumber(values, "LDL cholesterol");
+    const total = planNumber(values, "Total cholesterol");
+    const trig = planNumber(values, "Triglycerides");
+    const a1c = planNumber(values, "A1C");
+    const vitd = planNumber(values, "Vitamin D");
+    const bpText = String(values.find((item) => item.label === "Blood pressure")?.value ?? "");
+    const [systolic, diastolic] = bpText.split("/").map(Number);
+    const highBp = (Number.isFinite(systolic) && systolic >= 130) || (Number.isFinite(diastolic) && diastolic >= 80);
+    const urgent = analysis.riskLevel === "urgent" || (Number.isFinite(systolic) && systolic >= 180);
+    const heart = (ldl !== null && ldl >= 130) || (total !== null && total >= 200);
+    const heartWhy = ldl !== null && ldl >= 130 ? t.whyLdl(ldl) : total !== null ? t.whyTotal(total) : "";
+    const food = [];
+    if (heart) {
+        food.push({ text: t.heartFat, why: heartWhy, source: SOURCES.aha });
+        food.push({ text: t.heartFiber, why: heartWhy, source: SOURCES.aha });
+        food.push({ text: t.heartFish, why: heartWhy, source: SOURCES.aha });
+    }
+    if (trig !== null && trig >= 150) {
+        food.push({ text: t.trigSugar, why: t.whyTrig(trig), source: SOURCES.aha });
+        food.push({ text: t.trigAlcohol, why: t.whyTrig(trig), source: SOURCES.aha });
+    }
+    if (a1c !== null && a1c >= 5.7) {
+        food.push({ text: t.a1cPlate, why: t.whyA1c(a1c), source: SOURCES.ada });
+        food.push({ text: t.a1cDrinks, why: t.whyA1c(a1c), source: SOURCES.ada });
+        if (a1c < 6.5)
+            food.push({ text: t.a1cWeight, why: t.whyA1c(a1c), source: SOURCES.cdcDpp });
+    }
+    if (highBp) {
+        food.push({ text: t.bpDash, why: t.whyBp(bpText), source: SOURCES.dash });
+        food.push({ text: t.bpSalt, why: t.whyBp(bpText), source: SOURCES.aha });
+    }
+    if (vitd !== null && vitd < 30)
+        food.push({ text: t.vitdFood, why: t.whyVitd(vitd), source: SOURCES.nih });
+    if (!food.length)
+        food.push({ text: t.balanced, source: SOURCES.dga });
+    const move = urgent
+        ? [{ text: t.urgentMove }]
+        : [
+            { text: t.move150, why: t.whyAdults, source: SOURCES.cdcActivity },
+            { text: t.moveStrength, why: t.whyAdults, source: SOURCES.cdcActivity },
+            { text: t.moveStart, source: SOURCES.cdcActivity },
+            ...(a1c !== null && a1c >= 5.7 ? [{ text: t.moveMeals, why: t.whyA1c(a1c), source: SOURCES.ada }] : []),
+            ...(heart || highBp ? [{ text: t.moveAsk }] : [])
+        ];
+    const track = [];
+    if (highBp)
+        track.push({ text: t.trackBp, why: t.whyBp(bpText), source: SOURCES.aha });
+    if (a1c !== null && a1c >= 5.7)
+        track.push({ text: t.trackA1c, why: t.whyA1c(a1c) });
+    if (heart || (trig !== null && trig >= 150))
+        track.push({ text: t.trackLipids, why: heartWhy || (trig !== null ? t.whyTrig(trig) : "") });
+    track.push({ text: t.trackDiary });
+    const safety = [{ text: t.safetyAsk }];
+    if (vitd !== null && vitd < 30)
+        safety.push({ text: t.safetyVitd });
+    const reactionNames = reactions.map((name) => String(name).trim()).filter(Boolean).slice(0, 8);
+    if (reactionNames.length)
+        safety.push({ text: t.reactions(reactionNames.join(", ")) });
+    safety.push({ text: t.safetyGeneral });
+    return {
+        title: t.title,
+        urgent,
+        whyLabel: t.whyLabel,
+        sourceLabel: t.sourceLabel,
+        sections: [
+            { key: "food", title: t.food, items: food },
+            { key: "move", title: t.move, items: move },
+            { key: "track", title: t.track, items: track },
+            { key: "safety", title: t.safety, items: safety }
+        ]
+    };
+}
 
 const defaultBackendBaseUrl = "https://carewise-api.onrender.com";
 let backendBaseUrl = localStorage.getItem("carewiseApiUrl") || defaultBackendBaseUrl;
@@ -563,6 +745,7 @@ reportResults?.addEventListener("click", (event) => {
   if (action === "copy-summary") copyReportSummary();
   if (action === "share-summary") shareReportSummary();
   if (action === "copy-questions") copyReportQuestions();
+  if (action === "copy-plan") copyPersonalPlan();
   if (action === "doctor-brief") openDoctorBrief();
   if (action === "save-detected-values") saveDetectedValuesToTrends();
   if (action === "open-history") openReportHistoryItem(event.target.closest("[data-report-id]")?.dataset.reportId || "");
@@ -3202,24 +3385,41 @@ function handleReportFileSelection() {
 const PDFJS_VERSION = "6.3.289";
 const PDFJS_BASE_URL = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build`;
 
+// Rebuilds text lines from positioned PDF text. Items within half a line height
+// of each other belong to one row, so a table cell nudged by a superscript
+// footnote (Labcorp's "Cholesterol, Total 01") stays on the row with its value.
+function groupPdfTextRows(items) {
+  const rows = [];
+  items
+    .filter((item) => item.str?.trim())
+    .map((item) => ({ x: item.transform[4], y: item.transform[5], h: item.height || 10, text: item.str.trim() }))
+    .sort((a, b) => b.y - a.y)
+    .forEach((item) => {
+      const row = rows.find((candidate) => Math.abs(candidate.y - item.y) <= 0.5 * Math.max(candidate.h, item.h));
+      if (row) {
+        row.parts.push(item);
+        row.h = Math.max(row.h, item.h);
+      } else {
+        rows.push({ y: item.y, h: item.h, parts: [item] });
+      }
+    });
+  return rows.map((row) => row.parts.sort((a, b) => a.x - b.x).map((part) => part.text).join(" ")).join("\n");
+}
+
 async function extractPdfText(file, maxPages = 10) {
   const pdfjs = await import(`${PDFJS_BASE_URL}/pdf.min.mjs`);
   pdfjs.GlobalWorkerOptions.workerSrc = `${PDFJS_BASE_URL}/pdf.worker.min.mjs`;
-  const pdf = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+  const loadingTask = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
+  const pdf = await loadingTask.promise;
   const pages = [];
-  for (let number = 1; number <= Math.min(pdf.numPages, maxPages); number += 1) {
-    const content = await (await pdf.getPage(number)).getTextContent();
-    const lines = new Map();
-    content.items.forEach((item) => {
-      if (!item.str?.trim()) return;
-      const y = Math.round(item.transform[5]);
-      if (!lines.has(y)) lines.set(y, []);
-      lines.get(y).push({ x: item.transform[4], text: item.str.trim() });
-    });
-    pages.push([...lines.entries()]
-      .sort((a, b) => b[0] - a[0])
-      .map(([, parts]) => parts.sort((a, b) => a.x - b.x).map((part) => part.text).join(" "))
-      .join("\n"));
+  try {
+    for (let number = 1; number <= Math.min(pdf.numPages, maxPages); number += 1) {
+      const content = await (await pdf.getPage(number)).getTextContent();
+      pages.push(groupPdfTextRows(content.items));
+    }
+  } finally {
+    // Release the parsed document and its worker so repeated uploads do not pile up memory.
+    await loadingTask.destroy();
   }
   return pages.join("\n").trim();
 }
@@ -3286,14 +3486,14 @@ function renderReportHistory() {
   const personFilter = document.querySelector("#history-person-filter")?.value || "";
   const reports = personFilter ? allReports.filter((report) => normalizeReportPerson(report.person) === personFilter) : allReports;
   reportBadge.textContent = latestReportId ? "Report ready" : reportFeatureLabel();
-  reportBadge.className = `sync-badge ${latestReportId ? "online" : "offline"}`;
+  reportBadge.className = "sync-badge online";
   if (!allReports.length) {
     reportResults.innerHTML = "<p>No report analysis yet.</p>";
     if (reportHistoryList) {
       reportHistoryList.innerHTML = `
         <article>
           <div><strong>No reports saved yet</strong><span>Upload first</span></div>
-          <p>Upload a PDF, image, or pasted lab text to see plain-English explanations here.</p>
+          <p>Add a lab PDF or type your results to see plain-English explanations here.</p>
         </article>
       `;
     }
@@ -3373,9 +3573,9 @@ function renderReportHistoryResult(report) {
 }
 
 function reportFeatureLabel() {
-  if (backendFeatures.image_ocr) return "OCR ready";
-  if (backendFeatures.report_uploads) return "Cloud storage ready";
-  return "Backend check needed";
+  if (backendFeatures.image_ocr) return "Photo reading ready";
+  if (backendFeatures.report_uploads) return "Cloud save ready";
+  return "Works on this device";
 }
 
 function renderOcrReadiness() {
@@ -3418,10 +3618,33 @@ function getReportEvaluationSamples() {
       expected: "routine",
       reason: "Negated emergency phrases should not create an emergency alert.",
     },
+    {
+      name: "UK A1C units",
+      text: "HbA1c 44 mmol/mol",
+      expectedFinding: { label: "A1C", level: "Prediabetes range in many guidelines" },
+      reason: "44 mmol/mol is about 6.2%; it must not be read as 44% and raise a false diabetes alarm.",
+    },
+    {
+      name: "UK cholesterol units",
+      text: "Total cholesterol 5.8 mmol/L",
+      expectedFinding: { label: "Total cholesterol", level: "Above common reference target" },
+      reason: "5.8 mmol/L is about 224 mg/dL and should be flagged, not read as 5.8 mg/dL.",
+    },
+    {
+      name: "Lab footnote code",
+      text: "Cholesterol, Total 01   289   High   mg/dL   100-199",
+      expectedFinding: { label: "Total cholesterol", level: "Above common reference target" },
+      reason: "The '01' footnote code on Labcorp-style rows must not be read as the result.",
+    },
   ];
 }
 
 function evaluateReportSafetySample(sample) {
+  if (sample.expectedFinding) {
+    const finding = analyzeReportTextLocally(sample.text).findings.find((item) => item.label === sample.expectedFinding.label);
+    const actual = finding ? finding.level : "not read";
+    return { ...sample, expected: sample.expectedFinding.level, actual, label: sample.expectedFinding.label, passed: actual === sample.expectedFinding.level, matches: [], message: finding?.detail || "" };
+  }
   const text = sample.text.toLowerCase();
   const urgentMatches = findEmergencyTerms(text);
   if (hasHypertensiveCrisis(text)) urgentMatches.push("blood pressure over 180/120");
@@ -3771,6 +3994,57 @@ function readReportNumber(text, patterns) {
   return null;
 }
 
+// Skips a lab footnote code like the "01" in "Cholesterol, Total 01  289 mg/dL".
+const LAB_FOOTNOTE = String.raw`(?:\b0\d\s+\D{0,12}?)?`;
+const LAB_UNIT = String.raw`\s*(mmol\s*\/\s*mol|mmol\s*\/\s*l|mg\s*\/\s*dl|%)?`;
+
+function readLabMeasure(text, namePattern, maxGap = 24) {
+  const match = text.match(new RegExp(`${namePattern}\\D{0,${maxGap}}?${LAB_FOOTNOTE}(\\d+(?:\\.\\d+)?)${LAB_UNIT}`, "i"));
+  if (!match) return null;
+  return { value: Number(match[1]), unit: (match[2] || "").replace(/\s+/g, "").toLowerCase() };
+}
+
+// UK and European labs report lipids in mmol/L and A1C in mmol/mol (IFCC).
+// Convert to the US units the explanations use; a value with no unit that is
+// only plausible in the other unit is treated as that unit.
+function readCholesterolMgDl(text, namePattern) {
+  const measure = readLabMeasure(text, namePattern);
+  if (!measure) return null;
+  if (measure.unit === "mmol/l" || (!measure.unit && measure.value < 25)) return Math.round(measure.value * 38.67);
+  return measure.value;
+}
+
+// Many labs print total cholesterol simply as "Cholesterol". Accept that only
+// when it is not part of an LDL, HDL, VLDL or non-HDL name or a ratio.
+function readPlainCholesterolMgDl(text) {
+  const pattern = /\bcholesterol\b/gi;
+  let match;
+  while ((match = pattern.exec(text))) {
+    const before = text.slice(Math.max(0, match.index - 9), match.index);
+    const after = text.slice(match.index + match[0].length, match.index + match[0].length + 12);
+    if (/(?:ldl|hdl|vldl)[\s-]*$/i.test(before)) continue;
+    if (/^\s*[,/(-]?\s*(?:ldl|hdl|vldl|ratio|non)/i.test(after)) continue;
+    const value = readCholesterolMgDl(text.slice(match.index), "cholesterol");
+    if (value !== null) return value;
+  }
+  return null;
+}
+
+function readTriglyceridesMgDl(text) {
+  const measure = readLabMeasure(text, "triglycerides");
+  if (!measure) return null;
+  if (measure.unit === "mmol/l" || (!measure.unit && measure.value < 15)) return Math.round(measure.value * 88.57);
+  return measure.value;
+}
+
+function readA1cPercent(text) {
+  // UK reports say "HbA1c level - IFCC standardised 44 mmol/mol", so allow a longer label.
+  const measure = readLabMeasure(text, String.raw`(?:hemoglobin\s*)?a1c`, 40);
+  if (!measure) return null;
+  if (measure.unit === "mmol/mol" || (!measure.unit && measure.value > 20)) return Math.round((0.0915 * measure.value + 2.15) * 10) / 10;
+  return measure.value;
+}
+
 function buildDetectedReportValues({ ldl, totalCholesterol, triglycerides, a1c, vitaminD, systolic, diastolic }) {
   return [
     ldl !== null ? { label: "LDL cholesterol", value: ldl, unit: "mg/dL", flag: ldl >= 160 ? "High" : ldl >= 130 ? "Needs attention" : "In range discussion" } : null,
@@ -3795,10 +4069,10 @@ function analyzeReportTextLocally(text) {
   const urgentMatches = getNonNegatedEmergencyMatches(lower);
   if (hasHypertensiveCrisis(lower)) urgentMatches.push("blood pressure over 180/120");
 
-  const ldl = readReportNumber(lower, [/\bldl(?: cholesterol)?\D{0,24}(\d+(?:\.\d+)?)/i]);
-  const totalCholesterol = readReportNumber(lower, [/(?:total cholesterol|cholesterol,?\s*total)\D{0,24}(\d+(?:\.\d+)?)/i]);
-  const triglycerides = readReportNumber(lower, [/triglycerides\D{0,24}(\d+(?:\.\d+)?)/i]);
-  const a1c = readReportNumber(lower, [/(?:hemoglobin\s*)?a1c\D{0,24}(\d+(?:\.\d+)?)/i]);
+  const ldl = readCholesterolMgDl(lower, String.raw`\bldl(?: cholesterol)?`);
+  const totalCholesterol = readCholesterolMgDl(lower, String.raw`(?:total cholesterol|cholesterol,?\s*total)`) ?? readPlainCholesterolMgDl(lower);
+  const triglycerides = readTriglyceridesMgDl(lower);
+  const a1c = readA1cPercent(lower);
   // Skip the "25-hydroxy" / "25-OH" in the test name so it is not read as the value.
   const vitaminD = readReportNumber(lower, [/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?\D{0,24}(\d+(?:\.\d+)?)/i]);
   const systolic = readReportNumber(lower, [/blood pressure\D{0,60}(\d{2,3})\s*\/\s*\d{2,3}/i]);
@@ -3881,7 +4155,7 @@ function analyzeReportTextLocally(text) {
     findings.push({
       label: "Readable values",
       level: "Not enough structured data",
-      detail: "CareWise needs pasted lab values or OCR text to explain specific markers.",
+      detail: "CareWise needs typed or pasted lab values to explain specific results.",
     });
     suggestions.push("Paste key lab rows, values, units, and reference flags from the report.");
     score = 72;
@@ -3949,6 +4223,63 @@ function setReportLanguage(language) {
   reportLanguage = language;
   try { localStorage.setItem("carewiseReportLanguage", language); } catch {}
   if (latestReportAnalysis) renderLocalReportAnalysis(latestReportAnalysis);
+}
+
+function getPlanReactions() {
+  try {
+    return getHealthRecordFor(normalizeReportPerson(latestReportPerson)).filter((item) => item.type === "reaction").map((item) => item.name);
+  } catch {
+    return [];
+  }
+}
+
+function getLatestPersonalPlan(analysis = latestReportAnalysis) {
+  return analysis ? buildPersonalPlan(analysis, reportLanguage === "es" ? "es" : "en", getPlanReactions()) : null;
+}
+
+function renderPersonalPlanSection(analysis) {
+  const plan = getLatestPersonalPlan(analysis);
+  if (!plan) return "";
+  const ui = reportUiText();
+  return `
+        <section class="personal-plan${plan.urgent ? " personal-plan-urgent" : ""}">
+          <div class="section-heading-action">
+            <h4>${escapeHtml(plan.title)}</h4>
+            <button class="secondary-button compact" type="button" data-report-action="copy-plan">${escapeHtml(ui.copyPlan || "Copy plan")}</button>
+          </div>
+          <div class="plan-grid">
+            ${plan.sections.map((section) => `
+              <article class="plan-card plan-${escapeHtml(section.key)}">
+                <strong>${escapeHtml(section.title)}</strong>
+                <ul>${section.items.map((item, index) => {
+                  // Show a reason and source only when they change, so a group of tips reads cleanly.
+                  const previous = section.items[index + 1];
+                  const note = previous && previous.why === item.why && previous.source === item.source ? "" : [item.why ? `${plan.whyLabel}: ${item.why}` : "", item.source ? `${plan.sourceLabel}: ${item.source}` : ""].filter(Boolean).join(" · ");
+                  return `
+                  <li>${escapeHtml(item.text)}${note ? `<small>${escapeHtml(note)}</small>` : ""}</li>`;
+                }).join("")}
+                </ul>
+              </article>`).join("")}
+          </div>
+        </section>`;
+}
+
+function personalPlanText(plan) {
+  return [
+    plan.title,
+    ...plan.sections.flatMap((section) => ["", section.title.toUpperCase(), ...section.items.map((item) => `- ${item.text}${item.why ? ` (${plan.whyLabel}: ${item.why})` : ""}${item.source ? ` [${plan.sourceLabel}: ${item.source}]` : ""}`)]),
+  ].join("\n");
+}
+
+async function copyPersonalPlan() {
+  const plan = getLatestPersonalPlan();
+  if (!plan) return;
+  try {
+    await navigator.clipboard.writeText(personalPlanText(plan));
+    reportStatus.textContent = reportLanguage === "es" ? "Plan copiado." : "Plan copied. Paste it into notes or share it with your care team.";
+  } catch {
+    reportStatus.textContent = "Could not copy automatically. Select the plan text and copy it.";
+  }
 }
 
 function renderLocalReportAnalysis(analysis) {
@@ -4023,6 +4354,7 @@ function renderLocalReportAnalysis(analysis) {
           </div>
           <ul>${view.questions.map((item) => `<li><strong>${escapeHtml(ui.ask)}</strong><span>${escapeHtml(item)}</span></li>`).join("")}</ul>
         </section>
+        ${renderPersonalPlanSection(analysis)}
       </div>
       <div class="safety-note"><strong>${escapeHtml(ui.safetyTitle)}</strong><span>${escapeHtml(ui.safetyText)}</span></div>
     </article>
@@ -4062,7 +4394,7 @@ function buildBackendReportDisplayAnalysis(response, reportText) {
       },
     ],
     suggestions: response.recommendations?.next_steps || [
-      "Paste OCR text or key lab values before using report analysis.",
+      "Type or paste your lab results first, or press Try sample report.",
       "Ask a licensed professional to review the original report.",
     ],
     questions: [
@@ -4103,6 +4435,7 @@ function buildDoctorBriefHtml(analysis, person = "Me") {
 <p>${person === "Me" ? "Prepared by the patient with CareWise AI from their own report text." : `Prepared by a family caregiver for ${escapeHtml(person)} with CareWise AI from the report text.`} Health score ${escapeHtml(String(analysis.score))}/100 (educational estimate).</p>
 ${rows ? `<h2>Values detected in the report</h2><table><tr><th>Test</th><th>Value</th><th>CareWise note</th></tr>${rows}</table>` : ""}
 <h2>Discussion points</h2><ul>${findings}</ul>
+${buildHealthHistoryBriefSection(person)}
 <h2>Patient questions</h2><ol>${questions}</ol>
 <h2>Clinician notes</h2><div class="notes-box"></div>
 <p class="note">Educational summary only, not a diagnosis. Values were read automatically from pasted report text; please confirm them against the original report.</p>
@@ -4443,7 +4776,7 @@ async function analyzeLatestReport() {
     renderAuditTrail();
     renderLocalReportAnalysis(displayAnalysis);
     reportStatus.textContent = response.status === "needs_readable_text"
-      ? "Report stored securely. Paste OCR text or key lab values here, then click Analyze report again."
+      ? "Report stored securely. Type or paste the lab values here, then click Analyze report again."
       : `Analysis complete: ${response.risk_level}.`;
   } catch (error) {
     if (getLocalReportText()) {
@@ -7569,6 +7902,260 @@ function escapeHtml(value) {
     }[char];
   });
 }
+
+const HEALTH_RECORD_KEY = "carewiseHealthRecord";
+const HEALTH_RECORD_TYPES = {
+  condition: { label: "Condition", plural: "Ongoing conditions" },
+  medicine: { label: "Medicine", plural: "Current medicines" },
+  reaction: { label: "Did not suit me", plural: "Did not suit me" },
+  habit: { label: "Habit", plural: "Current habits" },
+  procedure: { label: "Surgery or visit", plural: "Surgery and visits" },
+};
+
+function getHealthRecord() {
+  try {
+    const items = JSON.parse(localStorage.getItem(HEALTH_RECORD_KEY) || "[]");
+    return Array.isArray(items) ? items.filter((item) => item && HEALTH_RECORD_TYPES[item.type] && item.name) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHealthRecord(items) {
+  try {
+    localStorage.setItem(HEALTH_RECORD_KEY, JSON.stringify(items));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isRecordItemCurrent(item) {
+  return item.type === "reaction" || Boolean(item.ongoing) || !item.end;
+}
+
+function formatRecordMonth(value) {
+  if (!/^\d{4}-\d{2}$/.test(value || "")) return "";
+  const [year, month] = value.split("-").map(Number);
+  return new Date(year, month - 1, 1).toLocaleDateString(undefined, { month: "short", year: "numeric" });
+}
+
+function formatRecordRange(item) {
+  const start = formatRecordMonth(item.start);
+  if (item.type === "reaction") return start ? `Noted ${start}` : "Date not recorded";
+  if (start && !item.ongoing && item.end === item.start) return start;
+  const end = item.ongoing || !item.end ? "now" : formatRecordMonth(item.end);
+  return start ? `${start} to ${end}` : end === "now" ? "Ongoing" : `Until ${end}`;
+}
+
+function getHealthRecordPeople(items = getHealthRecord()) {
+  const people = new Set(getReportPeople());
+  items.forEach((item) => people.add(normalizeReportPerson(item.person)));
+  return ["Me", ...[...people].filter((person) => person !== "Me")];
+}
+
+function getHealthRecordFor(person) {
+  return getHealthRecord().filter((item) => normalizeReportPerson(item.person) === person);
+}
+
+function buildHealthRecordSummary(items) {
+  return {
+    conditions: items.filter((item) => item.type === "condition" && isRecordItemCurrent(item)),
+    medicines: items.filter((item) => item.type === "medicine" && isRecordItemCurrent(item)),
+    reactions: items.filter((item) => item.type === "reaction"),
+  };
+}
+
+function renderHealthRecord(preferredPerson = "") {
+  const timeline = document.querySelector("#record-timeline");
+  if (!timeline) return;
+  const personSelect = document.querySelector("#record-person-filter");
+  const people = getHealthRecordPeople();
+  const wanted = typeof preferredPerson === "string" && preferredPerson ? preferredPerson : personSelect.value;
+  const person = people.includes(wanted) ? wanted : "Me";
+  personSelect.innerHTML = people.map((name) => `<option value="${escapeHtml(name)}"${name === person ? " selected" : ""}>${escapeHtml(name)}</option>`).join("");
+
+  const items = getHealthRecordFor(person);
+  const summary = buildHealthRecordSummary(items);
+  const card = (title, list, empty) => `
+    <article class="record-summary-card${title === "Did not suit me" && list.length ? " record-summary-warn" : ""}">
+      <strong>${escapeHtml(title)}</strong>
+      ${list.length ? `<ul>${list.map((item) => `<li>${escapeHtml(item.name)}${item.notes ? ` <span>${escapeHtml(item.notes)}</span>` : ""}</li>`).join("")}</ul>` : `<p>${escapeHtml(empty)}</p>`}
+    </article>`;
+  document.querySelector("#record-summary").innerHTML = [
+    card("Ongoing conditions", summary.conditions, "None recorded"),
+    card("Current medicines", summary.medicines, "None recorded"),
+    card("Did not suit me", summary.reactions, "None recorded"),
+  ].join("");
+
+  const typeFilter = document.querySelector("#record-type-filter").value;
+  const shown = items
+    .filter((item) => !typeFilter || item.type === typeFilter)
+    .sort((a, b) => String(b.start || "").localeCompare(String(a.start || "")));
+  if (!shown.length) {
+    timeline.innerHTML = `<p class="record-empty">${items.length ? "Nothing of this type yet." : `No health history saved for ${escapeHtml(person)} yet. Add an entry above, or try the sample 20-year history.`}</p>`;
+    return;
+  }
+  const groups = new Map();
+  shown.forEach((item) => {
+    const year = /^\d{4}/.test(item.start || "") ? item.start.slice(0, 4) : "Date not recorded";
+    if (!groups.has(year)) groups.set(year, []);
+    groups.get(year).push(item);
+  });
+  timeline.innerHTML = [...groups].map(([year, list]) => `
+    <div class="record-year">
+      <h4>${escapeHtml(year)}</h4>
+      ${list.map((item) => `
+        <article class="record-item record-${escapeHtml(item.type)}">
+          <div>
+            <span class="record-chip">${escapeHtml(HEALTH_RECORD_TYPES[item.type].label)}</span>
+            <strong>${escapeHtml(item.name)}</strong>
+            <small>${escapeHtml(formatRecordRange(item))}</small>
+            ${item.notes ? `<p>${escapeHtml(item.notes)}</p>` : ""}
+          </div>
+          <button class="secondary-button compact" type="button" data-record-delete="${escapeHtml(item.id)}" aria-label="Remove ${escapeHtml(item.name)}">Remove</button>
+        </article>`).join("")}
+    </div>`).join("");
+}
+
+function addHealthRecordItem(item) {
+  const items = getHealthRecord();
+  items.push({ id: `rec-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, createdAt: new Date().toISOString(), ...item });
+  return saveHealthRecord(items);
+}
+
+function saveHealthRecordFromForm(event) {
+  event.preventDefault();
+  const status = document.querySelector("#record-status");
+  const name = document.querySelector("#record-name").value.trim();
+  if (!name) {
+    status.textContent = "Add a name first, for example the condition or medicine.";
+    return;
+  }
+  const type = document.querySelector("#record-type").value;
+  const start = document.querySelector("#record-start").value;
+  const ongoing = document.querySelector("#record-ongoing").checked;
+  const end = ongoing ? "" : document.querySelector("#record-end").value;
+  if (start && end && end < start) {
+    status.textContent = "The end date is before the start date. Please check the dates.";
+    return;
+  }
+  const person = normalizeReportPerson(document.querySelector("#record-person").value);
+  const saved = addHealthRecordItem({ type, name, person, start, end, ongoing: type === "reaction" ? false : ongoing, notes: document.querySelector("#record-notes").value.trim().slice(0, 400) });
+  if (!saved) {
+    status.textContent = "This browser could not save the record. Check that site storage is allowed.";
+    return;
+  }
+  document.querySelector("#record-name").value = "";
+  document.querySelector("#record-notes").value = "";
+  document.querySelector("#record-end").value = "";
+  status.textContent = `Saved "${name}" to ${person === "Me" ? "your" : `${person}'s`} health record.`;
+  renderHealthRecord(person);
+}
+
+function getSampleHealthHistory() {
+  // Synthetic example for demos; not a real person.
+  return [
+    { type: "procedure", name: "Appendix removed (appendectomy)", start: "2006-03", end: "2006-03", ongoing: false, notes: "Two nights in hospital, recovered fully." },
+    { type: "reaction", name: "Penicillin", start: "2009-07", notes: "Itchy rash after 2 days. Doctor advised avoiding penicillin." },
+    { type: "habit", name: "Smoking, about 10 a day", start: "2008-01", end: "2018-06", ongoing: false, notes: "Quit in 2018." },
+    { type: "condition", name: "High blood pressure", start: "2015-02", ongoing: true, notes: "Checked every 6 months." },
+    { type: "medicine", name: "Lisinopril 10 mg", start: "2015-02", end: "2016-01", ongoing: false, notes: "Stopped because of a dry cough." },
+    { type: "reaction", name: "Lisinopril", start: "2016-01", notes: "Dry cough that went away after stopping." },
+    { type: "medicine", name: "Amlodipine 5 mg, once a day", start: "2016-01", ongoing: true, notes: "Morning, with food." },
+    { type: "habit", name: "Walking 30 minutes, 5 days a week", start: "2019-04", ongoing: true, notes: "" },
+    { type: "condition", name: "Prediabetes (A1C 5.9%)", start: "2021-09", ongoing: true, notes: "Repeat A1C every year." },
+    { type: "procedure", name: "Colonoscopy screening", start: "2024-05", end: "2024-05", ongoing: false, notes: "Normal result. Next in 10 years." },
+  ];
+}
+
+function addSampleHealthHistory() {
+  const person = normalizeReportPerson(document.querySelector("#record-person").value);
+  const items = getHealthRecord().filter((item) => !(item.sample && normalizeReportPerson(item.person) === person));
+  const stamp = Date.now();
+  getSampleHealthHistory().forEach((item, index) => items.push({ id: `rec-sample-${stamp}-${index}`, createdAt: new Date().toISOString(), person, sample: true, ...item }));
+  saveHealthRecord(items);
+  document.querySelector("#record-status").textContent = `Added a sample 20-year history for ${person}. It is made-up example data.`;
+  renderHealthRecord(person);
+}
+
+function deleteHealthRecordItem(id) {
+  saveHealthRecord(getHealthRecord().filter((item) => item.id !== id));
+  renderHealthRecord();
+}
+
+function exportHealthRecord() {
+  const blob = new Blob([JSON.stringify({ app: "CareWise", kind: "health-record", version: 1, exportedAt: new Date().toISOString(), items: getHealthRecord() }, null, 2)], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `carewise-health-record-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  document.querySelector("#record-status").textContent = "Backup downloaded. Keep it somewhere safe; it contains your health history.";
+}
+
+async function importHealthRecord(file) {
+  const status = document.querySelector("#record-status");
+  try {
+    const data = JSON.parse(await file.text());
+    const incoming = (Array.isArray(data) ? data : data.items || []).filter((item) => item && HEALTH_RECORD_TYPES[item.type] && item.name && item.id);
+    const items = getHealthRecord();
+    const known = new Set(items.map((item) => item.id));
+    const added = incoming.filter((item) => !known.has(item.id)).map((item) => ({
+      id: String(item.id).slice(0, 80),
+      type: item.type,
+      name: String(item.name).slice(0, 80),
+      person: normalizeReportPerson(item.person),
+      start: /^\d{4}-\d{2}$/.test(item.start || "") ? item.start : "",
+      end: /^\d{4}-\d{2}$/.test(item.end || "") ? item.end : "",
+      ongoing: Boolean(item.ongoing),
+      notes: String(item.notes || "").slice(0, 400),
+      sample: Boolean(item.sample),
+      createdAt: String(item.createdAt || ""),
+    }));
+    saveHealthRecord([...items, ...added]);
+    status.textContent = `Restored ${added.length} ${added.length === 1 ? "entry" : "entries"} from the backup.`;
+    renderHealthRecord();
+  } catch {
+    status.textContent = "That file is not a CareWise health record backup.";
+  }
+}
+
+function buildHealthHistoryBriefSection(person) {
+  const summary = buildHealthRecordSummary(getHealthRecordFor(person));
+  if (!summary.conditions.length && !summary.medicines.length && !summary.reactions.length) return "";
+  const list = (items) => items.length ? `<ul>${items.map((item) => `<li>${escapeHtml(item.name)}${item.start ? ` (since ${escapeHtml(formatRecordMonth(item.start))})` : ""}${item.notes ? `: ${escapeHtml(item.notes)}` : ""}</li>`).join("")}</ul>` : "<p>None recorded.</p>";
+  return `<h2>Health history (entered by the patient)</h2>
+<table><tr><th>Ongoing conditions</th><th>Current medicines</th><th>Did not suit me</th></tr>
+<tr><td>${list(summary.conditions)}</td><td>${list(summary.medicines)}</td><td>${list(summary.reactions)}</td></tr></table>`;
+}
+
+document.querySelector("#record-form")?.addEventListener("submit", saveHealthRecordFromForm);
+document.querySelector("#record-sample")?.addEventListener("click", addSampleHealthHistory);
+document.querySelector("#record-export")?.addEventListener("click", exportHealthRecord);
+document.querySelector("#record-person-filter")?.addEventListener("change", () => renderHealthRecord());
+document.querySelector("#record-type-filter")?.addEventListener("change", () => renderHealthRecord());
+document.querySelector("#record-import")?.addEventListener("change", (event) => {
+  const file = event.target.files?.[0];
+  if (file) importHealthRecord(file);
+  event.target.value = "";
+});
+document.querySelector("#record-ongoing")?.addEventListener("change", (event) => {
+  document.querySelector("#record-end").disabled = event.target.checked;
+});
+document.querySelector("#record-type")?.addEventListener("change", (event) => {
+  const reaction = event.target.value === "reaction";
+  document.querySelector("#record-ongoing").closest("label").hidden = reaction;
+  document.querySelector("#record-end").closest("label").hidden = reaction;
+});
+document.querySelector("#record-timeline")?.addEventListener("click", (event) => {
+  const id = event.target.closest("[data-record-delete]")?.dataset.recordDelete;
+  if (id) deleteHealthRecordItem(id);
+});
+if (document.querySelector("#record-end")) document.querySelector("#record-end").disabled = true;
+renderHealthRecord();
 
 function registerCareWiseServiceWorker() {
   if (!("serviceWorker" in navigator)) return;

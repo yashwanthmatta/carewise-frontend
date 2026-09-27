@@ -1497,6 +1497,7 @@ input[type="text"],
 input[type="email"],
 input[type="password"],
 input[type="date"],
+input[type="month"],
 select {
   width: 100%;
   min-height: 46px;
@@ -5213,4 +5214,260 @@ body::before {
   .how-it-works {
     grid-template-columns: 1fr;
   }
+}
+
+/* Lifetime health record */
+.record-panel .panel-heading-row {
+  align-items: flex-start;
+}
+
+.record-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0 20px;
+}
+
+.record-summary-card {
+  border: 1px solid var(--cw-line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: #fff;
+}
+
+.record-summary-card strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--cw-deep);
+}
+
+.record-summary-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.record-summary-card li span,
+.record-summary-card p {
+  display: block;
+  color: var(--cw-ink-soft);
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+.record-summary-warn {
+  border-color: #e7b7a3;
+  background: #fdf5f1;
+}
+
+.record-summary-warn strong {
+  color: #9a3b17;
+}
+
+.record-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.record-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.record-form .record-ongoing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.record-form .record-notes,
+.record-form .primary-action-row {
+  grid-column: 1 / -1;
+}
+
+.record-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 10px;
+  margin: 18px 0 8px;
+}
+
+.record-toolbar label:first-child {
+  display: grid;
+  gap: 6px;
+  margin-right: auto;
+}
+
+.record-import {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.record-year h4 {
+  margin: 18px 0 8px;
+  font-family: var(--cw-serif, "Domine", Georgia, serif);
+  color: var(--cw-deep);
+}
+
+.record-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--cw-line);
+  border-left: 4px solid var(--cw-teal);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  background: #fff;
+}
+
+.record-item strong {
+  display: block;
+}
+
+.record-item small,
+.record-item p {
+  color: var(--cw-ink-soft);
+  margin: 2px 0 0;
+}
+
+.record-chip {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--cw-teal);
+  margin-bottom: 2px;
+}
+
+.record-reaction { border-left-color: #c2552d; }
+.record-reaction .record-chip { color: #9a3b17; }
+.record-medicine { border-left-color: #2563eb; }
+.record-medicine .record-chip { color: #1d4ed8; }
+.record-habit { border-left-color: #a16207; }
+.record-habit .record-chip { color: #854d0e; }
+.record-procedure { border-left-color: #6b7280; }
+.record-procedure .record-chip { color: #4b5563; }
+
+.record-empty {
+  color: var(--cw-ink-soft);
+}
+
+@media (max-width: 760px) {
+  .record-summary,
+  .record-form {
+    grid-template-columns: 1fr;
+  }
+
+  .record-item {
+    flex-direction: column;
+  }
+}
+
+.record-item > button {
+  align-self: center;
+  flex: none;
+}
+
+.record-form input:disabled {
+  opacity: 0.55;
+}
+
+@media (max-width: 620px) {
+  .quick-nav.patient-nav {
+    gap: 4px;
+    justify-content: space-between;
+  }
+
+  .quick-nav.patient-nav a {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-inline: 4px;
+    font-size: 0.86rem;
+  }
+}
+
+/* Personal plan */
+.personal-plan {
+  grid-column: 1 / -1;
+}
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.plan-card {
+  border: 1px solid var(--cw-line);
+  border-top: 4px solid var(--cw-teal);
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: #fff;
+}
+
+.plan-card > strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--cw-deep);
+  font-size: 1.02rem;
+}
+
+.plan-card ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.plan-card li small {
+  display: block;
+  margin-top: 2px;
+  color: var(--cw-ink-soft);
+  font-size: 0.8rem;
+}
+
+.plan-move { border-top-color: #2563eb; }
+.plan-track { border-top-color: #a16207; }
+.plan-safety { border-top-color: #c2552d; background: #fdf8f5; }
+.personal-plan-urgent .plan-move { border-top-color: #b91c1c; background: #fdf2f2; }
+
+@media (max-width: 760px) {
+  .plan-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.result-sections .plan-card ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 18px;
+  list-style: disc;
+}
+
+.result-sections .plan-card li {
+  display: list-item;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: none;
+  line-height: 1.45;
+}
+
+.result-sections .plan-card li small {
+  margin-top: 3px;
+}
+
+.result-sections .plan-card ul {
+  align-content: start;
+}
+
+.plan-grid {
+  align-items: start;
 }

@@ -7,12 +7,12 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-120" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-125" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-120" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-125" />
   </head>
   <body>
     <main class="app-shell">
@@ -98,6 +98,7 @@
           <a href="#app-title">Home</a>
           <a href="#report-title">Upload</a>
           <a href="#saved-title">History</a>
+          <a href="#record-title">Record</a>
           <a href="#account-title">Profile</a>
         </nav>
 
@@ -130,7 +131,7 @@
               </div>
             </div>
             <div class="flow-steps" aria-label="CareWise patient flow">
-              <article><strong>01</strong><span>Upload</span><small>PDF, image, or pasted lab text</small></article>
+              <article><strong>01</strong><span>Upload</span><small>Lab PDF or typed results</small></article>
               <article><strong>02</strong><span>Explain</span><small>Values translated into plain English</small></article>
               <article><strong>03</strong><span>Score</span><small>Simple score plus risk areas</small></article>
               <article><strong>04</strong><span>Prepare</span><small>Questions for a licensed professional</small></article>
@@ -280,7 +281,7 @@
             <div>
               <p class="eyebrow">Upload</p>
               <h3 id="report-title">Analyze a report in seconds</h3>
-              <p class="panel-intro">Upload a PDF/image or paste lab text. CareWise explains readable values in plain English, adds a health score, and suggests questions to ask a licensed professional.</p>
+              <p class="panel-intro">Add a lab PDF or type your results. CareWise explains each value in plain English, adds a health score, and suggests questions for your doctor.</p>
             </div>
             <span id="report-badge" class="sync-badge offline">Cloud storage ready</span>
           </div>
@@ -291,11 +292,11 @@
           <div class="report-spotlight" aria-label="Report analysis benefits">
             <article>
               <strong>1. Upload</strong>
-              <span>Blood test PDF, image, or pasted lab text.</span>
+              <span>A lab PDF or your typed results.</span>
             </article>
             <article>
               <strong>2. Understand</strong>
-              <span>AI explains values in simple English.</span>
+              <span>Each value explained in simple English.</span>
             </article>
             <article>
               <strong>3. Improve</strong>
@@ -305,7 +306,7 @@
           <div class="report-grid">
             <label class="file-input-card">
               <span>Report file</span>
-              <strong>Drop in a PDF, image, or text report</strong>
+              <strong>Drop in a lab report PDF</strong>
               <small>Text PDFs are read on your device. Nothing is uploaded unless you sign in and choose Upload report.</small>
               <input id="report-file" type="file" accept=".pdf,image/*,.txt,text/plain" />
             </label>
@@ -322,7 +323,7 @@
             </div>
             <label>
               Optional report text for analysis
-              <textarea id="report-text" rows="6" placeholder="Paste OCR text, lab values, findings, or symptoms here. Example: LDL cholesterol elevated. A1C normal. No chest pain."></textarea>
+              <textarea id="report-text" rows="6" placeholder="Type or paste your lab results here. Example: LDL cholesterol 148 mg/dL, A1C 5.8%, blood pressure 138/86."></textarea>
             </label>
           </div>
           <div class="sync-grid">
@@ -774,6 +775,81 @@
           <div id="saved-plans" class="saved-plans-list">
             <p>No saved plans yet.</p>
           </div>
+        </section>
+
+        <section class="panel record-panel" aria-labelledby="record-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Lifetime health record</p>
+              <h3 id="record-title">My health record</h3>
+              <p class="panel-intro">Keep past conditions, medicines, what did not suit you, and habits in one timeline, as far back as you remember. Saved on this device.</p>
+            </div>
+            <label class="history-person-filter">
+              Record for
+              <select id="record-person-filter"><option value="Me">Me</option></select>
+            </label>
+          </div>
+          <div id="record-summary" class="record-summary" aria-live="polite"></div>
+          <form id="record-form" class="record-form">
+            <label>
+              What is it?
+              <select id="record-type">
+                <option value="condition">Condition or diagnosis</option>
+                <option value="medicine">Medicine</option>
+                <option value="reaction">Did not suit me (reaction or allergy)</option>
+                <option value="habit">Habit</option>
+                <option value="procedure">Surgery, hospital stay or visit</option>
+              </select>
+            </label>
+            <label>
+              Name
+              <input id="record-name" type="text" maxlength="80" required placeholder="Example: High blood pressure" />
+            </label>
+            <label>
+              Whose record
+              <input id="record-person" type="text" maxlength="40" list="report-people" placeholder="Me, Mom, Dad" />
+            </label>
+            <label>
+              Started
+              <input id="record-start" type="month" min="1920-01" />
+            </label>
+            <label>
+              Ended
+              <input id="record-end" type="month" min="1920-01" />
+            </label>
+            <label class="record-ongoing">
+              <input id="record-ongoing" type="checkbox" checked />
+              Still ongoing
+            </label>
+            <label class="record-notes">
+              Notes
+              <textarea id="record-notes" rows="2" maxlength="400" placeholder="Dose, what happened, which doctor, why it stopped"></textarea>
+            </label>
+            <div class="primary-action-row">
+              <button id="record-sample" class="secondary-button" type="button">Add sample 20-year history</button>
+              <button id="record-save" class="primary-button narrow-button" type="submit">Save to record</button>
+            </div>
+          </form>
+          <p id="record-status" class="status-line" role="status">CareWise keeps what you enter. It does not check medicine interactions or give medical advice.</p>
+          <div class="record-toolbar">
+            <label>
+              Show
+              <select id="record-type-filter">
+                <option value="">Everything</option>
+                <option value="condition">Conditions</option>
+                <option value="medicine">Medicines</option>
+                <option value="reaction">Did not suit me</option>
+                <option value="habit">Habits</option>
+                <option value="procedure">Surgery and visits</option>
+              </select>
+            </label>
+            <button id="record-export" class="secondary-button compact" type="button">Download backup</button>
+            <label class="secondary-button compact record-import">
+              Restore backup
+              <input id="record-import" type="file" accept="application/json,.json" hidden />
+            </label>
+          </div>
+          <div id="record-timeline" class="record-timeline"></div>
         </section>
 
         <section class="panel medication-panel" aria-labelledby="medication-title">
@@ -1849,6 +1925,6 @@
       </section>
     </main>
 
-    <script src="script.js?v=carewise-product-120"></script>
+    <script src="script.js?v=carewise-product-125"></script>
   </body>
 </html>
