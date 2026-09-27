@@ -5391,3 +5391,83 @@ body::before {
     font-size: 0.86rem;
   }
 }
+
+/* Personal plan */
+.personal-plan {
+  grid-column: 1 / -1;
+}
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.plan-card {
+  border: 1px solid var(--cw-line);
+  border-top: 4px solid var(--cw-teal);
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: #fff;
+}
+
+.plan-card > strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--cw-deep);
+  font-size: 1.02rem;
+}
+
+.plan-card ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.plan-card li small {
+  display: block;
+  margin-top: 2px;
+  color: var(--cw-ink-soft);
+  font-size: 0.8rem;
+}
+
+.plan-move { border-top-color: #2563eb; }
+.plan-track { border-top-color: #a16207; }
+.plan-safety { border-top-color: #c2552d; background: #fdf8f5; }
+.personal-plan-urgent .plan-move { border-top-color: #b91c1c; background: #fdf2f2; }
+
+@media (max-width: 760px) {
+  .plan-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.result-sections .plan-card ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 18px;
+  list-style: disc;
+}
+
+.result-sections .plan-card li {
+  display: list-item;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: none;
+  line-height: 1.45;
+}
+
+.result-sections .plan-card li small {
+  margin-top: 3px;
+}
+
+.result-sections .plan-card ul {
+  align-content: start;
+}
+
+.plan-grid {
+  align-items: start;
+}
