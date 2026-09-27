@@ -3202,24 +3202,41 @@ function handleReportFileSelection() {
 const PDFJS_VERSION = "6.3.289";
 const PDFJS_BASE_URL = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build`;
 
+// Rebuilds text lines from positioned PDF text. Items within half a line height
+// of each other belong to one row, so a table cell nudged by a superscript
+// footnote (Labcorp's "Cholesterol, Total 01") stays on the row with its value.
+function groupPdfTextRows(items) {
+  const rows = [];
+  items
+    .filter((item) => item.str?.trim())
+    .map((item) => ({ x: item.transform[4], y: item.transform[5], h: item.height || 10, text: item.str.trim() }))
+    .sort((a, b) => b.y - a.y)
+    .forEach((item) => {
+      const row = rows.find((candidate) => Math.abs(candidate.y - item.y) <= 0.5 * Math.max(candidate.h, item.h));
+      if (row) {
+        row.parts.push(item);
+        row.h = Math.max(row.h, item.h);
+      } else {
+        rows.push({ y: item.y, h: item.h, parts: [item] });
+      }
+    });
+  return rows.map((row) => row.parts.sort((a, b) => a.x - b.x).map((part) => part.text).join(" ")).join("\n");
+}
+
 async function extractPdfText(file, maxPages = 10) {
   const pdfjs = await import(`${PDFJS_BASE_URL}/pdf.min.mjs`);
   pdfjs.GlobalWorkerOptions.workerSrc = `${PDFJS_BASE_URL}/pdf.worker.min.mjs`;
-  const pdf = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+  const loadingTask = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
+  const pdf = await loadingTask.promise;
   const pages = [];
-  for (let number = 1; number <= Math.min(pdf.numPages, maxPages); number += 1) {
-    const content = await (await pdf.getPage(number)).getTextContent();
-    const lines = new Map();
-    content.items.forEach((item) => {
-      if (!item.str?.trim()) return;
-      const y = Math.round(item.transform[5]);
-      if (!lines.has(y)) lines.set(y, []);
-      lines.get(y).push({ x: item.transform[4], text: item.str.trim() });
-    });
-    pages.push([...lines.entries()]
-      .sort((a, b) => b[0] - a[0])
-      .map(([, parts]) => parts.sort((a, b) => a.x - b.x).map((part) => part.text).join(" "))
-      .join("\n"));
+  try {
+    for (let number = 1; number <= Math.min(pdf.numPages, maxPages); number += 1) {
+      const content = await (await pdf.getPage(number)).getTextContent();
+      pages.push(groupPdfTextRows(content.items));
+    }
+  } finally {
+    // Release the parsed document and its worker so repeated uploads do not pile up memory.
+    await loadingTask.destroy();
   }
   return pages.join("\n").trim();
 }
@@ -3798,8 +3815,8 @@ function readReportNumber(text, patterns) {
 const LAB_FOOTNOTE = String.raw`(?:\b0\d\s+\D{0,12}?)?`;
 const LAB_UNIT = String.raw`\s*(mmol\s*\/\s*mol|mmol\s*\/\s*l|mg\s*\/\s*dl|%)?`;
 
-function readLabMeasure(text, namePattern) {
-  const match = text.match(new RegExp(`${namePattern}\\D{0,24}?${LAB_FOOTNOTE}(\\d+(?:\\.\\d+)?)${LAB_UNIT}`, "i"));
+function readLabMeasure(text, namePattern, maxGap = 24) {
+  const match = text.match(new RegExp(`${namePattern}\\D{0,${maxGap}}?${LAB_FOOTNOTE}(\\d+(?:\\.\\d+)?)${LAB_UNIT}`, "i"));
   if (!match) return null;
   return { value: Number(match[1]), unit: (match[2] || "").replace(/\s+/g, "").toLowerCase() };
 }
@@ -3814,6 +3831,22 @@ function readCholesterolMgDl(text, namePattern) {
   return measure.value;
 }
 
+// Many labs print total cholesterol simply as "Cholesterol". Accept that only
+// when it is not part of an LDL, HDL, VLDL or non-HDL name or a ratio.
+function readPlainCholesterolMgDl(text) {
+  const pattern = /\bcholesterol\b/gi;
+  let match;
+  while ((match = pattern.exec(text))) {
+    const before = text.slice(Math.max(0, match.index - 9), match.index);
+    const after = text.slice(match.index + match[0].length, match.index + match[0].length + 12);
+    if (/(?:ldl|hdl|vldl)[\s-]*$/i.test(before)) continue;
+    if (/^\s*[,/(-]?\s*(?:ldl|hdl|vldl|ratio|non)/i.test(after)) continue;
+    const value = readCholesterolMgDl(text.slice(match.index), "cholesterol");
+    if (value !== null) return value;
+  }
+  return null;
+}
+
 function readTriglyceridesMgDl(text) {
   const measure = readLabMeasure(text, "triglycerides");
   if (!measure) return null;
@@ -3822,7 +3855,8 @@ function readTriglyceridesMgDl(text) {
 }
 
 function readA1cPercent(text) {
-  const measure = readLabMeasure(text, String.raw`(?:hemoglobin\s*)?a1c`);
+  // UK reports say "HbA1c level - IFCC standardised 44 mmol/mol", so allow a longer label.
+  const measure = readLabMeasure(text, String.raw`(?:hemoglobin\s*)?a1c`, 40);
   if (!measure) return null;
   if (measure.unit === "mmol/mol" || (!measure.unit && measure.value > 20)) return Math.round((0.0915 * measure.value + 2.15) * 10) / 10;
   return measure.value;
@@ -3853,7 +3887,7 @@ function analyzeReportTextLocally(text) {
   if (hasHypertensiveCrisis(lower)) urgentMatches.push("blood pressure over 180/120");
 
   const ldl = readCholesterolMgDl(lower, String.raw`\bldl(?: cholesterol)?`);
-  const totalCholesterol = readCholesterolMgDl(lower, String.raw`(?:total cholesterol|cholesterol,?\s*total)`);
+  const totalCholesterol = readCholesterolMgDl(lower, String.raw`(?:total cholesterol|cholesterol,?\s*total)`) ?? readPlainCholesterolMgDl(lower);
   const triglycerides = readTriglyceridesMgDl(lower);
   const a1c = readA1cPercent(lower);
   // Skip the "25-hydroxy" / "25-OH" in the test name so it is not read as the value.
