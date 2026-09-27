@@ -7,12 +7,12 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-127" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-128" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-127" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-128" />
   </head>
   <body>
     <main class="app-shell">
@@ -44,7 +44,7 @@
             </p>
             <div class="hero-actions" aria-label="Primary actions">
               <a class="primary-link" href="#report-title">Upload report</a>
-              <a class="secondary-link" href="#saved-title">View history</a>
+              <button id="start-tour" class="secondary-link" type="button">See a 1-minute demo</button>
             </div>
             <ul class="hero-assurances" aria-label="How CareWise handles your report">
               <li>Read on your device</li>
@@ -1925,6 +1925,27 @@
       </section>
     </main>
 
-    <script src="script.js?v=carewise-product-127"></script>
+    <div id="tour-bar" class="tour-bar" role="region" aria-label="Guided demo" hidden>
+      <div class="tour-copy">
+        <span id="tour-count" class="tour-count"></span>
+        <strong id="tour-title"></strong>
+        <p id="tour-caption"></p>
+      </div>
+      <div class="tour-actions">
+        <button id="tour-back" class="secondary-button compact" type="button">Back</button>
+        <button id="tour-next" class="primary-button compact" type="button">Next</button>
+        <button id="tour-exit" class="tour-exit" type="button" aria-label="Exit demo">Exit</button>
+      </div>
+    </div>
+    <div id="tour-brief" class="tour-brief" role="dialog" aria-modal="true" aria-label="Doctor brief preview" hidden>
+      <div class="tour-brief-card">
+        <div class="tour-brief-head">
+          <strong>Doctor brief</strong>
+          <button id="tour-brief-close" class="secondary-button compact" type="button">Close</button>
+        </div>
+        <iframe id="tour-brief-frame" title="Doctor brief preview"></iframe>
+      </div>
+    </div>
+    <script src="script.js?v=carewise-product-128"></script>
   </body>
 </html>

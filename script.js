@@ -8628,6 +8628,239 @@ document.querySelector("#record-timeline")?.addEventListener("click", (event) =>
 if (document.querySelector("#record-end")) document.querySelector("#record-end").disabled = true;
 renderHealthRecord();
 
+// Guided demo: walks a made-up patient through every feature, entirely on this device,
+// so it works for an audience even when the server is asleep. Open with the
+// "See a 1-minute demo" button or with #tour in the address.
+const TOUR_PERSON = "Maria (sample)";
+const TOUR_LAB_REPORT = [
+  "Sample lab report for the CareWise demo. Made-up patient: Maria, 54.",
+  "LIPID PANEL",
+  "Total cholesterol 226 mg/dL (ref <200) H",
+  "LDL cholesterol 148 mg/dL (ref <100) H",
+  "HDL cholesterol 44 mg/dL (ref >39)",
+  "Triglycerides 168 mg/dL (ref <150) H",
+  "BLOOD SUGAR",
+  "Hemoglobin A1C 5.8 % (ref 4.0-5.6) H",
+  "Glucose, fasting 104 mg/dL (ref 70-99) H",
+  "KIDNEY, LIVER AND THYROID",
+  "Creatinine 0.9 mg/dL (ref 0.6-1.1)",
+  "eGFR 78 mL/min/1.73m2 (ref >59)",
+  "ALT 22 U/L (ref 7-35)",
+  "TSH 2.1 mIU/L (ref 0.4-4.0)",
+  "BLOOD COUNT",
+  "Hemoglobin 12.9 g/dL (ref 12.0-15.5)",
+  "White blood cell count 6.2 x10^3/uL (ref 4.0-11.0)",
+  "Platelets 245 x10^3/uL (ref 150-400)",
+  "VITAMINS",
+  "Vitamin D, 25-Hydroxy 21 ng/mL (ref 30-100) L",
+  "Blood pressure at home often around 138/86.",
+  "No chest pain, no shortness of breath, no fainting.",
+].join("\n");
+const TOUR_SCAN_REPORT = [
+  "CT CHEST WITHOUT CONTRAST",
+  "Sample radiology report for the CareWise demo. Made-up patient: Maria, 54.",
+  "CLINICAL HISTORY: Cough for 3 weeks.",
+  "FINDINGS: There is a 5 mm solid nodule in the right upper lobe. No pleural effusion. No lymphadenopathy. Mild atelectasis at both lung bases. The heart is normal in size.",
+  "IMPRESSION:",
+  "1. 5 mm right upper lobe pulmonary nodule, likely benign.",
+  "2. Mild bibasilar atelectasis.",
+  "3. No pleural effusion.",
+  "Follow-up chest CT in 12 months is recommended.",
+].join("\n");
+
+const TOUR_STEPS = [
+  {
+    title: "A blood test, explained in seconds",
+    caption: "Maria (made up, 54) adds her lab report. CareWise reads it on the device and shows a simple score and what to watch.",
+    report: "lab",
+    target: ".v1-result-card",
+  },
+  {
+    title: "Every result, against her lab's own range",
+    caption: "Kidney, liver, thyroid, blood count and more, each in plain words and compared with the range her lab printed.",
+    report: "lab",
+    target: ".lab-panel",
+  },
+  {
+    title: "A 4-week plan from her own numbers",
+    caption: "Food and movement steps, each with the reason and a public source. It knows penicillin and lisinopril did not suit her. No medicines, no doses.",
+    report: "lab",
+    target: ".personal-plan",
+  },
+  {
+    title: "In her own language",
+    caption: "The same explanation in Spanish, with one tap. (Spanish wording is a draft pending clinician review.)",
+    report: "lab",
+    language: "es",
+    target: ".v1-result-card",
+  },
+  {
+    title: "A one-page brief for her doctor",
+    caption: "Values, discussion points, her questions and her history on one printable page the doctor can read in 30 seconds.",
+    report: "lab",
+    target: ".v1-result-card",
+    brief: true,
+  },
+  {
+    title: "Her health history, in one place",
+    caption: "Conditions, medicines, what did not suit her and habits over 20 years, for every family member. Saved on this device.",
+    target: ".record-panel",
+    section: "record",
+  },
+  {
+    title: "CT and MRI reports, in plain words",
+    caption: "CareWise explains the radiologist's written report, flags the follow-up to ask about, and never reads the images.",
+    report: "scan",
+    target: ".scan-explainer",
+  },
+  {
+    title: "Now try it with your own report",
+    caption: "Upload a lab report PDF or type the numbers. Text PDFs are read on your device. Educational, not a diagnosis.",
+    target: ".report-panel",
+    final: true,
+  },
+];
+
+let tourStep = -1;
+let tourShownReport = "";
+let tourSavedLanguage = "";
+const tourBar = document.querySelector("#tour-bar");
+
+function tourSetReport(kind) {
+  if (tourShownReport === kind) return;
+  document.querySelector("#report-name").value = kind === "scan" ? "maria-ct-chest.txt" : "maria-blood-test.txt";
+  document.querySelector("#report-person").value = TOUR_PERSON;
+  document.querySelector("#report-text").value = kind === "scan" ? TOUR_SCAN_REPORT : TOUR_LAB_REPORT;
+  // Render without saving to History, so the demo leaves no report behind.
+  latestReportPerson = TOUR_PERSON;
+  const analysis = analyzeReportTextLocally(kind === "scan" ? TOUR_SCAN_REPORT : TOUR_LAB_REPORT);
+  latestReportId = analysis.id;
+  renderLocalReportAnalysis(analysis);
+  reportStatus.textContent = "Demo report for a made-up patient. Nothing was saved.";
+  tourShownReport = kind;
+}
+
+function tourEnsureSampleHistory() {
+  if (getHealthRecordFor(TOUR_PERSON).some((item) => item.sample)) return;
+  const items = getHealthRecord();
+  const stamp = Date.now();
+  getSampleHealthHistory().forEach((item, index) => items.push({ id: `rec-tour-${stamp}-${index}`, createdAt: new Date().toISOString(), person: TOUR_PERSON, sample: true, ...item }));
+  saveHealthRecord(items);
+}
+
+function tourSetLanguage(language) {
+  if (reportLanguage === language) return;
+  reportLanguage = language;
+  if (latestReportAnalysis) renderLocalReportAnalysis(latestReportAnalysis);
+}
+
+function tourScrollTo(selector) {
+  const element = document.querySelector(selector);
+  if (!element) return;
+  // Land below the sticky header and tab bar, which would otherwise cover the section's heading.
+  const header = [".topbar", ".quick-nav"].reduce((height, headerSelector) => {
+    const bar = document.querySelector(headerSelector);
+    const style = bar && getComputedStyle(bar);
+    return style && style.position === "sticky" && bar.offsetHeight ? Math.max(height, (parseFloat(style.top) || 0) + bar.offsetHeight) : height;
+  }, 0);
+  const top = element.getBoundingClientRect().top + window.scrollY - header - 16;
+  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  element.classList.remove("tour-spotlight");
+  void element.offsetWidth;
+  element.classList.add("tour-spotlight");
+}
+
+function tourShowBrief() {
+  const frame = document.querySelector("#tour-brief-frame");
+  frame.srcdoc = buildDoctorBriefHtml(latestReportAnalysis, TOUR_PERSON);
+  document.querySelector("#tour-brief").hidden = false;
+  document.querySelector("#tour-brief-close").focus();
+}
+
+function tourHideBrief() {
+  document.querySelector("#tour-brief").hidden = true;
+}
+
+function showTourStep(index) {
+  const step = TOUR_STEPS[index];
+  if (!step) return;
+  tourStep = index;
+  tourHideBrief();
+  window.showCareWiseSection?.("report-title", false);
+  if (step.report) tourSetReport(step.report);
+  tourSetLanguage(step.language || "en");
+  if (step.section === "record") renderHealthRecord(TOUR_PERSON);
+
+  document.querySelector("#tour-count").textContent = `Demo · ${index + 1} of ${TOUR_STEPS.length}`;
+  document.querySelector("#tour-title").textContent = step.title;
+  document.querySelector("#tour-caption").textContent = step.caption;
+  document.querySelector("#tour-back").disabled = index === 0;
+  document.querySelector("#tour-next").textContent = step.final ? "Finish" : "Next";
+
+  requestAnimationFrame(() => {
+    tourScrollTo(step.target);
+    if (step.brief) tourShowBrief();
+  });
+}
+
+function startTour() {
+  tourSavedLanguage = reportLanguage;
+  tourShownReport = "";
+  tourEnsureSampleHistory();
+  document.body.classList.add("tour-active");
+  tourBar.hidden = false;
+  showTourStep(0);
+  document.querySelector("#tour-next").focus();
+}
+
+function endTour() {
+  if (tourStep < 0) return;
+  tourStep = -1;
+  tourHideBrief();
+  tourBar.hidden = true;
+  document.body.classList.remove("tour-active");
+  // Remove the made-up patient so the demo leaves nothing on this device.
+  saveHealthRecord(getHealthRecord().filter((item) => normalizeReportPerson(item.person) !== TOUR_PERSON));
+  renderHealthRecord("Me");
+  tourSetLanguage(tourSavedLanguage || "en");
+  if (history.replaceState && window.location.hash === "#tour") history.replaceState(null, "", "#report-title");
+  document.querySelector("#report-text").value = "";
+  document.querySelector("#report-person").value = "";
+  document.querySelector("#report-name").value = "";
+  reportStatus.textContent = "Try the sample report, paste lab text, or upload a file.";
+  window.showCareWiseSection?.("report-title", false);
+  tourScrollTo(".report-panel");
+}
+
+document.querySelector("#start-tour")?.addEventListener("click", startTour);
+document.querySelector("#tour-next")?.addEventListener("click", () => {
+  if (TOUR_STEPS[tourStep]?.final) endTour();
+  else showTourStep(tourStep + 1);
+});
+document.querySelector("#tour-back")?.addEventListener("click", () => showTourStep(Math.max(0, tourStep - 1)));
+document.querySelector("#tour-exit")?.addEventListener("click", endTour);
+document.querySelector("#tour-brief-close")?.addEventListener("click", tourHideBrief);
+document.querySelector("#tour-brief")?.addEventListener("click", (event) => {
+  if (event.target.id === "tour-brief") tourHideBrief();
+});
+document.addEventListener("keydown", (event) => {
+  if (tourStep < 0 || event.target.closest?.("input, textarea, select")) return;
+  if (event.key === "Escape") {
+    if (!document.querySelector("#tour-brief").hidden) tourHideBrief();
+    else endTour();
+  } else if (event.key === "ArrowRight" || event.key === "PageDown") {
+    event.preventDefault();
+    document.querySelector("#tour-next").click();
+  } else if (event.key === "ArrowLeft" || event.key === "PageUp") {
+    event.preventDefault();
+    showTourStep(Math.max(0, tourStep - 1));
+  }
+});
+if (window.location.hash === "#tour") startTour();
+window.addEventListener("hashchange", () => {
+  if (window.location.hash === "#tour" && tourStep < 0) startTour();
+});
+
 function registerCareWiseServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   if (!["http:", "https:"].includes(window.location.protocol)) return;
