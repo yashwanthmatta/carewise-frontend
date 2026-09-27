@@ -5471,3 +5471,83 @@ body::before {
 .plan-grid {
   align-items: start;
 }
+
+/* All tests on the report */
+.lab-panel {
+  grid-column: 1 / -1;
+}
+
+.lab-panel-note {
+  margin: 0 0 10px;
+  color: var(--cw-ink-soft);
+  font-size: 0.88rem;
+}
+
+.lab-panel-table {
+  border: 1px solid var(--cw-line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.lab-panel-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr);
+  gap: 10px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--cw-line);
+  align-items: center;
+}
+
+.lab-panel-head {
+  border-top: 0;
+  background: #eef6f4;
+  font-weight: 650;
+  font-size: 0.85rem;
+  color: var(--cw-deep);
+}
+
+.lab-panel-row small {
+  display: block;
+  color: var(--cw-ink-soft);
+  font-size: 0.8rem;
+}
+
+.lab-panel-row em {
+  font-style: normal;
+  font-weight: 650;
+  font-size: 0.85rem;
+  color: var(--cw-teal);
+}
+
+.lab-status-above em,
+.lab-status-below em,
+.lab-status-outside em {
+  color: #9a3b17;
+}
+
+.lab-status-critical {
+  background: #fdf2f2;
+}
+
+.lab-status-critical em {
+  color: #b91c1c;
+}
+
+.lab-status-unknown em {
+  color: var(--cw-ink-soft);
+}
+
+@media (max-width: 760px) {
+  .lab-panel-head {
+    display: none;
+  }
+
+  .lab-panel-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .lab-panel-row span:first-child {
+    grid-column: 1 / -1;
+  }
+}
