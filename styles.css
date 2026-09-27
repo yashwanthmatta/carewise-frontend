@@ -5551,3 +5551,50 @@ body::before {
     grid-column: 1 / -1;
   }
 }
+
+/* Scan report explainer */
+.scan-explainer {
+  grid-column: 1 / -1;
+}
+
+.scan-critical {
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  border: 1px solid #f1b8b8;
+  border-radius: 12px;
+  background: #fdf2f2;
+  color: #991b1b;
+  font-weight: 650;
+}
+
+.scan-impression blockquote {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--cw-teal);
+  background: #f5faf8;
+  border-radius: 6px;
+  line-height: 1.5;
+}
+
+.scan-terms dl {
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.scan-terms dt {
+  font-weight: 650;
+  color: var(--cw-deep);
+}
+
+.scan-terms dd {
+  margin: 0 0 4px;
+  color: var(--cw-ink-soft);
+  font-size: 0.9rem;
+}
+
+.scan-explainer .plan-card p {
+  margin: 0 0 8px;
+  color: var(--cw-ink-soft);
+  font-size: 0.9rem;
+}
