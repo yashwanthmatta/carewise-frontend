@@ -5796,3 +5796,83 @@ body.tour-active {
     display: none !important;
   }
 }
+
+/* Was this helpful?, early access and founder view */
+.feedback-box {
+  display: grid;
+  gap: 10px;
+  margin: 0 18px 18px;
+  border: 1px solid var(--cw-line);
+  border-radius: 8px;
+  padding: 13px;
+  background: var(--cw-mist);
+}
+
+.feedback-question {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.feedback-box button.selected {
+  border-color: var(--cw-teal);
+  background: var(--cw-teal);
+  color: #ffffff;
+}
+
+.feedback-more {
+  display: grid;
+  gap: 8px;
+}
+
+.feedback-more textarea,
+.early-access-form textarea {
+  width: 100%;
+}
+
+.feedback-early-access,
+.hero-early-access a {
+  color: var(--cw-teal);
+  font-weight: 600;
+}
+
+.hero-early-access {
+  margin: 14px 0 0;
+}
+
+.early-access-form {
+  display: grid;
+  gap: 12px;
+}
+
+.founder-results h4 {
+  margin: 18px 0 8px;
+}
+
+.founder-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.founder-table th,
+.founder-table td {
+  border: 1px solid var(--cw-line);
+  padding: 6px 8px;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.founder-list {
+  display: grid;
+  gap: 6px;
+  padding-left: 18px;
+}
+
+@media (max-width: 640px) {
+  .feedback-box {
+    margin: 0 12px 12px;
+  }
+}

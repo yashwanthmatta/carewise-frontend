@@ -649,6 +649,15 @@ const REPORT_TRANSLATIONS = {
       copyQuestions: "Copiar preguntas",
       copyPlan: "Copiar plan",
       draftNotice: "Traducción preliminar, pendiente de revisión por un profesional de salud y un traductor médico. El resumen para el médico se genera en inglés.",
+      helpfulQuestion: "¿Le resultó útil esta explicación?",
+      helpfulYes: "Sí",
+      helpfulNo: "No",
+      helpfulMore: "Gracias. ¿Qué la mejoraría? (opcional)",
+      helpfulPlaceholder: "Por favor, no incluya nombres ni datos médicos.",
+      helpfulSend: "Enviar",
+      helpfulSent: "Gracias por ayudarnos a mejorar CareWise.",
+      helpfulOffline: "Gracias. No se pudo conectar con CareWise en este momento, así que no se envió nada.",
+      earlyAccessLink: "¿Quiere probar las novedades primero? Únase al acceso anticipado",
     },
     phrases: {
       "LDL cholesterol": "Colesterol LDL",
@@ -772,6 +781,15 @@ const REPORT_UI_EN = {
   copyQuestions: "Copy questions",
   copyPlan: "Copy plan",
   draftNotice: "",
+  helpfulQuestion: "Was this explanation helpful?",
+  helpfulYes: "Yes",
+  helpfulNo: "No",
+  helpfulMore: "Thank you. What would make it better? (optional)",
+  helpfulPlaceholder: "Please leave out names and medical details.",
+  helpfulSend: "Send",
+  helpfulSent: "Thank you for helping us improve CareWise.",
+  helpfulOffline: "Thank you. CareWise could not be reached just now, so nothing was sent.",
+  earlyAccessLink: "Want new features first? Join early access",
 };
 
 // Personal plan built from a person's own report values, using published public
@@ -1522,6 +1540,7 @@ document.querySelector("#run-demo-flow").addEventListener("click", () => {
 });
 
 document.querySelector("#sample-report-text").addEventListener("click", () => {
+  trackReportUsage("sample_opened");
   fillSampleReportText();
   latestReportId = "";
   analyzeAndShowReport();
@@ -1896,11 +1915,13 @@ function initializeWorkspaceNavigation() {
     ["mobile-title", document.querySelector(".mobile-panel")],
     ["launch-title", document.querySelector(".launch-panel")],
     ["export-title", document.querySelector(".export-panel")],
+    ["early-access-title", document.querySelector(".early-access-panel")],
+    ["founder", document.querySelector(".founder-panel")],
     ["results", document.querySelector("#results")],
   ].filter(([, element]) => Boolean(element));
 
   const sectionsById = new Map(sectionTargets);
-  const navLinks = [...document.querySelectorAll(".quick-nav a[href^='#'], .team-nav a[href^='#'], .progress-rail a[href^='#'], .hero-actions a[href^='#'], .consent-action-card a[href^='#'], .report-panel a[href^='#']")];
+  const navLinks = [...document.querySelectorAll(".quick-nav a[href^='#'], .team-nav a[href^='#'], .progress-rail a[href^='#'], .hero-actions a[href^='#'], .hero-early-access a[href^='#'], [data-early-access-link], .consent-action-card a[href^='#'], .report-panel a[href^='#']")];
 
   sectionTargets.forEach(([, element]) => {
     element.classList.add("app-section");
@@ -3049,6 +3070,44 @@ async function requestJson(method, path, payload, options = {}) {
   });
 }
 
+// Anonymous daily counts of a few actions (no report text, no account, no IP kept)
+// so the team can see whether people use CareWise. Off for Do Not Track, during the
+// guided demo's own steps, and on local copies unless switched on for testing.
+function trackUsage(name) {
+  try {
+    if (navigator.doNotTrack === "1" || window.doNotTrack === "1") return;
+    const local = /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+    if (local && localStorage.getItem("carewiseTrackLocal") !== "1") return;
+    fetch(`${backendBaseUrl}/product/events`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, source: "web" }),
+      keepalive: true,
+    }).catch(() => {});
+  } catch {}
+}
+
+function trackReportUsage(name) {
+  try {
+    if (tourStep >= 0) return;
+  } catch {}
+  trackUsage(name);
+}
+
+async function postProductSignal(path, payload) {
+  const response = await fetch(`${backendBaseUrl}/product/${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    const error = new Error(`Backend returned ${response.status}`);
+    error.status = response.status;
+    throw error;
+  }
+  return response.json();
+}
+
 async function checkBackend(showSuccess) {
   try {
     const health = await apiGet("/health");
@@ -3960,12 +4019,201 @@ async function readPdfTextLocally(file) {
     }
     document.querySelector("#report-text").value = text.slice(0, 12000);
     updateProgressRail();
+    trackReportUsage("pdf_read");
     await analyzeAndShowReport();
     reportStatus.textContent = `PDF read on this device. Nothing was uploaded. ${reportStatus.textContent}`;
   } catch {
     reportStatus.textContent = "CareWise could not read this PDF. Paste the lab values as text below.";
   }
 }
+
+// "Was this helpful?" under each explanation. The answer is sent on the first tap;
+// an optional comment can follow. Nothing from the report itself is sent.
+function renderFeedbackBox(ui) {
+  return `
+    <div class="feedback-box" data-feedback>
+      <div class="feedback-question">
+        <strong>${escapeHtml(ui.helpfulQuestion)}</strong>
+        <div class="inline-action-group">
+          <button class="secondary-button compact" type="button" data-feedback-answer="yes">${escapeHtml(ui.helpfulYes)}</button>
+          <button class="secondary-button compact" type="button" data-feedback-answer="no">${escapeHtml(ui.helpfulNo)}</button>
+        </div>
+      </div>
+      <form class="feedback-more" data-feedback-form hidden>
+        <label>${escapeHtml(ui.helpfulMore)}
+          <textarea rows="2" maxlength="500" placeholder="${escapeHtml(ui.helpfulPlaceholder)}"></textarea>
+        </label>
+        <button class="primary-button compact" type="submit">${escapeHtml(ui.helpfulSend)}</button>
+      </form>
+      <p class="status-line" data-feedback-status role="status"></p>
+      <a class="feedback-early-access" href="#early-access-title" data-early-access-link>${escapeHtml(ui.earlyAccessLink)}</a>
+    </div>`;
+}
+
+let latestFeedbackId = "";
+
+async function sendFeedbackAnswer(box, helpful) {
+  const ui = reportUiText();
+  const status = box.querySelector("[data-feedback-status]");
+  box.querySelectorAll("[data-feedback-answer]").forEach((button) => {
+    button.disabled = true;
+    button.classList.toggle("selected", button.dataset.feedbackAnswer === (helpful ? "yes" : "no"));
+  });
+  try {
+    const result = await postProductSignal("feedback", { helpful, source: "web" });
+    latestFeedbackId = result.id || "";
+    box.querySelector("[data-feedback-form]").hidden = !latestFeedbackId;
+    status.textContent = ui.helpfulSent;
+  } catch {
+    status.textContent = ui.helpfulOffline;
+  }
+}
+
+async function sendFeedbackComment(box) {
+  const ui = reportUiText();
+  const form = box.querySelector("[data-feedback-form]");
+  const comment = form.querySelector("textarea").value.trim();
+  if (!comment || !latestFeedbackId) return;
+  form.querySelector("button").disabled = true;
+  try {
+    await postProductSignal(`feedback/${encodeURIComponent(latestFeedbackId)}/comment`, { comment });
+    form.hidden = true;
+    box.querySelector("[data-feedback-status]").textContent = ui.helpfulSent;
+  } catch {
+    form.querySelector("button").disabled = false;
+    box.querySelector("[data-feedback-status]").textContent = ui.helpfulOffline;
+  }
+}
+
+document.addEventListener("click", (event) => {
+  const answer = event.target.closest?.("[data-feedback-answer]");
+  if (answer) {
+    sendFeedbackAnswer(answer.closest("[data-feedback]"), answer.dataset.feedbackAnswer === "yes");
+    return;
+  }
+  const earlyAccess = event.target.closest?.("[data-early-access-link]");
+  if (earlyAccess && window.showCareWiseSection) {
+    event.preventDefault();
+    history.pushState(null, "", "#early-access-title");
+    window.showCareWiseSection("early-access-title");
+  }
+});
+document.addEventListener("submit", (event) => {
+  if (!event.target.matches?.("[data-feedback-form]")) return;
+  event.preventDefault();
+  sendFeedbackComment(event.target.closest("[data-feedback]"));
+});
+
+// Early access sign-up: email (stored encrypted), who they are, optional note.
+document.querySelector("#early-access-form")?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const status = document.querySelector("#early-access-status");
+  const email = document.querySelector("#early-access-email").value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    status.textContent = "Please enter a valid email address.";
+    return;
+  }
+  if (!document.querySelector("#early-access-consent").checked) {
+    status.textContent = "Please tick the box so we can email you about early access.";
+    return;
+  }
+  const button = document.querySelector("#early-access-submit");
+  button.disabled = true;
+  status.textContent = "Joining early access...";
+  try {
+    await postProductSignal("early-access", {
+      email,
+      role: document.querySelector("#early-access-role").value,
+      note: document.querySelector("#early-access-note").value.trim(),
+      consent: true,
+      source: "web",
+    });
+    event.target.reset();
+    status.textContent = "You're on the list. Thank you! We'll email you when there is something new to try.";
+  } catch (error) {
+    status.textContent = error.status === 429
+      ? "Too many tries from this connection. Please try again in 15 minutes."
+      : "CareWise could not be reached just now. The server may be waking up; please try again in a minute.";
+  } finally {
+    button.disabled = false;
+  }
+});
+let earlyAccessOpened = false;
+document.querySelector("#early-access-form")?.addEventListener("focusin", () => {
+  if (earlyAccessOpened) return;
+  earlyAccessOpened = true;
+  trackUsage("early_access_opened");
+});
+
+// Founder view (#founder): reads counts, feedback and sign-ups with the founder token.
+let founderSignups = [];
+const USAGE_EVENT_LABELS = {
+  report_explained: "Reports explained",
+  sample_opened: "Sample report opened",
+  demo_started: "1-minute demo started",
+  demo_finished: "1-minute demo finished",
+  pdf_read: "PDFs read",
+  doctor_brief_opened: "Doctor brief opened",
+  spanish_used: "Switched to Spanish",
+  early_access_opened: "Early-access form opened",
+};
+
+function renderFounderSummary(summary) {
+  const totals = summary.usage_totals || {};
+  const helpful = summary.helpful || { yes: 0, no: 0 };
+  const answered = helpful.yes + helpful.no;
+  const days = [...new Set((summary.usage_by_day || []).map((row) => row.day))].slice(0, 14);
+  const perDay = (day) => (summary.usage_by_day || []).filter((row) => row.day === day && row.name === "report_explained").reduce((sum, row) => sum + row.count, 0);
+  document.querySelector("#founder-results").innerHTML = `
+    <div class="readiness-grid">
+      ${Object.entries(USAGE_EVENT_LABELS).map(([key, label]) => `<article><strong>${escapeHtml(String(totals[key] || 0))}</strong><span>${escapeHtml(label)}</span></article>`).join("")}
+      <article><strong>${answered ? `${Math.round((helpful.yes / answered) * 100)}%` : "–"}</strong><span>Found it helpful (${helpful.yes} yes, ${helpful.no} no)</span></article>
+      <article><strong>${escapeHtml(String((summary.early_access || []).length))}</strong><span>Early-access sign-ups</span></article>
+    </div>
+    ${days.length ? `<h4>Reports explained per day</h4><table class="founder-table"><tr><th>Day</th><th>Reports</th></tr>${days.map((day) => `<tr><td>${escapeHtml(day)}</td><td>${perDay(day)}</td></tr>`).join("")}</table>` : ""}
+    <h4>Comments</h4>
+    ${(summary.comments || []).length ? `<ul class="founder-list">${summary.comments.map((item) => `<li><strong>${item.helpful === "yes" ? "Helpful" : "Not helpful"}</strong> ${escapeHtml(item.comment)} <small>${escapeHtml(String(item.created_at || "").slice(0, 10))}</small></li>`).join("")}</ul>` : "<p>No comments yet.</p>"}
+    <h4>Early-access sign-ups</h4>
+    ${(summary.early_access || []).length ? `<table class="founder-table"><tr><th>Email</th><th>Who</th><th>Note</th><th>Date</th></tr>${summary.early_access.map((item) => `<tr><td>${escapeHtml(item.email)}</td><td>${escapeHtml(item.role)}</td><td>${escapeHtml(item.note)}</td><td>${escapeHtml(String(item.created_at || "").slice(0, 10))}</td></tr>`).join("")}</table>` : "<p>No sign-ups yet.</p>"}`;
+}
+
+async function loadFounderSummary() {
+  const status = document.querySelector("#founder-status");
+  const token = document.querySelector("#founder-token").value.trim() || sessionStorage.getItem("carewiseFounderToken") || "";
+  if (!token) {
+    status.textContent = "Enter the founder token first.";
+    return;
+  }
+  status.textContent = "Loading... (the server can take a minute to wake up)";
+  try {
+    const response = await fetch(`${backendBaseUrl}/product/summary`, { headers: { "X-Founder-Token": token } });
+    if (response.status === 404) throw new Error("The founder view is switched off. Add CAREWISE_FOUNDER_TOKEN in the API's environment settings on Render.");
+    if (response.status === 401) throw new Error("That token is not right.");
+    if (!response.ok) throw new Error(`The server answered ${response.status}. Try again in a minute.`);
+    const summary = await response.json();
+    try { sessionStorage.setItem("carewiseFounderToken", token); } catch {}
+    founderSignups = summary.early_access || [];
+    document.querySelector("#founder-csv").disabled = !founderSignups.length;
+    renderFounderSummary(summary);
+    status.textContent = `Updated ${new Date().toLocaleTimeString()}.`;
+  } catch (error) {
+    status.textContent = error.message || "CareWise could not be reached just now.";
+  }
+}
+
+document.querySelector("#founder-form")?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  loadFounderSummary();
+});
+document.querySelector("#founder-csv")?.addEventListener("click", () => {
+  const cell = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+  const csv = ["email,role,note,date", ...founderSignups.map((item) => [item.email, item.role, item.note, String(item.created_at || "").slice(0, 10)].map(cell).join(","))].join("\n");
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  link.download = "carewise-early-access.csv";
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+});
 
 function getReportHistory() {
   try {
@@ -4834,6 +5082,7 @@ function reportUiText(language = reportLanguage) {
 
 function setReportLanguage(language) {
   if (!REPORT_LANGUAGES[language]) return;
+  if (language === "es" && reportLanguage !== "es") trackReportUsage("spanish_used");
   reportLanguage = language;
   try { localStorage.setItem("carewiseReportLanguage", language); } catch {}
   if (latestReportAnalysis) renderLocalReportAnalysis(latestReportAnalysis);
@@ -5033,6 +5282,7 @@ function renderLocalReportAnalysis(analysis) {
         ${renderPersonalPlanSection(analysis)}
       </div>
       <div class="safety-note"><strong>${escapeHtml(ui.safetyTitle)}</strong><span>${escapeHtml(ui.safetyText)}</span></div>
+      ${analysis.noData ? "" : renderFeedbackBox(ui)}
     </article>
   `;
 
@@ -5122,6 +5372,7 @@ ${buildHealthHistoryBriefSection(person)}
 }
 
 function openDoctorBrief() {
+  trackReportUsage("doctor_brief_opened");
   if (!latestReportAnalysis) {
     reportStatus.textContent = "Analyze a report first, then open the doctor brief.";
     return;
@@ -5322,6 +5573,7 @@ function runLocalReportAnalysis() {
     createdAt: new Date().toISOString(),
   });
   renderLocalReportAnalysis(analysis);
+  trackReportUsage("report_explained");
   reportStatus.textContent = "Analysis complete. Review the summary, health score, and doctor questions below.";
   if (reportAnswer) reportAnswer.textContent = 'Ask a question about this report, such as "Why is my LDL high?"';
   return analysis;
@@ -9012,6 +9264,7 @@ function showTourStep(index) {
 }
 
 function startTour() {
+  trackUsage("demo_started");
   tourSavedLanguage = reportLanguage;
   tourShownReport = "";
   tourEnsureSampleHistory();
@@ -9042,7 +9295,10 @@ function endTour() {
 
 document.querySelector("#start-tour")?.addEventListener("click", startTour);
 document.querySelector("#tour-next")?.addEventListener("click", () => {
-  if (TOUR_STEPS[tourStep]?.final) endTour();
+  if (TOUR_STEPS[tourStep]?.final) {
+    trackUsage("demo_finished");
+    endTour();
+  }
   else showTourStep(tourStep + 1);
 });
 document.querySelector("#tour-back")?.addEventListener("click", () => showTourStep(Math.max(0, tourStep - 1)));

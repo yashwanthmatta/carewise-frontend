@@ -7,12 +7,12 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-132" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-133" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-132" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-133" />
   </head>
   <body>
     <main class="app-shell">
@@ -46,6 +46,7 @@
               <a class="primary-link" href="#report-title">Upload report</a>
               <button id="start-tour" class="secondary-link" type="button">See a 1-minute demo</button>
             </div>
+            <p class="hero-early-access"><a href="#early-access-title">Looking after a parent's health? Join early access</a></p>
             <ul class="hero-assurances" aria-label="How CareWise handles your report">
               <li>Read on your device</li>
               <li>English and Español</li>
@@ -1879,6 +1880,67 @@
           </div>
         </section>
 
+        <section class="panel early-access-panel" aria-labelledby="early-access-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Early access</p>
+              <h3 id="early-access-title">Help us build CareWise for your family</h3>
+              <p class="panel-intro">We are building CareWise with people who look after a parent's or partner's health. Join to try new features first and tell us what would help.</p>
+            </div>
+          </div>
+          <form id="early-access-form" class="early-access-form" novalidate>
+            <div class="account-grid">
+              <label>
+                Email
+                <input id="early-access-email" type="email" autocomplete="email" required placeholder="you@example.com" />
+              </label>
+              <label>
+                I am
+                <select id="early-access-role">
+                  <option value="caregiver" selected>Looking after a family member</option>
+                  <option value="patient">Managing my own health</option>
+                  <option value="clinician">A doctor, nurse or pharmacist</option>
+                  <option value="other">Something else</option>
+                </select>
+              </label>
+            </div>
+            <label>
+              What is hardest about lab reports in your family? (optional)
+              <textarea id="early-access-note" rows="3" maxlength="500" placeholder="Please leave out names and medical details."></textarea>
+            </label>
+            <label class="check-line consent-check">
+              <input id="early-access-consent" type="checkbox" />
+              CareWise can email me about early access. I can ask to be removed at any time.
+            </label>
+            <div class="primary-action-row">
+              <button id="early-access-submit" class="primary-button narrow-button" type="submit">Join early access</button>
+            </div>
+            <p id="early-access-status" class="status-line" role="status"></p>
+          </form>
+        </section>
+
+        <section class="panel founder-panel" aria-labelledby="founder">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Founder view</p>
+              <h3 id="founder">How CareWise is being used</h3>
+              <p class="panel-intro">Only for the CareWise team. Enter the founder token set in the hosting dashboard. It is kept in this browser tab only.</p>
+            </div>
+          </div>
+          <form id="founder-form" class="account-grid" novalidate>
+            <label>
+              Founder token
+              <input id="founder-token" type="password" autocomplete="off" />
+            </label>
+            <div class="primary-action-row">
+              <button class="primary-button narrow-button" type="submit">Show numbers</button>
+              <button id="founder-csv" class="secondary-button" type="button" disabled>Download sign-ups (CSV)</button>
+            </div>
+          </form>
+          <p id="founder-status" class="status-line" role="status"></p>
+          <div id="founder-results" class="founder-results"></div>
+        </section>
+
         <section class="panel export-panel" aria-labelledby="export-title">
           <div class="panel-heading-row">
             <div>
@@ -1946,6 +2008,6 @@
         <iframe id="tour-brief-frame" title="Doctor brief preview"></iframe>
       </div>
     </div>
-    <script src="script.js?v=carewise-product-132"></script>
+    <script src="script.js?v=carewise-product-133"></script>
   </body>
 </html>
