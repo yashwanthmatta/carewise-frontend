@@ -7,12 +7,12 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-133" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-134" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-133" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-134" />
   </head>
   <body>
     <main class="app-shell">
@@ -334,7 +334,8 @@
             <button id="load-reports" class="secondary-button v1-secondary-control" type="button">Load cloud reports</button>
           </div>
           <p id="report-status" class="status-line" role="status">Try the sample report, paste lab text, or upload a file when signed in.</p>
-          <p id="ocr-status" class="status-line" role="status">Text PDFs are read on your device. For a photo or scanned page, type the numbers in the box above.</p>
+          <p id="ocr-status" class="status-line" role="status">PDFs and photos of reports are read on your device. Nothing is uploaded.</p>
+          <div id="ocr-checks" class="ocr-checks" hidden></div>
           <div id="report-results" class="saved-plans-list">
             <article class="empty-result-card">
               <strong>Your explanation will appear here</strong>
@@ -414,71 +415,6 @@
           <p id="report-eval-status" class="status-line" role="status">Evaluation is a safety check, not a guarantee of clinical accuracy.</p>
         </section>
 
-        <section class="panel lab-trend-panel" aria-labelledby="lab-trend-title">
-          <div class="panel-heading-row">
-            <div>
-              <p class="eyebrow">Report follow-up</p>
-              <h3 id="lab-trend-title">Lab value tracker</h3>
-              <p class="panel-intro">Save key lab values from reports so trends are easier to discuss. Ranges vary by lab, age, pregnancy, medicines, and medical history, so a licensed clinician should interpret results.</p>
-            </div>
-            <div class="inline-action-group">
-              <button id="load-lab-trends" class="secondary-button compact" type="button">Load cloud labs</button>
-              <button id="clear-lab-trends" class="secondary-button compact" type="button">Clear labs</button>
-            </div>
-          </div>
-          <div class="lab-trend-grid">
-            <label>
-              Test
-              <select id="lab-test">
-                <option value="A1C">A1C</option>
-                <option value="Fasting glucose">Fasting glucose</option>
-                <option value="LDL cholesterol">LDL cholesterol</option>
-                <option value="HDL cholesterol">HDL cholesterol</option>
-                <option value="Triglycerides">Triglycerides</option>
-                <option value="Blood pressure">Blood pressure</option>
-                <option value="Vitamin D">Vitamin D</option>
-                <option value="Creatinine/eGFR">Creatinine/eGFR</option>
-                <option value="TSH">TSH</option>
-                <option value="Other">Other</option>
-              </select>
-            </label>
-            <label>
-              Value
-              <input id="lab-value" type="text" placeholder="Example: 128 or 6.1" />
-            </label>
-            <label>
-              Unit
-              <input id="lab-unit" type="text" placeholder="mg/dL, %, mmHg" />
-            </label>
-            <label>
-              Date
-              <input id="lab-date" type="date" />
-            </label>
-            <label>
-              Flag
-              <select id="lab-flag">
-                <option value="Not sure" selected>Not sure</option>
-                <option value="In range">In range</option>
-                <option value="High">High</option>
-                <option value="Low">Low</option>
-                <option value="Needs clinician review">Needs clinician review</option>
-              </select>
-            </label>
-            <label class="lab-trend-wide">
-              Notes
-              <textarea id="lab-notes" rows="3" placeholder="Reference range, fasting status, symptoms, medications, or question for clinician."></textarea>
-            </label>
-          </div>
-          <div class="primary-action-row">
-            <button id="sample-lab-trend" class="secondary-button" type="button">Use sample labs</button>
-            <button id="save-lab-trend" class="primary-button narrow-button" type="button">Save lab</button>
-            <button id="copy-lab-trends" class="secondary-button" type="button">Copy lab summary</button>
-          </div>
-          <p id="lab-trend-status" class="status-line" role="status">Save values from reports before building a visit brief.</p>
-          <div id="lab-trend-list" class="lab-trend-list">
-            <p>No lab values saved yet.</p>
-          </div>
-        </section>
 
         <form id="patient-form" class="intake-grid">
           <section class="panel intake-panel">
@@ -659,21 +595,21 @@
             <div class="plan-options">
               <label class="plan-card">
                 <input type="radio" name="plan" value="basic" checked />
-                <span class="plan-name">Basic</span>
-                <strong>$29/mo</strong>
-                <span>Monthly summary and diet reminders</span>
+                <span class="plan-name">Free</span>
+                <strong>Free</strong>
+                <span>Explain any report, doctor brief, health record</span>
               </label>
               <label class="plan-card">
                 <input type="radio" name="plan" value="plus" />
                 <span class="plan-name">Plus</span>
-                <strong>$79/mo</strong>
-                <span>Care plan, nurse check-in, insurance guidance</span>
+                <strong>$7/mo</strong>
+                <span>Personal plans, reminders, trends over the years</span>
               </label>
               <label class="plan-card">
                 <input type="radio" name="plan" value="premium" />
-                <span class="plan-name">Premium</span>
-                <strong>$149/mo</strong>
-                <span>Priority matching, weekly coaching, plan concierge</span>
+                <span class="plan-name">Family</span>
+                <strong>$12/mo</strong>
+                <span>Plus for up to 5 people, shared with caregivers</span>
               </label>
             </div>
           </section>
@@ -775,6 +711,72 @@
           </div>
           <div id="saved-plans" class="saved-plans-list">
             <p>No saved plans yet.</p>
+          </div>
+        </section>
+
+        <section class="panel lab-trend-panel" aria-labelledby="lab-trend-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Report follow-up</p>
+              <h3 id="lab-trend-title">Lab value tracker</h3>
+              <p class="panel-intro">Save key lab values from reports so trends are easier to discuss. Ranges vary by lab, age, pregnancy, medicines, and medical history, so a licensed clinician should interpret results.</p>
+            </div>
+            <div class="inline-action-group">
+              <button id="load-lab-trends" class="secondary-button compact" type="button">Load cloud labs</button>
+              <button id="clear-lab-trends" class="secondary-button compact" type="button">Clear labs</button>
+            </div>
+          </div>
+          <div class="lab-trend-grid">
+            <label>
+              Test
+              <select id="lab-test">
+                <option value="A1C">A1C</option>
+                <option value="Fasting glucose">Fasting glucose</option>
+                <option value="LDL cholesterol">LDL cholesterol</option>
+                <option value="HDL cholesterol">HDL cholesterol</option>
+                <option value="Triglycerides">Triglycerides</option>
+                <option value="Blood pressure">Blood pressure</option>
+                <option value="Vitamin D">Vitamin D</option>
+                <option value="Creatinine/eGFR">Creatinine/eGFR</option>
+                <option value="TSH">TSH</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+            <label>
+              Value
+              <input id="lab-value" type="text" placeholder="Example: 128 or 6.1" />
+            </label>
+            <label>
+              Unit
+              <input id="lab-unit" type="text" placeholder="mg/dL, %, mmHg" />
+            </label>
+            <label>
+              Date
+              <input id="lab-date" type="date" />
+            </label>
+            <label>
+              Flag
+              <select id="lab-flag">
+                <option value="Not sure" selected>Not sure</option>
+                <option value="In range">In range</option>
+                <option value="High">High</option>
+                <option value="Low">Low</option>
+                <option value="Needs clinician review">Needs clinician review</option>
+              </select>
+            </label>
+            <label class="lab-trend-wide">
+              Notes
+              <textarea id="lab-notes" rows="3" placeholder="Reference range, fasting status, symptoms, medications, or question for clinician."></textarea>
+            </label>
+          </div>
+          <div class="primary-action-row">
+            <button id="sample-lab-trend" class="secondary-button" type="button">Use sample labs</button>
+            <button id="save-lab-trend" class="primary-button narrow-button" type="button">Save lab</button>
+            <button id="copy-lab-trends" class="secondary-button" type="button">Copy lab summary</button>
+          </div>
+          <p id="lab-trend-status" class="status-line" role="status">Save values from reports before building a visit brief.</p>
+          <div id="lab-trend-list" class="lab-trend-list">
+            <p>No lab values saved yet.</p>
           </div>
         </section>
 
@@ -1607,33 +1609,33 @@
           </div>
           <div class="payment-grid">
             <article>
-              <strong>Basic</strong>
-              <span>$29/mo</span>
-              <p>Education summaries, reminders, and local care plan export.</p>
+              <strong>Free</strong>
+              <span>Free</span>
+              <p>Explain any report, take a doctor brief, keep a health record.</p>
               <ul>
-                <li>Monthly plan summary</li>
-                <li>Food and habit reminders</li>
-                <li>Saved care history</li>
+                <li>Explain any lab or scan report</li>
+                <li>One-page doctor brief</li>
+                <li>Lifetime health record</li>
               </ul>
             </article>
             <article>
               <strong>Plus</strong>
-              <span>$79/mo</span>
-              <p>Care planning, insurance guidance, and monthly review workflow.</p>
+              <span>$7/mo</span>
+              <p>Personal plans, reminders and trends over the years.</p>
               <ul>
-                <li>Report-informed care plan</li>
-                <li>Monthly check-in workflow</li>
-                <li>Insurance and doctor prep</li>
+                <li>Personal plan from your own results</li>
+                <li>Reminders</li>
+                <li>Trends over the years</li>
               </ul>
             </article>
             <article>
-              <strong>Premium</strong>
-              <span>$149/mo</span>
-              <p>Priority navigation, weekly coaching workflow, and concierge handoff.</p>
+              <strong>Family</strong>
+              <span>$12/mo</span>
+              <p>Everything in Plus for up to 5 people, shared with caregivers.</p>
               <ul>
-                <li>Weekly follow-up workflow</li>
-                <li>Priority clinician review queue</li>
-                <li>Concierge care navigation</li>
+                <li>Everything in Plus</li>
+                <li>Up to 5 family members</li>
+                <li>Shared with siblings and caregivers</li>
               </ul>
             </article>
           </div>
@@ -2008,6 +2010,6 @@
         <iframe id="tour-brief-frame" title="Doctor brief preview"></iframe>
       </div>
     </div>
-    <script src="script.js?v=carewise-product-133"></script>
+    <script src="script.js?v=carewise-product-134"></script>
   </body>
 </html>
