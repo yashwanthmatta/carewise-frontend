@@ -2916,7 +2916,7 @@ async function requestPasswordReset() {
     }
     updateAuthStatus(response.delivery_status === "email_queued"
       ? "Reset email queued. Check your inbox for the reset link."
-      : "Reset requested. Email delivery is the next provider setup before public launch.");
+      : "CareWise could not email a reset link right now. Please try again later. Reports explained on this device are still here.");
   } catch {
     updateAuthStatus("Password reset request failed. Check backend status and try again.");
   }
