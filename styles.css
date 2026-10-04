@@ -5876,3 +5876,34 @@ body.tour-active {
     margin: 0 12px 12px;
   }
 }
+
+/* Numbers to check after reading a photo */
+.ocr-checks {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  padding: 13px;
+  background: #fff7ed;
+}
+
+.ocr-checks p {
+  margin: 0;
+}
+
+.ocr-checks ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ocr-checks li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}

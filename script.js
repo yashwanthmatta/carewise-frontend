@@ -154,18 +154,19 @@ const conditionRules = [
   },
 ];
 
+// Plan codes are stable; names and prices follow the public pricing (Free, $7, $12).
 const planDetails = {
   basic: {
-    name: "Basic",
-    summary: "Best for education, reminders, and monthly progress summaries.",
+    name: "Free",
+    summary: "Explain any report, take a doctor brief, keep a health record.",
   },
   plus: {
     name: "Plus",
-    summary: "Best for active care planning, insurance help, and monthly human check-ins.",
+    summary: "Personal plans, reminders and trends over the years. $7 a month.",
   },
   premium: {
-    name: "Premium",
-    summary: "Best for complex needs, frequent coaching, and faster doctor matching.",
+    name: "Family",
+    summary: "Everything in Plus for up to 5 people, shared with caregivers. $12 a month.",
   },
 };
 
@@ -248,7 +249,7 @@ const LAB_TESTS = [
     { key: "urineketones", name: "Urine ketones", es: "Cetonas en orina", aliases: ["urine ketones?", "ketones?,? urine", "ketones"], what: "Ketones appear when the body burns fat for energy instead of sugar.", whatEs: "Las cetonas aparecen cuando el cuerpo usa grasa en lugar de azúcar para obtener energía." },
     { key: "psa", name: "PSA (prostate)", es: "PSA (próstata)", aliases: ["prostate specific antigen", "psa"], what: "A protein made by the prostate.", whatEs: "Una proteína producida por la próstata." }
 ];
-const UNIT_PATTERN = /(?:x\s?10\^?E?\d+\s?\/\s?[uµμ]?l|10\^?\d+\s?\/\s?[uµμ]?l|[km]\/[uµμ]l|thousand\/[uµμ]l|million\/[uµμ]l|cells\/[uµμ]l|ml\/min(?:\/1\.73\s?m2)?|mg\/dl|(?:[uµμ]|mc)g\/dl|(?:[uµμ]|mc)g\/l|(?:[uµμ]|mc)g\/ml|g\/dl|g\/l|mg\/l|mmol\/l|[uµμ]mol\/l|nmol\/l|pmol\/l|meq\/l|miu\/l|[uµμ]iu\/ml|iu\/l|u\/l|ng\/ml|ng\/dl|ng\/l|pg\/ml|mm\/hr?|seconds|sec|fl|pg|%)/i;
+const UNIT_PATTERN = /(?:x\s?10\^?E?\d+\s?\/\s?[uµμ]?l|10\^?\d+\s?\/\s?[uµμ]?l|[km]\/[uµμ]l|thousand\/[uµμ]l|million\/[uµμ]l|cells\/[uµμ]l|ml\/min(?:\/1\.73\s?m2)?|mg\/dl|(?:[uµμ]|mc)g\/dl|(?:[uµμ]|mc)g\/l|(?:[uµμ]|mc)g\/ml|gm\/dl|g\/dl|g\/l|mg\/l|lakhs?\s?\/\s?(?:cu\.?\s?mm|[uµμ]l)|lakhs?|mmol\/l|[uµμ]mol\/l|nmol\/l|pmol\/l|meq\/l|miu\/l|[uµμ]iu\/ml|iu\/l|u\/l|ng\/ml|ng\/dl|ng\/l|pg\/ml|mm\/hr?|seconds|sec|fl|pg|%)/i;
 const RANGE_PATTERN = /(\d+(?:\.\d+)?)\s*(?:-|–|to)\s*(\d+(?:\.\d+)?)|(<=?|>=?|≤|≥)\s*(\d+(?:\.\d+)?)/;
 const FLAG_PATTERN = /(?:^|[\s(])(HH|LL|H|L|High|Low|HIGH|LOW|Critical|CRITICAL|CRIT|Panic|PANIC|Abnormal|ABNORMAL)(?=[\s*)]|$)/;
 const COMPILED = LAB_TESTS.map((test) => ({ test, patterns: test.aliases.map((alias) => new RegExp(`\\b${alias}\\b`, "i")) }));
@@ -301,7 +302,7 @@ function generalRangeFor(key, line, value, unit) {
         case "potassium": return guide(3.5, 5.1, "3.5-5.1");
         case "sodium": return guide(135, 145, "135-145");
         case "calcium": return value > 5 ? guide(8.5, 10.2, "8.5-10.2") : guide(2.1, 2.6, "2.1-2.6");
-        case "platelets": return value > 2000 ? guide(150000, 450000, "150,000-450,000") : guide(150, 450, "150-450");
+        case "platelets": return /lakh/i.test(unit) ? guide(1.5, 4.5, "1.5-4.5 lakh") : value > 2000 ? guide(150000, 450000, "150,000-450,000") : guide(150, 450, "150-450");
         case "wbc": return value > 300 ? guide(4000, 11000, "4,000-11,000") : guide(4, 11, "4-11");
         case "tsh": return guide(0.4, 4.0, "0.4-4.0");
         default: return null;
@@ -309,7 +310,13 @@ function generalRangeFor(key, line, value, unit) {
 }
 // Levels many hospital labs phone through as critical values. Deliberately
 // conservative: only clearly dangerous numbers, in the units the result uses.
-function dangerFrom(key, value, unit, status) {
+// Platelet counts are printed per µL, in thousands, or (in India) in lakhs; bring them to thousands.
+function plateletsInThousands(value, unit, high) {
+    if (/lakh/i.test(unit) || (high !== null && high < 50))
+        return value * 100;
+    return value > 2000 ? value / 1000 : value;
+}
+function dangerFrom(key, value, unit, status, high = null) {
     const mmol = /mmol/i.test(unit);
     switch (key) {
         case "glucose": return mmol || (!unit && value < 25) ? value < 3.0 || value > 22.2 : value < 54 || value > 400;
@@ -317,7 +324,7 @@ function dangerFrom(key, value, unit, status) {
         case "sodium": return value < 120 || value > 160;
         case "calcium": return value > 5 ? value < 6.5 || value > 13 : value < 1.63 || value > 3.25;
         case "hemoglobin": return value > 25 ? value < 70 : value < 7;
-        case "platelets": return value > 2000 ? value < 20000 : value < 20;
+        case "platelets": return plateletsInThousands(value, unit, high) < 20;
         case "inr": return value >= 5;
         // A raised troponin can mean heart injury: never something to wait on.
         case "troponin": return status === "above";
@@ -415,7 +422,7 @@ function readLabPanel(text) {
             status,
             far: farFrom(status, value, lowUsed, highUsed),
             generalRange: Boolean(general),
-            danger: dangerFrom(test.key, value, unit, status)
+            danger: dangerFrom(test.key, value, unit, status, highUsed)
         });
     });
     return results;
@@ -1907,6 +1914,7 @@ function initializeWorkspaceNavigation() {
     ["report-title", document.querySelector(".report-panel")],
     ["backend-title", document.querySelector(".backend-panel")],
     ["saved-title", document.querySelector(".saved-panel")],
+    ["record-title", document.querySelector(".record-panel")],
     ["medication-title", document.querySelector(".medication-panel")],
     ["checkin-title", document.querySelector(".checkin-panel")],
     ["review-title", document.querySelector(".review-panel")],
@@ -1921,6 +1929,8 @@ function initializeWorkspaceNavigation() {
   ].filter(([, element]) => Boolean(element));
 
   const sectionsById = new Map(sectionTargets);
+  // Panels shown together with a main section (the lab tracker sits under History).
+  const sectionCompanions = [["saved-title", document.querySelector(".lab-trend-panel")]].filter(([, element]) => Boolean(element));
   const navLinks = [...document.querySelectorAll(".quick-nav a[href^='#'], .team-nav a[href^='#'], .progress-rail a[href^='#'], .hero-actions a[href^='#'], .hero-early-access a[href^='#'], [data-early-access-link], .consent-action-card a[href^='#'], .report-panel a[href^='#']")];
 
   sectionTargets.forEach(([, element]) => {
@@ -1932,6 +1942,9 @@ function initializeWorkspaceNavigation() {
     const activeId = [...sectionsById.entries()].find(([, element]) => element === target)?.[0] || "home-title";
 
     sectionTargets.forEach(([id, element]) => {
+      element.hidden = id !== activeId;
+    });
+    sectionCompanions.forEach(([id, element]) => {
       element.hidden = id !== activeId;
     });
 
@@ -3750,20 +3763,16 @@ function renderSubscriptionPlans() {
     <label class="plan-card">
       <input type="radio" name="plan" value="${escapeHtml(plan.plan_code)}" ${plan.plan_code === selectedPlan ? "checked" : ""} />
       <span class="plan-name">${escapeHtml(plan.name)}</span>
-      <strong>$${Number(plan.monthly_price_usd)}/mo</strong>
+      <strong>${Number(plan.monthly_price_usd) ? `$${Number(plan.monthly_price_usd)}/mo` : "Free"}</strong>
       <span>${escapeHtml(plan.summary)}</span>
     </label>
   `).join("");
   paymentGrid.innerHTML = subscriptionPlans.map((plan) => `
     <article>
       <strong>${escapeHtml(plan.name)}</strong>
-      <span>$${Number(plan.monthly_price_usd)}/mo</span>
+      <span>${Number(plan.monthly_price_usd) ? `$${Number(plan.monthly_price_usd)}/mo` : "Free"}</span>
       <p>${escapeHtml(plan.summary)}</p>
-      <ul>
-        <li>${escapeHtml(plan.plan_code === "basic" ? "Monthly education summary" : plan.plan_code === "plus" ? "Report-informed planning" : "Priority navigation workflow")}</li>
-        <li>${escapeHtml(plan.plan_code === "basic" ? "Saved care history" : plan.plan_code === "plus" ? "Monthly check-ins" : "Weekly follow-up workflow")}</li>
-        <li>${escapeHtml(plan.plan_code === "basic" ? "Habit reminders" : plan.plan_code === "plus" ? "Doctor and insurance prep" : "Concierge handoff prep")}</li>
-      </ul>
+      <ul>${(plan.features || []).map((feature) => `<li>${escapeHtml(feature)}</li>`).join("")}</ul>
     </article>
   `).join("");
 }
@@ -3914,6 +3923,8 @@ function handleReportFileSelection() {
   const file = document.querySelector("#report-file").files?.[0];
   if (!file) return;
   latestReportId = "";
+  ocrChecks = [];
+  renderOcrChecks();
   document.querySelector("#report-name").value = file.name;
   updateProgressRail();
   if (file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt")) {
@@ -3936,11 +3947,11 @@ function handleReportFileSelection() {
     readPdfTextLocally(file);
     return;
   }
-  if (isImage && !backendFeatures.image_ocr) {
-    reportStatus.textContent = "File selected. It will upload privately, but paste readable lab text too because live OCR is not enabled yet.";
+  if (isImage) {
+    readPhotoTextLocally(file);
     return;
   }
-  reportStatus.textContent = "File selected. CareWise will use readable text when available, then upload securely.";
+  reportStatus.textContent = "CareWise reads PDFs, photos and text files. Choose one of those, or type the results below.";
 }
 
 // Text-based PDFs are read in the browser, so the file never leaves the
@@ -3953,6 +3964,31 @@ const PDFJS_SOURCES = [
   { module: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build/pdf.min.mjs`, worker: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build/pdf.worker.min.mjs` },
 ];
 let pdfjsLoading = null;
+
+// PDF.js 6 calls Map.prototype.getOrInsertComputed, which older browsers (and Safari
+// before 2026) do not have; add it so page rendering works everywhere.
+for (const MapType of [Map, WeakMap]) {
+  if (!MapType.prototype.getOrInsertComputed) {
+    Object.defineProperty(MapType.prototype, "getOrInsertComputed", {
+      value(key, compute) {
+        if (!this.has(key)) this.set(key, compute(key));
+        return this.get(key);
+      },
+      configurable: true,
+      writable: true,
+    });
+  }
+  if (!MapType.prototype.getOrInsert) {
+    Object.defineProperty(MapType.prototype, "getOrInsert", {
+      value(key, value) {
+        if (!this.has(key)) this.set(key, value);
+        return this.get(key);
+      },
+      configurable: true,
+      writable: true,
+    });
+  }
+}
 
 function loadPdfjs() {
   pdfjsLoading ??= (async () => {
@@ -4014,7 +4050,8 @@ async function readPdfTextLocally(file) {
   try {
     const text = await extractPdfText(file);
     if (text.replace(/\s/g, "").length < 20) {
-      reportStatus.textContent = "This PDF looks like a scanned image, so CareWise cannot read its text yet. Type or paste the lab values below.";
+      // A scanned PDF has no text layer: read the page images instead.
+      await readScannedPdfLocally(file);
       return;
     }
     document.querySelector("#report-text").value = text.slice(0, 12000);
@@ -4024,6 +4061,296 @@ async function readPdfTextLocally(file) {
     reportStatus.textContent = `PDF read on this device. Nothing was uploaded. ${reportStatus.textContent}`;
   } catch {
     reportStatus.textContent = "CareWise could not read this PDF. Paste the lab values as text below.";
+  }
+}
+
+// Photos and scanned PDFs are read on this device with Tesseract OCR (Apache-2.0),
+// served from vendor/tesseract and loaded only when needed. Nothing is uploaded.
+// OCR can misread a digit, so the text is shown for checking and the result says so.
+const TESSERACT_BASE = "vendor/tesseract/";
+let tesseractLoading = null;
+
+function loadTesseract() {
+  if (window.Tesseract) return Promise.resolve(window.Tesseract);
+  if (!tesseractLoading) {
+    tesseractLoading = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = `${TESSERACT_BASE}tesseract.min.js`;
+      script.onload = () => resolve(window.Tesseract);
+      script.onerror = () => {
+        tesseractLoading = null;
+        reject(new Error("Could not load the photo reader."));
+      };
+      document.head.appendChild(script);
+    });
+  }
+  return tesseractLoading;
+}
+
+// Phone photos are large; a 2000px-wide grey copy reads faster and just as well.
+async function preparePhotoForOcr(source) {
+  const bitmap = source instanceof HTMLCanvasElement ? source : await createImageBitmap(source);
+  const scale = Math.min(2, 2000 / bitmap.width);
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  context.filter = "grayscale(1) contrast(1.15)";
+  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close?.();
+  return canvas;
+}
+
+// Fixes the commonest OCR slips inside numbers only ("1O.2" -> "10.2", "l2" -> "12").
+function cleanOcrText(text) {
+  return String(text || "")
+    .replace(/(?<=\d)[Oo](?=[\d.,])|(?<=[\d.,])[Oo](?=\d)/g, "0")
+    .replace(/(?<=\d)[lI|](?=[\d.,])|(?<=[\d.,])[lI|](?=\d)/g, "1")
+    .replace(/\bH[bB]A[lI1|][cC]\b/g, "HbA1c")
+    .replace(/x\s?10["'°^7*]3(?=\s*\/)/gi, "x10^3")
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+async function recognizeImages(images, onProgress) {
+  const Tesseract = await loadTesseract();
+  const base = new URL(TESSERACT_BASE, window.location.href).href;
+  const worker = await Tesseract.createWorker("eng", 1, {
+    workerPath: `${base}worker.min.js`,
+    corePath: base,
+    langPath: base,
+    workerBlobURL: false,
+    logger: (message) => {
+      if (message.status === "recognizing text" && typeof message.progress === "number") onProgress?.(message.progress);
+    },
+  });
+  try {
+    // Lab reports are rows of text; treat each page as one block so rows stay together.
+    await worker.setParameters({ tessedit_pageseg_mode: "6", preserve_interword_spaces: "1" });
+    const texts = [];
+    for (const [index, image] of images.entries()) {
+      const { data } = await worker.recognize(image);
+      texts.push(data.text);
+      onProgress?.((index + 1) / images.length, index + 1);
+    }
+    return cleanOcrText(texts.join("\n"));
+  } finally {
+    await worker.terminate();
+  }
+}
+
+// OCR often drops a decimal point ("4.6" read as "46"). For common tests, a value
+// that is impossible for a living person is corrected and shown for checking; a value
+// that is possible but doubtful (its range lost its decimals too) is asked about.
+// [possible values, usual adult range] in the units most labs print.
+const OCR_SANITY = {
+  hemoglobin: [[2, 25], [12, 17.5]],
+  hematocrit: [[8, 75], [36, 50]],
+  rbc: [[0.5, 10], [4.2, 5.9]],
+  wbc: [[0.1, 200], [4, 11]],
+  platelets: [[2, 2500], [150, 450]],
+  mcv: [[40, 150], [80, 100]],
+  glucose: [[10, 1500], [70, 99]],
+  bun: [[1, 250], [7, 20]],
+  creatinine: [[0.1, 25], [0.6, 1.3]],
+  sodium: [[95, 200], [135, 145]],
+  potassium: [[1.2, 10], [3.5, 5.1]],
+  chloride: [[60, 150], [98, 107]],
+  calcium: [[3, 20], [8.5, 10.2]],
+  magnesium: [[0.3, 8], [1.7, 2.2]],
+  phosphorus: [[0.5, 15], [2.5, 4.5]],
+  albumin: [[0.5, 7], [3.5, 5]],
+  protein: [[2, 14], [6, 8.3]],
+  bilirubin: [[0, 40], [0.1, 1.2]],
+  tsh: [[0.001, 300], [0.4, 4]],
+  ft4: [[0.05, 10], [0.8, 1.8]],
+  ft3: [[0.5, 30], [2.3, 4.2]],
+  uricacid: [[0.5, 25], [3.5, 7.2]],
+  inr: [[0.5, 15], [0.8, 1.2]],
+  a1c: [[3, 20], [4, 5.6]],
+};
+// Rows printed in SI units (mmol/L, µmol/L, g/L) use other number ranges; skip those
+// tests rather than "correct" them. Salts like sodium and potassium are always mmol/L.
+const OCR_SI_UNIT_KEYS = new Set(["glucose", "bun", "creatinine", "calcium", "magnesium", "phosphorus", "bilirubin", "uricacid", "a1c", "ft4", "ft3"]);
+const OCR_GRAM_PER_LITRE_KEYS = new Set(["hemoglobin", "albumin", "protein"]);
+
+function ocrSkipsLine(key, line) {
+  if (OCR_SI_UNIT_KEYS.has(key) && /mmol|[uµμ]mol|pmol/i.test(line)) return true;
+  return OCR_GRAM_PER_LITRE_KEYS.has(key) && /\bg\/l\b/i.test(line);
+}
+
+function withDecimal(token) {
+  return token.length > 1 ? `${token.slice(0, -1)}.${token.slice(-1)}` : `0.${token}`;
+}
+
+function checkOcrNumbers(rawText) {
+  const checks = [];
+  const allLines = String(rawText || "").split("\n");
+  // Reports laid out as "Test : value" sometimes lose the colon to OCR as a "1"
+  // ("Haemoglobin : 9.6" read as "Haemoglobin 19.6").
+  const colonLayout = allLines.filter((line) => /[a-z]\s*:\s*\d/i.test(line)).length >= 2;
+  const lines = allLines.map((line, index) => {
+    const a1c = /\bh(?:b|e)?a1c\b|\bhba1c\b|\ba1c\b/i.test(line);
+    const key = a1c ? "a1c" : readLabPanel(line)[0]?.key;
+    const sanity = OCR_SANITY[key];
+    if (!sanity || ocrSkipsLine(key, line)) return line;
+    const name = a1c ? "HbA1c" : labTestInfo(key)?.name || key;
+    const [[possibleLow, possibleHigh], [usualLow, usualHigh]] = sanity;
+    let fixed = line;
+    let rangeLow = null;
+    let rangeHigh = null;
+    let rangeFixed = false;
+    let rangeHasDecimals = false;
+    // Range: "07-13" -> "0.7-1.3"; "35-51" for potassium -> "3.5-5.1".
+    fixed = fixed.replace(/(\d+(?:\.\d+)?)(\s*(?:-|–|to)\s*)(\d+(?:\.\d+)?)/, (match, low, joiner, high) => {
+      let newLow = /^0\d+$/.test(low) ? `0.${low.slice(1)}` : low;
+      let newHigh = /^0\d+$/.test(high) ? `0.${high.slice(1)}` : high;
+      const highNumber = Number(newHigh);
+      if (!newHigh.includes(".") && highNumber > usualHigh * 3 && highNumber / 10 >= usualHigh * 0.5 && highNumber / 10 <= usualHigh * 2) {
+        newHigh = withDecimal(newHigh);
+        if (!newLow.includes(".") && Number(newLow) > usualLow * 3) newLow = withDecimal(newLow);
+      }
+      rangeLow = Number(newLow);
+      rangeHigh = Number(newHigh);
+      rangeFixed = newLow !== low || newHigh !== high;
+      rangeHasDecimals = newLow.includes(".") || newHigh.includes(".");
+      return `${newLow}${joiner}${newHigh}`;
+    });
+    if (colonLayout && !line.includes(":")) {
+      const lost = fixed.match(/^([^\d]*?[a-z)]\s+)1(\d+(?:\.\d+)?)(?![\d.])/i);
+      if (lost) {
+        checks.push({ line: index, name, read: `1${lost[2]}`, value: `1${lost[2]}`, other: lost[2], kind: "ask" });
+        return fixed;
+      }
+    }
+    // Value: the first whole number after the test name.
+    const nameEnd = a1c ? line.search(/a1c/i) + 3 : 0;
+    const valueMatch = fixed.slice(nameEnd).match(/(^|[^\d.])(\d+)(?![\d.,])/);
+    if (valueMatch) {
+      const token = valueMatch[2];
+      const value = Number(token);
+      const tenth = value / 10;
+      const at = nameEnd + valueMatch.index + valueMatch[1].length;
+      const isPossible = value >= possibleLow && value <= possibleHigh;
+      const tenthPossible = tenth >= possibleLow && tenth <= possibleHigh;
+      const low = rangeLow ?? usualLow;
+      const high = rangeHigh ?? usualHigh;
+      const tenthNearRange = tenth >= low * 0.5 && tenth <= high * 2;
+      const valueNearRange = value >= low * 0.5 && value <= high * 2;
+      if (!isPossible && tenthPossible) {
+        fixed = `${fixed.slice(0, at)}${withDecimal(token)}${fixed.slice(at + token.length)}`;
+        checks.push({ line: index, name, read: token, value: withDecimal(token), kind: "fixed" });
+      } else if ((rangeFixed || rangeHasDecimals) && tenthNearRange && !valueNearRange) {
+        // Labs print a result with the same decimals as its range, so a whole number
+        // far outside a decimal range most likely lost its point: ask.
+        checks.push({ line: index, name, read: token, value: token, other: withDecimal(token), kind: "ask" });
+      }
+    }
+    return fixed;
+  });
+  return { text: lines.join("\n"), checks };
+}
+
+let ocrChecks = [];
+
+function renderOcrChecks() {
+  const box = document.querySelector("#ocr-checks");
+  if (!box) return;
+  box.hidden = !ocrChecks.length;
+  if (!ocrChecks.length) {
+    box.innerHTML = "";
+    return;
+  }
+  box.innerHTML = `
+    <strong>Please check these numbers against the report</strong>
+    <p>Photos can misread a decimal point or a colon. Tap the number that matches the report.</p>
+    <ul>${ocrChecks.map((check, index) => `
+      <li>
+        <span>${escapeHtml(check.name)}: ${check.kind === "fixed"
+          ? `read as ${escapeHtml(check.read)}, which is not possible, so CareWise used ${escapeHtml(check.value)}.`
+          : `read as ${escapeHtml(check.read)}. Did the report say ${escapeHtml(check.other)}?`}</span>
+        <span class="inline-action-group">
+          ${check.kind === "fixed"
+            ? `<button class="secondary-button compact" type="button" data-ocr-check="${index}" data-ocr-choice="${escapeHtml(check.value)}">${escapeHtml(check.value)} is right</button>`
+            : `<button class="secondary-button compact" type="button" data-ocr-check="${index}" data-ocr-choice="${escapeHtml(check.other)}" data-ocr-suggested>It says ${escapeHtml(check.other)}</button>
+               <button class="secondary-button compact" type="button" data-ocr-check="${index}" data-ocr-choice="${escapeHtml(check.read)}">It says ${escapeHtml(check.read)}</button>`}
+        </span>
+      </li>`).join("")}</ul>`;
+}
+
+document.querySelector("#ocr-checks")?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-ocr-check]");
+  if (!button) return;
+  const check = ocrChecks[Number(button.dataset.ocrCheck)];
+  if (!check) return;
+  const choice = button.dataset.ocrChoice;
+  const textArea = document.querySelector("#report-text");
+  const lines = textArea.value.split("\n");
+  const current = check.kind === "fixed" ? check.value : check.read;
+  if (lines[check.line] !== undefined && choice !== current) {
+    lines[check.line] = lines[check.line].replace(new RegExp(`(^|[^\\d.])${current.replace(".", "\\.")}(?![\\d.])`), `$1${choice}`);
+    textArea.value = lines.join("\n");
+    runLocalReportAnalysis();
+  }
+  ocrChecks = ocrChecks.filter((item) => item !== check);
+  renderOcrChecks();
+});
+
+async function showOcrResult(rawText, sourceLabel) {
+  if (rawText.replace(/\s/g, "").length < 20) {
+    reportStatus.textContent = `CareWise could not find readable text in this ${sourceLabel}. Try a sharper, well-lit photo taken straight on, or type the results below.`;
+    return;
+  }
+  const { text, checks } = checkOcrNumbers(rawText);
+  ocrChecks = checks;
+  document.querySelector("#report-text").value = text.slice(0, 12000);
+  updateProgressRail();
+  trackReportUsage("photo_read");
+  await analyzeAndShowReport();
+  renderOcrChecks();
+  reportStatus.textContent = `Read from your ${sourceLabel} on this device. Nothing was uploaded. Photos can be misread, so please check the numbers in the text box against the report.`;
+}
+
+async function readPhotoTextLocally(file) {
+  reportStatus.textContent = "Reading your photo on this device. The first time takes a little longer while the reader loads.";
+  try {
+    const image = await preparePhotoForOcr(file);
+    const text = await recognizeImages([image], (progress) => {
+      reportStatus.textContent = `Reading your photo on this device... ${Math.round(progress * 100)}%`;
+    });
+    await showOcrResult(text, "photo");
+  } catch {
+    reportStatus.textContent = "CareWise could not read this photo on this device. Type the results below, or try a PDF.";
+  }
+}
+
+async function readScannedPdfLocally(file, maxPages = 3) {
+  reportStatus.textContent = "This PDF is a scan. Reading the page images on this device...";
+  try {
+    const pdfjs = await loadPdfjs();
+    const loadingTask = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
+    const images = [];
+    try {
+      const pdf = await loadingTask.promise;
+      for (let number = 1; number <= Math.min(pdf.numPages, maxPages); number += 1) {
+        const page = await pdf.getPage(number);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(viewport.width);
+        canvas.height = Math.round(viewport.height);
+        await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
+        images.push(await preparePhotoForOcr(canvas));
+      }
+    } finally {
+      await loadingTask.destroy();
+    }
+    const text = await recognizeImages(images, (progress, done) => {
+      reportStatus.textContent = `Reading the scanned PDF on this device... page ${Math.min(images.length, (done || 0) + 1)} of ${images.length}`;
+    });
+    await showOcrResult(text, "scanned PDF");
+  } catch {
+    reportStatus.textContent = "This PDF looks like a scanned image and CareWise could not read it on this device. Type the lab values below.";
   }
 }
 
@@ -4153,6 +4480,7 @@ const USAGE_EVENT_LABELS = {
   demo_started: "1-minute demo started",
   demo_finished: "1-minute demo finished",
   pdf_read: "PDFs read",
+  photo_read: "Photos or scans read",
   doctor_brief_opened: "Doctor brief opened",
   spanish_used: "Switched to Spanish",
   early_access_opened: "Early-access form opened",
@@ -9246,7 +9574,7 @@ function showTourStep(index) {
   if (!step) return;
   tourStep = index;
   tourHideBrief();
-  window.showCareWiseSection?.("report-title", false);
+  window.showCareWiseSection?.(step.section === "record" ? "record-title" : "report-title", false);
   if (step.report) tourSetReport(step.report);
   tourSetLanguage(step.language || "en");
   if (step.section === "record") renderHealthRecord(TOUR_PERSON);
