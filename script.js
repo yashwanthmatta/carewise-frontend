@@ -2580,14 +2580,12 @@ function initializeAccountPanel() {
   renderReviewSyncSummary();
 }
 
+// Staff roles only work for emails on the server's staff list (CAREWISE_STAFF_EMAILS).
 function fillTeamAccount(role, navigateToAccount = true) {
-  const suffix = role === "admin" ? "admin" : "clinician";
-  document.querySelector("#auth-email").value = `${suffix}@carewise.ai`;
-  document.querySelector("#auth-password").value = "carewise-team-password";
   document.querySelector("#auth-role").value = role;
   authRole = role;
   localStorage.setItem("carewiseAuthRole", role);
-  updateAuthStatus(`${role === "admin" ? "Admin" : "Clinician"} test account filled. Create it once, then use Login after that.`);
+  updateAuthStatus(`${role === "admin" ? "Admin" : "Clinician"} role selected. Enter your staff email and password. Only emails on the CareWise staff list can use it.`);
   if (navigateToAccount) window.showCareWiseSection?.("account-title");
 }
 
@@ -2869,6 +2867,10 @@ async function signup() {
     const response = await apiPost("/auth/signup", payload, { skipAuth: true });
     await saveAuthToken(response, "signup");
   } catch (error) {
+    if (String(error?.message || "").includes("403")) {
+      updateAuthStatus("Clinician and admin accounts are set up by the CareWise team. Choose Patient under CareWise team sign-in, or ask the team to add your email.");
+      return;
+    }
     updateAuthStatus(authErrorMessage(error, "Account may already exist. Try Log in."));
   }
 }
@@ -8831,7 +8833,7 @@ function getSupportForm() {
 function fillSampleSupportRequest() {
   document.querySelector("#support-type").value = "Report upload concern";
   document.querySelector("#support-priority").value = "High";
-  document.querySelector("#support-email").value = authEmail || "patient@example.com";
+  document.querySelector("#support-email").value = authEmail || "";
   document.querySelector("#support-contact").value = "Yes";
   document.querySelector("#support-notes").value = "User uploaded a lab report but wants the summary language reviewed for clarity before sharing with a doctor.";
   supportStatus.textContent = "Sample support request filled. Save it when ready.";

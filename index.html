@@ -7,12 +7,12 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-134" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-135" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-134" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-135" />
   </head>
   <body>
     <main class="app-shell">
@@ -165,19 +165,11 @@
           <div class="account-grid">
             <label>
               Email
-              <input id="auth-email" type="email" value="patient@example.com" />
+              <input id="auth-email" type="email" autocomplete="email" placeholder="you@example.com" />
             </label>
             <label>
               Password
               <input id="auth-password" type="password" placeholder="At least 12 characters" />
-            </label>
-            <label>
-              Role
-              <select id="auth-role">
-                <option value="patient" selected>Patient</option>
-                <option value="clinician">Clinician</option>
-                <option value="admin">Admin</option>
-              </select>
             </label>
           </div>
           <div class="primary-action-row">
@@ -189,18 +181,24 @@
             <strong id="signed-in-label">Signed out</strong>
             <span id="signed-in-detail">You can test report analysis without an account. Sign in when you want cloud sync.</span>
           </div>
-          <div class="team-account-card">
-            <div>
-              <strong>Team review account</strong>
-              <span>Use this when testing clinician/admin queue access. Create the account once, then log in anytime.</span>
-            </div>
+          <details class="team-account-card">
+            <summary>CareWise team sign-in</summary>
+            <span>For clinicians and admins on the CareWise staff list only. Everyone else uses a patient account.</span>
+            <label>
+              Role
+              <select id="auth-role">
+                <option value="patient" selected>Patient</option>
+                <option value="clinician">Clinician</option>
+                <option value="admin">Admin</option>
+              </select>
+            </label>
             <div class="team-account-actions">
               <button id="fill-clinician-account" class="secondary-button compact" type="button">Clinician test</button>
               <button id="fill-admin-account" class="secondary-button compact" type="button">Admin test</button>
             </div>
-          </div>
+          </details>
           <details class="advanced-actions">
-            <summary>Account recovery and verification</summary>
+            <summary>Log out, verify email or reset password</summary>
             <div class="sync-grid secondary-actions">
               <button id="logout" class="secondary-button" type="button">Logout</button>
               <button id="record-consent" class="secondary-button" type="button">Record consent</button>
@@ -2010,6 +2008,6 @@
         <iframe id="tour-brief-frame" title="Doctor brief preview"></iframe>
       </div>
     </div>
-    <script src="script.js?v=carewise-product-134"></script>
+    <script src="script.js?v=carewise-product-135"></script>
   </body>
 </html>
