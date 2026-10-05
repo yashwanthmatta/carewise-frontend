@@ -1944,6 +1944,7 @@ function initializeWorkspaceNavigation() {
   // Panels shown together with a main section (the lab tracker sits under History).
   const sectionCompanions = [
     ["saved-title", document.querySelector(".lab-trend-panel")],
+    ["account-title", document.querySelector(".billing-panel")],
     // The landing page (hero, how it works, safety, pricing) only shows on Home.
     ["home-title", document.querySelector(".landing")],
   ].filter(([, element]) => Boolean(element));
