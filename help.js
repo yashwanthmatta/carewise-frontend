@@ -31,25 +31,166 @@
 
   const EMERGENCY_PATTERN = /(chest pain|can'?t breathe|cannot breathe|trouble breathing|short of breath|stroke|face droop|slurred speech|passed out|unconscious|fainted|seizure|severe bleeding|bleeding (a lot|heavily)|overdose|suicid|kill myself|end my life|self[- ]harm|dolor (de|en el) pecho|no puedo respirar|derrame|desmay|convulsi|sangrado (fuerte|abundante)|suicid|quitarme la vida)/i;
 
-  // Built-in answers for when the online helper is off or unreachable.
-  const OFFLINE_ANSWERS = {
+  // Built-in answers, used when the online helper is off or unreachable. They come
+  // from CareWise's own test explanations, the person's latest result and app how-tos.
+  const EXTRA_TESTS = [
+    { pattern: /\bldl\b|bad cholesterol|colesterol malo/i, name: "LDL cholesterol", es: "Colesterol LDL", what: "The \"bad\" cholesterol that can build up in blood vessels over time. Lower is usually better for the heart.", whatEs: "El colesterol \"malo\" que puede acumularse en los vasos sanguíneos con el tiempo. Más bajo suele ser mejor para el corazón.", finding: "LDL cholesterol" },
+    { pattern: /total cholesterol|\bcholesterol\b|colesterol total/i, name: "Total cholesterol", es: "Colesterol total", what: "All the cholesterol in your blood: LDL, HDL and others together.", whatEs: "Todo el colesterol de la sangre: LDL, HDL y otros juntos.", finding: "Total cholesterol" },
+    { pattern: /triglycer|triglicér/i, name: "Triglycerides", es: "Triglicéridos", what: "A type of fat in the blood. It goes up with sugar, alcohol and large meals, and is often checked after fasting.", whatEs: "Un tipo de grasa en la sangre. Sube con el azúcar, el alcohol y las comidas grandes; suele medirse en ayunas.", finding: "Triglycerides" },
+    { pattern: /\b(hb)?a1c\b|hemoglobin a1c|glycated|glucosilada/i, name: "A1C (HbA1c)", es: "A1C (HbA1c)", what: "Your average blood sugar over the last 2 to 3 months. It is used to check for diabetes and prediabetes.", whatEs: "El promedio de azúcar en la sangre de los últimos 2 a 3 meses. Se usa para detectar diabetes y prediabetes.", finding: "A1C" },
+    { pattern: /blood pressure|\bbp\b|presión arterial/i, name: "Blood pressure", es: "Presión arterial", what: "How hard blood pushes on your artery walls. The top number is when the heart beats, the bottom when it rests.", whatEs: "La fuerza con la que la sangre empuja las arterias. El número de arriba es cuando late el corazón; el de abajo, cuando descansa.", finding: "Blood pressure" },
+    { pattern: /vitamin d|vitamina d/i, name: "Vitamin D", es: "Vitamina D", what: "A vitamin that helps keep bones and muscles strong. Levels are often low in winter or with little sun.", whatEs: "Una vitamina que ayuda a mantener fuertes los huesos y músculos. Suele estar baja en invierno o con poco sol.", finding: "Vitamin D" },
+  ];
+
+  const STATUS_WORDS = {
+    en: { above: "above the lab's range", below: "below the lab's range", within: "within the lab's range", unknown: "with no range printed" },
+    es: { above: "por encima del rango del laboratorio", below: "por debajo del rango del laboratorio", within: "dentro del rango del laboratorio", unknown: "sin rango impreso" },
+  };
+
+  const TOPICS = {
     en: [
-      [/upload|photo|pdf|scan|add.*report|how.*start/i, "Open Upload, add a PDF, a photo or paste the report text, choose whose report it is, then press \"Explain report\". Text PDFs and photos are read on your device."],
-      [/plan|price|pay|cost|cancel|subscri|plus|family|stripe|card/i, "Free covers explaining reports, the doctor brief and your health record. Plus is $7 a month for personal plans, reminders and trends. Family is $12 a month for up to 5 people. Choose a plan in Profile; you can cancel any time with \"Manage or cancel plan\"."],
-      [/brief|doctor|ask|question|visit/i, "After a report is explained, the result lists questions to ask your doctor. \"Doctor brief\" makes a one-page summary you can print or share at the visit."],
-      [/account|sign|log ?in|password|save|sync/i, "Go to Profile to create a free account with your email. Then press \"Save to my account\" under a report to keep it. Password reset is under \"Log out, verify email or reset password\"."],
-      [/privacy|delete|data|safe|secure|share/i, "Reports are read on your device. When you save to an account, report text is encrypted. You can ask to delete your data from Profile."],
-      [/spanish|español|language/i, "Pick Español in the language menu on a result to read it in Spanish. The Spanish text is still being reviewed."],
-      [/mean|result|high|low|normal|range|test|value/i, "Your result lists each test in plain words and marks what needs attention first. Open \"All tests\" for every value with its range. Your doctor is the right person to say what it means for you."],
+      [/^(hi|hello|hey|good (morning|afternoon|evening))\b|^yo\b/i, "Hello! I can explain a test on your report, tell you what to do next, or help with uploading, the doctor brief, your account and plans. What would you like to know?"],
+      [/thank|thanks|great|perfect|ok(ay)?\b|got it/i, "You're welcome. Ask me anything else about your report or CareWise."],
+      [/who are you|what are you|what can you do|help me|^help$|how does (this|it|the app|the site|carewise) work|what is carewise|how (do i|to) use/i, "I'm the CareWise helper. CareWise explains lab and scan reports in plain words, shows what needs attention first, gives you questions for the doctor and a one-page doctor brief, and keeps a health record for you or a family member. Try asking \"What does my result mean?\" or the name of a test, like \"What is eGFR?\""],
+      [/upload|photo|picture|pdf|add .*report|new report|how.*start|paste/i, "Open Upload, add a PDF, a photo, or paste the report text, choose whose report it is, then press \"Explain report\". Text PDFs and photos are read on your device, so nothing is uploaded unless you save it."],
+      [/plan|price|pay|cost|cancel|subscri|\bplus\b|family plan|stripe|card|refund|billing|free/i, "Free covers explaining reports, the doctor brief and your health record. Plus is $7 a month for personal plans, reminders and trends. Family is $12 a month for up to 5 people. Choose a plan in Profile under \"Plans and payments\"; you can cancel any time with \"Manage or cancel plan\"."],
+      [/brief|print|share with (my )?doctor|appointment|visit/i, "Under your result, press \"Doctor brief\". It makes a one-page summary of the values, what needs attention and your questions. Print it or save it as a PDF for the visit."],
+      [/ask (my |the )?doctor|questions? (for|to ask)/i, "Good questions to start with: Which result matters most for me? Does anything need a repeat test, and when? Is any of this linked to how I have been feeling? Is there anything I should change before the next visit?"],
+      [/mom|mum|dad|father|mother|parent|family member|caregiver|someone else/i, "Choose whose report it is (Me, Mom, Dad or another name) before you press \"Explain report\". CareWise keeps each person's reports and record apart, and the doctor brief shows their name. The Family plan is for sharing with siblings or other caregivers."],
+      [/history|old report|past report|trend|compare/i, "Open History to see reports you saved and how values changed over time. Save a report first with \"Save to my account\" under Upload."],
+      [/record|allerg|condition|medicines? list|timeline/i, "Open Record to keep conditions, allergies, visits and what did not suit you, as far back as you remember. It is saved on this device and goes into the doctor brief."],
+      [/account|sign ?up|log ?in|password|save|sync|email/i, "Go to Profile to create a free account with your email. Then press \"Save to my account\" under a report to keep it. Password reset is under \"Log out, verify email or reset password\"."],
+      [/privacy|delete|data|safe|secure|hipaa|who can see/i, "Reports are read on your device. When you save to an account, report text is encrypted. You can ask for your data to be deleted from Profile."],
+      [/spanish|español|language|translate/i, "Pick Español in the language menu on a result to read it in Spanish. The Spanish text is still being reviewed."],
+      [/install|app\b|phone|offline/i, "You can add CareWise to your phone's home screen from your browser's menu (\"Add to Home Screen\"). Report explaining also works offline once the page has loaded."],
+      [/\b(mri|ct|x-?ray|ultrasound|scan|mammogram|radiolog)/i, "For a scan, paste or upload the written report from the radiologist. CareWise explains the words in it and the Impression; it does not look at the images themselves."],
+      [/medicine|medication|drug|pill|dose|supplement|treat|cure|prescri|\b(can|should) i take\b|aspirin|ibuprofen|tylenol|acetaminophen|statin|metformin|insulin|antibiotic|vitamin pill/i, "I can't suggest medicines, supplements or doses. Please ask your doctor or pharmacist, and write the question down so you remember it at the visit."],
+      [/diet|food|eat|exercise|weight|lifestyle/i, "Your result includes general wellness tips. For a food or exercise plan that fits your results and conditions, ask your doctor or a dietitian."],
     ],
     es: [
-      [/subir|foto|pdf|informe|empez/i, "Abre Subir, agrega un PDF, una foto o pega el texto del informe, elige de quién es y pulsa \"Explicar informe\"."],
-      [/plan|precio|pag|costo|cancel|suscri/i, "Gratis incluye explicar informes, el resumen para el médico y tu historial. Plus cuesta $7 al mes y Familia $12 al mes para hasta 5 personas. Elige un plan en Perfil y cancela cuando quieras."],
-      [/médico|medico|pregunt|cita|resumen/i, "Después de explicar un informe verás preguntas para tu médico. \"Doctor brief\" crea un resumen de una página para imprimir o compartir."],
-      [/cuenta|contraseña|guardar|iniciar/i, "Ve a Perfil para crear una cuenta gratis con tu correo y guarda tus informes."],
-      [/significa|resultado|alto|bajo|normal|rango|prueba/i, "Tu resultado explica cada prueba con palabras simples y marca primero lo que necesita atención. Tu médico es quien puede decir qué significa para ti."],
+      [/^(hola|buenas|buenos días)/i, "¡Hola! Puedo explicar una prueba de tu informe, decirte qué hacer después o ayudarte a subir un informe, con el resumen para el médico, tu cuenta y los planes."],
+      [/gracias|perfecto|vale|de acuerdo/i, "De nada. Pregúntame lo que quieras sobre tu informe o CareWise."],
+      [/quién eres|qué puedes hacer|ayuda|cómo funciona|qué es carewise/i, "Soy el asistente de CareWise. CareWise explica informes de laboratorio e imagen con palabras simples, muestra primero lo que necesita atención, te da preguntas para el médico y guarda un historial. Prueba con \"¿Qué significa mi resultado?\" o el nombre de una prueba."],
+      [/subir|foto|pdf|agregar|nuevo informe|empez|pegar/i, "Abre Subir, agrega un PDF, una foto o pega el texto del informe, elige de quién es y pulsa \"Explicar informe\"."],
+      [/plan|precio|pag|costo|cancel|suscri|tarjeta|gratis/i, "Gratis incluye explicar informes, el resumen para el médico y tu historial. Plus cuesta $7 al mes y Familia $12 al mes para hasta 5 personas. Elige un plan en Perfil y cancela cuando quieras."],
+      [/resumen|imprimir|cita|consulta/i, "Debajo de tu resultado pulsa \"Doctor brief\" para crear un resumen de una página para imprimir o guardar como PDF."],
+      [/pregunt.*médico|preguntas/i, "Buenas preguntas: ¿Qué resultado es más importante para mí? ¿Hace falta repetir alguna prueba y cuándo? ¿Tiene relación con cómo me he sentido?"],
+      [/mamá|papá|madre|padre|familia|cuidador/i, "Elige de quién es el informe (Yo, Mamá, Papá u otro nombre) antes de pulsar \"Explicar informe\". CareWise guarda los informes de cada persona por separado."],
+      [/cuenta|contraseña|guardar|iniciar|correo/i, "Ve a Perfil para crear una cuenta gratis con tu correo y guarda tus informes."],
+      [/privacidad|borrar|eliminar|datos|seguro/i, "Los informes se leen en tu dispositivo. Al guardarlos en una cuenta, el texto se cifra. Puedes pedir que se borren tus datos desde Perfil."],
+      [/medicina|medicamento|pastilla|dosis|suplemento|tratamiento|puedo tomar|receta/i, "No puedo sugerir medicamentos, suplementos ni dosis. Pregunta a tu médico o farmacéutico."],
+      [/dieta|comida|comer|ejercicio|peso/i, "Tu resultado incluye consejos generales. Para un plan de comida o ejercicio, pregunta a tu médico o a un dietista."],
     ],
   };
+
+  const RESULT_QUESTION = /(my|the) (result|report|score|numbers|values)|what does (it|this|my).*mean|what (should i do )?next|next step|what now|anything wrong|is (it|this|my).*(bad|ok|okay|normal|serious|fine)|explain (it|this|my)|summar|resultado|mi informe|qué hago|siguiente paso|qué significa/i;
+
+  function formatList(items, es) {
+    if (items.length <= 1) return items.join("");
+    return `${items.slice(0, -1).join(", ")} ${es ? "y" : "and"} ${items[items.length - 1]}`;
+  }
+
+  function latestAnalysis() {
+    return typeof latestReportAnalysis !== "undefined" && latestReportAnalysis && !latestReportAnalysis.noData ? latestReportAnalysis : null;
+  }
+
+  function nextStepText(analysis, es) {
+    const ui = es ? (REPORT_TRANSLATIONS?.es?.ui || {}) : {};
+    const pick = (key, english) => ui[key] || english;
+    if (analysis.riskLevel === "urgent") return pick("nextUrgent", "Contact your doctor today. If you feel very unwell, seek emergency care.");
+    if (analysis.riskLevel === "needs_review") return pick("nextReview", "Ask your doctor about these results soon.");
+    if (analysis.riskLevel === "attention") return pick("nextAttention", "Bring these results up at your next visit.");
+    return pick("nextRoutine", "Nothing urgent stands out. Keep this for your next checkup.");
+  }
+
+  function testName(item, es) {
+    const info = typeof labTestInfo === "function" ? labTestInfo(item.key) : null;
+    return es && info ? info.es : item.name;
+  }
+
+  function resultAnswer(es) {
+    const analysis = latestAnalysis();
+    if (!analysis) {
+      return es
+        ? "Todavía no hay un informe explicado. Abre Subir, agrega tu informe (o pulsa \"Probar un ejemplo\") y pulsa \"Explicar informe\". Luego pregúntame de nuevo y te lo resumo."
+        : "There's no explained report yet. Open Upload, add your report (or try the sample report), and press \"Explain report\". Then ask me again and I'll sum it up for you.";
+    }
+    const view = es && typeof translateReportAnalysis === "function" ? translateReportAnalysis(analysis, "es") : analysis;
+    const lines = [];
+    if (analysis.scanOnly) {
+      lines.push(es ? "Es un informe de imagen. CareWise explica las palabras del radiólogo; no mira las imágenes." : "This is a scan report. CareWise explains the radiologist's words; it does not look at the images.");
+    } else {
+      lines.push(es ? `Puntuación de salud: ${analysis.score}/100 (estimación educativa).` : `Health score: ${analysis.score}/100 (an educational estimate).`);
+    }
+    const outside = (analysis.panelResults || []).filter((item) => item.status === "above" || item.status === "below");
+    const flagged = (view.findings || []).filter((item) => !/better range|within|mejor rango|dentro/i.test(item.level)).slice(0, 3);
+    if (flagged.length) {
+      lines.push((es ? "Lo que necesita atención: " : "What needs attention: ") + flagged.map((item) => `${item.label} (${item.level.toLowerCase()})`).join("; ") + ".");
+    }
+    if (outside.length) {
+      const names = outside.slice(0, 4).map((item) => `${testName(item, es)} ${item.valueText}${item.unit ? ` ${item.unit}` : ""} (${es ? (item.status === "above" ? "alto" : "bajo") : (item.status === "above" ? "high" : "low")})`);
+      lines.push((es ? "Fuera del rango del laboratorio: " : "Outside the lab's range: ") + formatList(names, es) + (outside.length > 4 ? (es ? ", y más." : ", and more.") : "."));
+    } else if ((analysis.panelResults || []).length) {
+      const count = analysis.panelResults.length;
+      lines.push(es
+        ? (count === 1 ? "La prueba con rango impreso está dentro del rango del laboratorio." : `Las ${count} pruebas con rango impreso están dentro del rango del laboratorio.`)
+        : (count === 1 ? "The test with a printed range is within the lab's range." : `All ${count} tests with a printed range are within the lab's range.`));
+    }
+    lines.push((es ? "Siguiente paso: " : "Next step: ") + nextStepText(analysis, es));
+    if (view.questions?.length) lines.push((es ? "Pregunta para su médico: " : "A question for your doctor: ") + view.questions[0]);
+    lines.push(es ? "Escríbeme el nombre de una prueba para saber qué mide." : "Type the name of any test to learn what it measures.");
+    return lines.join("\n");
+  }
+
+  function testAnswer(question, es) {
+    const analysis = latestAnalysis();
+    const compiled = typeof COMPILED !== "undefined" ? COMPILED : [];
+    const hit = compiled.find(({ patterns }) => patterns.some((pattern) => pattern.test(question)));
+    if (hit) {
+      const { test } = hit;
+      const lines = [`${es ? test.es : test.name}: ${es ? test.whatEs : test.what}`];
+      const mine = analysis?.panelResults?.find((item) => item.key === test.key);
+      if (mine) {
+        lines.push(es
+          ? `En su informe: ${mine.valueText}${mine.unit ? ` ${mine.unit}` : ""}${mine.rangeText ? ` (rango ${mine.rangeText})` : ""}, ${STATUS_WORDS.es[mine.status] || ""}.`
+          : `On your report: ${mine.valueText}${mine.unit ? ` ${mine.unit}` : ""}${mine.rangeText ? ` (range ${mine.rangeText})` : ""}, ${STATUS_WORDS.en[mine.status] || ""}.`);
+      }
+      lines.push(es ? "Su médico puede decir qué significa para usted." : "Your doctor can tell you what it means for you.");
+      return lines.join("\n");
+    }
+    const extra = EXTRA_TESTS.find((test) => test.pattern.test(question));
+    if (extra) {
+      const lines = [`${es ? extra.es : extra.name}: ${es ? extra.whatEs : extra.what}`];
+      const finding = analysis?.findings?.find((item) => item.label === extra.finding);
+      if (finding) lines.push(`${es ? "En su informe" : "On your report"}: ${finding.detail.replace(/\.$/, "")} (${finding.level.toLowerCase()}).`);
+      lines.push(es ? "Su médico puede decir qué significa para usted." : "Your doctor can tell you what it means for you.");
+      return lines.join("\n");
+    }
+    if (typeof TERMS !== "undefined") {
+      const term = TERMS.find(([pattern]) => new RegExp(`\\b${pattern}`, "i").test(question));
+      if (term) return `${term[1].replace(/^./, (c) => c.toUpperCase())}: ${es ? term[3] : term[2]}\n${es ? "Su médico puede explicar qué significa en su caso." : "Your doctor can explain what it means in your case."}`;
+    }
+    return "";
+  }
+
+  function fallbackAnswer(es) {
+    return es
+      ? "Puedo ayudarte con esto:\n• Qué significa tu resultado y qué hacer después\n• Qué mide una prueba (escribe su nombre, por ejemplo \"TSH\")\n• Subir un informe, el resumen para el médico, tu cuenta y los planes\nElige una opción abajo o escribe tu pregunta de otra forma."
+      : "Here's what I can help with:\n• What your result means and what to do next\n• What a test measures (type its name, like \"TSH\" or \"eGFR\")\n• Uploading a report, the doctor brief, your account and plans\nPick one below or ask in a different way.";
+  }
+
+  function builtInAnswer(question) {
+    const es = lang() === "es";
+    const clean = question.trim();
+    // A test name wins over a general topic ("what is my LDL" is about LDL).
+    const test = testAnswer(clean, es);
+    if (test) return { reply: test };
+    if (RESULT_QUESTION.test(clean)) return { reply: resultAnswer(es) };
+    const topic = TOPICS[es ? "es" : "en"].find(([pattern]) => pattern.test(clean));
+    if (topic) return { reply: topic[1] };
+    if (/\b(what|why|how|mean|result|report|qué|significa)\b/i.test(clean) && latestAnalysis()) return { reply: resultAnswer(es) };
+    return { reply: fallbackAnswer(es), showTopics: true };
+  }
 
   const lang = () => (typeof reportLanguage !== "undefined" && reportLanguage === "es" ? "es" : "en");
   const text = () => HELP_TEXT[lang()];
@@ -80,9 +221,9 @@
     return bubble;
   }
 
-  function renderChips() {
+  function renderChips(force = false) {
     chips.innerHTML = "";
-    if (conversation.length) return;
+    if (conversation.length && !force) return;
     text().chips.forEach((label) => {
       const chip = document.createElement("button");
       chip.type = "button";
@@ -105,14 +246,6 @@
     if (!hasResult) shareBox.checked = false;
     if (!log.childElementCount) addBubble("assistant", t.hello, "help-chat-hello");
     renderChips();
-  }
-
-  function offlineAnswer(question) {
-    const match = OFFLINE_ANSWERS[lang()].find(([pattern]) => pattern.test(question));
-    if (match) return match[1];
-    return lang() === "es"
-      ? "No tengo una respuesta para eso. Prueba con otra pregunta, o usa el cuadro \"¿Te ayudó?\" para escribir al equipo."
-      : "I don't have an answer for that one. Try asking another way, or use the \"Was this helpful?\" box to reach the CareWise team.";
   }
 
   function setOpen(open) {
@@ -145,7 +278,9 @@
     sendButton.disabled = true;
     const pending = addBubble("assistant", text().thinking, "help-chat-pending");
     let reply = "";
+    let showTopics = false;
     try {
+      // Without the online helper, answer straight away from built-in knowledge.
       if (backendFeatures && backendFeatures.help_assistant === false) throw new Error("Backend returned 503");
       const response = await apiPost("/assistant/chat", {
         messages: conversation.slice(-12),
@@ -155,11 +290,14 @@
       }, { skipAuth: true });
       reply = response.reply;
     } catch (error) {
-      reply = /429/.test(String(error && error.message)) ? text().busy : offlineAnswer(clean);
+      const answer = builtInAnswer(clean);
+      reply = answer.reply;
+      showTopics = Boolean(answer.showTopics);
     }
     pending.remove();
     addBubble("assistant", reply);
     conversation.push({ role: "assistant", content: reply });
+    if (showTopics) renderChips(true);
     waiting = false;
     sendButton.disabled = false;
   }
