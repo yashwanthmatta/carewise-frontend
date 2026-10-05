@@ -7,13 +7,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-138" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-139" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-138" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-139" />
   </head>
   <body>
     <main class="app-shell">
@@ -173,10 +173,10 @@
             <h2 id="lp-pricing-title">Free to start. Families pay for the whole family.</h2>
             <div class="lp-price-grid">
               <article><h3>Free</h3><p class="lp-price">$0</p><ul><li>Explain any lab or scan report</li><li>One-page doctor brief</li><li>Lifetime health record</li></ul><a class="lp-btn lp-btn-dark" href="#report-title">Start free</a></article>
-              <article><h3>Plus</h3><p class="lp-price">$7<small>/mo</small></p><ul><li>Personal plan from your results</li><li>Reminders</li><li>Trends over the years</li></ul><a class="lp-btn lp-btn-light" href="#early-access-title">Join early access</a></article>
-              <article class="lp-price-pop"><h3>Family</h3><p class="lp-price">$12<small>/mo</small></p><ul><li>Everything in Plus</li><li>Up to 5 family members</li><li>Shared with siblings and caregivers</li></ul><a class="lp-btn lp-btn-light" href="#early-access-title">Join early access</a></article>
+              <article><h3>Plus</h3><p class="lp-price">$7<small>/mo</small></p><ul><li>Personal plan from your results</li><li>Reminders</li><li>Trends over the years</li></ul><a class="lp-btn lp-btn-light" href="#account-title" data-choose-plan="plus">Choose Plus</a></article>
+              <article class="lp-price-pop"><h3>Family</h3><p class="lp-price">$12<small>/mo</small></p><ul><li>Everything in Plus</li><li>Up to 5 family members</li><li>Shared with siblings and caregivers</li></ul><a class="lp-btn lp-btn-light" href="#account-title" data-choose-plan="premium">Choose Family</a></article>
             </div>
-            <p class="lp-fine">Starting prices, to be tested with our first families.</p>
+            <p class="lp-fine">Billed monthly through Stripe. Cancel any time from Profile.</p>
           </section>
 
           <section class="lp-final" aria-labelledby="lp-final-title">
@@ -327,6 +327,42 @@
             </label>
           </details>
           <p id="auth-status" class="status-line" role="status">Use the live production backend at carewise-api.onrender.com.</p>
+        </section>
+
+        <section class="panel billing-panel" id="your-plan" aria-labelledby="billing-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Your plan</p>
+              <h3 id="billing-title">Plans and payments</h3>
+              <p class="panel-intro">Start free. Upgrade when you want reminders, trends, or the whole family in one place. Cancel any time.</p>
+            </div>
+            <span id="billing-current" class="sync-badge">Free plan</span>
+          </div>
+          <div class="billing-banner" id="billing-banner" role="status" hidden></div>
+          <div class="billing-grid">
+            <article class="billing-card" data-plan-card="basic">
+              <h4>Free</h4>
+              <p class="billing-price">$0</p>
+              <ul><li>Explain any lab or scan report</li><li>One-page doctor brief</li><li>Lifetime health record</li></ul>
+              <button class="secondary-button" type="button" data-choose-plan="basic">Included</button>
+            </article>
+            <article class="billing-card" data-plan-card="plus">
+              <h4>Plus</h4>
+              <p class="billing-price">$7<small>/month</small></p>
+              <ul><li>Personal plan from your own results</li><li>Reminders</li><li>Trends over the years</li></ul>
+              <button class="primary-button" type="button" data-choose-plan="plus">Choose Plus</button>
+            </article>
+            <article class="billing-card billing-card-pop" data-plan-card="premium">
+              <h4>Family</h4>
+              <p class="billing-price">$12<small>/month</small></p>
+              <ul><li>Everything in Plus</li><li>Up to 5 family members</li><li>Shared with siblings and caregivers</li></ul>
+              <button class="primary-button" type="button" data-choose-plan="premium">Choose Family</button>
+            </article>
+          </div>
+          <div class="billing-actions">
+            <button id="manage-billing" class="secondary-button" type="button" hidden>Manage or cancel plan</button>
+            <p id="billing-status" class="status-line" role="status">Payments are handled by Stripe. CareWise never sees your card number.</p>
+          </div>
         </section>
 
         <section class="panel backend-panel" aria-labelledby="backend-title">
@@ -2100,6 +2136,33 @@
         <iframe id="tour-brief-frame" title="Doctor brief preview"></iframe>
       </div>
     </div>
-    <script src="script.js?v=carewise-product-138"></script>
+    <div class="help-chat" id="help-chat">
+      <button class="help-chat-launcher" id="help-chat-open" type="button" aria-label="Open CareWise help" aria-expanded="false" aria-controls="help-chat-panel">
+        <span aria-hidden="true">?</span><span class="help-chat-launcher-text">Need help?</span>
+      </button>
+      <section class="help-chat-panel" id="help-chat-panel" role="dialog" aria-modal="false" aria-labelledby="help-chat-title" hidden>
+        <header class="help-chat-head">
+          <div>
+            <h2 id="help-chat-title">CareWise helper</h2>
+            <p id="help-chat-sub">Ask about your report or how to use CareWise.</p>
+          </div>
+          <button class="help-chat-close" id="help-chat-close" type="button" aria-label="Close help">&times;</button>
+        </header>
+        <div class="help-chat-log" id="help-chat-log" aria-live="polite"></div>
+        <div class="help-chat-chips" id="help-chat-chips"></div>
+        <label class="help-chat-share" id="help-chat-share-row" hidden>
+          <input id="help-chat-share" type="checkbox" />
+          <span id="help-chat-share-label">Share my latest result with the helper</span>
+        </label>
+        <form class="help-chat-form" id="help-chat-form">
+          <label class="sr-only" for="help-chat-input">Your question</label>
+          <textarea id="help-chat-input" rows="1" maxlength="1000" placeholder="Type a question"></textarea>
+          <button class="help-chat-send" id="help-chat-send" type="submit">Send</button>
+        </form>
+        <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
+      </section>
+    </div>
+    <script src="script.js?v=carewise-product-139"></script>
+    <script src="help.js?v=carewise-product-139"></script>
   </body>
 </html>
