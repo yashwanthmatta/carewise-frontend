@@ -665,6 +665,12 @@ const REPORT_TRANSLATIONS = {
       helpfulSent: "Gracias por ayudarnos a mejorar CareWise.",
       helpfulOffline: "Gracias. No se pudo conectar con CareWise en este momento, así que no se envió nada.",
       earlyAccessLink: "¿Quiere probar las novedades primero? Únase al acceso anticipado",
+      nextUrgent: "Comuníquese hoy con su médico. Si se siente muy mal, busque atención de emergencia.",
+      nextReview: "Pregunte pronto a su médico sobre estos resultados.",
+      nextAttention: "Comente estos resultados en su próxima consulta.",
+      nextRoutine: "No se ve nada urgente. Guárdelo para su próximo chequeo.",
+      allTests: (count, outside) => `${count} prueba${count === 1 ? "" : "s"}${outside ? ` · ${outside} fuera del rango` : " · todas dentro del rango"}`,
+      showDetails: "Toque para abrir",
     },
     phrases: {
       "LDL cholesterol": "Colesterol LDL",
@@ -797,6 +803,12 @@ const REPORT_UI_EN = {
   helpfulSent: "Thank you for helping us improve CareWise.",
   helpfulOffline: "Thank you. CareWise could not be reached just now, so nothing was sent.",
   earlyAccessLink: "Want new features first? Join early access",
+  nextUrgent: "Contact your doctor today. If you feel very unwell, seek emergency care.",
+  nextReview: "Ask your doctor about these results soon.",
+  nextAttention: "Bring these results up at your next visit.",
+  nextRoutine: "Nothing urgent stands out. Keep this for your next checkup.",
+  allTests: (count, outside) => `${count} test${count === 1 ? "" : "s"}${outside ? ` · ${outside} outside the range` : " · all within range"}`,
+  showDetails: "Tap to open",
 };
 
 // Personal plan built from a person's own report values, using published public
@@ -4381,6 +4393,22 @@ async function readScannedPdfLocally(file, maxPages = 3) {
   }
 }
 
+// "Whose report?" chips fill the person field; typing a name selects no chip.
+function syncWhoseChips() {
+  const value = normalizeReportPerson(document.querySelector("#report-person")?.value);
+  document.querySelectorAll(".whose-chip").forEach((chip) => {
+    const chipValue = normalizeReportPerson(chip.dataset.whose);
+    chip.classList.toggle("is-active", chipValue === value);
+    chip.setAttribute("aria-pressed", String(chipValue === value));
+  });
+}
+document.querySelectorAll(".whose-chip").forEach((chip) => chip.addEventListener("click", () => {
+  const input = document.querySelector("#report-person");
+  if (input) input.value = chip.dataset.whose;
+  syncWhoseChips();
+}));
+document.querySelector("#report-person")?.addEventListener("input", syncWhoseChips);
+
 // "Was this helpful?" under each explanation. The answer is sent on the first tap;
 // an optional comment can follow. Nothing from the report itself is sent.
 function renderFeedbackBox(ui) {
@@ -5485,6 +5513,16 @@ function renderScanSection(analysis) {
         </section>`;
 }
 
+// Long parts of a result (every test, the plan, tips) open on demand so the answer comes first.
+function renderResultMore(content, title, detail) {
+  if (!content || !title) return "";
+  return `
+        <details class="result-more">
+          <summary><strong>${escapeHtml(title)}</strong>${detail ? `<span>${escapeHtml(detail)}</span>` : ""}</summary>
+          ${content}
+        </details>`;
+}
+
 function renderLabPanelSection(analysis) {
   const results = analysis.panelResults || [];
   if (!results.length) return "";
@@ -5599,7 +5637,19 @@ function renderLocalReportAnalysis(analysis) {
           <small>${escapeHtml(riskLabelText)}</small>
         </div>
       </div>
+      ${analysis.noData ? "" : `<p class="result-next result-next-${escapeHtml(analysis.riskLevel)}">${escapeHtml(analysis.riskLevel === "urgent" ? ui.nextUrgent : analysis.riskLevel === "needs_review" ? ui.nextReview : analysis.riskLevel === "attention" ? ui.nextAttention : ui.nextRoutine)}</p>`}
       <div class="result-sections">
+        <section>
+          <div class="section-heading-action">
+            <h4>${escapeHtml(ui.questions)}</h4>
+            <button class="secondary-button compact" type="button" data-report-action="copy-questions">${escapeHtml(ui.copyQuestions)}</button>
+          </div>
+          <ul>${view.questions.map((item) => `<li><strong>${escapeHtml(ui.ask)}</strong><span>${escapeHtml(item)}</span></li>`).join("")}</ul>
+        </section>
+        <section>
+          <h4>${escapeHtml(ui.keyFindings)}</h4>
+          <ul>${view.findings.map((item) => `<li><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.level)}. ${escapeHtml(item.detail)}</span></li>`).join("")}</ul>
+        </section>
         ${view.labValues?.length ? `
         <section>
           <div class="section-heading-action">
@@ -5617,30 +5667,21 @@ function renderLocalReportAnalysis(analysis) {
           </div>
         </section>
         ` : ""}
-        <section>
-          <h4>${escapeHtml(ui.keyFindings)}</h4>
-          <ul>${view.findings.map((item) => `<li><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.level)}. ${escapeHtml(item.detail)}</span></li>`).join("")}</ul>
-        </section>
-        <section>
+        ${renderScanSection(analysis)}
+        ${renderResultMore(renderLabPanelSection(analysis), LAB_PANEL_TEXT[reportLanguage === "es" ? "es" : "en"].title, (analysis.panelResults || []).length ? ui.allTests(analysis.panelResults.length, analysis.panelResults.filter((item) => item.status !== "within" && item.status !== "unknown").length) : "")}
+        ${renderResultMore(renderPersonalPlanSection(analysis), getLatestPersonalPlan(analysis)?.title || "", "")}
+        ${renderResultMore(`<section class="result-suggestions">
           <h4>${escapeHtml(ui.suggestions)}</h4>
           <ul>${view.suggestions.map((item) => `<li><strong>${escapeHtml(ui.nextStep)}</strong><span>${escapeHtml(item)}</span></li>`).join("")}</ul>
-        </section>
-        <section>
-          <div class="section-heading-action">
-            <h4>${escapeHtml(ui.questions)}</h4>
-            <button class="secondary-button compact" type="button" data-report-action="copy-questions">${escapeHtml(ui.copyQuestions)}</button>
-          </div>
-          <ul>${view.questions.map((item) => `<li><strong>${escapeHtml(ui.ask)}</strong><span>${escapeHtml(item)}</span></li>`).join("")}</ul>
-        </section>
-        ${renderScanSection(analysis)}
-        ${renderLabPanelSection(analysis)}
-        ${renderPersonalPlanSection(analysis)}
+        </section>`, ui.suggestions, "")}
       </div>
       <div class="safety-note"><strong>${escapeHtml(ui.safetyTitle)}</strong><span>${escapeHtml(ui.safetyText)}</span></div>
       ${analysis.noData ? "" : renderFeedbackBox(ui)}
     </article>
   `;
 
+  document.querySelector(".report-panel")?.classList.add("has-result");
+  syncWhoseChips();
   const scoreCard = document.querySelector(".health-score-card strong");
   if (scoreCard) scoreCard.textContent = `${analysis.score}/100`;
   const dashboardCards = document.querySelectorAll(".v1-report-dashboard article");
@@ -9613,6 +9654,7 @@ function showTourStep(index) {
   document.querySelector("#tour-next").textContent = step.final ? "Finish" : "Next";
 
   requestAnimationFrame(() => {
+    document.querySelectorAll("#report-results details.result-more").forEach((details) => { details.open = true; });
     tourScrollTo(step.target);
     if (step.brief) tourShowBrief();
   });
@@ -9643,6 +9685,7 @@ function endTour() {
   document.querySelector("#report-text").value = "";
   document.querySelector("#report-person").value = "";
   document.querySelector("#report-name").value = "";
+  syncWhoseChips();
   reportStatus.textContent = "Try the sample report, paste lab text, or upload a file.";
   window.showCareWiseSection?.("report-title", false);
   tourScrollTo(".report-panel");
