@@ -1930,8 +1930,12 @@ function initializeWorkspaceNavigation() {
 
   const sectionsById = new Map(sectionTargets);
   // Panels shown together with a main section (the lab tracker sits under History).
-  const sectionCompanions = [["saved-title", document.querySelector(".lab-trend-panel")]].filter(([, element]) => Boolean(element));
-  const navLinks = [...document.querySelectorAll(".quick-nav a[href^='#'], .team-nav a[href^='#'], .progress-rail a[href^='#'], .hero-actions a[href^='#'], .hero-early-access a[href^='#'], [data-early-access-link], .consent-action-card a[href^='#'], .report-panel a[href^='#']")];
+  const sectionCompanions = [
+    ["saved-title", document.querySelector(".lab-trend-panel")],
+    // The landing page (hero, how it works, safety, pricing) only shows on Home.
+    ["home-title", document.querySelector(".landing")],
+  ].filter(([, element]) => Boolean(element));
+  const navLinks = [...document.querySelectorAll(".quick-nav a[href^='#'], .team-nav a[href^='#'], .progress-rail a[href^='#'], .hero-actions a[href^='#'], .hero-early-access a[href^='#'], [data-early-access-link], .landing a[href^='#'], .site-nav a[href^='#'], .consent-action-card a[href^='#'], .report-panel a[href^='#']")];
 
   sectionTargets.forEach(([, element]) => {
     element.classList.add("app-section");
@@ -1957,9 +1961,29 @@ function initializeWorkspaceNavigation() {
     updateProgressRail();
 
     if (shouldScroll) {
-      document.querySelector(".quick-nav")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
+
+  // Links to a part of the landing page ("#pricing") open Home and scroll to that part.
+  const showLandingAnchor = (anchorId) => {
+    const anchor = anchorId && document.getElementById(anchorId);
+    if (!anchor || !anchor.closest(".landing")) return false;
+    showSection("home-title", false);
+    requestAnimationFrame(() => scrollBelowHeader(anchor));
+    return true;
+  };
+  document.querySelectorAll(".landing a[href^='#'], .site-nav a[href^='#']").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      if (link.hasAttribute("data-start-tour")) return;
+      const targetId = link.getAttribute("href").slice(1);
+      if (sectionsById.has(targetId)) return;
+      if (showLandingAnchor(targetId)) {
+        event.preventDefault();
+        history.pushState(null, "", `#${targetId}`);
+      }
+    });
+  });
 
   navLinks.forEach((link) => {
     link.addEventListener("click", (event) => {
@@ -1972,11 +1996,12 @@ function initializeWorkspaceNavigation() {
   });
 
   window.addEventListener("hashchange", () => {
+    if (showLandingAnchor(window.location.hash.slice(1))) return;
     showSection(window.location.hash.slice(1), true);
   });
 
   window.showCareWiseSection = showSection;
-  showSection(window.location.hash.slice(1) || "home-title", false);
+  if (!showLandingAnchor(window.location.hash.slice(1))) showSection(window.location.hash.slice(1) || "home-title", false);
 }
 
 function updateProgressRail() {
@@ -9624,6 +9649,46 @@ function endTour() {
 }
 
 document.querySelector("#start-tour")?.addEventListener("click", startTour);
+document.querySelectorAll("[data-start-tour]").forEach((element) => element.addEventListener("click", (event) => {
+  event.preventDefault();
+  startTour();
+}));
+
+// "The moment we fix": three problems that rotate every 6 seconds (paused on hover or
+// focus, and not at all for people who prefer reduced motion); tapping one selects it.
+(function setupLandingProblems() {
+  const list = document.querySelector("[data-lp-acc]");
+  if (!list) return;
+  const items = [...list.querySelectorAll("li")];
+  const results = [
+    ["Plain words", "Every result, in language your family uses."],
+    ["Clear urgency", "Routine, ask soon, or contact your doctor today."],
+    ["Ready for the visit", "Questions from your numbers, and a one-page doctor brief."],
+  ];
+  const big = document.querySelector("[data-lp-result]");
+  const sub = document.querySelector("[data-lp-result-sub]");
+  let active = 0;
+  let paused = false;
+  const select = (index) => {
+    active = index;
+    items.forEach((item, i) => {
+      item.classList.toggle("is-active", i === index);
+      item.querySelector("button").setAttribute("aria-expanded", String(i === index));
+    });
+    if (big) big.textContent = results[index][0];
+    if (sub) sub.textContent = results[index][1];
+  };
+  items.forEach((item, index) => item.querySelector("button").addEventListener("click", () => select(index)));
+  list.addEventListener("mouseenter", () => { paused = true; });
+  list.addEventListener("mouseleave", () => { paused = false; });
+  list.addEventListener("focusin", () => { paused = true; });
+  list.addEventListener("focusout", () => { paused = false; });
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+  list.classList.add("is-cycling");
+  setInterval(() => {
+    if (!paused && !document.hidden && document.body.dataset.activeWorkspace === "home-title") select((active + 1) % items.length);
+  }, 6000);
+})();
 document.querySelector("#tour-next")?.addEventListener("click", () => {
   if (TOUR_STEPS[tourStep]?.final) {
     trackUsage("demo_finished");

@@ -7,93 +7,34 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-136" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-137" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-136" />
+    <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-137" />
   </head>
   <body>
     <main class="app-shell">
       <section class="workspace" aria-labelledby="app-title">
-        <header class="topbar">
-          <a class="brand-lockup" href="#app-title" aria-label="CareWise home">
-            <img class="brand-logo" src="assets/carewise-logo.svg" alt="" width="52" height="52" />
-            <span class="brand-text">
-              <strong>CareWise</strong>
-              <small>AI report explainer</small>
-            </span>
+        <header class="topbar site-nav">
+          <a class="brand-lockup" href="#app-title" aria-label="CareWise home" data-home-link>
+            <img class="brand-logo" src="assets/carewise-logo.svg" alt="" width="34" height="34" />
+            <span class="brand-text"><strong>CareWise</strong></span>
           </a>
+          <nav class="site-links" aria-label="About CareWise">
+            <a href="#how-it-works">How it works</a>
+            <a href="#safety">Safety</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#early-access-title">For families</a>
+          </nav>
           <div class="topbar-actions">
-            <span class="trust-pill">Educational health report explainer</span>
-            <span class="live-pill">Private beta</span>
             <span id="network-status" class="network-pill">Checking network</span>
             <button id="install-app" class="install-button" type="button" hidden>Install</button>
+            <a class="nav-cta" href="#report-title">Explain a report</a>
           </div>
         </header>
-
-        <section class="hero-panel">
-          <div class="hero-copy">
-            <p class="eyebrow">CareWise AI</p>
-            <h1 id="app-title">Understand your health reports in simple English.</h1>
-            <p>
-              Add a blood test report. CareWise explains each result in plain
-              words, shows what to watch, and gives you questions for your
-              doctor.
-            </p>
-            <div class="hero-actions" aria-label="Primary actions">
-              <a class="primary-link" href="#report-title">Upload report</a>
-              <button id="start-tour" class="secondary-link" type="button">See a 1-minute demo</button>
-            </div>
-            <p class="hero-early-access"><a href="#early-access-title">Looking after a parent's health? Join early access</a></p>
-            <ul class="hero-assurances" aria-label="How CareWise handles your report">
-              <li>Read on your device</li>
-              <li>English and Español</li>
-              <li>Educational, not a diagnosis</li>
-            </ul>
-          </div>
-          <div class="hero-visual" aria-label="CareWise report preview">
-            <div class="report-preview-card">
-              <div class="preview-topline">
-                <span>Sample report</span>
-                <strong>73/100</strong>
-              </div>
-              <div class="preview-score-ring" aria-hidden="true">
-                <span>Health Score</span>
-              </div>
-              <div class="preview-finding-list">
-                <article>
-                  <span>LDL cholesterol</span>
-                  <strong>Needs attention</strong>
-                </article>
-                <article>
-                  <span>A1C</span>
-                  <strong>Discuss prevention</strong>
-                </article>
-                <article>
-                  <span>Next step</span>
-                  <strong>Ask your doctor 3 questions</strong>
-                </article>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="overview-strip how-it-works" aria-label="How CareWise works">
-          <article>
-            <strong><b class="step-num">1</b>Add your report</strong>
-            <span>Drop in a lab PDF or type the numbers.</span>
-          </article>
-          <article>
-            <strong><b class="step-num">2</b>Read it simply</strong>
-            <span>Each result in plain English or Spanish, and what to watch.</span>
-          </article>
-          <article>
-            <strong><b class="step-num">3</b>Talk to your doctor</strong>
-            <span>Take the questions and a one-page brief to your visit.</span>
-          </article>
-        </section>
 
         <nav class="quick-nav patient-nav" aria-label="CareWise patient flow">
           <a href="#app-title">Home</a>
@@ -102,6 +43,156 @@
           <a href="#record-title">Record</a>
           <a href="#account-title">Profile</a>
         </nav>
+
+        <div class="landing" id="landing">
+          <section class="lp-hero" aria-labelledby="app-title">
+            <p class="lp-chip"><img src="assets/carewise-logo.svg" alt="" width="20" height="20" /> For families who look after a parent's health</p>
+            <h1 id="app-title">Understand your health reports in simple English.</h1>
+            <p class="lp-lede">Add a blood test or scan report. CareWise explains every result in plain words, tells you how urgent it is, and gets you ready for the doctor. Free, and read on your own device.</p>
+            <div class="hero-actions lp-actions" aria-label="Primary actions">
+              <a class="lp-btn lp-btn-dark" href="#report-title">Explain a report, free</a>
+              <button id="start-tour" class="lp-btn lp-btn-light" type="button"><span class="lp-play" aria-hidden="true"></span>See a 1-minute demo</button>
+            </div>
+            <p class="hero-early-access"><a href="#early-access-title">Looking after a parent's health? Join early access</a></p>
+
+            <div class="lp-stage" aria-label="Example: a parent's kidney report explained by CareWise">
+              <div class="lp-stage-glow" aria-hidden="true"></div>
+              <div class="lp-float lp-float-a" aria-hidden="true">Read on this phone · nothing uploaded</div>
+              <div class="lp-float lp-float-b" aria-hidden="true">English · Español</div>
+              <article class="lp-mock lp-mock-hero">
+                <header class="lp-mock-bar"><span></span><span></span><span></span><b>Dad's kidney panel</b></header>
+                <div class="lp-mock-body">
+                  <div class="lp-score"><strong>64</strong><small>/100</small><em>Clinician review</em></div>
+                  <ul class="lp-rows">
+                    <li><span>eGFR (kidney filtering)</span><b>28</b><i class="lp-tag lp-tag-far">Far below the lab's range</i></li>
+                    <li><span>Creatinine</span><b>2.3</b><i class="lp-tag lp-tag-far">Far above the lab's range</i></li>
+                    <li><span>Hemoglobin</span><b>11.2</b><i class="lp-tag lp-tag-out">Below the lab's range</i></li>
+                    <li><span>Potassium</span><b>4.9</b><i class="lp-tag lp-tag-ok">Within range</i></li>
+                  </ul>
+                  <p class="lp-ask"><strong>Ask your doctor:</strong> Which results are far outside the range, and how soon should I be seen about them?</p>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="lp-strip" aria-label="What CareWise does">
+            <p class="lp-strip-label">Built for <b>families</b>, not clinics</p>
+            <ul>
+              <li><strong>PDFs and photos</strong><span>Snap the WhatsApp photo or drop the lab PDF.</span></li>
+              <li><strong>Your lab's own range</strong><span>Every result compared with the range on the report.</span></li>
+              <li><strong>How urgent it is</strong><span>Routine, ask soon, or contact your doctor today.</span></li>
+              <li><strong>English and Español</strong><span>One tap to switch, doctor brief stays in English.</span></li>
+            </ul>
+          </section>
+
+          <section class="lp-problems" aria-labelledby="lp-problems-title">
+            <div class="lp-problems-copy">
+              <p class="lp-eyebrow">The moment we fix</p>
+              <h2 id="lp-problems-title">A report lands at 9 pm. Now what?</h2>
+              <ol class="lp-acc" data-lp-acc>
+                <li class="is-active"><button type="button" aria-expanded="true">"I can't read it."</button><p>Abbreviations and ranges written for clinicians. CareWise explains every line in plain words.</p><span class="lp-acc-bar" aria-hidden="true"></span></li>
+                <li><button type="button" aria-expanded="false">"Should I call the doctor tonight?"</button><p>Each result is checked against the lab's own range. Far outside means ask soon; a dangerous level means contact your doctor today.</p><span class="lp-acc-bar" aria-hidden="true"></span></li>
+                <li><button type="button" aria-expanded="false">"I forgot what to ask."</button><p>Questions written from your numbers, and a one-page brief your doctor can read in 30 seconds.</p><span class="lp-acc-bar" aria-hidden="true"></span></li>
+              </ol>
+            </div>
+            <div class="lp-result" aria-live="polite">
+              <p class="lp-eyebrow lp-eyebrow-light">Result</p>
+              <p class="lp-result-big" data-lp-result>Plain words</p>
+              <p class="lp-result-sub" data-lp-result-sub>Every result, in language your family uses.</p>
+              <a class="lp-result-link" href="#report-title">Try it on a sample report <span aria-hidden="true">→</span></a>
+            </div>
+          </section>
+
+          <section class="lp-sentence" aria-label="Watch the demo">
+            <p><span>From a photo</span>
+              <button class="lp-pill-video" type="button" data-start-tour><span class="lp-pill-lines" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="lp-pill-label">Watch the 1-minute demo <span class="lp-play" aria-hidden="true"></span></span></button>
+              <span>to your doctor</span></p>
+          </section>
+
+          <section class="lp-dark" id="how-it-works" aria-labelledby="lp-how-title">
+            <p class="lp-eyebrow lp-eyebrow-light lp-center">How it works</p>
+            <h2 id="lp-how-title" class="lp-center">Four steps. About a minute.</h2>
+            <div class="lp-flows">
+              <article class="lp-flow lp-flow-1">
+                <p class="lp-step">Step 01</p>
+                <h3>Add the report</h3>
+                <p>Take a photo, drop a PDF or type the numbers. Photos and PDFs are read on your device; nothing is uploaded.</p>
+                <a href="#report-title">Add a report <span aria-hidden="true">→</span></a>
+                <div class="lp-window"><header><span></span><span></span><span></span><b>CareWise</b><em>/ Upload</em></header>
+                  <div class="lp-window-body"><p class="lp-w-title">Reading your photo</p><p class="lp-w-sub">On this device · nothing uploaded</p><div class="lp-progress"><i></i></div><p class="lp-w-check">Hemoglobin: read as 108. CareWise used 10.8; please check.</p></div></div>
+              </article>
+              <article class="lp-flow lp-flow-2">
+                <p class="lp-step">Step 02</p>
+                <h3>Every result, against your lab's range</h3>
+                <p>Kidney, liver, thyroid, blood count, sugar and more: each compared with the range printed on your report.</p>
+                <a href="#tour" data-start-tour>See it in the demo <span aria-hidden="true">→</span></a>
+                <div class="lp-window"><header><span></span><span></span><span></span><b>CareWise</b><em>/ All tests on your report</em></header>
+                  <div class="lp-window-body"><div class="lp-pills"><span class="lp-dot-ok">9 within</span><span class="lp-dot-out">2 outside</span><span class="lp-dot-far">1 far outside</span></div>
+                  <table class="lp-table"><tr><th>Test</th><th>Result</th><th>Status</th></tr><tr><td>TSH (thyroid)</td><td>9.8</td><td><i class="lp-tag lp-tag-far">Far above</i></td></tr><tr><td>Vitamin B12</td><td>150</td><td><i class="lp-tag lp-tag-out">Below</i></td></tr><tr><td>Sodium</td><td>139</td><td><i class="lp-tag lp-tag-ok">Within</i></td></tr></table></div></div>
+              </article>
+              <article class="lp-flow lp-flow-3">
+                <p class="lp-step">Step 03</p>
+                <h3>Know how urgent it is</h3>
+                <p>Routine, ask your doctor soon, or contact your doctor today. Dangerous levels are never called routine.</p>
+                <a href="#safety">How we keep it safe <span aria-hidden="true">→</span></a>
+                <div class="lp-window"><header><span></span><span></span><span></span><b>CareWise</b><em>/ Result</em></header>
+                  <div class="lp-window-body"><div class="lp-alert"><strong>Possible danger level</strong><span>Glucose 45 mg/dL; lab range 70-99. Labs often treat this level as urgent. Contact your doctor today, or seek emergency care if you feel very unwell.</span></div></div></div>
+              </article>
+              <article class="lp-flow lp-flow-4">
+                <p class="lp-step">Step 04</p>
+                <h3>Walk in ready</h3>
+                <p>Questions from your own numbers and a one-page doctor brief. Switch the explanation to Spanish in one tap.</p>
+                <a href="#report-title">Make a doctor brief <span aria-hidden="true">→</span></a>
+                <div class="lp-window"><header><span></span><span></span><span></span><b>CareWise</b><em>/ Doctor brief</em></header>
+                  <div class="lp-window-body"><p class="lp-w-title">Lab summary for clinician review: Mum</p><ol class="lp-brief"><li>Is my TSH high enough to need treatment or a repeat test?</li><li>Should my B12 be rechecked?</li><li>When should I repeat these labs?</li></ol></div></div>
+              </article>
+            </div>
+
+            <div class="lp-cards">
+              <article><h3>A health record for the whole family</h3><p>Conditions, medicines and what didn't suit each person, kept in one timeline on your device.</p><a href="#record-title">Open the record <span aria-hidden="true">→</span></a></article>
+              <article><h3>A 4-week plan from your numbers</h3><p>Food, movement and tracking tips that say why ("your LDL is 148") and where the advice comes from.</p><a href="#tour" data-start-tour>See a plan <span aria-hidden="true">→</span></a></article>
+              <article><h3>CT, MRI and X-ray reports</h3><p>The radiologist's words in plain language. CareWise never reads the images and never judges findings.</p><a href="#report-title">Explain a scan report <span aria-hidden="true">→</span></a></article>
+              <article><h3>Caregiver mode</h3><p>Keep Mum's, Dad's and your own reports apart, and filter history by person.</p><a href="#saved-title">See report history <span aria-hidden="true">→</span></a></article>
+              <article><h3>Private by design</h3><p>Reports are read in your browser. An account is optional and only needed to sync between devices.</p><a href="legal/privacy.html">Read the privacy policy <span aria-hidden="true">→</span></a></article>
+              <article class="lp-card-accent"><h3>Works on your phone</h3><p>Add CareWise to your home screen, or use the CareWise app. Same explanations, same safety rules.</p><a href="#report-title">Start on this phone <span aria-hidden="true">→</span></a></article>
+            </div>
+          </section>
+
+          <section class="lp-safety" id="safety" aria-labelledby="lp-safety-title">
+            <p class="lp-eyebrow">Safe by design</p>
+            <h2 id="lp-safety-title">Education that sends you to your doctor, never around them.</h2>
+            <div class="lp-safety-grid">
+              <div><h3>CareWise does</h3><ul><li>Compare each result with the lab's own range</li><li>Say "contact your doctor today" for dangerous levels</li><li>Ask you to check numbers read from a photo</li><li>Label general guides honestly when no range is printed</li></ul></div>
+              <div><h3>CareWise never</h3><ul><li>Diagnoses</li><li>Names medicines or doses</li><li>Reads scan images (only the radiologist's words)</li><li>Replaces your doctor</li></ul></div>
+            </div>
+            <p class="lp-fine">CareWise is not a diagnosis, prescription, emergency service, or replacement for licensed medical care. If you feel very unwell, call your local emergency number.</p>
+          </section>
+
+          <section class="lp-pricing" id="pricing" aria-labelledby="lp-pricing-title">
+            <p class="lp-eyebrow">Pricing</p>
+            <h2 id="lp-pricing-title">Free to start. Families pay for the whole family.</h2>
+            <div class="lp-price-grid">
+              <article><h3>Free</h3><p class="lp-price">$0</p><ul><li>Explain any lab or scan report</li><li>One-page doctor brief</li><li>Lifetime health record</li></ul><a class="lp-btn lp-btn-dark" href="#report-title">Start free</a></article>
+              <article><h3>Plus</h3><p class="lp-price">$7<small>/mo</small></p><ul><li>Personal plan from your results</li><li>Reminders</li><li>Trends over the years</li></ul><a class="lp-btn lp-btn-light" href="#early-access-title">Join early access</a></article>
+              <article class="lp-price-pop"><h3>Family</h3><p class="lp-price">$12<small>/mo</small></p><ul><li>Everything in Plus</li><li>Up to 5 family members</li><li>Shared with siblings and caregivers</li></ul><a class="lp-btn lp-btn-light" href="#early-access-title">Join early access</a></article>
+            </div>
+            <p class="lp-fine">Starting prices, to be tested with our first families.</p>
+          </section>
+
+          <section class="lp-final" aria-labelledby="lp-final-title">
+            <h2 id="lp-final-title">Your parent's next report, explained in a minute.</h2>
+            <div class="lp-actions">
+              <a class="lp-btn lp-btn-white" href="#report-title">Explain a report, free</a>
+              <a class="lp-btn lp-btn-ghost" href="#early-access-title">Join early access</a>
+            </div>
+          </section>
+
+          <footer class="lp-footer">
+            <div><strong>CareWise</strong><span>Educational health report explainer. Not a diagnosis.</span></div>
+            <nav aria-label="Legal"><a href="legal/privacy.html">Privacy</a><a href="legal/terms.html">Terms</a><a href="legal/disclaimer.html">Disclaimer</a><a href="legal/data-deletion.html">Delete my data</a></nav>
+          </footer>
+        </div>
+
 
         <section class="progress-rail" aria-label="CareWise progress">
           <a href="#account-title"><strong>1</strong><span>Account</span></a>
@@ -2008,6 +2099,6 @@
         <iframe id="tour-brief-frame" title="Doctor brief preview"></iframe>
       </div>
     </div>
-    <script src="script.js?v=carewise-product-136"></script>
+    <script src="script.js?v=carewise-product-137"></script>
   </body>
 </html>
