@@ -65,7 +65,6 @@
       [/install|app\b|phone|offline/i, "You can add CareWise to your phone's home screen from your browser's menu (\"Add to Home Screen\"). Report explaining also works offline once the page has loaded."],
       [/\b(mri|ct|x-?ray|ultrasound|scan|mammogram|radiolog)/i, "For a scan, paste or upload the written report from the radiologist. CareWise explains the words in it and the Impression; it does not look at the images themselves."],
       [/medicine|medication|drug|pill|dose|supplement|treat|cure|prescri|\b(can|should) i take\b|aspirin|ibuprofen|tylenol|acetaminophen|statin|metformin|insulin|antibiotic|vitamin pill/i, "I can't suggest medicines, supplements or doses. Please ask your doctor or pharmacist, and write the question down so you remember it at the visit."],
-      [/diet|food|eat|exercise|weight|lifestyle/i, "Your result includes general wellness tips. For a food or exercise plan that fits your results and conditions, ask your doctor or a dietitian."],
     ],
     es: [
       [/^(hola|buenas|buenos días)/i, "¡Hola! Puedo explicar una prueba de tu informe, decirte qué hacer después o ayudarte a subir un informe, con el resumen para el médico, tu cuenta y los planes."],
@@ -79,7 +78,6 @@
       [/cuenta|contraseña|guardar|iniciar|correo/i, "Ve a Perfil para crear una cuenta gratis con tu correo y guarda tus informes."],
       [/privacidad|borrar|eliminar|datos|seguro/i, "Los informes se leen en tu dispositivo. Al guardarlos en una cuenta, el texto se cifra. Puedes pedir que se borren tus datos desde Perfil."],
       [/medicina|medicamento|pastilla|dosis|suplemento|tratamiento|puedo tomar|receta/i, "No puedo sugerir medicamentos, suplementos ni dosis. Pregunta a tu médico o farmacéutico."],
-      [/dieta|comida|comer|ejercicio|peso/i, "Tu resultado incluye consejos generales. Para un plan de comida o ejercicio, pregunta a tu médico o a un dietista."],
     ],
   };
 
@@ -179,9 +177,99 @@
       : "Here's what I can help with:\n• What your result means and what to do next\n• What a test measures (type its name, like \"TSH\" or \"eGFR\")\n• Uploading a report, the doctor brief, your account and plans\nPick one below or ask in a different way.";
   }
 
+  // Food, movement and lifestyle questions get the same guideline-based plan the
+  // result shows (AHA, ADA, CDC, DASH), built from the person's own values.
+  const LIFESTYLE_QUESTION = /\b(eat|eating|food|foods|diet|meal|meals|recipe|breakfast|lunch|dinner|snack|cook|nutrition|fruit|vegetable|sugar intake|salt|exercise|exercises|workout|walk|walking|gym|yoga|activity|active|fitness|weight|lose|losing|lower|reduce|improve|bring down|control|lifestyle|habit|habits|naturally)\b|comer|comida|dieta|ejercicio|caminar|peso|bajar|mejorar|hábitos|saludable/i;
+  const SLEEP_QUESTION = /\b(sleep|insomnia|tired|fatigue|stress|anxious|anxiety)\b|dormir|sueño|cansad|estrés/i;
+
+  // Say each reason once, after the first tip it applies to.
+  function planItems(section, plan, limit, said = new Set()) {
+    return section.items.slice(0, limit).map((item) => {
+      const why = item.why && !said.has(item.why) ? ` (${item.why})` : "";
+      if (item.why) said.add(item.why);
+      return `• ${item.text}${why}`;
+    });
+  }
+
+  function lifestyleAnswer(question, es) {
+    const analysis = latestAnalysis();
+    const wantsMove = /exercise|workout|walk|gym|yoga|activity|active|fitness|ejercicio|caminar/i.test(question);
+    const wantsFood = /eat|food|diet|meal|recipe|breakfast|lunch|dinner|snack|cook|nutrition|fruit|vegetable|salt|sugar|comer|comida|dieta/i.test(question);
+    const both = wantsMove === wantsFood;
+    if (typeof buildPersonalPlan !== "function" || !analysis || analysis.scanOnly) {
+      const lines = es
+        ? ["Consejos generales basados en guías públicas (AHA, CDC):",
+          "• Verduras y fruta en la mayoría de las comidas, cereales integrales, y proteína de pescado, legumbres, frutos secos o pollo.",
+          "• Menos bebidas azucaradas, dulces, sal y carnes procesadas.",
+          "• 150 minutos por semana de actividad moderada (por ejemplo, caminar rápido 30 minutos, 5 días) y ejercicios de fuerza 2 días.",
+          "• Si no haces ejercicio ahora, empieza con 10 minutos al día."]
+        : ["General guidance from public guidelines (AHA, CDC):",
+          "• Vegetables and fruit at most meals, whole grains, and protein from fish, beans, nuts or poultry.",
+          "• Fewer sugary drinks, sweets, salty and processed foods.",
+          "• 150 minutes a week of moderate activity (for example a brisk 30-minute walk on 5 days) plus strength exercises on 2 days.",
+          "• If you're not active now, start with 10 minutes a day and add a little each week."];
+      lines.push(es
+        ? "Explica tu informe en Subir y te daré un plan según tus propios valores."
+        : "Explain your report under Upload and I'll tailor this to your own results.");
+      return lines.join("\n");
+    }
+    const reactions = typeof getPlanReactions === "function" ? getPlanReactions() : [];
+    const plan = buildPersonalPlan(analysis, es ? "es" : "en", reactions);
+    const section = (key) => plan.sections.find((item) => item.key === key);
+    const lines = [es ? "Según tu informe, esto es lo que recomiendan las guías:" : "Based on your report, here's what the guidelines suggest:"];
+    if (plan.urgent) {
+      lines.push(`• ${section("move").items[0].text}`);
+      return lines.join("\n");
+    }
+    const said = new Set();
+    if (both || wantsFood) {
+      lines.push(es ? "Comida:" : "Food:");
+      lines.push(...planItems(section("food"), plan, both ? 4 : 6, said));
+    }
+    if (both || wantsMove) {
+      lines.push(es ? "Movimiento:" : "Movement:");
+      lines.push(...planItems(section("move"), plan, both ? 3 : 5, said));
+    }
+    const track = section("track").items[0];
+    if (track) lines.push((es ? "Seguimiento: " : "Track: ") + track.text);
+    lines.push(section("safety").items[0].text);
+    return lines.join("\n");
+  }
+
+  function sleepAnswer(es) {
+    return es
+      ? "Consejos generales (CDC):\n• Los adultos necesitan 7 horas o más de sueño.\n• Acuéstate y levántate a la misma hora, también los fines de semana.\n• Evita pantallas, cafeína y comidas grandes antes de dormir.\n• Camina o muévete durante el día y sal a la luz del sol por la mañana.\nSi el cansancio o el estrés duran semanas, coméntalo con tu médico: algunas pruebas de laboratorio (como hierro, tiroides o B12) pueden estar relacionadas."
+      : "General guidance (CDC):\n• Adults need 7 or more hours of sleep.\n• Go to bed and get up at the same time, weekends too.\n• Avoid screens, caffeine and big meals close to bedtime.\n• Move during the day and get morning daylight.\nIf tiredness or stress lasts for weeks, tell your doctor: some lab results (such as iron, thyroid or B12) can be linked to tiredness.";
+  }
+
+  const MEDICINE_QUESTION = /medicine|medication|meds\b|drug|pill|tablet|dose|dosage|supplement|prescri|\b(can|should) i take\b|aspirin|ibuprofen|tylenol|acetaminophen|statin|metformin|insulin|antibiotic|medicina|medicamento|pastilla|dosis|suplemento|receta|puedo tomar/i;
+
+  function medicineAnswer(es) {
+    const analysis = latestAnalysis();
+    const lines = es
+      ? ["No puedo recomendar ni nombrar medicamentos, suplementos o dosis; eso lo decide tu médico, que conoce tu historial completo.",
+        "Preguntas útiles para tu médico o farmacéutico:",
+        "• ¿Mis resultados indican que debería considerar un medicamento, o primero cambios de hábitos?",
+        "• ¿Qué beneficios y efectos secundarios tendría, y cuándo repetimos la prueba?",
+        "• ¿Interactúa con lo que ya tomo?"]
+      : ["I can't recommend or name medicines, supplements or doses. That decision is your doctor's, because it depends on your whole history.",
+        "Useful questions to ask your doctor or pharmacist:",
+        "• Do my results mean I should consider a medicine, or try lifestyle changes first?",
+        "• What are the benefits and side effects, and when should I repeat the test?",
+        "• Does it interact with anything I already take?"];
+    if (analysis && !analysis.scanOnly) {
+      lines.push(es ? "Mientras tanto, pregúntame \"¿qué debo comer?\" o \"¿qué ejercicio me conviene?\" para ver lo que las guías recomiendan según tu informe." : "Meanwhile, ask me \"what should I eat?\" or \"what exercise is good for me?\" to see what the guidelines suggest for your results.");
+    }
+    return lines.join("\n");
+  }
+
   function builtInAnswer(question) {
     const es = lang() === "es";
     const clean = question.trim();
+    if (MEDICINE_QUESTION.test(clean)) return { reply: medicineAnswer(es) };
+    // "How do I lower my LDL?" is about food and movement, so check that first.
+    if (LIFESTYLE_QUESTION.test(clean)) return { reply: lifestyleAnswer(clean, es) };
+    if (SLEEP_QUESTION.test(clean)) return { reply: sleepAnswer(es) };
     // A test name wins over a general topic ("what is my LDL" is about LDL).
     const test = testAnswer(clean, es);
     if (test) return { reply: test };
