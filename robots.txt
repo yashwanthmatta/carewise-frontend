@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://carewise-frontend.onrender.com/sitemap.xml

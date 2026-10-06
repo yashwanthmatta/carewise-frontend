@@ -1,7 +1,7 @@
 {
   "name": "CareWise AI",
   "short_name": "CareWise",
-  "description": "Care navigation workspace for safer health planning.",
+  "description": "Understand lab and scan reports in simple English, and get ready for the doctor.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
