@@ -652,6 +652,7 @@ const REPORT_TRANSLATIONS = {
       copySummary: "Copiar resumen",
       shareSummary: "Compartir resumen",
       doctorBrief: "Resumen para el médico",
+      shareDoctor: "Compartir con mi médico",
       saveToTrends: "Guardar en tendencias",
       copyQuestions: "Copiar preguntas",
       copyPlan: "Copiar plan",
@@ -790,6 +791,7 @@ const REPORT_UI_EN = {
   copySummary: "Copy summary",
   shareSummary: "Share summary",
   doctorBrief: "Doctor brief",
+  shareDoctor: "Share with my doctor",
   saveToTrends: "Save to trends",
   copyQuestions: "Copy questions",
   copyPlan: "Copy plan",
@@ -1285,6 +1287,7 @@ reportResults?.addEventListener("click", (event) => {
   if (action === "copy-questions") copyReportQuestions();
   if (action === "copy-plan") copyPersonalPlan();
   if (action === "doctor-brief") openDoctorBrief();
+  if (action === "share-doctor") window.openDoctorShare?.();
   if (action === "save-detected-values") saveDetectedValuesToTrends();
   if (action === "open-history") openReportHistoryItem(event.target.closest("[data-report-id]")?.dataset.reportId || "");
 });
@@ -1945,6 +1948,7 @@ function initializeWorkspaceNavigation() {
   const sectionCompanions = [
     ["saved-title", document.querySelector(".lab-trend-panel")],
     ["account-title", document.querySelector(".billing-panel")],
+    ["account-title", document.querySelector(".doctor-links-panel")],
     // The landing page (hero, how it works, safety, pricing) only shows on Home.
     ["home-title", document.querySelector(".landing")],
   ].filter(([, element]) => Boolean(element));
@@ -5626,6 +5630,7 @@ function renderLocalReportAnalysis(analysis) {
               <button class="secondary-button compact" type="button" data-report-action="copy-summary">${escapeHtml(ui.copySummary)}</button>
               <button class="secondary-button compact" type="button" data-report-action="share-summary">${escapeHtml(ui.shareSummary)}</button>
               <button class="primary-button compact" type="button" data-report-action="doctor-brief">${escapeHtml(ui.doctorBrief)}</button>
+              <button class="secondary-button compact" type="button" data-report-action="share-doctor">${escapeHtml(ui.shareDoctor)}</button>
               <select data-report-language aria-label="Report language">${Object.entries(REPORT_LANGUAGES).map(([code, name]) => `<option value="${code}"${code === reportLanguage ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
             </div>
           </div>

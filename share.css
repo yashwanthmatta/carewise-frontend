@@ -1,0 +1,26 @@
+:root { --ink: #111314; --paper: #f7f4ef; --line: #e2dcd2; --teal: #0f766e; --muted: #5b6064; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Inter Tight", system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.5; }
+.sv { max-width: 860px; margin: 0 auto; padding: 20px 16px 40px; }
+.sv-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.sv-brand { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); font-weight: 700; font-size: 1.1rem; text-decoration: none; }
+.sv-print { padding: 10px 16px; border: 0; border-radius: 999px; background: var(--ink); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.sv-print[hidden] { display: none; }
+.sv-card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 20px; margin-bottom: 14px; }
+.sv-card h1 { margin: 4px 0 6px; font-size: clamp(1.5rem, 5vw, 2rem); letter-spacing: -0.02em; }
+.sv-card h2 { margin: 0 0 10px; font-size: 1.1rem; color: var(--teal); }
+.sv-card h3 { margin: 0 0 6px; font-size: 0.95rem; }
+.sv-eyebrow { margin: 0; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+.sv-muted { color: var(--muted); }
+.sv-score { font-size: 1.1rem; margin: 10px 0 4px; } .sv-score strong { font-size: 2rem; }
+.sv-next { margin: 8px 0 0; padding: 10px 12px; border-radius: 12px; background: #eaf6f2; border: 1px solid #b6dccf; font-weight: 600; }
+.sv-error h1 { color: #7a1d12; }
+.sv-table { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { background: #f1f8f6; font-weight: 600; }
+ul, ol { margin: 0; padding-left: 20px; } li { margin: 4px 0; }
+.sv-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.sv-foot { font-size: 0.82rem; color: var(--muted); margin-top: 18px; }
+@media (max-width: 640px) { .sv-grid { grid-template-columns: 1fr; } .sv-card { padding: 16px; } }
+@media print { body { background: #fff; } .sv-print, .sv-brand img { display: none; } .sv-card { border: 0; padding: 8px 0; } }
