@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /share.html
 
 Sitemap: https://carewise-frontend.onrender.com/sitemap.xml

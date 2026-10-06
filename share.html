@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <title>CareWise shared summary</title>
+    <link rel="icon" href="assets/carewise-app-icon.svg" />
+    <link rel="stylesheet" href="share.css?v=carewise-product-143" />
+  </head>
+  <body>
+    <main class="sv">
+      <header class="sv-head">
+        <a class="sv-brand" href="/"><img src="assets/carewise-logo.svg" alt="" width="28" height="28" /> CareWise</a>
+        <button class="sv-print" type="button" id="sv-print" hidden>Print or save as PDF</button>
+      </header>
+      <section id="sv-loading" class="sv-card"><p>Opening the shared summary…</p></section>
+      <section id="sv-error" class="sv-card sv-error" hidden>
+        <h1>This link isn't available</h1>
+        <p id="sv-error-text">It may have expired or been turned off. Ask the family to send a new one.</p>
+      </section>
+      <article id="sv-summary" hidden></article>
+      <footer class="sv-foot">
+        <p>Shared read-only by a patient or family caregiver using CareWise. Educational summary only, not a diagnosis. Values were read automatically from the report text; please confirm them against the original report.</p>
+      </footer>
+    </main>
+    <script src="share-view.js?v=carewise-product-143"></script>
+  </body>
+</html>

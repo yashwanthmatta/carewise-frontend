@@ -15,13 +15,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-142" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-143" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-142" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-143" />
   </head>
   <body>
     <main class="app-shell">
@@ -373,6 +373,16 @@
           </div>
         </section>
 
+        <section class="panel doctor-links-panel" aria-labelledby="doctor-links-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Shared with doctors</p>
+              <h3 id="doctor-links-title">Doctor links</h3>
+              <p class="panel-intro">Read-only links you made with "Share with my doctor". See how often each was opened, and turn any of them off.</p>
+            </div>
+          </div>
+          <div id="doctor-links-list" class="share-list"><p>Sign in to see your doctor links.</p></div>
+        </section>
         <section class="panel backend-panel" aria-labelledby="backend-title">
           <div class="panel-heading-row">
             <div>
@@ -2144,6 +2154,48 @@
         <iframe id="tour-brief-frame" title="Doctor brief preview"></iframe>
       </div>
     </div>
+    <dialog class="share-dialog" id="share-dialog" aria-labelledby="share-dialog-title">
+      <form method="dialog" class="share-dialog-inner" id="share-form">
+        <header class="share-dialog-head">
+          <h2 id="share-dialog-title">Share with my doctor</h2>
+          <button class="help-chat-close" type="submit" value="close" aria-label="Close">&times;</button>
+        </header>
+        <p class="share-intro">Make a private, read-only link to this summary. Your doctor opens it in any browser, with no account. You can turn it off at any time.</p>
+        <div class="share-signin" id="share-signin" hidden>
+          <p>Sign in first so you can see who opened the link and turn it off later.</p>
+          <a class="primary-button" href="#account-title" id="share-signin-link">Sign in or create a free account</a>
+        </div>
+        <div id="share-create">
+          <label>For (optional)
+            <input id="share-label" type="text" maxlength="80" placeholder="Dr. Patel, family doctor" />
+          </label>
+          <label>Link works for
+            <select id="share-days">
+              <option value="1">1 day</option>
+              <option value="7" selected>7 days</option>
+              <option value="30">30 days</option>
+            </select>
+          </label>
+          <p class="share-includes" id="share-includes"></p>
+          <p class="share-warning">Anyone who has this link can see the summary until it expires. Send it only to your doctor.</p>
+          <button class="primary-button" type="button" id="share-create-button">Create link</button>
+        </div>
+        <div class="share-result" id="share-result" hidden>
+          <label>Your link
+            <input id="share-url" type="text" readonly />
+          </label>
+          <div class="share-result-actions">
+            <button class="primary-button" type="button" id="share-copy">Copy link</button>
+            <button class="secondary-button" type="button" id="share-native">Send</button>
+          </div>
+        </div>
+        <p class="status-line" id="share-status" role="status"></p>
+        <details class="share-list-wrap" id="share-list-wrap">
+          <summary>Links you've shared</summary>
+          <div id="share-list" class="share-list"><p>No links yet.</p></div>
+        </details>
+      </form>
+    </dialog>
     <div class="help-chat" id="help-chat">
       <button class="help-chat-launcher" id="help-chat-open" type="button" aria-label="Open CareWise help" aria-expanded="false" aria-controls="help-chat-panel">
         <span aria-hidden="true">?</span><span class="help-chat-launcher-text">Need help?</span>
@@ -2170,7 +2222,8 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-142"></script>
-    <script src="help.js?v=carewise-product-142"></script>
+    <script src="script.js?v=carewise-product-143"></script>
+    <script src="help.js?v=carewise-product-143"></script>
+    <script src="doctor-share.js?v=carewise-product-143"></script>
   </body>
 </html>
