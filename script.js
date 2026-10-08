@@ -4650,8 +4650,11 @@ function renderReportHistory() {
   const reports = personFilter ? allReports.filter((report) => normalizeReportPerson(report.person) === personFilter) : allReports;
   reportBadge.textContent = latestReportId ? "Report ready" : reportFeatureLabel();
   reportBadge.className = "sync-badge online";
+  // Keep an explained result on screen (for example after signing in); the saved
+  // list only fills the result area when nothing has been explained yet.
+  const showingResult = Boolean(reportResults.querySelector(".result-hero"));
   if (!allReports.length) {
-    reportResults.innerHTML = "<p>No report analysis yet.</p>";
+    if (!showingResult) reportResults.innerHTML = "<p>No report analysis yet.</p>";
     if (reportHistoryList) {
       reportHistoryList.innerHTML = `
         <article>
@@ -4678,7 +4681,7 @@ function renderReportHistory() {
       ${report.questions?.length ? `<details class="saved-plan-summary"><summary>Saved doctor questions</summary><pre>${escapeHtml(report.questions.slice(0, 5).map((item, index) => `${index + 1}. ${item}`).join("\n"))}</pre></details>` : ""}
     </article>
   `).join("");
-  reportResults.innerHTML = reportCards;
+  if (!showingResult) reportResults.innerHTML = reportCards;
   if (reportHistoryList && !reports.length) {
     reportHistoryList.innerHTML = `<article><div><strong>No reports for ${escapeHtml(personFilter)} yet</strong></div></article>`;
   } else if (reportHistoryList) {
