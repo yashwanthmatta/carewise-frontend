@@ -32,3 +32,11 @@ jobs:
 
       - name: Frontend smoke test
         run: node scripts/smoke_frontend.mjs
+
+      - name: Report reading accuracy test
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+          python3 -m http.server 4173 >/dev/null 2>&1 &
+          sleep 2
+          node scripts/eval/run-eval.mjs
