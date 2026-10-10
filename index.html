@@ -15,13 +15,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-145" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-146" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-145" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-146" />
   </head>
   <body>
     <main class="app-shell">
@@ -198,7 +198,7 @@
 
           <footer class="lp-footer">
             <div><strong>CareWise</strong><span>Educational health report explainer. Not a diagnosis.</span></div>
-            <nav aria-label="Legal"><a href="legal/privacy.html">Privacy</a><a href="legal/terms.html">Terms</a><a href="legal/disclaimer.html">Disclaimer</a><a href="legal/data-deletion.html">Delete my data</a></nav>
+            <nav aria-label="Legal"><a href="glossary.html">Lab test glossary</a><a href="legal/security.html">Security</a><a href="legal/privacy.html">Privacy</a><a href="legal/terms.html">Terms</a><a href="legal/disclaimer.html">Disclaimer</a><a href="legal/data-deletion.html">Delete my data</a></nav>
           </footer>
         </div>
 
@@ -395,9 +395,25 @@
           </div>
           <p class="db-pilot-note">Pilot mode: use de-identified or sample labs only (no names, birth dates or record numbers) until your practice's HIPAA agreement with CareWise is signed.</p>
 
+          <div class="db-pricing">
+            <div><strong>Pilot</strong><span>Free for 30 days. We onboard you personally.</span></div>
+            <div><strong>$79 per clinician / month</strong><span>After the pilot. Unlimited labs, visit summaries, audit trail.</span></div>
+            <div><strong>No IT project</strong><span>Works in the browser. Nothing to install or integrate.</span></div>
+          </div>
+
           <div id="db-signin" class="db-block" hidden>
             <p>Sign in or create a free account under Profile, then come back here to set up your clinic.</p>
             <a class="primary-button" href="#account-title">Go to sign in</a>
+            <form id="db-waitlist" class="db-waitlist">
+              <p><strong>Not ready to try it yet?</strong> Join the doctor waitlist and we'll reach out about a free pilot.</p>
+              <div class="db-grid">
+                <label>Work email<input id="db-wl-email" type="email" required placeholder="you@clinic.com" /></label>
+                <label>Practice (optional)<input id="db-wl-note" type="text" maxlength="200" placeholder="Practice name, city, number of clinicians" /></label>
+              </div>
+              <label class="db-check"><input id="db-wl-consent" type="checkbox" required /> You can email me about the CareWise doctor pilot.</label>
+              <button class="secondary-button" type="submit">Join the waitlist</button>
+              <p class="status-line" id="db-wl-status" role="status"></p>
+            </form>
           </div>
 
           <form id="db-setup" class="db-block" hidden>
@@ -410,6 +426,14 @@
               </label>
             </div>
             <button class="primary-button" type="submit">Create clinic</button>
+            <details class="db-join">
+              <summary>Have an invite code from your clinic?</summary>
+              <div class="db-grid">
+                <label>Invite code<input id="db-join-code" type="text" maxlength="40" /></label>
+                <label>Your name as the team will see it<input id="db-join-name" type="text" maxlength="160" placeholder="Sam, front desk" /></label>
+              </div>
+              <button class="secondary-button" type="button" id="db-join">Join clinic</button>
+            </details>
           </form>
 
           <div id="db-workspace" hidden>
@@ -444,7 +468,9 @@
                   <button class="primary-button" type="button" id="db-approve">Approve and create patient link</button>
                   <button class="secondary-button" type="button" id="db-followup">Needs follow-up call</button>
                   <button class="text-button" type="button" id="db-save">Save draft</button>
+                  <button class="text-button db-reject" type="button" id="db-reject">Reject</button>
                 </div>
+                <p class="db-muted" id="db-approver-note" hidden>Front desk can prepare drafts. A clinician approves or rejects them.</p>
                 <div class="db-link" id="db-link" hidden>
                   <label>Patient link (works 30 days)<input id="db-link-url" type="text" readonly /></label>
                   <button class="secondary-button" type="button" id="db-copy">Copy link</button>
@@ -459,6 +485,19 @@
             </div>
 
             <div class="db-block db-visit" id="db-visit" hidden></div>
+
+            <details class="db-block" id="db-team">
+              <summary>Team</summary>
+              <div id="db-members" class="db-list"></div>
+              <div class="db-invite" id="db-invite-box" hidden>
+                <label>Invite a colleague as
+                  <select id="db-invite-role"><option value="clinician">Clinician (can approve)</option><option value="front_desk">Front desk (drafts only)</option></select>
+                </label>
+                <button class="secondary-button" type="button" id="db-invite">Create invite code</button>
+                <p class="db-muted" id="db-invite-code"></p>
+              </div>
+            </details>
+            <p class="db-muted">For your security, DocBridge signs you out after 15 minutes without activity.</p>
           </div>
         </section>
         <section class="panel backend-panel" aria-labelledby="backend-title">
@@ -2300,9 +2339,9 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-145"></script>
-    <script src="help.js?v=carewise-product-145"></script>
-    <script src="doctor-share.js?v=carewise-product-145"></script>
-    <script src="docbridge.js?v=carewise-product-145"></script>
+    <script src="script.js?v=carewise-product-146"></script>
+    <script src="help.js?v=carewise-product-146"></script>
+    <script src="doctor-share.js?v=carewise-product-146"></script>
+    <script src="docbridge.js?v=carewise-product-146"></script>
   </body>
 </html>

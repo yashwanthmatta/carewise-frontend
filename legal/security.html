@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CareWise Security</title>
+    <meta name="description" content="How CareWise protects health information: on-device reading, encryption, audit logs, retention, the services we use and our incident plan." />
+    <meta name="theme-color" content="#0f766e" />
+    <link rel="stylesheet" href="../styles.css?v=carewise-product-20" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <article class="legal-document">
+        <a class="inline-link" href="../index.html">Back to CareWise</a>
+        <section class="panel">
+          <p class="eyebrow">Security</p>
+          <h1>How CareWise protects health information</h1>
+          <p class="document-meta">Last updated: October 10, 2026</p>
+          <p><strong>Your report is read on your device.</strong> Explaining a report happens in your browser or app; nothing is uploaded unless you choose to save or share it.</p>
+
+          <h2>What we do</h2>
+          <ul>
+            <li><strong>Encryption:</strong> all traffic uses HTTPS. Report text, health details, shared summaries and DocBridge lab data are encrypted in the database with a separate field key.</li>
+            <li><strong>Access control:</strong> each account sees only its own data. DocBridge clinics see only their own labs; front-desk members can prepare drafts but only clinicians can approve; clinic sessions sign out after 15 minutes without activity.</li>
+            <li><strong>Doctor in the loop:</strong> there is no way for DocBridge to send an explanation to a patient without a named clinician's approval.</li>
+            <li><strong>Audit logs:</strong> every view, edit, approval, share and deletion is recorded with who did it and when.</li>
+            <li><strong>Links that expire:</strong> doctor share links last 1 to 30 days and patient result links 30 days; only a fingerprint (hash) of each link is stored, and families can turn links off at any time.</li>
+            <li><strong>Retention and deletion:</strong> DocBridge labs are kept for 90 days by default. Anyone can delete their account and data from the app; deleting a clinic owner's account removes the clinic's labs.</li>
+            <li><strong>No training, no selling:</strong> health information is never used to train AI models and never sold.</li>
+            <li><strong>Product analytics without health data:</strong> we count actions (for example "a report was explained") without report content, accounts or IP addresses.</li>
+          </ul>
+
+          <h2>Services that handle data</h2>
+          <table>
+            <tr><th>Service</th><th>What it does</th><th>What it can see</th></tr>
+            <tr><td>Render</td><td>Hosts the website, API and database</td><td>Encrypted account and health data at rest</td></tr>
+            <tr><td>Anthropic</td><td>Writes help-chat answers when the online helper is on</td><td>The question asked, and a result summary only if the person ticks "share"</td></tr>
+            <tr><td>Stripe</td><td>Handles plan payments</td><td>Name, email and card details for paying customers</td></tr>
+            <tr><td>GitHub</td><td>Stores CareWise source code</td><td>No patient data</td></tr>
+          </table>
+          <p><strong>HIPAA status:</strong> CareWise has not yet signed Business Associate Agreements with these services. Until it does, DocBridge runs in pilot mode with de-identified or sample labs only, and CareWise does not claim to be HIPAA compliant.</p>
+
+          <h2>If something goes wrong (incident plan)</h2>
+          <ol>
+            <li><strong>Contain:</strong> revoke affected keys and links, and take the affected feature offline if needed.</li>
+            <li><strong>Assess:</strong> work out what data was involved, whose, and how, using the audit logs.</li>
+            <li><strong>Notify:</strong> tell affected people and clinics without unreasonable delay, and within the time limits the law requires, with what happened, what data was involved and what to do next.</li>
+            <li><strong>Fix and learn:</strong> fix the cause, check it can't recur, and write up what changed.</li>
+          </ol>
+
+          <h2>Report a security concern</h2>
+          <p>Please use the "Was this helpful?" box in the app and include the words "security concern", and we will follow up. Please don't include personal health details in the report.</p>
+        </section>
+      </article>
+    </main>
+  </body>
+</html>

@@ -63,6 +63,8 @@
       show("workspace");
       if (!$("db-lab-date").value) $("db-lab-date").value = today();
       refresh();
+      loadTeam();
+      resetIdle();
     } catch (error) {
       clinic = null;
       show(/404/.test(String(error?.message)) ? "setup" : "signin");
@@ -83,7 +85,7 @@
   function renderMetrics(m) {
     const review = m.median_review_seconds == null ? "–" : m.median_review_seconds < 120 ? `${m.median_review_seconds}s` : `${Math.round(m.median_review_seconds / 60)} min`;
     $("db-metrics").innerHTML = [
-      ["Waiting for review", m.drafts],
+      ["Waiting for review", m.drafts + (m.manual_review || 0)],
       ["Need a call", m.needs_call],
       ["Approved this week", m.approved_this_week],
       ["Median review time", review],
@@ -91,7 +93,43 @@
     ].map(([label, value]) => `<div><strong>${escapeHtml(String(value))}</strong><span>${escapeHtml(label)}</span></div>`).join("");
   }
 
-  const STATUS_LABEL = { draft: "Waiting for review", needs_call: "Needs a call", approved: "Approved" };
+  const STATUS_LABEL = { draft: "Waiting for review", manual_review: "Needs manual review", needs_call: "Needs a call", approved: "Approved", rejected: "Rejected, not sent" };
+  const canApprove = () => clinic && (clinic.member_role === "owner" || clinic.member_role === "clinician");
+
+  // Billing codes for common lab panels, as a reference for the front desk only.
+  const LAB_CODES = [
+    [/ldl|hdl|triglycer|total cholesterol|non-hdl/i, "80061", "Lipid panel"],
+    [/a1c/i, "83036", "Hemoglobin A1c"],
+    [/white blood|red blood|hemoglobin$|hematocrit|platelet|mcv|neutrophil|lymphocyte/i, "85025", "Complete blood count (CBC) with differential"],
+    [/alt|ast|albumin|bilirubin|alkaline phosphatase|total protein/i, "80053", "Comprehensive metabolic panel"],
+    [/tsh/i, "84443", "TSH"],
+    [/vitamin d/i, "82306", "Vitamin D, 25-hydroxy"],
+    [/ferritin/i, "82728", "Ferritin"],
+    [/vitamin b12/i, "82607", "Vitamin B12"],
+    [/psa/i, "84153", "PSA, total"],
+    [/crp/i, "86140", "C-reactive protein"],
+  ];
+
+  function coverageBlock(markers) {
+    const codes = [];
+    LAB_CODES.forEach(([re, code, name]) => {
+      if (markers.some((m) => re.test(m.name)) && !codes.some((c) => c.code === code)) codes.push({ code, name });
+    });
+    if (!codes.length) return "";
+    return `<h5>Coverage and cost check (educational)</h5>
+      <p class="db-muted">Common billing codes if these tests are repeated. Confirm codes with your billing team and coverage with the patient's insurer. Not a price quote.</p>
+      <ul>${codes.map((c) => `<li>${escapeHtml(c.name)}: CPT ${escapeHtml(c.code)}</li>`).join("")}</ul>
+      <ul class="db-muted"><li>Confirm the lab is in the patient's network before booking.</li><li>Some plans limit how often screening tests are covered, so check before reordering.</li><li>For cash-pay patients, ask the lab for its self-pay price list.</li></ul>`;
+  }
+
+  function agendaBlock(flaggedCount, questionCount, changeCount) {
+    const items = [
+      `2 min · Results: ${flaggedCount ? `${flaggedCount} outside the usual range` : "nothing outside the usual range"}${changeCount ? `, ${changeCount} changed since last time` : ""}`,
+      `3 min · Patient questions${questionCount ? ` (${questionCount} likely)` : ""}`,
+      "2 min · Next steps and when to recheck",
+    ];
+    return `<h5>Suggested visit agenda</h5><ol>${items.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ol>`;
+  }
 
   function renderList(packets) {
     if (!packets.length) {
@@ -102,10 +140,11 @@
       <article class="db-row db-row-${escapeHtml(p.status)}">
         <div>
           <strong>${escapeHtml(p.patient_ref)}</strong>
-          <span>${escapeHtml(p.lab_date || "No date")} · ${escapeHtml(STATUS_LABEL[p.status] || p.status)}${p.status === "approved" ? ` by ${escapeHtml(p.approved_by_name)}${p.patient_viewed ? " · opened by patient" : ""}` : ""}</span>
+          <span>${escapeHtml(p.lab_date || "No date")} · ${escapeHtml(STATUS_LABEL[p.status] || p.status)}${p.status === "approved" ? ` by ${escapeHtml(p.approved_by_name)}${p.edited === false ? " as drafted" : p.edited ? " with edits" : ""}${p.patient_viewed ? " · opened by patient" : ""}` : ""}</span>
         </div>
         <div class="db-row-actions">
-          ${p.status !== "approved" ? `<button class="secondary-button compact" type="button" data-db-open="${escapeHtml(p.id)}">Review</button>` : ""}
+          ${p.status !== "approved" && p.status !== "rejected" ? `<button class="secondary-button compact" type="button" data-db-open="${escapeHtml(p.id)}">Review</button>` : ""}
+          <button class="text-button" type="button" data-db-audit="${escapeHtml(p.id)}">History</button>
           <button class="text-button" type="button" data-db-visit="${escapeHtml(p.patient_ref)}">Visit summary</button>
         </div>
       </article>`).join("");
@@ -157,9 +196,12 @@
   function renderReview(markers, patientRef) {
     $("db-review-ref").textContent = `· ${patientRef}`;
     $("db-values").innerHTML = markers.length ? `<div class="db-table"><table><tr><th>Test</th><th>Result</th><th>Range</th><th>Status</th></tr>${markers.map((m) => `
-      <tr class="${isFlagged(m) ? "db-flag" : ""}"><td>${escapeHtml(m.name)}</td><td>${escapeHtml(`${m.value} ${m.unit}`.trim())}</td><td>${escapeHtml(m.range || "—")}</td><td>${escapeHtml(m.status || "—")}${m.low_confidence ? ' <em class="db-check-tag">check</em>' : ""}</td></tr>`).join("")}</table></div>` : "<p>No values could be read. Type the key values into the explanation instead.</p>";
+      <tr class="${isFlagged(m) ? "db-flag" : ""}"><td>${escapeHtml(m.name)}</td><td>${escapeHtml(`${m.value} ${m.unit}`.trim())}</td><td>${escapeHtml(m.range || "—")}</td><td>${escapeHtml(m.status || "—")}${m.low_confidence ? ' <em class="db-check-tag">check</em>' : ""}</td></tr>`).join("")}</table></div>` : "<p><b>Needs manual review:</b> no values could be read from this lab. Type the key values into the explanation yourself; nothing is guessed.</p>";
     $("db-review").hidden = false;
     $("db-link").hidden = true;
+    $("db-approve").hidden = !canApprove();
+    $("db-reject").hidden = !canApprove();
+    $("db-approver-note").hidden = canApprove();
     if (typeof scrollBelowHeader === "function") scrollBelowHeader($("db-review"));
     else $("db-review").scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -272,7 +314,9 @@
         <p>${latest?.status === "approved" ? `Approved by ${escapeHtml(latest.approved_by_name)}${latest.patient_viewed ? " · the patient opened it" : " · not opened yet"}` : "Not sent yet."}</p>
         <blockquote>${escapeHtml(latest?.summary || "").replace(/\n/g, "<br>")}</blockquote>
         <h5>Questions the patient may ask</h5>
-        ${(latest?.questions || []).length ? `<ol>${latest.questions.map((q) => `<li>${escapeHtml(q)}</li>`).join("")}</ol>` : "<p>None recorded.</p>"}`;
+        ${(latest?.questions || []).length ? `<ol>${latest.questions.map((q) => `<li>${escapeHtml(q)}</li>`).join("")}</ol>` : "<p>None recorded.</p>"}
+        ${agendaBlock(flagged.length, (latest?.questions || []).length, data.changes.length)}
+        ${coverageBlock(latest?.markers || [])}`;
       $("db-visit").hidden = false;
       if (typeof scrollBelowHeader === "function") scrollBelowHeader($("db-visit"));
       else $("db-visit").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -280,6 +324,58 @@
       say("Could not load the visit summary.");
     }
   }
+
+  async function reject() {
+    if (!current) return;
+    try {
+      await apiPost(`/clinics/${clinic.id}/packets/${current.packetId}/reject`, {});
+      say("Rejected. Nothing was sent to the patient.");
+      $("db-review").hidden = true;
+      current = null;
+      refresh();
+    } catch {
+      say("Could not reject this lab. Please try again.");
+    }
+  }
+
+  async function showAudit(id) {
+    try {
+      const steps = await apiGet(`/clinics/${clinic.id}/packets/${id}/audit`);
+      $("db-visit").innerHTML = `<div class="db-list-head"><h4>History of this lab</h4><button class="text-button" type="button" data-db-close-visit>Close</button></div>
+        <ol class="db-audit">${steps.map((s) => `<li><b>${escapeHtml(s.action)}</b> · ${escapeHtml(s.who)} · ${escapeHtml(new Date(s.at).toLocaleString())}</li>`).join("")}</ol>`;
+      $("db-visit").hidden = false;
+      if (typeof scrollBelowHeader === "function") scrollBelowHeader($("db-visit"));
+    } catch {
+      say("Could not load the history.");
+    }
+  }
+
+  async function loadTeam() {
+    if (!clinic) return;
+    try {
+      const members = await apiGet(`/clinics/${clinic.id}/members`);
+      const label = { owner: "Owner", clinician: "Clinician", front_desk: "Front desk" };
+      $("db-members").innerHTML = members.map((m) => `<div class="db-row"><div><strong>${escapeHtml(m.name)}</strong><span>${escapeHtml(label[m.role] || m.role)}</span></div></div>`).join("");
+      $("db-invite-box").hidden = clinic.member_role !== "owner";
+    } catch {
+      $("db-members").innerHTML = "<p>Could not load the team.</p>";
+    }
+  }
+
+  // Sign out after 15 minutes without activity while DocBridge is in use.
+  let idleTimer = null;
+  function resetIdle() {
+    clearTimeout(idleTimer);
+    if (!clinic || !authToken) return;
+    idleTimer = setTimeout(() => {
+      if (!clinic || panel.hidden) return;
+      if (typeof logout === "function") logout();
+      clinic = null;
+      show("signin");
+      say("Signed out after 15 minutes without activity. Sign in again to continue.");
+    }, 15 * 60 * 1000);
+  }
+  ["click", "keydown", "input"].forEach((type) => panel.addEventListener(type, resetIdle));
 
   // ----- Wiring -----
   $("db-setup").addEventListener("submit", async (event) => {
@@ -302,6 +398,34 @@
     say("Sample lab added. Press Draft explanation.");
   });
   $("db-approve").addEventListener("click", approve);
+  $("db-reject").addEventListener("click", reject);
+  $("db-join").addEventListener("click", async () => {
+    try {
+      clinic = await apiPost("/clinics/join", { code: $("db-join-code").value.trim(), display_name: $("db-join-name").value.trim() });
+      say(`You joined ${clinic.name}.`);
+      load();
+    } catch (error) {
+      say(/409/.test(String(error?.message)) ? "This account already belongs to a clinic." : "That invite code isn't valid. Ask your clinic for a new one.");
+    }
+  });
+  $("db-invite").addEventListener("click", async () => {
+    try {
+      const invite = await apiPost(`/clinics/${clinic.id}/invites`, { role: $("db-invite-role").value });
+      $("db-invite-code").textContent = `Invite code: ${invite.code} (one use, works for 7 days). Your colleague signs in, opens For doctors, and enters it under "Have an invite code?".`;
+    } catch {
+      $("db-invite-code").textContent = "Could not create an invite.";
+    }
+  });
+  $("db-waitlist").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    try {
+      await apiPost("/product/early-access", { email: $("db-wl-email").value.trim(), role: "clinician", note: $("db-wl-note").value.trim(), consent: $("db-wl-consent").checked, source: "web" }, { skipAuth: true });
+      $("db-wl-status").textContent = "Thank you. We'll be in touch about a pilot.";
+      event.target.reset();
+    } catch {
+      $("db-wl-status").textContent = "Could not join right now. Please try again.";
+    }
+  });
   $("db-save").addEventListener("click", saveDraft);
   $("db-followup").addEventListener("click", followUp);
   $("db-refresh").addEventListener("click", refresh);
@@ -315,6 +439,8 @@
     const visit = event.target.closest("[data-db-visit]");
     if (visit) visitSummary(visit.dataset.dbVisit);
     if (event.target.closest("[data-db-close-visit]")) $("db-visit").hidden = true;
+    const audit = event.target.closest("[data-db-audit]");
+    if (audit) showAudit(audit.dataset.dbAudit);
   });
 
   new MutationObserver(() => { if (!panel.hidden) load(); }).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
