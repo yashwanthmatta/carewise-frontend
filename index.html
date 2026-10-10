@@ -15,13 +15,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-144" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-145" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-144" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-145" />
   </head>
   <body>
     <main class="app-shell">
@@ -36,6 +36,7 @@
             <a href="#safety">Safety</a>
             <a href="#pricing">Pricing</a>
             <a href="#early-access-title">For families</a>
+            <a href="#docbridge-title">For doctors</a>
           </nav>
           <div class="topbar-actions">
             <span id="network-status" class="network-pill">Checking network</span>
@@ -382,6 +383,83 @@
             </div>
           </div>
           <div id="doctor-links-list" class="share-list"><p>Sign in to see your doctor links.</p></div>
+        </section>
+        <section class="panel docbridge-panel" aria-labelledby="docbridge-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">CareWise for doctors · Pilot</p>
+              <h3 id="docbridge-title">DocBridge: lab explanations your patients understand</h3>
+              <p class="panel-intro">Drop in a lab PDF. CareWise drafts a plain-English explanation on this device. You edit and approve it, then the patient gets a private link with your name on it. Nothing goes to a patient without your approval.</p>
+            </div>
+            <span id="db-badge" class="sync-badge">Pilot</span>
+          </div>
+          <p class="db-pilot-note">Pilot mode: use de-identified or sample labs only (no names, birth dates or record numbers) until your practice's HIPAA agreement with CareWise is signed.</p>
+
+          <div id="db-signin" class="db-block" hidden>
+            <p>Sign in or create a free account under Profile, then come back here to set up your clinic.</p>
+            <a class="primary-button" href="#account-title">Go to sign in</a>
+          </div>
+
+          <form id="db-setup" class="db-block" hidden>
+            <h4>Set up your clinic</h4>
+            <div class="db-grid">
+              <label>Clinic name<input id="db-clinic-name" type="text" maxlength="160" placeholder="Maple Family Practice" required /></label>
+              <label>Your name as patients will see it<input id="db-clinician-name" type="text" maxlength="160" placeholder="Dr. Priya Lee" required /></label>
+              <label>Tone
+                <select id="db-tone"><option value="friendly" selected>Friendly</option><option value="formal">Formal</option></select>
+              </label>
+            </div>
+            <button class="primary-button" type="submit">Create clinic</button>
+          </form>
+
+          <div id="db-workspace" hidden>
+            <div class="db-metrics" id="db-metrics"></div>
+
+            <details class="db-block db-new" id="db-new" open>
+              <summary>New lab</summary>
+              <div class="db-grid">
+                <label>Patient reference<input id="db-patient-ref" type="text" maxlength="60" placeholder="e.g. JD-1042 (no names)" /></label>
+                <label>Lab date<input id="db-lab-date" type="date" /></label>
+                <label>Lab PDF<input id="db-file" type="file" accept="application/pdf,.pdf,.txt,text/plain" /></label>
+              </div>
+              <label>Or paste the lab text<textarea id="db-text" rows="4" placeholder="LDL cholesterol 148 mg/dL (ref <100) H"></textarea></label>
+              <label class="db-check"><input id="db-deid" type="checkbox" /> This lab is de-identified or a sample (pilot rule)</label>
+              <div class="db-actions">
+                <button class="primary-button" type="button" id="db-draft">Draft explanation</button>
+                <button class="text-button" type="button" id="db-sample">Use a sample lab</button>
+              </div>
+            </details>
+
+            <div class="db-review" id="db-review" hidden>
+              <div class="db-pane">
+                <h4>Lab values <span class="db-muted" id="db-review-ref"></span></h4>
+                <div id="db-values"></div>
+                <p class="db-muted">Rows marked "check" had no range printed on the lab, so please confirm them against the original.</p>
+              </div>
+              <div class="db-pane">
+                <h4>Patient explanation (edit freely)</h4>
+                <textarea id="db-summary" rows="12"></textarea>
+                <label>Questions for the visit (one per line)<textarea id="db-questions" rows="3"></textarea></label>
+                <div class="db-actions">
+                  <button class="primary-button" type="button" id="db-approve">Approve and create patient link</button>
+                  <button class="secondary-button" type="button" id="db-followup">Needs follow-up call</button>
+                  <button class="text-button" type="button" id="db-save">Save draft</button>
+                </div>
+                <div class="db-link" id="db-link" hidden>
+                  <label>Patient link (works 30 days)<input id="db-link-url" type="text" readonly /></label>
+                  <button class="secondary-button" type="button" id="db-copy">Copy link</button>
+                </div>
+              </div>
+            </div>
+            <p class="status-line" id="db-status" role="status"></p>
+
+            <div class="db-block">
+              <div class="db-list-head"><h4>Inbox</h4><button class="text-button" type="button" id="db-refresh">Refresh</button></div>
+              <div id="db-list" class="db-list"><p>No labs yet.</p></div>
+            </div>
+
+            <div class="db-block db-visit" id="db-visit" hidden></div>
+          </div>
         </section>
         <section class="panel backend-panel" aria-labelledby="backend-title">
           <div class="panel-heading-row">
@@ -2222,8 +2300,9 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-144"></script>
-    <script src="help.js?v=carewise-product-144"></script>
-    <script src="doctor-share.js?v=carewise-product-144"></script>
+    <script src="script.js?v=carewise-product-145"></script>
+    <script src="help.js?v=carewise-product-145"></script>
+    <script src="doctor-share.js?v=carewise-product-145"></script>
+    <script src="docbridge.js?v=carewise-product-145"></script>
   </body>
 </html>
