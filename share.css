@@ -24,3 +24,6 @@ ul, ol { margin: 0; padding-left: 20px; } li { margin: 4px 0; }
 .sv-foot { font-size: 0.82rem; color: var(--muted); margin-top: 18px; }
 @media (max-width: 640px) { .sv-grid { grid-template-columns: 1fr; } .sv-card { padding: 16px; } }
 @media print { body { background: #fff; } .sv-print, .sv-brand img { display: none; } .sv-card { border: 0; padding: 8px 0; } }
+.pv-letter { font-size: 1.05rem; line-height: 1.6; }
+.pv-out td { background: #fff6f4; }
+.pv-flag { font-size: 0.8rem; color: #8a2b1d; }

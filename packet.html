@@ -5,26 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
     <meta name="referrer" content="no-referrer" />
-    <title>CareWise shared summary</title>
+    <title>Your lab results explained</title>
     <link rel="icon" href="assets/carewise-app-icon.svg" />
     <link rel="stylesheet" href="share.css?v=carewise-product-145" />
   </head>
   <body>
     <main class="sv">
       <header class="sv-head">
-        <a class="sv-brand" href="/"><img src="assets/carewise-logo.svg" alt="" width="28" height="28" /> CareWise</a>
+        <span class="sv-brand"><img src="assets/carewise-logo.svg" alt="" width="28" height="28" /> <span id="pv-clinic">Your clinic</span></span>
         <button class="sv-print" type="button" id="sv-print" hidden>Print or save as PDF</button>
       </header>
-      <section id="sv-loading" class="sv-card"><p>Opening the shared summary…</p></section>
+      <section id="sv-loading" class="sv-card"><p>Opening your results…</p></section>
       <section id="sv-error" class="sv-card sv-error" hidden>
         <h1>This link isn't available</h1>
-        <p id="sv-error-text">It may have expired or been turned off. Ask the family to send a new one.</p>
+        <p id="sv-error-text">It may have expired. Please contact your clinic.</p>
       </section>
       <article id="sv-summary" hidden></article>
       <footer class="sv-foot">
-        <p>Shared read-only by a patient or family caregiver using CareWise. Educational summary only, not a diagnosis. Values were read automatically from the report text; please confirm them against the original report.</p>
+        <p>This explanation is educational and was reviewed and approved by your clinician. It is not a diagnosis. Please discuss your results with your care team before making any changes. In an emergency, call 911.</p>
+        <p>Powered by CareWise. Ask your doctor about using it.</p>
       </footer>
     </main>
-    <script src="share-view.js?v=carewise-product-145"></script>
+    <script src="packet-view.js?v=carewise-product-145"></script>
   </body>
 </html>

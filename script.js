@@ -1939,6 +1939,7 @@ function initializeWorkspaceNavigation() {
     ["launch-title", document.querySelector(".launch-panel")],
     ["export-title", document.querySelector(".export-panel")],
     ["early-access-title", document.querySelector(".early-access-panel")],
+    ["docbridge-title", document.querySelector(".docbridge-panel")],
     ["founder", document.querySelector(".founder-panel")],
     ["results", document.querySelector("#results")],
   ].filter(([, element]) => Boolean(element));

@@ -6542,3 +6542,47 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .share-row div { display: grid; gap: 2px; min-width: 0; }
 .share-row span { font-size: 0.85rem; color: #5b6064; }
 .share-row-off { opacity: 0.6; }
+
+/* ---------- DocBridge (for doctors) ---------- */
+.docbridge-panel .db-pilot-note { margin: 12px 0 0; padding: 10px 12px; border-radius: 12px; background: #fff7e6; border: 1px solid #f1d9a6; font-size: 0.92rem; }
+.db-block { margin-top: 16px; padding: 16px; border: 1px solid var(--lp-line, #e2dcd2); border-radius: 16px; background: #fff; display: grid; gap: 12px; }
+.db-block[hidden], #db-workspace[hidden], .db-review[hidden], .db-link[hidden], .db-visit[hidden] { display: none !important; }
+.db-block summary { cursor: pointer; font-weight: 700; }
+.db-new[open] { gap: 12px; }
+.db-new > :not(summary) { margin-top: 10px; }
+.db-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.docbridge-panel label { display: grid; gap: 6px; font-weight: 600; font-size: 0.92rem; }
+.docbridge-panel input[type="text"], .docbridge-panel input[type="date"], .docbridge-panel select, .docbridge-panel textarea { min-height: 42px; padding: 8px 12px; border: 1px solid var(--lp-line, #e2dcd2); border-radius: 12px; font: inherit; font-weight: 400; }
+.db-check { display: flex !important; align-items: center; gap: 8px; font-weight: 500 !important; }
+.db-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.db-metrics { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+.db-metrics div { padding: 12px; border: 1px solid var(--lp-line, #e2dcd2); border-radius: 14px; background: #fff; display: grid; gap: 2px; }
+.db-metrics strong { font-size: 1.5rem; letter-spacing: -0.02em; }
+.db-metrics span { font-size: 0.82rem; color: #5b6064; }
+.db-review { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; margin-top: 16px; }
+.db-pane { padding: 16px; border: 2px solid var(--lp-teal, #0f766e); border-radius: 16px; background: #fff; display: grid; gap: 10px; align-content: start; }
+.db-pane h4 { margin: 0; }
+.db-pane textarea#db-summary { min-height: 260px; line-height: 1.5; }
+.db-table { overflow-x: auto; }
+.db-table table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.db-table th, .db-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--lp-line, #e2dcd2); }
+.db-table th { background: #f1f8f6; }
+.db-flag td { background: #fff4f2; font-weight: 600; }
+.db-check-tag { font-style: normal; font-size: 0.75rem; padding: 1px 6px; border-radius: 999px; background: #fff7e6; border: 1px solid #f1d9a6; }
+.db-muted { color: #5b6064; font-weight: 400; font-size: 0.9rem; }
+.db-link { display: grid; gap: 8px; }
+.db-list-head { display: flex; justify-content: space-between; align-items: center; }
+.db-list-head h4 { margin: 0; }
+.db-list { display: grid; gap: 8px; }
+.db-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--lp-line, #e2dcd2); border-radius: 12px; }
+.db-row div:first-child { display: grid; gap: 2px; min-width: 0; }
+.db-row span { font-size: 0.85rem; color: #5b6064; }
+.db-row-needs_call { border-color: #f2b8b0; background: #fff8f6; }
+.db-row-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.db-visit h5 { margin: 8px 0 4px; font-size: 0.95rem; color: var(--lp-teal, #0f766e); }
+.db-visit blockquote { margin: 0; padding: 10px 12px; border-left: 3px solid var(--lp-teal, #0f766e); background: #f7f4ef; border-radius: 0 10px 10px 0; font-size: 0.92rem; }
+@media (max-width: 720px) {
+  .db-grid, .db-review { grid-template-columns: 1fr; }
+  .db-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .db-row { flex-direction: column; align-items: flex-start; }
+}
