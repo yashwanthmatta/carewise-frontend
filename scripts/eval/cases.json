@@ -1,0 +1,78 @@
+{
+  "note": "Synthetic lab reports with known answers. 'expect' is what the lab's own printed range says: high, low or normal. No real patient data.",
+  "reports": [
+    { "id": "cmp-table", "format": "table", "title": "Comprehensive Metabolic Panel", "tests": [
+      { "key": "glucose", "name": "Glucose", "value": "102", "unit": "mg/dL", "range": "70-99", "flag": "H", "expect": "high" },
+      { "key": "bun", "name": "BUN", "value": "18", "unit": "mg/dL", "range": "7-25", "flag": "", "expect": "normal" },
+      { "key": "creatinine", "name": "Creatinine", "value": "1.32", "unit": "mg/dL", "range": "0.60-1.29", "flag": "H", "expect": "high" },
+      { "key": "egfr", "name": "eGFR", "value": "58", "unit": "mL/min/1.73m2", "range": ">=60", "flag": "L", "expect": "low" },
+      { "key": "sodium", "name": "Sodium", "value": "139", "unit": "mmol/L", "range": "135-146", "flag": "", "expect": "normal" },
+      { "key": "potassium", "name": "Potassium", "value": "5.4", "unit": "mmol/L", "range": "3.5-5.3", "flag": "H", "expect": "high" },
+      { "key": "chloride", "name": "Chloride", "value": "101", "unit": "mmol/L", "range": "98-110", "flag": "", "expect": "normal" },
+      { "key": "calcium", "name": "Calcium", "value": "9.6", "unit": "mg/dL", "range": "8.6-10.3", "flag": "", "expect": "normal" },
+      { "key": "albumin", "name": "Albumin", "value": "4.3", "unit": "g/dL", "range": "3.6-5.1", "flag": "", "expect": "normal" },
+      { "key": "alt", "name": "ALT", "value": "52", "unit": "U/L", "range": "9-46", "flag": "H", "expect": "high" },
+      { "key": "ast", "name": "AST", "value": "31", "unit": "U/L", "range": "10-35", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "lipid-list", "format": "list", "title": "Lipid Panel", "tests": [
+      { "key": "totalchol", "name": "Total Cholesterol", "value": "226", "unit": "mg/dL", "range": "<200", "flag": "H", "expect": "high" },
+      { "key": "hdl", "name": "HDL Cholesterol", "value": "38", "unit": "mg/dL", "range": ">39", "flag": "L", "expect": "low" },
+      { "key": "trig", "name": "Triglycerides", "value": "168", "unit": "mg/dL", "range": "<150", "flag": "H", "expect": "high" },
+      { "key": "ldl", "name": "LDL Cholesterol", "value": "148", "unit": "mg/dL", "range": "<100", "flag": "H", "expect": "high" }
+    ]},
+    { "id": "lipid-borderline", "format": "table", "title": "Lipid Panel", "tests": [
+      { "key": "totalchol", "name": "Cholesterol, Total", "value": "189", "unit": "mg/dL", "range": "100-199", "flag": "", "expect": "normal" },
+      { "key": "trig", "name": "Triglycerides", "value": "122", "unit": "mg/dL", "range": "0-149", "flag": "", "expect": "normal" },
+      { "key": "hdl", "name": "HDL Cholesterol", "value": "52", "unit": "mg/dL", "range": ">39", "flag": "", "expect": "normal" },
+      { "key": "ldl", "name": "LDL Chol Calc (NIH)", "value": "112", "unit": "mg/dL", "range": "0-99", "flag": "H", "expect": "high" }
+    ]},
+    { "id": "cbc-labcorp", "format": "labcorp", "title": "CBC With Differential/Platelet", "tests": [
+      { "key": "wbc", "name": "WBC", "value": "11.8", "unit": "x10E3/uL", "range": "3.4-10.8", "flag": "High", "expect": "high" },
+      { "key": "rbc", "name": "RBC", "value": "4.62", "unit": "x10E6/uL", "range": "4.14-5.80", "flag": "", "expect": "normal" },
+      { "key": "hemoglobin", "name": "Hemoglobin", "value": "11.9", "unit": "g/dL", "range": "13.0-17.7", "flag": "Low", "expect": "low" },
+      { "key": "hematocrit", "name": "Hematocrit", "value": "36.2", "unit": "%", "range": "37.5-51.0", "flag": "Low", "expect": "low" },
+      { "key": "mcv", "name": "MCV", "value": "78", "unit": "fL", "range": "79-97", "flag": "Low", "expect": "low" },
+      { "key": "platelets", "name": "Platelets", "value": "265", "unit": "x10E3/uL", "range": "150-450", "flag": "", "expect": "normal" },
+      { "key": "neutrophils", "name": "Neutrophils", "value": "72", "unit": "%", "range": "40-74", "flag": "", "expect": "normal" },
+      { "key": "lymphocytes", "name": "Lymphs", "value": "19", "unit": "%", "range": "14-46", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "a1c-quest", "format": "quest", "title": "Diabetes Screen", "tests": [
+      { "key": "a1c", "name": "Hemoglobin A1c", "value": "6.8", "unit": "%", "range": "<5.7", "flag": "H", "expect": "high" },
+      { "key": "glucose", "name": "Glucose", "value": "131", "unit": "mg/dL", "range": "65-99", "flag": "H", "expect": "high" }
+    ]},
+    { "id": "a1c-normal", "format": "list", "title": "Hemoglobin A1c", "tests": [
+      { "key": "a1c", "name": "Hemoglobin A1c", "value": "5.3", "unit": "%", "range": "4.8-5.6", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "thyroid-quest", "format": "quest", "title": "Thyroid Panel", "tests": [
+      { "key": "tsh", "name": "TSH", "value": "6.21", "unit": "mIU/L", "range": "0.40-4.50", "flag": "H", "expect": "high" },
+      { "key": "ft4", "name": "Free T4", "value": "0.8", "unit": "ng/dL", "range": "0.8-1.8", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "iron-labcorp", "format": "labcorp", "title": "Iron and Vitamins", "tests": [
+      { "key": "iron", "name": "Iron, Serum", "value": "38", "unit": "ug/dL", "range": "38-169", "flag": "", "expect": "normal" },
+      { "key": "ferritin", "name": "Ferritin", "value": "9", "unit": "ng/mL", "range": "30-400", "flag": "Low", "expect": "low" },
+      { "key": "b12", "name": "Vitamin B12", "value": "412", "unit": "pg/mL", "range": "232-1245", "flag": "", "expect": "normal" },
+      { "key": "vitd", "name": "Vitamin D, 25-Hydroxy", "value": "22", "unit": "ng/mL", "range": "30.0-100.0", "flag": "Low", "expect": "low" }
+    ]},
+    { "id": "kidney-table", "format": "table", "title": "Renal Function", "tests": [
+      { "key": "creatinine", "name": "Creatinine", "value": "0.84", "unit": "mg/dL", "range": "0.57-1.00", "flag": "", "expect": "normal" },
+      { "key": "egfr", "name": "eGFR", "value": "88", "unit": "mL/min/1.73", "range": ">59", "flag": "", "expect": "normal" },
+      { "key": "bun", "name": "BUN", "value": "26", "unit": "mg/dL", "range": "6-24", "flag": "H", "expect": "high" },
+      { "key": "uricacid", "name": "Uric Acid", "value": "7.9", "unit": "mg/dL", "range": "2.5-7.0", "flag": "H", "expect": "high" },
+      { "key": "magnesium", "name": "Magnesium", "value": "2.0", "unit": "mg/dL", "range": "1.6-2.3", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "inflammation-list", "format": "list", "title": "Inflammation Markers", "tests": [
+      { "key": "crp", "name": "C-Reactive Protein", "value": "12.4", "unit": "mg/L", "range": "0.0-4.9", "flag": "H", "expect": "high" },
+      { "key": "esr", "name": "Sed Rate", "value": "18", "unit": "mm/hr", "range": "0-30", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "liver-labcorp", "format": "labcorp", "title": "Hepatic Function Panel", "tests": [
+      { "key": "protein", "name": "Protein, Total", "value": "7.1", "unit": "g/dL", "range": "6.0-8.5", "flag": "", "expect": "normal" },
+      { "key": "bilirubin", "name": "Bilirubin, Total", "value": "1.6", "unit": "mg/dL", "range": "0.0-1.2", "flag": "High", "expect": "high" },
+      { "key": "alp", "name": "Alkaline Phosphatase", "value": "141", "unit": "IU/L", "range": "44-121", "flag": "High", "expect": "high" },
+      { "key": "ast", "name": "AST (SGOT)", "value": "29", "unit": "IU/L", "range": "0-40", "flag": "", "expect": "normal" },
+      { "key": "alt", "name": "ALT (SGPT)", "value": "33", "unit": "IU/L", "range": "0-44", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "psa-quest", "format": "quest", "title": "Prostate Screen", "tests": [
+      { "key": "psa", "name": "PSA, Total", "value": "1.2", "unit": "ng/mL", "range": "<4.0", "flag": "", "expect": "normal" }
+    ]}
+  ]
+}

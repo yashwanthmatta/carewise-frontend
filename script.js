@@ -5166,10 +5166,33 @@ function readReportNumber(text, patterns) {
 const LAB_FOOTNOTE = String.raw`(?:\b0\d\s+\D{0,12}?)?`;
 const LAB_UNIT = String.raw`\s*(mmol\s*\/\s*mol|mmol\s*\/\s*l|mg\s*\/\s*dl|%)?`;
 
+// The value must not start inside a word, so the "1" in "Hemoglobin A1c" is never read as a result.
 function readLabMeasure(text, namePattern, maxGap = 24) {
-  const match = text.match(new RegExp(`${namePattern}\\D{0,${maxGap}}?${LAB_FOOTNOTE}(\\d+(?:\\.\\d+)?)${LAB_UNIT}`, "i"));
+  const match = text.match(new RegExp(`${namePattern}\\D{0,${maxGap}}?${LAB_FOOTNOTE}(?<![a-z])(\\d+(?:\\.\\d+)?)${LAB_UNIT}`, "i"));
   if (!match) return null;
-  return { value: Number(match[1]), unit: (match[2] || "").replace(/\s+/g, "").toLowerCase() };
+  const value = Number(match[1]);
+  const rest = text.slice(match.index + match[0].length).split("\n")[0].slice(0, 60);
+  return { value, unit: (match[2] || "").replace(/\s+/g, "").toLowerCase(), outside: compareWithPrintedRange(value, rest) };
+}
+
+// Reads the reference range printed on the same line after a value ("0-99", "<5.7",
+// ">=40") and says whether the value is "above" or "below" it, or null if inside or none.
+function compareWithPrintedRange(value, rest) {
+  const between = rest.match(/(?<![\d.\/-])(\d+(?:\.\d+)?)\s*[-–]\s*(\d+(?:\.\d+)?)(?![\d\/.-])/);
+  if (between) {
+    const low = Number(between[1]);
+    const high = Number(between[2]);
+    if (low < high) return value > high ? "above" : value < low ? "below" : null;
+  }
+  const upper = rest.match(/(?:<|≤)\s*=?\s*(\d+(?:\.\d+)?)/);
+  if (upper) return value > Number(upper[1]) ? "above" : null;
+  const lower = rest.match(/(?:>|≥)\s*=?\s*(\d+(?:\.\d+)?)/);
+  if (lower) return value < Number(lower[1]) ? "below" : null;
+  return null;
+}
+
+function printedRangeStatus(text, namePattern, maxGap) {
+  return readLabMeasure(text, namePattern, maxGap)?.outside || null;
 }
 
 // UK and European labs report lipids in mmol/L and A1C in mmol/mol (IFCC).
@@ -5213,13 +5236,21 @@ function readA1cPercent(text) {
   return measure.value;
 }
 
-function buildDetectedReportValues({ ldl, totalCholesterol, triglycerides, a1c, vitaminD, systolic, diastolic }) {
+// When the lab printed its own range and the value is outside it, say so even if a
+// common target would call the value fine.
+const OUTSIDE_LAB_RANGE = { above: "Above the lab's range", below: "Below the lab's range" };
+
+function buildDetectedReportValues({ ldl, totalCholesterol, triglycerides, a1c, vitaminD, systolic, diastolic }, outside = {}) {
+  const useLabRange = (item, key) => {
+    if (item && outside[key] && item.flag === "In range discussion") item.flag = OUTSIDE_LAB_RANGE[outside[key]];
+    return item;
+  };
   return [
-    ldl !== null ? { label: "LDL cholesterol", value: ldl, unit: "mg/dL", flag: ldl >= 160 ? "High" : ldl >= 130 ? "Needs attention" : "In range discussion" } : null,
-    totalCholesterol !== null ? { label: "Total cholesterol", value: totalCholesterol, unit: "mg/dL", flag: totalCholesterol >= 200 ? "Above common target" : "In range discussion" } : null,
-    triglycerides !== null ? { label: "Triglycerides", value: triglycerides, unit: "mg/dL", flag: triglycerides >= 150 ? "Needs attention" : "In range discussion" } : null,
-    a1c !== null ? { label: "A1C", value: a1c, unit: "%", flag: a1c >= 6.5 ? "Clinician review" : a1c >= 5.7 ? "Needs attention" : "In range discussion" } : null,
-    vitaminD !== null ? { label: "Vitamin D", value: vitaminD, unit: "ng/mL", flag: vitaminD < 30 ? "Needs attention" : "In range discussion" } : null,
+    useLabRange(ldl !== null ? { label: "LDL cholesterol", value: ldl, unit: "mg/dL", flag: ldl >= 160 ? "High" : ldl >= 130 ? "Needs attention" : "In range discussion" } : null, "ldl"),
+    useLabRange(totalCholesterol !== null ? { label: "Total cholesterol", value: totalCholesterol, unit: "mg/dL", flag: totalCholesterol >= 200 ? "Above common target" : "In range discussion" } : null, "totalCholesterol"),
+    useLabRange(triglycerides !== null ? { label: "Triglycerides", value: triglycerides, unit: "mg/dL", flag: triglycerides >= 150 ? "Needs attention" : "In range discussion" } : null, "triglycerides"),
+    useLabRange(a1c !== null ? { label: "A1C", value: a1c, unit: "%", flag: a1c >= 6.5 ? "Clinician review" : a1c >= 5.7 ? "Needs attention" : "In range discussion" } : null, "a1c"),
+    useLabRange(vitaminD !== null ? { label: "Vitamin D", value: vitaminD, unit: "ng/mL", flag: vitaminD < 30 ? "Needs attention" : "In range discussion" } : null, "vitaminD"),
     systolic !== null ? { label: "Blood pressure", value: `${systolic}/${diastolic || "?"}`, unit: "mmHg", flag: systolic >= 180 ? "Urgent if confirmed" : systolic >= 130 ? "Needs tracking" : "In range discussion" } : null,
   ].filter(Boolean);
 }
@@ -5247,7 +5278,19 @@ function analyzeReportTextLocally(rawText) {
   const vitaminD = readReportNumber(lower, [/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?\D{0,24}(\d+(?:\.\d+)?)/i]);
   const systolic = readReportNumber(lower, [/(?:blood pressure|\bbp\b)\D{0,60}(\d{2,3})\s*\/\s*\d{2,3}/i]);
   const diastolic = readReportNumber(lower, [/(?:blood pressure|\bbp\b)\D{0,60}\d{2,3}\s*\/\s*(\d{2,3})/i]);
-  const labValues = buildDetectedReportValues({ ldl, totalCholesterol, triglycerides, a1c, vitaminD, systolic, diastolic });
+  const vitaminDMatch = lower.match(/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?\D{0,24}\d+(?:\.\d+)?([^\n]{0,60})/i);
+  const outside = {
+    ldl: printedRangeStatus(lower, String.raw`\bldl(?: cholesterol)?`),
+    totalCholesterol: printedRangeStatus(lower, String.raw`(?:total cholesterol|cholesterol,?\s*total)`),
+    triglycerides: printedRangeStatus(lower, "triglycerides"),
+    a1c: printedRangeStatus(lower, String.raw`(?:hemoglobin\s*)?a1c`, 40),
+    vitaminD: vitaminDMatch && vitaminD !== null ? compareWithPrintedRange(vitaminD, vitaminDMatch[1]) : null,
+  };
+  const labValues = buildDetectedReportValues({ ldl, totalCholesterol, triglycerides, a1c, vitaminD, systolic, diastolic }, outside);
+  const labRangeDetail = (key) => {
+    const item = labValues.find((value) => value.flag === OUTSIDE_LAB_RANGE[outside[key]]);
+    return item ? ` That is ${outside[key]} the range printed on the report.` : "";
+  };
 
   const findings = [];
   const suggestions = [];
@@ -5271,6 +5314,9 @@ function analyzeReportTextLocally(rawText) {
     } else if (ldl >= 130) {
       score -= 6;
       findings.push({ label: "LDL cholesterol", level: "Needs attention", detail: `LDL appears around ${ldl} mg/dL.` });
+    } else if (outside.ldl) {
+      score -= 3;
+      findings.push({ label: "LDL cholesterol", level: OUTSIDE_LAB_RANGE[outside.ldl], detail: `LDL appears around ${ldl} mg/dL.${labRangeDetail("ldl")}` });
     } else {
       findings.push({ label: "LDL cholesterol", level: "In a better range", detail: `LDL appears around ${ldl} mg/dL.` });
     }
@@ -5281,12 +5327,18 @@ function analyzeReportTextLocally(rawText) {
   if (totalCholesterol !== null && totalCholesterol >= 200) {
     score -= 3;
     findings.push({ label: "Total cholesterol", level: "Above common reference target", detail: `Total cholesterol appears around ${totalCholesterol} mg/dL.` });
+  } else if (totalCholesterol !== null && outside.totalCholesterol) {
+    score -= 2;
+    findings.push({ label: "Total cholesterol", level: OUTSIDE_LAB_RANGE[outside.totalCholesterol], detail: `Total cholesterol appears around ${totalCholesterol} mg/dL.${labRangeDetail("totalCholesterol")}` });
   }
 
   if (triglycerides !== null && triglycerides >= 150) {
     score -= 3;
     findings.push({ label: "Triglycerides", level: "Needs attention", detail: `Triglycerides appear around ${triglycerides} mg/dL.` });
     suggestions.push("Ask whether fasting status, alcohol, refined carbs, medicines, or thyroid/metabolic factors could affect triglycerides.");
+  } else if (triglycerides !== null && outside.triglycerides) {
+    score -= 2;
+    findings.push({ label: "Triglycerides", level: OUTSIDE_LAB_RANGE[outside.triglycerides], detail: `Triglycerides appear around ${triglycerides} mg/dL.${labRangeDetail("triglycerides")}` });
   }
 
   if (a1c !== null) {
@@ -5298,6 +5350,9 @@ function analyzeReportTextLocally(rawText) {
       score -= 5;
       findings.push({ label: "A1C", level: "Prediabetes range in many guidelines", detail: `A1C appears around ${a1c}%.` });
       questions.push("What changes would help lower my A1C safely over the next 3 months?");
+    } else if (outside.a1c) {
+      score -= 2;
+      findings.push({ label: "A1C", level: OUTSIDE_LAB_RANGE[outside.a1c], detail: `A1C appears around ${a1c}%.${labRangeDetail("a1c")}` });
     } else {
       findings.push({ label: "A1C", level: "Often considered in range", detail: `A1C appears around ${a1c}%.` });
     }
@@ -5314,6 +5369,9 @@ function analyzeReportTextLocally(rawText) {
       score -= 4;
       findings.push({ label: "Vitamin D", level: "Needs attention", detail: `Vitamin D appears around ${vitaminD}.` });
       questions.push("Should I repeat Vitamin D testing or discuss supplementation dose and duration?");
+    } else if (outside.vitaminD) {
+      score -= 2;
+      findings.push({ label: "Vitamin D", level: OUTSIDE_LAB_RANGE[outside.vitaminD], detail: `Vitamin D appears around ${vitaminD}.${labRangeDetail("vitaminD")}` });
     } else {
       findings.push({ label: "Vitamin D", level: "No obvious issue in pasted text", detail: `Vitamin D appears around ${vitaminD}.` });
     }
@@ -5953,6 +6011,8 @@ function normalizeDetectedValueFlag(flag) {
   if (flag === "High" || flag === "Urgent if confirmed" || flag === "Clinician review") return "Needs clinician review";
   if (flag === "Needs attention" || flag === "Needs tracking" || flag === "Above common target") return "High";
   if (flag === "In range discussion") return "In range";
+  if (flag === OUTSIDE_LAB_RANGE.above) return "High";
+  if (flag === OUTSIDE_LAB_RANGE.below) return "Low";
   return "Not sure";
 }
 
