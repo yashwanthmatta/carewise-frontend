@@ -6586,3 +6586,34 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
   .db-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .db-row { flex-direction: column; align-items: flex-start; }
 }
+
+/* ---------- What changed + lab reminder ---------- */
+.report-changes { margin: 14px 0; padding: 16px; border: 1px solid var(--lp-line, #e2dcd2); border-radius: 16px; background: #fff; }
+.report-changes-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.report-changes-head h4 { margin: 0; }
+.report-changes-head span { font-size: 0.85rem; color: #5b6064; }
+.report-changes-counts { margin: 8px 0; }
+.rc-good { color: #0f766e; } .rc-bad { color: #9a3412; }
+.report-changes ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.report-changes li { padding: 8px 10px; border-radius: 10px; background: #f7f4ef; }
+.report-changes .rc-backIn, .report-changes .rc-improving { background: #eaf6f2; }
+.report-changes .rc-newOut, .report-changes .rc-worsening { background: #fff4f2; }
+.rc-arrow { display: inline-block; width: 1.2em; font-weight: 700; }
+.rc-backIn .rc-arrow, .rc-improving .rc-arrow { color: #0f766e; }
+.rc-newOut .rc-arrow, .rc-worsening .rc-arrow { color: #9a3412; }
+.lab-reminder { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0; font-size: 0.92rem; }
+.lab-reminder select { min-height: 36px; padding: 4px 10px; border: 1px solid var(--lp-line, #e2dcd2); border-radius: 10px; font: inherit; }
+.db-pricing { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.db-pricing div { display: grid; gap: 2px; padding: 12px; border: 1px solid var(--lp-line, #e2dcd2); border-radius: 14px; background: #fff; }
+.db-pricing span { font-size: 0.86rem; color: #5b6064; }
+.db-waitlist { display: grid; gap: 10px; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--lp-line, #e2dcd2); }
+.db-join summary { cursor: pointer; font-weight: 600; }
+.db-join { display: grid; gap: 10px; }
+.db-join > :not(summary) { margin-top: 10px; }
+.db-invite { display: grid; gap: 8px; }
+.db-invite[hidden], #db-approver-note[hidden], .db-actions [hidden] { display: none !important; }
+.db-reject { color: #9a3412 !important; }
+.db-audit { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 0.92rem; }
+.db-row-manual_review { border-color: #f1d9a6; background: #fffbf2; }
+.db-row-rejected { opacity: 0.6; }
+@media (max-width: 720px) { .db-pricing { grid-template-columns: 1fr; } }

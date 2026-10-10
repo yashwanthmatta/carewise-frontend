@@ -1288,6 +1288,7 @@ reportResults?.addEventListener("click", (event) => {
   if (action === "copy-plan") copyPersonalPlan();
   if (action === "doctor-brief") openDoctorBrief();
   if (action === "share-doctor") window.openDoctorShare?.();
+  if (action === "lab-reminder") downloadLabReminder(Number(reportResults.querySelector("[data-lab-reminder]")?.value) || 6);
   if (action === "save-detected-values") saveDetectedValuesToTrends();
   if (action === "open-history") openReportHistoryItem(event.target.closest("[data-report-id]")?.dataset.reportId || "");
 });
@@ -5605,11 +5606,138 @@ async function copyPersonalPlan() {
   }
 }
 
+// ----- What changed since the last report (stored on this device only) -----
+const SNAPSHOT_KEY = "carewiseReportSnapshots";
+const CHANGE_TEXT = {
+  en: { title: "What changed since your last report", since: (d) => `Compared with your report from ${d}`, improved: "improved", worse: "need attention", same: "unchanged", improving: "improving", worsening: "moving away from the range", backIn: "back in range", stillOut: "still outside the range", newOut: "now outside the range", steady: "no change" },
+  es: { title: "Qué cambió desde su último informe", since: (d) => `Comparado con su informe del ${d}`, improved: "mejoraron", worse: "requieren atención", same: "sin cambios", improving: "mejorando", worsening: "alejándose del rango", backIn: "de vuelta en el rango", stillOut: "todavía fuera del rango", newOut: "ahora fuera del rango", steady: "sin cambios" },
+};
+
+function reportMarkers(analysis) {
+  const markers = [];
+  (analysis.labValues || []).forEach((item) => {
+    const out = !/in range|better range|within|normal/i.test(item.flag || "");
+    markers.push({ name: item.label, value: String(item.value), unit: item.unit || "", out, direction: /hdl|vitamin d/i.test(item.label) ? "high-good" : "low-good" });
+  });
+  (analysis.panelResults || []).forEach((item) => {
+    if (markers.some((m) => m.name.toLowerCase() === item.name.toLowerCase())) return;
+    markers.push({ name: item.name, value: String(item.valueText), unit: item.unit || "", out: item.status === "above" || item.status === "below", direction: item.status === "below" ? "high-good" : item.status === "above" ? "low-good" : "" });
+  });
+  return markers;
+}
+
+function readSnapshots() {
+  try {
+    const list = JSON.parse(localStorage.getItem(SNAPSHOT_KEY) || "[]");
+    return Array.isArray(list) ? list : [];
+  } catch {
+    return [];
+  }
+}
+
+function compareMarkers(before, now) {
+  const previous = new Map(before.map((m) => [m.name.toLowerCase(), m]));
+  return now.flatMap((m) => {
+    const old = previous.get(m.name.toLowerCase());
+    if (!old) return [];
+    const a = parseFloat(String(old.value).replace(/[^\d.-]/g, ""));
+    const b = parseFloat(String(m.value).replace(/[^\d.-]/g, ""));
+    let kind = "same";
+    if (old.out && !m.out) kind = "backIn";
+    else if (!old.out && m.out) kind = "newOut";
+    else if (Number.isFinite(a) && Number.isFinite(b) && a !== b && m.out) {
+      const lowerIsBetter = (m.direction || old.direction) !== "high-good";
+      kind = (lowerIsBetter ? b < a : b > a) ? "improving" : "worsening";
+    } else if (String(old.value) !== String(m.value)) kind = "steady-changed";
+    return [{ name: m.name, before: old.value, now: m.value, unit: m.unit, kind, out: m.out }];
+  });
+}
+
+// Runs once per explained report: compares with the last different report for the same
+// person, then remembers this one. The sample report and the demo tour are never stored.
+function computeReportChanges(analysis) {
+  if (analysis._changes !== undefined) return analysis._changes;
+  analysis._changes = null;
+  const text = document.querySelector("#report-text")?.value || "";
+  if (analysis.noData || analysis.scanOnly || document.body.classList.contains("tour-active") || /^\s*Sample lab text for CareWise demo/i.test(text)) return null;
+  const markers = reportMarkers(analysis);
+  if (!markers.length) return null;
+  const person = normalizeReportPerson(latestReportPerson);
+  const signature = markers.map((m) => `${m.name}:${m.value}`).join("|");
+  const snapshots = readSnapshots();
+  const mine = snapshots.filter((snap) => snap.person === person);
+  const previous = [...mine].reverse().find((snap) => snap.signature !== signature);
+  if (previous) {
+    const rows = compareMarkers(previous.markers, markers);
+    if (rows.length) analysis._changes = { since: previous.date, rows };
+  }
+  if (!mine.length || mine[mine.length - 1].signature !== signature) {
+    snapshots.push({ person, date: new Date().toISOString().slice(0, 10), signature, markers: markers.map(({ name, value, unit, out, direction }) => ({ name, value, unit, out, direction })) });
+    try {
+      localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(snapshots.slice(-60)));
+    } catch {
+      // Storage full or blocked: the comparison still shows, it just won't be remembered.
+    }
+  }
+  return analysis._changes;
+}
+
+function changeLabel(row, t) {
+  if (row.kind === "backIn") return t.backIn;
+  if (row.kind === "newOut") return t.newOut;
+  if (row.kind === "improving") return `${t.improving}, ${t.stillOut}`;
+  if (row.kind === "worsening") return `${t.worsening}, ${t.stillOut}`;
+  return t.steady;
+}
+
+function renderReportChanges(analysis) {
+  const changes = analysis._changes;
+  if (!changes || !changes.rows.length) return "";
+  const t = CHANGE_TEXT[reportLanguage === "es" ? "es" : "en"];
+  const improved = changes.rows.filter((r) => r.kind === "backIn" || r.kind === "improving").length;
+  const worse = changes.rows.filter((r) => r.kind === "newOut" || r.kind === "worsening").length;
+  const same = changes.rows.length - improved - worse;
+  const arrow = (r) => (r.kind === "backIn" || r.kind === "improving" ? "▲" : r.kind === "newOut" || r.kind === "worsening" ? "▼" : "•");
+  const date = new Date(`${changes.since}T12:00:00`).toLocaleDateString(reportLanguage === "es" ? "es" : undefined, { day: "numeric", month: "long", year: "numeric" });
+  return `<section class="report-changes">
+    <div class="report-changes-head"><h4>${escapeHtml(t.title)}</h4><span>${escapeHtml(t.since(date))}</span></div>
+    <p class="report-changes-counts"><b class="rc-good">${improved} ${escapeHtml(t.improved)}</b> · <b class="rc-bad">${worse} ${escapeHtml(t.worse)}</b> · <span>${same} ${escapeHtml(t.same)}</span></p>
+    <ul>${changes.rows.map((r) => `<li class="rc-${escapeHtml(r.kind)}"><span class="rc-arrow" aria-hidden="true">${arrow(r)}</span> <b>${escapeHtml(r.name)}</b> ${escapeHtml(String(r.before))} → ${escapeHtml(String(r.now))} ${escapeHtml(r.unit)} · ${escapeHtml(changeLabel(r, t))}</li>`).join("")}</ul>
+  </section>`;
+}
+
+// "Remind me about my next labs": a calendar file made on this device, nothing sent.
+function downloadLabReminder(months) {
+  const date = new Date();
+  date.setMonth(date.getMonth() + months);
+  const day = date.toISOString().slice(0, 10).replace(/-/g, "");
+  const next = new Date(date.getTime() + 86400000).toISOString().slice(0, 10).replace(/-/g, "");
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
+  const person = normalizeReportPerson(latestReportPerson);
+  const who = person === "Me" ? "" : ` for ${person}`;
+  const ics = [
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//CareWise//Lab reminder//EN", "BEGIN:VEVENT",
+    `UID:carewise-${Date.now()}@carewise`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${day}`, `DTEND;VALUE=DATE:${next}`,
+    `SUMMARY:Time for your next labs${who}`,
+    "DESCRIPTION:Ask your doctor whether it's time to repeat your lab tests. Then explain the new report on CareWise to see what changed.",
+    "BEGIN:VALARM", "TRIGGER:-P2D", "ACTION:DISPLAY", "DESCRIPTION:Lab reminder", "END:VALARM",
+    "END:VEVENT", "END:VCALENDAR",
+  ].join("\r\n");
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
+  link.download = "carewise-next-labs.ics";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  reportStatus.textContent = `Reminder added for ${date.toLocaleDateString(undefined, { month: "long", year: "numeric" })}. Open the file to save it in your calendar.`;
+}
+
 function renderLocalReportAnalysis(analysis) {
   if (!reportResults) return;
   latestReportQuestionPack = buildReportQuestionPack(analysis);
   latestReportSummaryPack = buildReportSummaryPack(analysis);
   latestReportAnalysis = analysis;
+  computeReportChanges(analysis);
   const view = translateReportAnalysis(analysis);
   const ui = reportUiText();
   const riskLabel = analysis.noData
@@ -5648,6 +5776,8 @@ function renderLocalReportAnalysis(analysis) {
         </div>
       </div>
       ${analysis.noData ? "" : `<p class="result-next result-next-${escapeHtml(analysis.riskLevel)}">${escapeHtml(analysis.riskLevel === "urgent" ? ui.nextUrgent : analysis.riskLevel === "needs_review" ? ui.nextReview : analysis.riskLevel === "attention" ? ui.nextAttention : ui.nextRoutine)}</p>`}
+      ${renderReportChanges(analysis)}
+      ${analysis.noData ? "" : `<div class="lab-reminder"><span>${reportLanguage === "es" ? "Recordatorio de próximos análisis" : "Remind me about my next labs"}</span><select data-lab-reminder aria-label="Reminder interval"><option value="3">${reportLanguage === "es" ? "en 3 meses" : "in 3 months"}</option><option value="6" selected>${reportLanguage === "es" ? "en 6 meses" : "in 6 months"}</option><option value="12">${reportLanguage === "es" ? "en 12 meses" : "in 12 months"}</option></select><button class="secondary-button compact" type="button" data-report-action="lab-reminder">${reportLanguage === "es" ? "Añadir al calendario" : "Add to calendar"}</button></div>`}
       <div class="result-sections">
         <section>
           <div class="section-heading-action">
@@ -5769,6 +5899,7 @@ ${rows ? `<h2>Values detected in the report</h2><table><tr><th>Test</th><th>Valu
 ${(analysis.panelResults || []).length ? `<h2>Other tests on the report (compared with the lab's printed range)</h2><table><tr><th>Test</th><th>Result</th><th>Lab range</th><th>Status</th></tr>${analysis.panelResults.map((item) => `<tr><td>${escapeHtml(item.name)}</td><td>${escapeHtml(`${item.valueText} ${item.unit}`.trim())}</td><td>${escapeHtml(item.rangeText || "not printed")}</td><td>${escapeHtml(LAB_PANEL_TEXT.en[`status_${item.status}`])}</td></tr>`).join("")}</table>` : ""}
 ${analysis.scan ? `<h2>Imaging report (${escapeHtml(analysis.scan.en.modality || "imaging")}), explained from the radiologist's text only</h2>${analysis.scan.en.followUps.length ? `<p>Lines the patient would like to discuss:</p><ul>${analysis.scan.en.followUps.map((item) => `<li>“${escapeHtml(item.sentence)}”</li>`).join("")}</ul>` : "<p>No follow-up lines were flagged in the report text.</p>"}` : ""}
 <h2>Discussion points</h2><ul>${findings}</ul>
+${analysis._changes?.rows?.length ? `<h2>Changes since the previous report (${escapeHtml(analysis._changes.since)})</h2><ul>${analysis._changes.rows.map((r) => `<li>${escapeHtml(r.name)}: ${escapeHtml(String(r.before))} → ${escapeHtml(String(r.now))} ${escapeHtml(r.unit)} (${escapeHtml(changeLabel(r, CHANGE_TEXT.en))})</li>`).join("")}</ul>` : ""}
 ${buildHealthHistoryBriefSection(person)}
 <h2>Patient questions</h2><ol>${questions}</ol>
 <h2>Clinician notes</h2><div class="notes-box"></div>
