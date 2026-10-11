@@ -94,7 +94,7 @@ async function main() {
   assertIncludes("script.js", script, "labValues: analysis.labValues");
   assertIncludes("script.js", script, "labValues: report.labValues || []");
   assertIncludes("script.js", script, "navigator.share");
-  assertIncludes("script.js", script, "CareWise AI report summary");
+  assertIncludes("script.js", script, "FollowThrough Health report summary");
   assertIncludes("script.js", script, "data-report-action=\"copy-questions\"");
   assertIncludes("script.js", script, "Educational prep only. Review the original report with a licensed professional.");
   assertIncludes("script.js", script, "buildBackendReportDisplayAnalysis");
@@ -116,15 +116,15 @@ async function main() {
   assertIncludes("sw.js", serviceWorker, "/legal/data-deletion.html");
   assertIncludes("sw.js", serviceWorker, "/legal/app-store-disclosures.html");
 
-  if (manifest.name !== "CareWise AI") {
-    throw new Error(`manifest.webmanifest name should be CareWise AI, found ${manifest.name || "empty"}`);
+  if (manifest.name !== "FollowThrough Health") {
+    throw new Error(`manifest.webmanifest name should be FollowThrough Health, found ${manifest.name || "empty"}`);
   }
   if (!Array.isArray(manifest.icons) || manifest.icons.length === 0) {
     throw new Error("manifest.webmanifest must include at least one icon.");
   }
 
   for (const [index, page] of legalPages.entries()) {
-    assertIncludes(`legal page ${index + 1}`, page, "CareWise");
+    assertIncludes(`legal page ${index + 1}`, page, "FollowThrough Health");
   }
 
   console.log(

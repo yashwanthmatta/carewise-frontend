@@ -46,7 +46,7 @@
       if (!response.ok) return fail();
       render(await response.json());
     } catch {
-      fail("We couldn't reach CareWise. Check your connection and refresh the page.");
+      fail("We couldn't reach FollowThrough Health. Check your connection and refresh the page.");
     }
   }
 

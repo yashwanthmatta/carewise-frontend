@@ -597,7 +597,7 @@ function explainScanReport(text, language = "en") {
 const SCAN_TEXT = {
     en: {
         title: "Your scan report explained",
-        notice: "CareWise explains the words in the radiologist's report. It does not look at the images, and it does not change what the radiologist concluded.",
+        notice: "FollowThrough Health explains the words in the radiologist's report. It does not look at the images, and it does not change what the radiologist concluded.",
         impression: "The radiologist's summary (Impression)",
         noImpression: "No 'Impression' section was found. Read the whole report with your doctor.",
         terms: "Words in your report",
@@ -607,7 +607,7 @@ const SCAN_TEXT = {
         scoreLabel: "Scan",
         finding: "Imaging report",
         findingLevel: "Explained below",
-        findingDetail: (modality) => `This looks like a${/^[AEIOU]/.test(modality) ? "n" : ""} ${modality || "imaging"} report. CareWise explains the radiologist's words; it does not read the images.`,
+        findingDetail: (modality) => `This looks like a${/^[AEIOU]/.test(modality) ? "n" : ""} ${modality || "imaging"} report. FollowThrough Health explains the radiologist's words; it does not read the images.`,
         questions: [
             "What does the Impression mean for me in everyday terms?",
             "Does anything in this report need a follow-up scan or another test, and when?",
@@ -616,7 +616,7 @@ const SCAN_TEXT = {
     },
     es: {
         title: "Su informe de imagen explicado",
-        notice: "CareWise explica las palabras del informe del radiólogo. No mira las imágenes ni cambia lo que concluyó el radiólogo.",
+        notice: "FollowThrough Health explica las palabras del informe del radiólogo. No mira las imágenes ni cambia lo que concluyó el radiólogo.",
         impression: "El resumen del radiólogo (Impresión)",
         noImpression: "No se encontró la sección 'Impresión'. Revise el informe completo con su médico.",
         terms: "Palabras de su informe",
@@ -626,7 +626,7 @@ const SCAN_TEXT = {
         scoreLabel: "Imagen",
         finding: "Informe de imagen",
         findingLevel: "Explicado abajo",
-        findingDetail: (modality) => `Parece un informe de ${modality || "imagen"}. CareWise explica las palabras del radiólogo; no lee las imágenes.`,
+        findingDetail: (modality) => `Parece un informe de ${modality || "imagen"}. FollowThrough Health explica las palabras del radiólogo; no lee las imágenes.`,
         questions: [
             "¿Qué significa la Impresión para mí en palabras sencillas?",
             "¿Algo de este informe necesita otro estudio o prueba de control, y cuándo?",
@@ -638,9 +638,9 @@ const SCAN_TEXT = {
 const REPORT_TRANSLATIONS = {
   es: {
     ui: {
-      eyebrow: "Explicación de CareWise",
+      eyebrow: "Explicación de FollowThrough Health",
       title: "Resumen del informe en lenguaje sencillo",
-      found: (count) => `CareWise encontró ${count} punto${count === 1 ? "" : "s"} para comentar en el texto del informe.`,
+      found: (count) => `FollowThrough Health encontró ${count} punto${count === 1 ? "" : "s"} para comentar en el texto del informe.`,
       detectedValues: "Valores detectados",
       keyFindings: "Hallazgos principales",
       suggestions: "Sugerencias de bienestar",
@@ -663,8 +663,8 @@ const REPORT_TRANSLATIONS = {
       helpfulMore: "Gracias. ¿Qué la mejoraría? (opcional)",
       helpfulPlaceholder: "Por favor, no incluya nombres ni datos médicos.",
       helpfulSend: "Enviar",
-      helpfulSent: "Gracias por ayudarnos a mejorar CareWise.",
-      helpfulOffline: "Gracias. No se pudo conectar con CareWise en este momento, así que no se envió nada.",
+      helpfulSent: "Gracias por ayudarnos a mejorar FollowThrough Health.",
+      helpfulOffline: "Gracias. No se pudo conectar con FollowThrough Health en este momento, así que no se envió nada.",
       earlyAccessLink: "¿Quiere probar las novedades primero? Únase al acceso anticipado",
       nextUrgent: "Comuníquese hoy con su médico. Si se siente muy mal, busque atención de emergencia.",
       nextReview: "Pregunte pronto a su médico sobre estos resultados.",
@@ -704,8 +704,8 @@ const REPORT_TRANSLATIONS = {
       "Urgent review": "Revisión urgente",
       "Routine follow-up": "Seguimiento de rutina",
       "The report text includes symptoms that should not wait for routine AI guidance.": "El texto del informe incluye síntomas que no deben esperar a una orientación de rutina.",
-      "Vitamin D appears in the report text, but CareWise could not confidently read the value.": "La vitamina D aparece en el informe, pero CareWise no pudo leer el valor con seguridad.",
-      "CareWise needs typed or pasted lab values to explain specific results.": "CareWise necesita los valores del laboratorio escritos o pegados para explicar resultados específicos.",
+      "Vitamin D appears in the report text, but FollowThrough Health could not confidently read the value.": "La vitamina D aparece en el informe, pero FollowThrough Health no pudo leer el valor con seguridad.",
+      "FollowThrough Health needs typed or pasted lab values to explain specific results.": "FollowThrough Health necesita los valores del laboratorio escritos o pegados para explicar resultados específicos.",
       "If these symptoms are happening now, seek emergency care or call local emergency services.": "Si estos síntomas están ocurriendo ahora, busque atención de emergencia o llame a los servicios de emergencia locales.",
       "Discuss heart-risk context, diet pattern, exercise, family history, and follow-up timing with a clinician.": "Hable con un profesional de salud sobre su riesgo cardíaco, su alimentación, el ejercicio, sus antecedentes familiares y cuándo hacer seguimiento.",
       "Ask whether fasting status, alcohol, refined carbs, medicines, or thyroid/metabolic factors could affect triglycerides.": "Pregunte si el ayuno, el alcohol, los carbohidratos refinados, los medicamentos o factores tiroideos o metabólicos podrían afectar sus triglicéridos.",
@@ -767,19 +767,19 @@ const REPORT_TRANSLATIONS = {
       [/^(.+); general guide (.+)\. Labs often treat this level as urgent\. Contact your doctor today, or seek emergency care if you feel very unwell\.$/, "$1; guía general $2. Los laboratorios suelen considerar urgente este nivel. Comuníquese hoy con su médico o busque atención de emergencia si se siente muy mal."],
       [/^(.+); lab range not printed\. Labs often treat this level as urgent\. Contact your doctor today, or seek emergency care if you feel very unwell\.$/, "$1; rango del laboratorio no impreso. Los laboratorios suelen considerar urgente este nivel. Comuníquese hoy con su médico o busque atención de emergencia si se siente muy mal."],
       [/^(.+); lab range (.+)\. Labs often treat this level as urgent\. Contact your doctor today, or seek emergency care if you feel very unwell\.$/, "$1; rango del laboratorio $2. Los laboratorios suelen considerar urgente este nivel. Comuníquese hoy con su médico o busque atención de emergencia si se siente muy mal."],
-      [/^CareWise read (\d+) results but found no range to compare one of them with\. Ask your doctor what range applies to you\.$/, "CareWise leyó $1 resultados, pero no encontró un rango para comparar uno de ellos. Pregunte a su médico qué rango le corresponde."],
-      [/^CareWise read (\d+) results but found no range to compare (\d+) of them with\. Ask your doctor what range applies to you\.$/, "CareWise leyó $1 resultados, pero no encontró un rango para comparar $2 de ellos. Pregunte a su médico qué rango le corresponde."],
+      [/^FollowThrough Health read (\d+) results but found no range to compare one of them with\. Ask your doctor what range applies to you\.$/, "FollowThrough Health leyó $1 resultados, pero no encontró un rango para comparar uno de ellos. Pregunte a su médico qué rango le corresponde."],
+      [/^FollowThrough Health read (\d+) results but found no range to compare (\d+) of them with\. Ask your doctor what range applies to you\.$/, "FollowThrough Health leyó $1 resultados, pero no encontró un rango para comparar $2 de ellos. Pregunte a su médico qué rango le corresponde."],
       [/^(.+); lab range (.+)\.$/, "$1; rango del laboratorio $2."],
       [/^All (\d+) tests read from your report are within the lab's ranges\.$/, "Las $1 pruebas leídas de su informe están dentro de los rangos del laboratorio."],
-      [/^This looks like an? (.+) report\. CareWise explains the radiologist's words; it does not read the images\.$/, "Parece un informe de imagen ($1). CareWise explica las palabras del radiólogo; no lee las imágenes."],
+      [/^This looks like an? (.+) report\. FollowThrough Health explains the radiologist's words; it does not read the images\.$/, "Parece un informe de imagen ($1). FollowThrough Health explica las palabras del radiólogo; no lee las imágenes."],
     ],
   },
 };
 
 const REPORT_UI_EN = {
-  eyebrow: "CareWise explanation",
+  eyebrow: "FollowThrough Health explanation",
   title: "Plain-English report summary",
-  found: (count) => `CareWise found ${count} discussion point${count === 1 ? "" : "s"} in the readable report text.`,
+  found: (count) => `FollowThrough Health found ${count} discussion point${count === 1 ? "" : "s"} in the readable report text.`,
   detectedValues: "Detected values",
   keyFindings: "Key findings",
   suggestions: "Wellness suggestions",
@@ -802,8 +802,8 @@ const REPORT_UI_EN = {
   helpfulMore: "Thank you. What would make it better? (optional)",
   helpfulPlaceholder: "Please leave out names and medical details.",
   helpfulSend: "Send",
-  helpfulSent: "Thank you for helping us improve CareWise.",
-  helpfulOffline: "Thank you. CareWise could not be reached just now, so nothing was sent.",
+  helpfulSent: "Thank you for helping us improve FollowThrough Health.",
+  helpfulOffline: "Thank you. FollowThrough Health could not be reached just now, so nothing was sent.",
   earlyAccessLink: "Want new features first? Join early access",
   nextUrgent: "Contact your doctor today. If you feel very unwell, seek emergency care.",
   nextReview: "Ask your doctor about these results soon.",
@@ -2079,7 +2079,7 @@ function renderRoutinePausedCard(location) {
       <h3>Use emergency care before monthly planning</h3>
       <ul>
         <li>Do not use diet, insurance, subscription, or doctor-shopping guidance to delay emergency care.</li>
-        <li>After the person is medically stable, CareWise can help organize follow-up care near ${escapeHtml(location)}.</li>
+        <li>After the person is medically stable, FollowThrough Health can help organize follow-up care near ${escapeHtml(location)}.</li>
         <li>Bring medication names, allergies, major symptoms, and symptom start time to the care team if possible.</li>
       </ul>
     </article>
@@ -2105,7 +2105,7 @@ function renderSafetyCard(matches) {
       <p>The intake mentioned ${matches.map(escapeHtml).join(", ")}. Get immediate medical care or emergency help before using routine plan recommendations.</p>
       <ul>
         ${guidance.map((item) => `<li><strong>${escapeHtml(item.label)}:</strong> ${escapeHtml(item.action)}</li>`).join("")}
-        <li>CareWise cannot diagnose or cure this. It can only help route the person to safer next steps.</li>
+        <li>FollowThrough Health cannot diagnose or cure this. It can only help route the person to safer next steps.</li>
       </ul>
     </article>
   `;
@@ -2154,7 +2154,7 @@ function renderCarePlanSnapshotCard(context) {
 
   return `
     <article class="result-card snapshot-card">
-      <span class="badge blue">CareWise snapshot</span>
+      <span class="badge blue">FollowThrough Health snapshot</span>
       <h3>${escapeHtml(conditionLabel)}</h3>
       <div class="snapshot-grid">
         <div><strong>Risk</strong><span>${escapeHtml(context.risk.label)}</span></div>
@@ -2165,7 +2165,7 @@ function renderCarePlanSnapshotCard(context) {
       <p>${escapeHtml(nextStep)}</p>
       <div class="clinical-note">
         <strong>Safety note</strong>
-        <span>CareWise provides educational planning support only. It does not diagnose, prescribe, cure, or replace emergency care or licensed clinicians.</span>
+        <span>FollowThrough Health provides educational planning support only. It does not diagnose, prescribe, cure, or replace emergency care or licensed clinicians.</span>
       </div>
       <div class="hero-actions">
         <button data-save-current-plan class="primary-button narrow-button" type="button">Save plan</button>
@@ -2633,7 +2633,7 @@ function fillTeamAccount(role, navigateToAccount = true) {
   document.querySelector("#auth-role").value = role;
   authRole = role;
   localStorage.setItem("carewiseAuthRole", role);
-  updateAuthStatus(`${role === "admin" ? "Admin" : "Clinician"} role selected. Enter your staff email and password. Only emails on the CareWise staff list can use it.`);
+  updateAuthStatus(`${role === "admin" ? "Admin" : "Clinician"} role selected. Enter your staff email and password. Only emails on the FollowThrough Health staff list can use it.`);
   if (navigateToAccount) window.showCareWiseSection?.("account-title");
 }
 
@@ -2666,7 +2666,7 @@ function updateNetworkStatus() {
 function fillSampleReportText() {
   document.querySelector("#report-name").value = "sample-blood-work.txt";
   document.querySelector("#report-text").value = [
-    "Sample lab text for CareWise demo:",
+    "Sample lab text for FollowThrough Health demo:",
     "Total cholesterol 226 mg/dL.",
     "LDL cholesterol 148 mg/dL.",
     "HDL cholesterol 44 mg/dL.",
@@ -2916,7 +2916,7 @@ async function signup() {
     await saveAuthToken(response, "signup");
   } catch (error) {
     if (String(error?.message || "").includes("403")) {
-      updateAuthStatus("Clinician and admin accounts are set up by the CareWise team. Choose Patient under CareWise team sign-in, or ask the team to add your email.");
+      updateAuthStatus("Clinician and admin accounts are set up by the FollowThrough Health team. Choose Patient under FollowThrough Health team sign-in, or ask the team to add your email.");
       return;
     }
     updateAuthStatus(authErrorMessage(error, "Account may already exist. Try Log in."));
@@ -2928,11 +2928,11 @@ async function signup() {
 function authErrorMessage(error, rejectedMessage) {
   const message = String(error?.message || "");
   if (!message.startsWith("Backend returned")) {
-    return "The CareWise server is not reachable right now. You can still try the sample report; results stay in this browser.";
+    return "The FollowThrough Health server is not reachable right now. You can still try the sample report; results stay in this browser.";
   }
   if (message.includes("429")) return "Too many sign-in attempts. Wait a few minutes and try again.";
   if (/Backend returned 4\d\d/.test(message)) return rejectedMessage;
-  return "The CareWise server had a problem. Please try again in a moment.";
+  return "The FollowThrough Health server had a problem. Please try again in a moment.";
 }
 
 async function login() {
@@ -2997,7 +2997,7 @@ async function requestPasswordReset() {
     }
     updateAuthStatus(response.delivery_status === "email_queued"
       ? "Reset email queued. Check your inbox for the reset link."
-      : "CareWise could not email a reset link right now. Please try again later. Reports explained on this device are still here.");
+      : "FollowThrough Health could not email a reset link right now. Please try again later. Reports explained on this device are still here.");
   } catch {
     updateAuthStatus("Password reset request failed. Check backend status and try again.");
   }
@@ -3171,7 +3171,7 @@ async function requestJson(method, path, payload, options = {}) {
 }
 
 // Anonymous daily counts of a few actions (no report text, no account, no IP kept)
-// so the team can see whether people use CareWise. Off for Do Not Track, during the
+// so the team can see whether people use FollowThrough Health. Off for Do Not Track, during the
 // guided demo's own steps, and on local copies unless switched on for testing.
 function trackUsage(name) {
   try {
@@ -3239,7 +3239,7 @@ async function wakeBackendOnLoad(attempts = 12, delayMs = 8000) {
     if (await checkBackend(false)) return true;
     if (attempt === attempts) break;
     renderHomeReadiness(false, true);
-    setBackendStatus(false, "Waking up the CareWise server. This can take up to a minute.");
+    setBackendStatus(false, "Waking up the FollowThrough Health server. This can take up to a minute.");
     await new Promise((resolve) => setTimeout(resolve, delayMs));
   }
   return false;
@@ -3363,7 +3363,7 @@ function getLaunchProofText() {
     outcome = null;
   }
   return [
-    "CareWise AI launch proof",
+    "FollowThrough Health launch proof",
     `Generated: ${new Date().toLocaleString()}`,
     ...proofItems,
     outcome ? `Clinical review receipt: ${outcome.status} for ${outcome.carePlanId}` : "Clinical review receipt: not generated yet",
@@ -3387,7 +3387,7 @@ function getStoreDisclosureText() {
   const storageReady = Boolean(checks.storage || backendFeatures.report_uploads);
   const encryptionReady = Boolean(checks.configuration);
   return [
-    "CareWise AI app-store privacy disclosure draft",
+    "FollowThrough Health app-store privacy disclosure draft",
     `Generated: ${new Date().toLocaleString()}`,
     "",
     "Data collected:",
@@ -3459,7 +3459,7 @@ function getDemoScriptSteps() {
       label: "Open with mission",
       anchor: "app-title",
       ready: true,
-      detail: "CareWise AI organizes health concerns, report text, food habits, and follow-up questions before a licensed care professional visit.",
+      detail: "FollowThrough Health organizes health concerns, report text, food habits, and follow-up questions before a licensed care professional visit.",
     },
     {
       label: "Show live readiness",
@@ -3552,13 +3552,13 @@ function renderDemoScript() {
 
 function getDemoScriptText() {
   const script = getLatestDemoScript();
-  if (!script) return "CareWise AI demo walkthrough\nNo demo script built yet.";
+  if (!script) return "FollowThrough Health demo walkthrough\nNo demo script built yet.";
   return [
-    "CareWise AI demo walkthrough",
+    "FollowThrough Health demo walkthrough",
     `Generated: ${new Date(script.createdAt).toLocaleString()}`,
     `Status: ${script.status}`,
     `Readiness: ${script.readyCount}/${script.total}`,
-    "Safety line: CareWise is educational planning support, not diagnosis, cure, prescription, insurance verification, or emergency care.",
+    "Safety line: FollowThrough Health is educational planning support, not diagnosis, cure, prescription, insurance verification, or emergency care.",
     "",
     ...script.steps.map((step, index) => [
       `${index + 1}. ${step.label}`,
@@ -3593,11 +3593,11 @@ function getInvestorBriefText() {
     ? "Clinical review demo receipt is available, showing the safer human-review workflow."
     : "Clinical review workflow exists; run the review demo before serious investor conversations.";
   return [
-    "CareWise AI investor one-page brief",
+    "FollowThrough Health investor one-page brief",
     `Generated: ${new Date().toLocaleString()}`,
     "",
     "Mission:",
-    "CareWise AI helps people organize health concerns, lab report text, food habits, medication notes, and follow-up questions before speaking with licensed care professionals.",
+    "FollowThrough Health helps people organize health concerns, lab report text, food habits, medication notes, and follow-up questions before speaking with licensed care professionals.",
     "",
     "Problem:",
     "Patients often leave labs, portals, and insurance pages confused. They need a simple way to understand next steps, prepare better questions, track habits, and know when a clinician or emergency pathway is needed.",
@@ -3707,9 +3707,9 @@ function fillSamplePilotLead() {
 
 function getPilotListText() {
   const leads = getPilotLeads();
-  if (!leads.length) return "CareWise AI pilot leads\nNo pilot leads saved yet.";
+  if (!leads.length) return "FollowThrough Health pilot leads\nNo pilot leads saved yet.";
   return [
-    "CareWise AI pilot leads",
+    "FollowThrough Health pilot leads",
     `Generated: ${new Date().toLocaleString()}`,
     "",
     ...leads.map((lead, index) => [
@@ -3764,7 +3764,7 @@ function renderPreflightReport(items) {
 
 async function runLaunchPreflight() {
   if (!preflightReport || !preflightStatus) return;
-  preflightStatus.textContent = "Running CareWise launch preflight.";
+  preflightStatus.textContent = "Running FollowThrough Health launch preflight.";
   renderPreflightReport([
     { label: "Preflight", ready: false, detail: "Checking live systems" },
   ]);
@@ -3866,7 +3866,7 @@ function renderSubscriptionPlans() {
 
 function profileToBackendPayload(profile) {
   return {
-    name: profile.name || "CareWise Patient",
+    name: profile.name || "FollowThrough Health Patient",
     date_of_birth: "",
     sex_at_birth: profile.sex,
     conditions: profile.conditions,
@@ -3947,7 +3947,7 @@ function getPendingReviewItemForSync() {
 function reviewItemToBackendPayload(item, patientId) {
   return {
     patient_id: patientId,
-    symptom_text: item.symptoms || item.summary || "CareWise clinician review item.",
+    symptom_text: item.symptoms || item.summary || "FollowThrough Health clinician review item.",
     goals: ["doctor", "diet", "tracking"],
     diet_style: document.querySelector("#diet-style")?.value || "flexible",
     activity_level: document.querySelector("#activity-level")?.value || "sedentary",
@@ -4038,7 +4038,7 @@ function handleReportFileSelection() {
     readPhotoTextLocally(file);
     return;
   }
-  reportStatus.textContent = "CareWise reads PDFs, photos and text files. Choose one of those, or type the results below.";
+  reportStatus.textContent = "FollowThrough Health reads PDFs, photos and text files. Choose one of those, or type the results below.";
 }
 
 // Text-based PDFs are read in the browser, so the file never leaves the
@@ -4147,7 +4147,7 @@ async function readPdfTextLocally(file) {
     await analyzeAndShowReport();
     reportStatus.textContent = `PDF read on this device. Nothing was uploaded. ${reportStatus.textContent}`;
   } catch {
-    reportStatus.textContent = "CareWise could not read this PDF. Paste the lab values as text below.";
+    reportStatus.textContent = "FollowThrough Health could not read this PDF. Paste the lab values as text below.";
   }
 }
 
@@ -4355,7 +4355,7 @@ function renderOcrChecks() {
     <ul>${ocrChecks.map((check, index) => `
       <li>
         <span>${escapeHtml(check.name)}: ${check.kind === "fixed"
-          ? `read as ${escapeHtml(check.read)}, which is not possible, so CareWise used ${escapeHtml(check.value)}.`
+          ? `read as ${escapeHtml(check.read)}, which is not possible, so FollowThrough Health used ${escapeHtml(check.value)}.`
           : `read as ${escapeHtml(check.read)}. Did the report say ${escapeHtml(check.other)}?`}</span>
         <span class="inline-action-group">
           ${check.kind === "fixed"
@@ -4386,7 +4386,7 @@ document.querySelector("#ocr-checks")?.addEventListener("click", (event) => {
 
 async function showOcrResult(rawText, sourceLabel) {
   if (rawText.replace(/\s/g, "").length < 20) {
-    reportStatus.textContent = `CareWise could not find readable text in this ${sourceLabel}. Try a sharper, well-lit photo taken straight on, or type the results below.`;
+    reportStatus.textContent = `FollowThrough Health could not find readable text in this ${sourceLabel}. Try a sharper, well-lit photo taken straight on, or type the results below.`;
     return;
   }
   const { text, checks } = checkOcrNumbers(rawText);
@@ -4408,7 +4408,7 @@ async function readPhotoTextLocally(file) {
     });
     await showOcrResult(text, "photo");
   } catch {
-    reportStatus.textContent = "CareWise could not read this photo on this device. Type the results below, or try a PDF.";
+    reportStatus.textContent = "FollowThrough Health could not read this photo on this device. Type the results below, or try a PDF.";
   }
 }
 
@@ -4437,7 +4437,7 @@ async function readScannedPdfLocally(file, maxPages = 3) {
     });
     await showOcrResult(text, "scanned PDF");
   } catch {
-    reportStatus.textContent = "This PDF looks like a scanned image and CareWise could not read it on this device. Type the lab values below.";
+    reportStatus.textContent = "This PDF looks like a scanned image and FollowThrough Health could not read it on this device. Type the lab values below.";
   }
 }
 
@@ -4563,7 +4563,7 @@ document.querySelector("#early-access-form")?.addEventListener("submit", async (
   } catch (error) {
     status.textContent = error.status === 429
       ? "Too many tries from this connection. Please try again in 15 minutes."
-      : "CareWise could not be reached just now. The server may be waking up; please try again in a minute.";
+      : "FollowThrough Health could not be reached just now. The server may be waking up; please try again in a minute.";
   } finally {
     button.disabled = false;
   }
@@ -4628,7 +4628,7 @@ async function loadFounderSummary() {
     renderFounderSummary(summary);
     status.textContent = `Updated ${new Date().toLocaleTimeString()}.`;
   } catch (error) {
-    status.textContent = error.message || "CareWise could not be reached just now.";
+    status.textContent = error.message || "FollowThrough Health could not be reached just now.";
   }
 }
 
@@ -4906,10 +4906,10 @@ function runReportSafetyEvaluation() {
 
 function getReportEvaluationText() {
   const results = getLatestReportEvaluation();
-  if (!results.length) return "CareWise AI report safety evaluation\nNo evaluation run yet.";
+  if (!results.length) return "FollowThrough Health report safety evaluation\nNo evaluation run yet.";
   const passed = results.filter((item) => item.passed).length;
   return [
-    "CareWise AI report safety evaluation",
+    "FollowThrough Health report safety evaluation",
     `Generated: ${new Date().toLocaleString()}`,
     `Result: ${passed}/${results.length} safety checks passed`,
     "Scope: local red-flag routing and safe review behavior. This is not a clinical accuracy guarantee.",
@@ -5163,9 +5163,9 @@ function renderLabTrends() {
 
 function getLabTrendsText() {
   const labs = getLabTrends();
-  if (!labs.length) return "CareWise AI lab value tracker\nNo lab values saved yet.";
+  if (!labs.length) return "FollowThrough Health lab value tracker\nNo lab values saved yet.";
   return [
-    "CareWise AI lab value tracker",
+    "FollowThrough Health lab value tracker",
     `Generated: ${new Date().toLocaleString()}`,
     "Safety: lab values require interpretation by a licensed clinician using the original report, reference range, history, symptoms, pregnancy status, and medications.",
     "",
@@ -5417,7 +5417,7 @@ function analyzeReportTextLocally(rawText) {
       findings.push({ label: "Vitamin D", level: "No obvious issue in pasted text", detail: `Vitamin D appears around ${vitaminD}.` });
     }
   } else if (lower.includes("vitamin d")) {
-    findings.push({ label: "Vitamin D", level: "Mentioned", detail: "Vitamin D appears in the report text, but CareWise could not confidently read the value." });
+    findings.push({ label: "Vitamin D", level: "Mentioned", detail: "Vitamin D appears in the report text, but FollowThrough Health could not confidently read the value." });
   }
 
   // Any other lab rows, compared with the range and flags the lab printed.
@@ -5489,7 +5489,7 @@ function analyzeReportTextLocally(rawText) {
   if (panelResults.length && !findings.length) {
     if (unchecked.length) {
       score = Math.min(score, 84);
-      findings.push({ label: "Other tests", level: "No range to compare", detail: `CareWise read ${panelResults.length} results but found no range to compare ${unchecked.length === 1 ? "one of them" : `${unchecked.length} of them`} with. Ask your doctor what range applies to you.` });
+      findings.push({ label: "Other tests", level: "No range to compare", detail: `FollowThrough Health read ${panelResults.length} results but found no range to compare ${unchecked.length === 1 ? "one of them" : `${unchecked.length} of them`} with. Ask your doctor what range applies to you.` });
     } else {
       findings.push({ label: "Other tests", level: "Within the lab's range", detail: `All ${panelResults.length} tests read from your report are within the lab's ranges.` });
     }
@@ -5500,7 +5500,7 @@ function analyzeReportTextLocally(rawText) {
     findings.push({
       label: "Readable values",
       level: "Not enough structured data",
-      detail: "CareWise needs typed or pasted lab values to explain specific results.",
+      detail: "FollowThrough Health needs typed or pasted lab values to explain specific results.",
     });
     suggestions.push("Paste key lab rows, values, units, and reference flags from the report.");
     score = 72;
@@ -5758,7 +5758,7 @@ function computeReportChanges(analysis) {
   if (analysis._changes !== undefined) return analysis._changes;
   analysis._changes = null;
   const text = document.querySelector("#report-text")?.value || "";
-  if (analysis.noData || analysis.scanOnly || document.body.classList.contains("tour-active") || /^\s*Sample lab text for CareWise demo/i.test(text)) return null;
+  if (analysis.noData || analysis.scanOnly || document.body.classList.contains("tour-active") || /^\s*Sample lab text for FollowThrough Health demo/i.test(text)) return null;
   const markers = reportMarkers(analysis);
   if (!markers.length) return null;
   const person = normalizeReportPerson(latestReportPerson);
@@ -5815,10 +5815,10 @@ function downloadLabReminder(months) {
   const person = normalizeReportPerson(latestReportPerson);
   const who = person === "Me" ? "" : ` for ${person}`;
   const ics = [
-    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//CareWise//Lab reminder//EN", "BEGIN:VEVENT",
+    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//FollowThrough Health//Lab reminder//EN", "BEGIN:VEVENT",
     `UID:carewise-${Date.now()}@carewise`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${day}`, `DTEND;VALUE=DATE:${next}`,
     `SUMMARY:Time for your next labs${who}`,
-    "DESCRIPTION:Ask your doctor whether it's time to repeat your lab tests. Then explain the new report on CareWise to see what changed.",
+    "DESCRIPTION:Ask your doctor whether it's time to repeat your lab tests. Then explain the new report on FollowThrough Health to see what changed.",
     "BEGIN:VALARM", "TRIGGER:-P2D", "ACTION:DISPLAY", "DESCRIPTION:Lab reminder", "END:VALARM",
     "END:VEVENT", "END:VCALENDAR",
   ].join("\r\n");
@@ -5951,7 +5951,7 @@ function buildBackendReportDisplayAnalysis(response, reportText) {
       {
         label: "Readable report text",
         level: "Needed",
-        detail: response.summary?.message || "CareWise stored the report but needs readable values before explaining it.",
+        detail: response.summary?.message || "FollowThrough Health stored the report but needs readable values before explaining it.",
       },
     ],
     suggestions: response.recommendations?.next_steps || [
@@ -5980,7 +5980,7 @@ function buildDoctorBriefHtml(analysis, person = "Me") {
   const questions = analysis.questions.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CareWise doctor brief</title>
+<title>FollowThrough Health doctor brief</title>
 <style>
   body { font-family: Arial, sans-serif; color: #14302c; max-width: 760px; margin: 32px auto; padding: 0 20px; line-height: 1.45; }
   header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 3px solid #0f766e; padding-bottom: 8px; }
@@ -5993,8 +5993,8 @@ function buildDoctorBriefHtml(analysis, person = "Me") {
   @media print { button { display: none; } body { margin: 0 auto; } }
 </style></head><body>
 <header><h1>${person === "Me" ? "Patient lab summary for clinician review" : `Lab summary for clinician review: ${escapeHtml(person)}`}</h1><span>${escapeHtml(today)}</span></header>
-<p>${person === "Me" ? "Prepared by the patient with CareWise AI from their own report text." : `Prepared by a family caregiver for ${escapeHtml(person)} with CareWise AI from the report text.`}${analysis.scanOnly || analysis.noData ? "" : ` Health score ${escapeHtml(String(analysis.score))}/100 (educational estimate).`}</p>
-${rows ? `<h2>Values detected in the report</h2><table><tr><th>Test</th><th>Value</th><th>CareWise note</th></tr>${rows}</table>` : ""}
+<p>${person === "Me" ? "Prepared by the patient with FollowThrough Health from their own report text." : `Prepared by a family caregiver for ${escapeHtml(person)} with FollowThrough Health from the report text.`}${analysis.scanOnly || analysis.noData ? "" : ` Health score ${escapeHtml(String(analysis.score))}/100 (educational estimate).`}</p>
+${rows ? `<h2>Values detected in the report</h2><table><tr><th>Test</th><th>Value</th><th>FollowThrough Health note</th></tr>${rows}</table>` : ""}
 ${(analysis.panelResults || []).length ? `<h2>Other tests on the report (compared with the lab's printed range)</h2><table><tr><th>Test</th><th>Result</th><th>Lab range</th><th>Status</th></tr>${analysis.panelResults.map((item) => `<tr><td>${escapeHtml(item.name)}</td><td>${escapeHtml(`${item.valueText} ${item.unit}`.trim())}</td><td>${escapeHtml(item.rangeText || "not printed")}</td><td>${escapeHtml(LAB_PANEL_TEXT.en[`status_${item.status}`])}</td></tr>`).join("")}</table>` : ""}
 ${analysis.scan ? `<h2>Imaging report (${escapeHtml(analysis.scan.en.modality || "imaging")}), explained from the radiologist's text only</h2>${analysis.scan.en.followUps.length ? `<p>Lines the patient would like to discuss:</p><ul>${analysis.scan.en.followUps.map((item) => `<li>“${escapeHtml(item.sentence)}”</li>`).join("")}</ul>` : "<p>No follow-up lines were flagged in the report text.</p>"}` : ""}
 <h2>Discussion points</h2><ul>${findings}</ul>
@@ -6015,7 +6015,7 @@ function openDoctorBrief() {
   }
   const briefWindow = window.open("", "_blank");
   if (!briefWindow) {
-    reportStatus.textContent = "Allow pop-ups for CareWise to open the doctor brief.";
+    reportStatus.textContent = "Allow pop-ups for FollowThrough Health to open the doctor brief.";
     return;
   }
   briefWindow.document.write(buildDoctorBriefHtml(latestReportAnalysis, latestReportPerson));
@@ -6025,7 +6025,7 @@ function openDoctorBrief() {
 
 function buildReportSummaryPack(analysis) {
   return [
-    "CareWise AI report summary",
+    "FollowThrough Health report summary",
     "Educational prep only. This is not a diagnosis or treatment plan.",
     `Health Score: ${analysis.score}/100`,
     `Follow-up level: ${analysis.riskLevel}`,
@@ -6073,7 +6073,7 @@ async function saveDetectedValuesToTrends() {
     unit: item.unit,
     date: today,
     flag: normalizeDetectedValueFlag(item.flag),
-    notes: "Saved from CareWise detected report values. Verify against the original report and reference range.",
+    notes: "Saved from FollowThrough Health detected report values. Verify against the original report and reference range.",
     source: "detected_report_value",
     createdAt: new Date().toISOString(),
   }));
@@ -6099,7 +6099,7 @@ async function saveDetectedValuesToTrends() {
 
 function buildReportQuestionPack(analysis) {
   return [
-    "CareWise AI report questions",
+    "FollowThrough Health report questions",
     "Educational prep only. Review the original report with a licensed professional.",
     "",
     ...analysis.questions.map((question, index) => `${index + 1}. ${question}`),
@@ -6143,7 +6143,7 @@ async function shareReportSummary() {
   if (navigator.share) {
     try {
       await navigator.share({
-        title: "CareWise AI report summary",
+        title: "FollowThrough Health report summary",
         text: latestReportSummaryPack,
       });
       reportStatus.textContent = "Report summary shared. Review it with the original report before relying on it.";
@@ -6192,7 +6192,7 @@ function runLocalReportAnalysis() {
   if (analysis.noData) {
     // Nothing to explain: no score, nothing saved to History.
     renderLocalReportAnalysis(analysis);
-    reportStatus.textContent = 'CareWise could not find any results in that text. Type the test names and numbers, for example "LDL 148, HbA1c 6.1, fasting sugar 110".';
+    reportStatus.textContent = 'FollowThrough Health could not find any results in that text. Type the test names and numbers, for example "LDL 148, HbA1c 6.1, fasting sugar 110".';
     return analysis;
   }
   latestReportId = analysis.id;
@@ -6225,7 +6225,7 @@ function answerReportQuestion() {
     return;
   }
   if (!text) {
-    reportAnswer.textContent = "Paste report text or use the sample report first so CareWise has context.";
+    reportAnswer.textContent = "Paste report text or use the sample report first so FollowThrough Health has context.";
     return;
   }
   const analysis = analyzeReportTextLocally(text);
@@ -6239,7 +6239,7 @@ function answerReportQuestion() {
   } else if (lowerQuestion.includes("diet") || lowerQuestion.includes("food")) {
     reportAnswer.textContent = "A generally heart-supportive pattern includes vegetables, beans/lentils, whole grains, nuts/seeds, fish or other lean proteins if you eat them, and unsaturated fats. Ask a clinician or dietitian how this should change for allergies, kidney disease, pregnancy, diabetes, or medicines.";
   } else {
-    reportAnswer.textContent = `CareWise found ${analysis.findings.length} discussion point${analysis.findings.length === 1 ? "" : "s"}. The safest next step is to ask a licensed professional which result matters most, whether any repeat testing is needed, and what changes are appropriate for your history.`;
+    reportAnswer.textContent = `FollowThrough Health found ${analysis.findings.length} discussion point${analysis.findings.length === 1 ? "" : "s"}. The safest next step is to ask a licensed professional which result matters most, whether any repeat testing is needed, and what changes are appropriate for your history.`;
   }
 }
 
@@ -6315,7 +6315,7 @@ async function analyzeLatestReport() {
       reportStatus.textContent = "Saving readable report text before analysis.";
       await apiPut(`/reports/${latestReportId}/text`, { report_text: reportText });
     }
-    reportStatus.textContent = "Analyzing report through CareWise backend.";
+    reportStatus.textContent = "Analyzing report through FollowThrough Health backend.";
     const response = await apiPost(`/reports/${latestReportId}/analyze`, {});
     const displayAnalysis = buildBackendReportDisplayAnalysis(response, reportText);
     const message = response.summary?.message || "Report education summary generated.";
@@ -6357,7 +6357,7 @@ async function analyzeLatestReport() {
   } catch (error) {
     if (getLocalReportText()) {
       runLocalReportAnalysis();
-      reportStatus.textContent = "Backend analysis was unavailable, so CareWise generated a local educational summary.";
+      reportStatus.textContent = "Backend analysis was unavailable, so FollowThrough Health generated a local educational summary.";
       return;
     }
     reportStatus.textContent = error.message.includes("404") ? "Report not found. Upload again." : "Report analysis failed. Check backend status.";
@@ -6620,13 +6620,13 @@ function getReviewDemoReceiptText() {
     const outcome = JSON.parse(localStorage.getItem("carewiseReviewDemoOutcome") || "null");
     if (!outcome) return "";
     return [
-      "CareWise AI clinical review demo receipt",
+      "FollowThrough Health clinical review demo receipt",
       `Decision: ${outcome.status}`,
       `Backend care plan: ${outcome.carePlanId}`,
       `Reviewed at: ${new Date(outcome.reviewedAt || outcome.createdAt).toLocaleString()}`,
       `Role: ${authRole || document.querySelector("#auth-role")?.value || "not signed in"}`,
       `Pending backend queue count: ${localStorage.getItem("carewiseBackendReviewCount") || "0"}`,
-      "Safety: CareWise provides educational care planning support and routes high-risk items to clinician review.",
+      "Safety: FollowThrough Health provides educational care planning support and routes high-risk items to clinician review.",
     ].join("\n");
   } catch {
     return "";
@@ -6843,7 +6843,7 @@ function getMealBudgetNotes(budget) {
 
 function buildMealPlanText(plan) {
   return [
-    "CareWise AI meal and grocery plan",
+    "FollowThrough Health meal and grocery plan",
     `Generated: ${new Date(plan.createdAt).toLocaleString()}`,
     "Safety scope: food planning support only. This is not diagnosis, treatment, a prescription, or a replacement for a clinician or dietitian.",
     "",
@@ -7282,9 +7282,9 @@ function renderSafetyChecks() {
 
 function getSafetyCheckText() {
   const latest = getLatestSafetyCheck();
-  if (!latest) return "CareWise AI safety checklist\nNo safety checklist generated yet.";
+  if (!latest) return "FollowThrough Health safety checklist\nNo safety checklist generated yet.";
   return [
-    "CareWise AI medication, allergy, and food safety checklist",
+    "FollowThrough Health medication, allergy, and food safety checklist",
     `Generated: ${new Date(latest.createdAt).toLocaleString()}`,
     "Safety scope: checklist support only. It does not detect all interactions and is not a substitute for clinician, pharmacist, dietitian, emergency, or poison-control advice.",
     "",
@@ -7694,7 +7694,7 @@ async function requestBackendDataDeletion() {
       return;
     }
     const response = await apiPost("/privacy/me/delete-request", {
-      reason: "User requested deletion from CareWise web app.",
+      reason: "User requested deletion from FollowThrough Health web app.",
     });
     exportStatus.textContent = `Deletion request submitted: ${response.id}.`;
     addAuditEvent("backend_deletion_requested", `Backend deletion request submitted: ${response.id}.`);
@@ -7802,9 +7802,9 @@ function renderSymptomTimeline() {
 
 function getSymptomTimelineText() {
   const timeline = getSymptomTimeline();
-  if (!timeline.length) return "CareWise AI symptom timeline\nNo symptom timeline entries yet.";
+  if (!timeline.length) return "FollowThrough Health symptom timeline\nNo symptom timeline entries yet.";
   return [
-    "CareWise AI symptom timeline",
+    "FollowThrough Health symptom timeline",
     `Generated: ${new Date().toLocaleString()}`,
     "Safety: this is a symptom note log only. Severe, new, unusual, or fast-worsening symptoms should use urgent care, emergency services, or a licensed clinician.",
     "",
@@ -7989,7 +7989,7 @@ function getGoalNextStep(goal) {
   if (goal.progress === "Done") return "Keep it realistic. Consider maintaining the habit before increasing intensity.";
   if (goal.priority === "High") return "Review this goal during the next care conversation before making major changes.";
   if (goal.category === "Medication question") return "Prepare this as a question for a clinician or pharmacist. Do not change medication without professional guidance.";
-  if (goal.category === "Report follow-up") return "Bring the report and CareWise summary to the next appointment or review.";
+  if (goal.category === "Report follow-up") return "Bring the report and FollowThrough Health summary to the next appointment or review.";
   return "Track progress during the next weekly check-in.";
 }
 
@@ -8021,9 +8021,9 @@ function renderGoals() {
 
 function getGoalPlanText() {
   const goals = getGoals();
-  if (!goals.length) return "CareWise AI weekly goals\nNo weekly goals saved yet.";
+  if (!goals.length) return "FollowThrough Health weekly goals\nNo weekly goals saved yet.";
   return [
-    "CareWise AI weekly goals",
+    "FollowThrough Health weekly goals",
     `Generated: ${new Date().toLocaleString()}`,
     "Safety: goals are habit and preparation support only. Do not change treatment, medication, or urgent care decisions based only on this app.",
     "",
@@ -8137,9 +8137,9 @@ function renderBarriers() {
 
 function getBarrierPlanText() {
   const barriers = getBarriers();
-  if (!barriers.length) return "CareWise AI barriers\nNo barriers saved yet.";
+  if (!barriers.length) return "FollowThrough Health barriers\nNo barriers saved yet.";
   return [
-    "CareWise AI barrier support tracker",
+    "FollowThrough Health barrier support tracker",
     `Generated: ${new Date().toLocaleString()}`,
     "Safety: barrier notes help prepare support conversations. They are not emergency, financial, insurance, medication, or treatment advice.",
     "",
@@ -8188,7 +8188,7 @@ function getReminderForm() {
 function fillSampleReminder() {
   const nextWeek = new Date();
   nextWeek.setDate(nextWeek.getDate() + 7);
-  document.querySelector("#reminder-title-input").value = "Weekly CareWise check-in";
+  document.querySelector("#reminder-title-input").value = "Weekly FollowThrough Health check-in";
   document.querySelector("#reminder-type").value = "Check-in";
   document.querySelector("#reminder-frequency").value = "Weekly";
   document.querySelector("#reminder-date").value = nextWeek.toISOString().slice(0, 10);
@@ -8234,9 +8234,9 @@ function renderReminders() {
 
 function getReminderPlanText() {
   const reminders = getReminders();
-  if (!reminders.length) return "CareWise AI reminder plan\nNo reminders planned yet.";
+  if (!reminders.length) return "FollowThrough Health reminder plan\nNo reminders planned yet.";
   return [
-    "CareWise AI reminder plan",
+    "FollowThrough Health reminder plan",
     `Generated: ${new Date().toLocaleString()}`,
     "Scope: local planning only. This MVP does not send push, email, or SMS reminders yet.",
     "",
@@ -8393,9 +8393,9 @@ function renderMonthlyCalendars() {
 
 function getMonthlyCalendarText() {
   const calendar = getMonthlyCalendars()[0];
-  if (!calendar) return "CareWise AI monthly care calendar\nNo monthly calendar generated yet.";
+  if (!calendar) return "FollowThrough Health monthly care calendar\nNo monthly calendar generated yet.";
   return [
-    "CareWise AI 4-week care calendar",
+    "FollowThrough Health 4-week care calendar",
     `Generated: ${new Date(calendar.createdAt).toLocaleString()}`,
     "Safety scope: planning support only. This is not a treatment plan, diagnosis, prescription, emergency care, or a replacement for licensed medical advice.",
     `Focus: ${calendar.focus}`,
@@ -8466,7 +8466,7 @@ function getNavigationPrepChecklist(item) {
   const checklist = [
     "Confirm the provider accepts new patients.",
     "Verify insurance network, deductible, copay, referrals, and lab coverage directly with the plan.",
-    "Bring medication list, allergies, recent reports, and CareWise summary.",
+    "Bring medication list, allergies, recent reports, and FollowThrough Health summary.",
   ];
   if (item.insurance === "No insurance") checklist.push("Ask about community clinic, sliding-scale, cash-pay, pharmacy discount, and public program options.");
   if (item.insurance === "Comparing plans") checklist.push("Compare monthly premium, deductible, out-of-pocket max, medication coverage, and preferred clinic network.");
@@ -8495,11 +8495,11 @@ function renderNavigationPrep() {
 
 function getNavigationPrepText() {
   const items = getNavigationPrepItems();
-  if (!items.length) return "CareWise AI care navigation prep\nNo care navigation prep saved yet.";
+  if (!items.length) return "FollowThrough Health care navigation prep\nNo care navigation prep saved yet.";
   return [
-    "CareWise AI care navigation prep",
+    "FollowThrough Health care navigation prep",
     `Generated: ${new Date().toLocaleString()}`,
-    "Scope: preparation checklist only. CareWise does not verify live provider availability, insurance coverage, prices, or medical appropriateness.",
+    "Scope: preparation checklist only. FollowThrough Health does not verify live provider availability, insurance coverage, prices, or medical appropriateness.",
     "",
     ...items.map((item, index) => [
       `${index + 1}. ${item.need}`,
@@ -8557,7 +8557,7 @@ function getCareTeamNextStep(contact) {
   if (contact.role === "Insurance/member services") return "Verify network, deductible, copay, prior authorization, referral rules, and covered labs directly with the plan.";
   if (contact.role === "Pharmacist") return "Ask medication, refill, side-effect, allergy, and interaction questions before changing anything.";
   if (contact.role === "Dietitian/nutritionist") return "Prepare food preferences, budget, culture, allergies, and barriers so recommendations are realistic.";
-  if (contact.action === "Report follow-up") return "Bring the report, dates, symptoms, medications, and CareWise summary to the care conversation.";
+  if (contact.action === "Report follow-up") return "Bring the report, dates, symptoms, medications, and FollowThrough Health summary to the care conversation.";
   if (contact.action === "Medication question") return "Do not stop, start, or change medication without clinician or pharmacist guidance.";
   return "Confirm availability, accepted insurance, visit type, and what records to bring.";
 }
@@ -8608,9 +8608,9 @@ function renderCareTeamContacts() {
 
 function getCareTeamText() {
   const contacts = getCareTeamContacts();
-  if (!contacts.length) return "CareWise AI care team contacts\nNo care team contacts saved yet.";
+  if (!contacts.length) return "FollowThrough Health care team contacts\nNo care team contacts saved yet.";
   return [
-    "CareWise AI care team contacts",
+    "FollowThrough Health care team contacts",
     `Generated: ${new Date().toLocaleString()}`,
     "Safety: contacts and questions are preparation notes only. Verify credentials, availability, insurance network, and medical appropriateness directly.",
     "",
@@ -8845,7 +8845,7 @@ function buildVisitBriefText(snapshot) {
     ? snapshot.checkins.map((checkin) => `- ${checkin.week || "No date"}: symptoms ${checkin.symptoms || "not set"}, meals ${checkin.meals || "not set"}, exercise ${checkin.exercise || "not set"}, sleep ${checkin.sleep || "not set"}. ${checkin.notes || ""}`)
     : ["- No check-ins saved yet."];
   return [
-    "CareWise AI clinician visit brief",
+    "FollowThrough Health clinician visit brief",
     `Generated: ${new Date().toLocaleString()}`,
     "Safety scope: preparation support only. This is not a diagnosis, cure, prescription, emergency service, or insurance verification.",
     "",
@@ -9013,7 +9013,7 @@ function buildCarePacketText() {
   const barriers = getBarriers().slice(0, 5);
   const contacts = getCareTeamContacts().slice(0, 6);
   return [
-    "CareWise AI care packet",
+    "FollowThrough Health care packet",
     `Generated: ${new Date().toLocaleString()}`,
     "Safety scope: preparation and organization support only. This is not diagnosis, treatment, prescription, emergency care, insurance verification, or a substitute for licensed professional advice.",
     "",
@@ -9195,9 +9195,9 @@ function renderSupportRequests() {
 
 function getSupportRequestsText() {
   const requests = getSupportRequests();
-  if (!requests.length) return "CareWise AI support inbox\nNo support requests saved yet.";
+  if (!requests.length) return "FollowThrough Health support inbox\nNo support requests saved yet.";
   return [
-    "CareWise AI support inbox",
+    "FollowThrough Health support inbox",
     `Generated: ${new Date().toLocaleString()}`,
     "Safety: this inbox is for product support only. Severe or fast-worsening symptoms should use emergency services or a qualified clinician.",
     "",
@@ -9377,9 +9377,9 @@ function renderQaReport() {
 
 function getQaReportText() {
   const report = getLatestQaReport();
-  if (!report) return "CareWise AI QA report\nNo QA report generated yet.";
+  if (!report) return "FollowThrough Health QA report\nNo QA report generated yet.";
   return [
-    "CareWise AI MVP QA report",
+    "FollowThrough Health MVP QA report",
     `Generated: ${new Date(report.createdAt).toLocaleString()}`,
     `Status: ${report.status}`,
     `Readiness: ${report.readyCount}/${report.total}`,
@@ -9661,7 +9661,7 @@ function deleteHealthRecordItem(id) {
 }
 
 function exportHealthRecord() {
-  const blob = new Blob([JSON.stringify({ app: "CareWise", kind: "health-record", version: 1, exportedAt: new Date().toISOString(), items: getHealthRecord() }, null, 2)], { type: "application/json" });
+  const blob = new Blob([JSON.stringify({ app: "FollowThrough Health", kind: "health-record", version: 1, exportedAt: new Date().toISOString(), items: getHealthRecord() }, null, 2)], { type: "application/json" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = `carewise-health-record-${new Date().toISOString().slice(0, 10)}.json`;
@@ -9695,7 +9695,7 @@ async function importHealthRecord(file) {
     status.textContent = `Restored ${added.length} ${added.length === 1 ? "entry" : "entries"} from the backup.`;
     renderHealthRecord();
   } catch {
-    status.textContent = "That file is not a CareWise health record backup.";
+    status.textContent = "That file is not a FollowThrough Health record backup.";
   }
 }
 
@@ -9738,7 +9738,7 @@ renderHealthRecord();
 // "See a 1-minute demo" button or with #tour in the address.
 const TOUR_PERSON = "Maria (sample)";
 const TOUR_LAB_REPORT = [
-  "Sample lab report for the CareWise demo. Made-up patient: Maria, 54.",
+  "Sample lab report for the FollowThrough Health demo. Made-up patient: Maria, 54.",
   "LIPID PANEL",
   "Total cholesterol 226 mg/dL (ref <200) H",
   "LDL cholesterol 148 mg/dL (ref <100) H",
@@ -9763,7 +9763,7 @@ const TOUR_LAB_REPORT = [
 ].join("\n");
 const TOUR_SCAN_REPORT = [
   "CT CHEST WITHOUT CONTRAST",
-  "Sample radiology report for the CareWise demo. Made-up patient: Maria, 54.",
+  "Sample radiology report for the FollowThrough Health demo. Made-up patient: Maria, 54.",
   "CLINICAL HISTORY: Cough for 3 weeks.",
   "FINDINGS: There is a 5 mm solid nodule in the right upper lobe. No pleural effusion. No lymphadenopathy. Mild atelectasis at both lung bases. The heart is normal in size.",
   "IMPRESSION:",
@@ -9776,7 +9776,7 @@ const TOUR_SCAN_REPORT = [
 const TOUR_STEPS = [
   {
     title: "A blood test, explained in seconds",
-    caption: "Maria (made up, 54) adds her lab report. CareWise reads it on the device and shows a simple score and what to watch.",
+    caption: "Maria (made up, 54) adds her lab report. FollowThrough Health reads it on the device and shows a simple score and what to watch.",
     report: "lab",
     target: ".v1-result-card",
   },
@@ -9814,7 +9814,7 @@ const TOUR_STEPS = [
   },
   {
     title: "CT and MRI reports, in plain words",
-    caption: "CareWise explains the radiologist's written report, flags the follow-up to ask about, and never reads the images.",
+    caption: "FollowThrough Health explains the radiologist's written report, flags the follow-up to ask about, and never reads the images.",
     report: "scan",
     target: ".scan-explainer",
   },

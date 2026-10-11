@@ -67,7 +67,7 @@ async function main() {
   }
 
   if (problems.length) {
-    console.error(`CareWise frontend reference audit failed:\n- ${problems.join("\n- ")}`);
+    console.error(`FollowThrough Health frontend reference audit failed:\n- ${problems.join("\n- ")}`);
     process.exit(1);
   }
 
@@ -88,6 +88,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(`CareWise frontend reference audit failed: ${error.message}`);
+  console.error(`FollowThrough Health frontend reference audit failed: ${error.message}`);
   process.exit(1);
 });
