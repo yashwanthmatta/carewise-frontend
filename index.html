@@ -15,13 +15,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-150" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-151" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-150" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-151" />
   </head>
   <body>
     <main class="app-shell">
@@ -277,6 +277,12 @@
             <button id="login" class="secondary-button" type="button">Login</button>
             <a class="secondary-link inline-action" href="#report-title">Try demo first</a>
           </div>
+          <div id="tf-login" class="tf-login" hidden>
+            <label>Code from your authenticator app
+              <input id="tf-login-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="20" placeholder="6-digit code, or a backup code" />
+            </label>
+            <button id="tf-login-submit" class="primary-button narrow-button" type="button">Verify and sign in</button>
+          </div>
           <div class="session-card">
             <strong id="signed-in-label">Signed out</strong>
             <span id="signed-in-detail">You can test report analysis without an account. Sign in when you want cloud sync.</span>
@@ -372,6 +378,51 @@
             <button id="manage-billing" class="secondary-button" type="button" hidden>Manage or cancel plan</button>
             <p id="billing-status" class="status-line" role="status">Payments are handled by Stripe. CareWise never sees your card number.</p>
           </div>
+        </section>
+
+        <section class="panel twofactor-panel" aria-labelledby="twofactor-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Account security</p>
+              <h3 id="twofactor-title">Two-step sign-in</h3>
+              <p class="panel-intro">After your password, CareWise also asks for a 6-digit code from an authenticator app on your phone (Google Authenticator, Microsoft Authenticator, 1Password and others). Recommended for clinic accounts.</p>
+            </div>
+            <span id="tf-badge" class="sync-badge offline">Off</span>
+          </div>
+          <p id="tf-signin" class="tf-note">Sign in to turn on two-step sign-in.</p>
+          <div id="tf-off" hidden>
+            <button id="tf-start" class="primary-button narrow-button" type="button">Turn on two-step sign-in</button>
+          </div>
+          <div id="tf-setup" class="tf-setup" hidden>
+            <ol class="tf-steps">
+              <li>Open your authenticator app and add an account by scanning this code.</li>
+              <li>Or type this key into the app: <code id="tf-key"></code></li>
+              <li>Enter the 6-digit code the app shows.</li>
+            </ol>
+            <div id="tf-qr" class="tf-qr" role="img" aria-label="QR code for your authenticator app"></div>
+            <label>6-digit code
+              <input id="tf-enable-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" />
+            </label>
+            <div class="primary-action-row">
+              <button id="tf-enable" class="primary-button narrow-button" type="button">Turn on</button>
+              <button id="tf-cancel" class="secondary-button" type="button">Cancel</button>
+            </div>
+          </div>
+          <div id="tf-codes" class="tf-codes" hidden>
+            <p><strong>Save these backup codes.</strong> Each one works once if you lose your phone. They won't be shown again.</p>
+            <ul id="tf-code-list"></ul>
+            <div class="primary-action-row">
+              <button id="tf-copy" class="secondary-button" type="button">Copy codes</button>
+              <button id="tf-done" class="primary-button narrow-button" type="button">I saved them</button>
+            </div>
+          </div>
+          <div id="tf-on" hidden>
+            <label>To turn it off, enter a current code or a backup code
+              <input id="tf-disable-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="20" />
+            </label>
+            <button id="tf-disable" class="secondary-button" type="button">Turn off two-step sign-in</button>
+          </div>
+          <p id="tf-status" class="status-line" role="status"></p>
         </section>
 
         <section class="panel doctor-links-panel" aria-labelledby="doctor-links-title">
@@ -2415,10 +2466,12 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-150"></script>
-    <script src="help.js?v=carewise-product-150"></script>
-    <script src="doctor-share.js?v=carewise-product-150"></script>
-    <script src="docbridge.js?v=carewise-product-150"></script>
-    <script src="reminders.js?v=carewise-product-150"></script>
+    <script src="script.js?v=carewise-product-151"></script>
+    <script src="help.js?v=carewise-product-151"></script>
+    <script src="doctor-share.js?v=carewise-product-151"></script>
+    <script src="docbridge.js?v=carewise-product-151"></script>
+    <script src="reminders.js?v=carewise-product-151"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-151"></script>
+    <script src="twofactor.js?v=carewise-product-151"></script>
   </body>
 </html>

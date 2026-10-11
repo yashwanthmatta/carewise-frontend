@@ -22,6 +22,8 @@
           <ul>
             <li><strong>Encryption:</strong> all traffic uses HTTPS. Report text, health details, shared summaries and DocBridge lab data are encrypted in the database with a separate field key.</li>
             <li><strong>Access control:</strong> each account sees only its own data. DocBridge clinics see only their own labs; front-desk members can prepare drafts but only clinicians can approve; clinic sessions sign out after 15 minutes without activity.</li>
+            <li><strong>Two-step sign-in:</strong> any account can require a 6-digit code from an authenticator app after the password, with one-time backup codes. Each code works only once.</li>
+            <li><strong>Data retention:</strong> each clinic chooses how long DocBridge keeps labs (30 days to 1 year); older labs and their patient links are deleted automatically every night. Clinic owners can download their activity log.</li>
             <li><strong>Doctor in the loop:</strong> there is no way for DocBridge to send an explanation to a patient without a named clinician's approval.</li>
             <li><strong>Audit logs:</strong> every view, edit, approval, share and deletion is recorded with who did it and when.</li>
             <li><strong>Links that expire:</strong> doctor share links last 1 to 30 days and patient result links 30 days; only a fingerprint (hash) of each link is stored, and families can turn links off at any time.</li>

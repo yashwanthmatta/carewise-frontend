@@ -1141,6 +1141,8 @@ document.querySelector("#signup").addEventListener("click", () => {
   signup();
 });
 
+document.querySelector("#tf-login-submit")?.addEventListener("click", submitTwoFactorCode);
+document.querySelector("#tf-login-code")?.addEventListener("keydown", (event) => { if (event.key === "Enter") submitTwoFactorCode(); });
 document.querySelector("#login").addEventListener("click", () => {
   login();
 });
@@ -1952,6 +1954,7 @@ function initializeWorkspaceNavigation() {
     ["record-title", document.querySelector(".reminders-panel")],
     ["account-title", document.querySelector(".billing-panel")],
     ["account-title", document.querySelector(".doctor-links-panel")],
+    ["account-title", document.querySelector(".twofactor-panel")],
     // The landing page (hero, how it works, safety, pricing) only shows on Home.
     ["home-title", document.querySelector(".landing")],
   ].filter(([, element]) => Boolean(element));
@@ -2940,9 +2943,42 @@ async function login() {
       email: payload.email,
       password: payload.password,
     }, { skipAuth: true });
+    if (response.two_factor_required) {
+      askForTwoFactorCode(response.challenge);
+      return;
+    }
     await saveAuthToken(response, "login");
   } catch (error) {
     updateAuthStatus(authErrorMessage(error, "Email or password is incorrect."));
+  }
+}
+
+// Two-step sign-in: the password was right; now ask for the authenticator code.
+let pendingTwoFactorChallenge = "";
+function askForTwoFactorCode(challenge) {
+  pendingTwoFactorChallenge = challenge;
+  const box = document.querySelector("#tf-login");
+  if (box) box.hidden = false;
+  document.querySelector("#tf-login-code")?.focus();
+  updateAuthStatus("Enter the 6-digit code from your authenticator app to finish signing in.");
+}
+
+async function submitTwoFactorCode() {
+  const code = document.querySelector("#tf-login-code").value.trim();
+  if (!pendingTwoFactorChallenge || code.length < 6) {
+    updateAuthStatus("Enter the 6-digit code from your authenticator app.");
+    return;
+  }
+  try {
+    const response = await apiPost("/auth/login/two-factor", { challenge: pendingTwoFactorChallenge, code }, { skipAuth: true });
+    pendingTwoFactorChallenge = "";
+    document.querySelector("#tf-login").hidden = true;
+    document.querySelector("#tf-login-code").value = "";
+    await saveAuthToken(response, "login");
+  } catch (error) {
+    updateAuthStatus(String(error?.message || "").includes("429")
+      ? "Too many tries. Wait a few minutes and try again."
+      : "That code didn't work. Check it, or log in again if it has been more than 5 minutes.");
   }
 }
 
@@ -3027,6 +3063,10 @@ async function confirmPasswordReset() {
     document.querySelector("#auth-password").value = newPassword;
     document.querySelector("#reset-token").value = "";
     document.querySelector("#reset-password").value = "";
+    if (response.two_factor_required) {
+      askForTwoFactorCode(response.challenge);
+      return;
+    }
     await saveAuthToken(response, "password_reset");
   } catch {
     updateAuthStatus("Password reset failed. The token may be expired or already used.");
