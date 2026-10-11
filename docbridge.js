@@ -354,13 +354,66 @@
     if (!clinic) return;
     try {
       const members = await apiGet(`/clinics/${clinic.id}/members`);
-      const label = { owner: "Owner", clinician: "Clinician", front_desk: "Front desk" };
-      $("db-members").innerHTML = members.map((m) => `<div class="db-row"><div><strong>${escapeHtml(m.name)}</strong><span>${escapeHtml(label[m.role] || m.role)}</span></div></div>`).join("");
-      $("db-invite-box").hidden = clinic.member_role !== "owner";
+      const label = { owner: "Owner", clinician: "Clinician (can approve)", front_desk: "Front desk (drafts only)" };
+      const isOwner = clinic.member_role === "owner";
+      const controls = (m) => {
+        if (isOwner && !m.you && m.role !== "owner") {
+          return `<div class="db-actions"><label class="visually-hidden" for="db-role-${escapeHtml(m.id)}">Role for ${escapeHtml(m.name)}</label>
+            <select id="db-role-${escapeHtml(m.id)}" data-db-role="${escapeHtml(m.id)}">
+              <option value="clinician"${m.role === "clinician" ? " selected" : ""}>Clinician (can approve)</option>
+              <option value="front_desk"${m.role === "front_desk" ? " selected" : ""}>Front desk (drafts only)</option>
+            </select>
+            <button type="button" class="secondary-button compact" data-db-remove="${escapeHtml(m.id)}">Remove</button></div>`;
+        }
+        if (m.you && !isOwner) return `<button type="button" class="secondary-button compact" data-db-leave>Leave this clinic</button>`;
+        return "";
+      };
+      $("db-members").innerHTML = members.map((m) => `<div class="db-row"><div><strong>${escapeHtml(m.name)}${m.you ? " (you)" : ""}</strong><span>${escapeHtml(label[m.role] || m.role)}</span></div>${controls(m)}</div>`).join("");
+      $("db-invite-box").hidden = !isOwner;
     } catch {
       $("db-members").innerHTML = "<p>Could not load the team.</p>";
     }
   }
+
+  // Refresh the team each time it is opened, so new joiners show up.
+  $("db-team").addEventListener("toggle", (event) => { if (event.target.open) loadTeam(); });
+
+  // Team changes by the owner; removing someone keeps their past steps in the audit trail.
+  $("db-members").addEventListener("change", async (event) => {
+    const select = event.target.closest("[data-db-role]");
+    if (!select || !clinic) return;
+    try {
+      await apiPut(`/clinics/${clinic.id}/members/${encodeURIComponent(select.dataset.dbRole)}`, { role: select.value });
+      say("Role updated.");
+    } catch {
+      say("The role could not be changed. Try again.");
+    }
+    loadTeam();
+  });
+  $("db-members").addEventListener("click", async (event) => {
+    const remove = event.target.closest("[data-db-remove]");
+    const confirmRemove = event.target.closest("[data-db-confirm-remove]");
+    const leave = event.target.closest("[data-db-leave]");
+    const confirmLeave = event.target.closest("[data-db-confirm-leave]");
+    if (!clinic || !(remove || confirmRemove || leave || confirmLeave)) return;
+    // No confirm() dialogs in some app views: ask for a second tap instead.
+    if (remove) { remove.outerHTML = `<button type="button" class="secondary-button compact db-danger" data-db-confirm-remove="${escapeHtml(remove.dataset.dbRemove)}">Tap again to remove</button>`; return; }
+    if (leave) { leave.outerHTML = `<button type="button" class="secondary-button compact db-danger" data-db-confirm-leave>Tap again to leave</button>`; return; }
+    try {
+      if (confirmRemove) {
+        await requestJson("DELETE", `/clinics/${clinic.id}/members/${encodeURIComponent(confirmRemove.dataset.dbConfirmRemove)}`);
+        say("Removed from the team. Their past steps stay in the audit trail.");
+        loadTeam();
+      } else {
+        await apiPost(`/clinics/${clinic.id}/leave`, {});
+        clinic = null;
+        say("You left the clinic.");
+        load();
+      }
+    } catch {
+      say("That didn't work. Try again.");
+    }
+  });
 
   // Sign out after 15 minutes without activity while DocBridge is in use.
   let idleTimer = null;
