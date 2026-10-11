@@ -85,6 +85,16 @@
       {"key":  "potassium", "name":  "Potassium", "value":  "5.6", "unit":  "mmol/L", "range":  "3.5-5.3", "flag":  "H", "expect":  "high"},
       {"key":  "creatinine", "name":  "Creatinine", "value":  "118", "unit":  "umol/L", "range":  "59-104", "flag":  "H", "expect":  "high"},
       {"key":  "egfr", "name":  "eGFR", "value":  "52", "unit":  "mL/min/1.73m2", "range":  ">90", "flag":  "L", "expect":  "low"}
+    ]},
+    { "id": "metabolic-uk-mmol", "format": "table", "title": "Biochemistry Profile", "tests": [
+      {"key":  "glucose", "name":  "Glucose (fasting)", "value":  "7.2", "unit":  "mmol/L", "range":  "3.9-5.5", "flag":  "H", "expect":  "high"},
+      {"key":  "albumin", "name":  "Albumin", "value":  "38", "unit":  "g/L", "range":  "35-50", "flag":  "", "expect":  "normal"},
+      {"key":  "calcium", "name":  "Calcium", "value":  "2.65", "unit":  "mmol/L", "range":  "2.20-2.60", "flag":  "H", "expect":  "high"},
+      {"key":  "bilirubin", "name":  "Bilirubin", "value":  "25", "unit":  "umol/L", "range":  "0-21", "flag":  "H", "expect":  "high"}
+    ]},
+    { "id": "thyroid-spaced", "format": "list", "title": "Thyroid Function", "tests": [
+      {"key":  "tsh", "name":  "TSH", "value":  "0.12", "unit":  "mU/L", "range":  "0.27 - 4.20", "flag":  "L", "expect":  "low"},
+      {"key":  "ft4", "name":  "Free T4", "value":  "24.5", "unit":  "pmol/L", "range":  "12.0 - 22.0", "flag":  "H", "expect":  "high"}
     ]}
   ]
 }
