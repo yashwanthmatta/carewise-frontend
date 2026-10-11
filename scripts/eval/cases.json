@@ -73,6 +73,18 @@
     ]},
     { "id": "psa-quest", "format": "quest", "title": "Prostate Screen", "tests": [
       { "key": "psa", "name": "PSA, Total", "value": "1.2", "unit": "ng/mL", "range": "<4.0", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "cbc-eu-commas", "format": "table", "title": "Blutbild / Full Blood Count", "tests": [
+      {"key":  "hemoglobin", "name":  "Hemoglobin", "value":  "11,4", "unit":  "g/dL", "range":  "12,0-15,5", "flag":  "L", "expect":  "low"},
+      {"key":  "wbc", "name":  "WBC", "value":  "7,8", "unit":  "10^9/L", "range":  "4,0-10,0", "flag":  "", "expect":  "normal"},
+      {"key":  "platelets", "name":  "Platelets", "value":  "412", "unit":  "10^9/L", "range":  "150-400", "flag":  "H", "expect":  "high"},
+      {"key":  "mcv", "name":  "MCV", "value":  "78,5", "unit":  "fL", "range":  "80,0-100,0", "flag":  "L", "expect":  "low"}
+    ]},
+    { "id": "kidney-uk-umol", "format": "list", "title": "Renal Profile (U&E)", "tests": [
+      {"key":  "sodium", "name":  "Sodium", "value":  "136", "unit":  "mmol/L", "range":  "133-146", "flag":  "", "expect":  "normal"},
+      {"key":  "potassium", "name":  "Potassium", "value":  "5.6", "unit":  "mmol/L", "range":  "3.5-5.3", "flag":  "H", "expect":  "high"},
+      {"key":  "creatinine", "name":  "Creatinine", "value":  "118", "unit":  "umol/L", "range":  "59-104", "flag":  "H", "expect":  "high"},
+      {"key":  "egfr", "name":  "eGFR", "value":  "52", "unit":  "mL/min/1.73m2", "range":  ">90", "flag":  "L", "expect":  "low"}
     ]}
   ]
 }
