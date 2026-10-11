@@ -62,6 +62,8 @@
       $("db-badge").textContent = `${clinic.name} · Pilot`;
       show("workspace");
       if (!$("db-lab-date").value) $("db-lab-date").value = today();
+      $("db-intake").hidden = !clinic.intake_address;
+      $("db-intake-address").textContent = clinic.intake_address || "";
       refresh();
       loadTeam();
       fillSettings();
@@ -94,7 +96,7 @@
     ].map(([label, value]) => `<div><strong>${escapeHtml(String(value))}</strong><span>${escapeHtml(label)}</span></div>`).join("");
   }
 
-  const STATUS_LABEL = { draft: "Waiting for review", manual_review: "Needs manual review", needs_call: "Needs a call", approved: "Approved", rejected: "Rejected, not sent" };
+  const STATUS_LABEL = { new: "New from email, open to draft", draft: "Waiting for review", manual_review: "Needs manual review", needs_call: "Needs a call", approved: "Approved", rejected: "Rejected, not sent" };
   const canApprove = () => clinic && (clinic.member_role === "owner" || clinic.member_role === "clinician");
 
   // Billing codes for common lab panels, as a reference for the front desk only.
@@ -157,7 +159,8 @@
     const markers = [];
     (analysis.labValues || []).forEach((item) => {
       const range = printedRange(text, item.label);
-      markers.push({ name: item.label, value: String(item.value), unit: item.unit || "", range, status: item.flag || "", low_confidence: !range });
+      const status = item.flag === "In range discussion" ? "In range" : item.flag || "";
+      markers.push({ name: item.label, value: String(item.value), unit: item.unit || "", range, status, low_confidence: !range });
     });
     (analysis.panelResults || []).forEach((item) => {
       if (markers.some((m) => m.name.toLowerCase() === item.name.toLowerCase())) return;
@@ -289,10 +292,46 @@
     }
   }
 
+  // Collected/reported date printed on the lab, as YYYY-MM-DD, if one can be found.
+  function labDateFrom(text) {
+    const match = text.match(/(?:collected|collection date|drawn|specimen date|date of service)\D{0,12}(\d{1,2})\/(\d{1,2})\/(\d{4})/i)
+      || text.match(/(?:collected|collection date|drawn|specimen date|date of service)\D{0,12}(\d{4})-(\d{2})-(\d{2})/i);
+    if (!match) return "";
+    const [y, m, d] = match[1].length === 4 ? [match[1], match[2], match[3]] : [match[3], match[1], match[2]];
+    return `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  }
+
+  // A lab that arrived by email: read its text with the same parser as uploads, on this
+  // screen, and save the first draft.
+  async function draftEmailedPacket(p) {
+    say("Reading the emailed lab on this device…");
+    try {
+      const { text } = await apiGet(`/clinics/${clinic.id}/packets/${p.id}/source`);
+      const analysis = analyzeReportTextLocally(text || "");
+      const markers = text ? markersFrom(analysis, text) : [];
+      const labDate = p.lab_date || labDateFrom(text || "");
+      const summary = markers.length ? draftText(analysis, markers, labDate) : "";
+      const questions = (analysis.questions || []).slice(0, 3);
+      const saved = await apiPut(`/clinics/${clinic.id}/packets/${p.id}`, { summary, questions, markers, lab_date: labDate });
+      current = { packetId: saved.id, markers: saved.markers, patientRef: saved.patient_ref };
+      $("db-summary").value = saved.summary;
+      $("db-questions").value = (saved.questions || []).join("\n");
+      renderReview(saved.markers, saved.patient_ref);
+      say(markers.length ? "Draft ready from the emailed lab. Edit anything, then approve." : "No values could be read from this PDF. Type the key values into the explanation yourself.");
+      refresh();
+    } catch {
+      say("The emailed lab could not be opened. Try again.");
+    }
+  }
+
   function openPacket(id) {
     const packets = JSON.parse($("db-list").dataset.packets || "[]");
     const p = packets.find((item) => item.id === id);
     if (!p) return;
+    if (p.status === "new") {
+      draftEmailedPacket(p);
+      return;
+    }
     current = { packetId: p.id, markers: p.markers, patientRef: p.patient_ref };
     $("db-summary").value = p.summary;
     $("db-questions").value = (p.questions || []).join("\n");
@@ -414,6 +453,12 @@
     } catch {
       say("The activity log could not be downloaded. Try again.");
     }
+  });
+
+  $("db-intake-copy").addEventListener("click", () => {
+    navigator.clipboard?.writeText($("db-intake-address").textContent)
+      .then(() => say("Intake address copied."))
+      .catch(() => say("Select the address and copy it."));
   });
 
   // Refresh the team each time it is opened, so new joiners show up.
