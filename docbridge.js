@@ -64,6 +64,7 @@
       if (!$("db-lab-date").value) $("db-lab-date").value = today();
       refresh();
       loadTeam();
+      fillSettings();
       resetIdle();
     } catch (error) {
       clinic = null;
@@ -374,6 +375,46 @@
       $("db-members").innerHTML = "<p>Could not load the team.</p>";
     }
   }
+
+  // ----- Clinic settings (owner only) -----
+  function fillSettings() {
+    const owner = clinic?.member_role === "owner";
+    $("db-settings").hidden = !owner;
+    if (!owner) return;
+    $("db-set-name").value = clinic.name;
+    $("db-set-tone").value = clinic.tone || "friendly";
+    $("db-set-retention").value = String(clinic.retention_days || 90);
+  }
+  $("db-settings-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    try {
+      const saved = await apiPut(`/clinics/${clinic.id}/settings`, {
+        name: $("db-set-name").value.trim(),
+        tone: $("db-set-tone").value,
+        retention_days: Number($("db-set-retention").value),
+      });
+      clinic = { ...clinic, ...saved };
+      $("db-badge").textContent = `${clinic.name} · Pilot`;
+      say("Settings saved.");
+    } catch {
+      say("Settings could not be saved. Check the clinic name and try again.");
+    }
+  });
+  $("db-audit-download").addEventListener("click", async () => {
+    try {
+      const response = await fetch(`${backendBaseUrl}/clinics/${clinic.id}/audit.csv`, { headers: { Authorization: `Bearer ${authToken}` } });
+      if (!response.ok) throw new Error(String(response.status));
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(await response.blob());
+      link.download = (response.headers.get("Content-Disposition") || "").match(/filename="([^"]+)"/)?.[1] || "docbridge-audit.csv";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      say("Activity log downloaded.");
+    } catch {
+      say("The activity log could not be downloaded. Try again.");
+    }
+  });
 
   // Refresh the team each time it is opened, so new joiners show up.
   $("db-team").addEventListener("toggle", (event) => { if (event.target.open) loadTeam(); });

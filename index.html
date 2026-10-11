@@ -15,13 +15,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-149" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-150" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-149" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-150" />
   </head>
   <body>
     <main class="app-shell">
@@ -496,6 +496,26 @@
                 <button class="secondary-button" type="button" id="db-invite">Create invite code</button>
                 <p class="db-muted" id="db-invite-code"></p>
               </div>
+            </details>
+            <details class="db-block" id="db-settings" hidden>
+              <summary>Clinic settings and activity log</summary>
+              <form id="db-settings-form" class="db-grid">
+                <label>Clinic name
+                  <input id="db-set-name" type="text" maxlength="160" required />
+                </label>
+                <label>Tone for patients
+                  <select id="db-set-tone"><option value="friendly">Friendly</option><option value="formal">Formal</option></select>
+                </label>
+                <label>Delete labs after
+                  <select id="db-set-retention">
+                    <option value="30">30 days</option><option value="60">60 days</option><option value="90">90 days</option>
+                    <option value="180">180 days</option><option value="365">1 year</option>
+                  </select>
+                </label>
+                <div class="db-actions"><button class="secondary-button" type="submit">Save settings</button></div>
+              </form>
+              <p class="db-muted">Labs older than this are deleted automatically every night, including patient links. The activity log keeps who did what and when, never lab values.</p>
+              <div class="db-actions"><button class="secondary-button" type="button" id="db-audit-download">Download activity log (CSV)</button></div>
             </details>
             <p class="db-muted">For your security, DocBridge signs you out after 15 minutes without activity.</p>
           </div>
@@ -2395,10 +2415,10 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-149"></script>
-    <script src="help.js?v=carewise-product-149"></script>
-    <script src="doctor-share.js?v=carewise-product-149"></script>
-    <script src="docbridge.js?v=carewise-product-149"></script>
-    <script src="reminders.js?v=carewise-product-149"></script>
+    <script src="script.js?v=carewise-product-150"></script>
+    <script src="help.js?v=carewise-product-150"></script>
+    <script src="doctor-share.js?v=carewise-product-150"></script>
+    <script src="docbridge.js?v=carewise-product-150"></script>
+    <script src="reminders.js?v=carewise-product-150"></script>
   </body>
 </html>
