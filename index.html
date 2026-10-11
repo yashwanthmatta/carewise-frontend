@@ -15,13 +15,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-151" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-152" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-151" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-152" />
   </head>
   <body>
     <main class="app-shell">
@@ -488,6 +488,11 @@
           </form>
 
           <div id="db-workspace" hidden>
+            <div class="db-intake" id="db-intake" hidden>
+              <strong>Email labs to your inbox</strong>
+              <p>Forward a lab PDF from your work email to <code id="db-intake-address"></code>. Put <b>DEID</b> and the patient reference in the subject, for example <i>DEID JD-1042</i>. During the pilot, only de-identified or sample labs; emails without DEID, or from addresses not on your team, are ignored and not stored.</p>
+              <button class="secondary-button compact" type="button" id="db-intake-copy">Copy address</button>
+            </div>
             <div class="db-metrics" id="db-metrics"></div>
 
             <details class="db-block db-new" id="db-new" open>
@@ -2466,12 +2471,12 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-151"></script>
-    <script src="help.js?v=carewise-product-151"></script>
-    <script src="doctor-share.js?v=carewise-product-151"></script>
-    <script src="docbridge.js?v=carewise-product-151"></script>
-    <script src="reminders.js?v=carewise-product-151"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-151"></script>
-    <script src="twofactor.js?v=carewise-product-151"></script>
+    <script src="script.js?v=carewise-product-152"></script>
+    <script src="help.js?v=carewise-product-152"></script>
+    <script src="doctor-share.js?v=carewise-product-152"></script>
+    <script src="docbridge.js?v=carewise-product-152"></script>
+    <script src="reminders.js?v=carewise-product-152"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-152"></script>
+    <script src="twofactor.js?v=carewise-product-152"></script>
   </body>
 </html>
