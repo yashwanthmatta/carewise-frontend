@@ -95,6 +95,18 @@
     { "id": "thyroid-spaced", "format": "list", "title": "Thyroid Function", "tests": [
       {"key":  "tsh", "name":  "TSH", "value":  "0.12", "unit":  "mU/L", "range":  "0.27 - 4.20", "flag":  "L", "expect":  "low"},
       {"key":  "ft4", "name":  "Free T4", "value":  "24.5", "unit":  "pmol/L", "range":  "12.0 - 22.0", "flag":  "H", "expect":  "high"}
+    ]},
+    { "id": "lipid-labcorp-mixed", "format": "labcorp", "title": "Lipid Panel", "tests": [
+      {"key":  "totalchol", "name":  "Cholesterol, Total", "value":  "186", "unit":  "mg/dL", "range":  "100-199", "flag":  "", "expect":  "normal"},
+      {"key":  "trig", "name":  "Triglycerides", "value":  "162", "unit":  "mg/dL", "range":  "0-149", "flag":  "High", "expect":  "high"},
+      {"key":  "hdl", "name":  "HDL Cholesterol", "value":  "38", "unit":  "mg/dL", "range":  ">39", "flag":  "Low", "expect":  "low"},
+      {"key":  "ldl", "name":  "LDL Chol Calc (NIH)", "value":  "118", "unit":  "mg/dL", "range":  "0-99", "flag":  "High", "expect":  "high"}
+    ]},
+    { "id": "cbc-quest-diff", "format": "quest", "title": "CBC with Differential", "tests": [
+      {"key":  "wbc", "name":  "White Blood Cell Count", "value":  "11.8", "unit":  "Thousand/uL", "range":  "3.8-10.8", "flag":  "H", "expect":  "high"},
+      {"key":  "hemoglobin", "name":  "Hemoglobin", "value":  "13.9", "unit":  "g/dL", "range":  "13.2-17.1", "flag":  "", "expect":  "normal"},
+      {"key":  "platelets", "name":  "Platelet Count", "value":  "138", "unit":  "Thousand/uL", "range":  "140-400", "flag":  "L", "expect":  "low"},
+      {"key":  "neutrophils", "name":  "Absolute Neutrophils", "value":  "8350", "unit":  "cells/uL", "range":  "1500-7800", "flag":  "H", "expect":  "high"}
     ]}
   ]
 }
