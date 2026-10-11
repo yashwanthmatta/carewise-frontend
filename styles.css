@@ -6653,3 +6653,4 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .rm-disclaimer { margin: 14px 0 0; font-size: 0.85rem; color: var(--lp-ink-soft, #5d605f); }
 .reminders-panel .link-button { background: none; border: 0; padding: 4px 2px; font: inherit; font-size: 0.9rem; font-weight: 600; color: var(--lp-teal, #0f766e); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .reminders-panel .link-button:focus-visible { outline: 2px solid var(--lp-teal, #0f766e); outline-offset: 2px; border-radius: 4px; }
+.db-danger { color: #b4400e !important; border-color: #f1c4ad !important; }
