@@ -107,6 +107,15 @@
       {"key":  "hemoglobin", "name":  "Hemoglobin", "value":  "13.9", "unit":  "g/dL", "range":  "13.2-17.1", "flag":  "", "expect":  "normal"},
       {"key":  "platelets", "name":  "Platelet Count", "value":  "138", "unit":  "Thousand/uL", "range":  "140-400", "flag":  "L", "expect":  "low"},
       {"key":  "neutrophils", "name":  "Absolute Neutrophils", "value":  "8350", "unit":  "cells/uL", "range":  "1500-7800", "flag":  "H", "expect":  "high"}
+    ]},
+    { "id": "a1c-uk-ifcc", "format": "list", "title": "Diabetes Monitoring", "tests": [
+      {"key":  "glucose", "name":  "Fasting Glucose", "value":  "6.9", "unit":  "mmol/L", "range":  "3.0-6.0", "flag":  "H", "expect":  "high"},
+      {"key":  "egfr", "name":  "eGFR", "value":  "74", "unit":  "mL/min/1.73m2", "range":  ">60", "flag":  "", "expect":  "normal"}
+    ]},
+    { "id": "vitamins-quest-ranges", "format": "quest", "title": "Vitamins and Minerals", "tests": [
+      {"key":  "b12", "name":  "Vitamin B12", "value":  "180", "unit":  "pg/mL", "range":  "200-1100", "flag":  "L", "expect":  "low"},
+      {"key":  "magnesium", "name":  "Magnesium", "value":  "2.0", "unit":  "mg/dL", "range":  "1.5-2.5", "flag":  "", "expect":  "normal"},
+      {"key":  "ferritin", "name":  "Ferritin", "value":  "512", "unit":  "ng/mL", "range":  "16-232", "flag":  "H", "expect":  "high"}
     ]}
   ]
 }
