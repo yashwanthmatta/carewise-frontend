@@ -1,4 +1,4 @@
-// DocBridge (CareWise for doctors): draft a patient-ready lab explanation on this
+// DocBridge (FollowThrough Health for doctors): draft a patient-ready lab explanation on this
 // device, let a named clinician edit and approve it, then hand the patient a private
 // link. Loaded after script.js and uses its helpers (apiGet, apiPost, apiPut, authToken,
 // extractPdfText, analyzeReportTextLocally, labTestInfo, escapeHtml, SAMPLE text).

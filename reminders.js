@@ -154,7 +154,7 @@
       else await apiPost("/reminders", payload);
       form.hidden = true;
       statusLine.textContent = call && backendFeatures.reminder_calls
-        ? `Reminder saved. CareWise will call ${payload.person} now to ask them to press 1 and agree.`
+        ? `Reminder saved. FollowThrough Health will call ${payload.person} now to ask them to press 1 and agree.`
         : "Reminder saved.";
       await load();
     } catch (error) {
@@ -180,7 +180,7 @@
         `SUMMARY:${title}${item.label ? ` (${item.label.replace(/[,;\\]/g, " ")})` : ""}`,
         "BEGIN:VALARM", "TRIGGER:PT0M", "ACTION:DISPLAY", "DESCRIPTION:Medicine reminder", "END:VALARM", "END:VEVENT"].join("\r\n");
     });
-    const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//CareWise//Medicine reminder//EN", ...events, "END:VCALENDAR"].join("\r\n");
+    const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//FollowThrough Health//Medicine reminder//EN", ...events, "END:VCALENDAR"].join("\r\n");
     const link = document.createElement("a");
     link.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
     link.download = "carewise-medicine-reminder.ics";

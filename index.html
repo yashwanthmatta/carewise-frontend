@@ -3,35 +3,35 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CareWise: understand lab and scan reports in simple English</title>
-    <meta name="description" content="CareWise explains blood tests and scan reports in plain words, shows what needs attention first, and makes a one-page doctor brief. Free to start, for families looking after a parent's health." />
+    <title>FollowThrough Health: understand lab and scan reports in simple English</title>
+    <meta name="description" content="FollowThrough Health explains blood tests and scan reports in plain words, shows what needs attention first, and makes a one-page doctor brief. Free to start, for families looking after a parent's health." />
     <link rel="canonical" href="https://carewise-frontend.onrender.com/" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="CareWise" />
-    <meta property="og:title" content="CareWise: understand your health reports in simple English" />
-    <meta property="og:description" content="Add a blood test or scan report. CareWise explains every result in plain words and gets you ready for the doctor." />
+    <meta property="og:site_name" content="FollowThrough Health" />
+    <meta property="og:title" content="FollowThrough Health: understand your health reports in simple English" />
+    <meta property="og:description" content="Add a blood test or scan report. FollowThrough Health explains every result in plain words and gets you ready for the doctor." />
     <meta property="og:url" content="https://carewise-frontend.onrender.com/" />
     <meta name="twitter:card" content="summary" />
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-152" />
+    <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-153" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-152" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-153" />
   </head>
   <body>
     <main class="app-shell">
       <section class="workspace" aria-labelledby="app-title">
         <header class="topbar site-nav">
-          <a class="brand-lockup" href="#app-title" aria-label="CareWise home" data-home-link>
+          <a class="brand-lockup" href="#app-title" aria-label="FollowThrough Health home" data-home-link>
             <img class="brand-logo" src="assets/carewise-logo.svg" alt="" width="34" height="34" />
-            <span class="brand-text"><strong>CareWise</strong></span>
+            <span class="brand-text"><strong>FollowThrough Health</strong></span>
           </a>
-          <nav class="site-links" aria-label="About CareWise">
+          <nav class="site-links" aria-label="About FollowThrough Health">
             <a href="#how-it-works">How it works</a>
             <a href="#safety">Safety</a>
             <a href="#pricing">Pricing</a>
@@ -41,11 +41,11 @@
           <div class="topbar-actions">
             <span id="network-status" class="network-pill">Checking network</span>
             <button id="install-app" class="install-button" type="button" hidden>Install</button>
-            <a class="nav-cta" href="#report-title">Explain a report</a>
+            <a class="nav-cta" href="#report-title" aria-label="Explain a report">Explain<span class="cta-long">&nbsp;a report</span></a>
           </div>
         </header>
 
-        <nav class="quick-nav patient-nav" aria-label="CareWise patient flow">
+        <nav class="quick-nav patient-nav" aria-label="FollowThrough Health patient flow">
           <a href="#app-title">Home</a>
           <a href="#report-title">Upload</a>
           <a href="#saved-title">History</a>
@@ -57,14 +57,14 @@
           <section class="lp-hero" aria-labelledby="app-title">
             <p class="lp-chip"><img src="assets/carewise-logo.svg" alt="" width="20" height="20" /> For families who look after a parent's health</p>
             <h1 id="app-title">Understand your health reports in simple English.</h1>
-            <p class="lp-lede">Add a blood test or scan report. CareWise explains every result in plain words, tells you how urgent it is, and gets you ready for the doctor. Free, and read on your own device.</p>
+            <p class="lp-lede">Add a blood test or scan report. FollowThrough Health explains every result in plain words, tells you how urgent it is, and gets you ready for the doctor. Free, and read on your own device.</p>
             <div class="hero-actions lp-actions" aria-label="Primary actions">
               <a class="lp-btn lp-btn-dark" href="#report-title">Explain a report, free</a>
               <button id="start-tour" class="lp-btn lp-btn-light" type="button"><span class="lp-play" aria-hidden="true"></span>See a 1-minute demo</button>
             </div>
             <p class="hero-early-access"><a href="#early-access-title">Looking after a parent's health? Join early access</a></p>
 
-            <div class="lp-stage" aria-label="Example: a parent's kidney report explained by CareWise">
+            <div class="lp-stage" aria-label="Example: a parent's kidney report explained by FollowThrough Health">
               <div class="lp-stage-glow" aria-hidden="true"></div>
               <div class="lp-float lp-float-a" aria-hidden="true">Read on this phone · nothing uploaded</div>
               <div class="lp-float lp-float-b" aria-hidden="true">English · Español</div>
@@ -84,7 +84,7 @@
             </div>
           </section>
 
-          <section class="lp-strip" aria-label="What CareWise does">
+          <section class="lp-strip" aria-label="What FollowThrough Health does">
             <p class="lp-strip-label">Built for <b>families</b>, not clinics</p>
             <ul>
               <li><strong>PDFs and photos</strong><span>Snap the WhatsApp photo or drop the lab PDF.</span></li>
@@ -99,7 +99,7 @@
               <p class="lp-eyebrow">The moment we fix</p>
               <h2 id="lp-problems-title">A report lands at 9 pm. Now what?</h2>
               <ol class="lp-acc" data-lp-acc>
-                <li class="is-active"><button type="button" aria-expanded="true">"I can't read it."</button><p>Abbreviations and ranges written for clinicians. CareWise explains every line in plain words.</p><span class="lp-acc-bar" aria-hidden="true"></span></li>
+                <li class="is-active"><button type="button" aria-expanded="true">"I can't read it."</button><p>Abbreviations and ranges written for clinicians. FollowThrough Health explains every line in plain words.</p><span class="lp-acc-bar" aria-hidden="true"></span></li>
                 <li><button type="button" aria-expanded="false">"Should I call the doctor tonight?"</button><p>Each result is checked against the lab's own range. Far outside means ask soon; a dangerous level means contact your doctor today.</p><span class="lp-acc-bar" aria-hidden="true"></span></li>
                 <li><button type="button" aria-expanded="false">"I forgot what to ask."</button><p>Questions written from your numbers, and a one-page brief your doctor can read in 30 seconds.</p><span class="lp-acc-bar" aria-hidden="true"></span></li>
               </ol>
@@ -127,15 +127,15 @@
                 <h3>Add the report</h3>
                 <p>Take a photo, drop a PDF or type the numbers. Photos and PDFs are read on your device; nothing is uploaded.</p>
                 <a href="#report-title">Add a report <span aria-hidden="true">→</span></a>
-                <div class="lp-window"><header><span></span><span></span><span></span><b>CareWise</b><em>/ Upload</em></header>
-                  <div class="lp-window-body"><p class="lp-w-title">Reading your photo</p><p class="lp-w-sub">On this device · nothing uploaded</p><div class="lp-progress"><i></i></div><p class="lp-w-check">Hemoglobin: read as 108. CareWise used 10.8; please check.</p></div></div>
+                <div class="lp-window"><header><span></span><span></span><span></span><b>FollowThrough Health</b><em>/ Upload</em></header>
+                  <div class="lp-window-body"><p class="lp-w-title">Reading your photo</p><p class="lp-w-sub">On this device · nothing uploaded</p><div class="lp-progress"><i></i></div><p class="lp-w-check">Hemoglobin: read as 108. FollowThrough Health used 10.8; please check.</p></div></div>
               </article>
               <article class="lp-flow lp-flow-2">
                 <p class="lp-step">Step 02</p>
                 <h3>Every result, against your lab's range</h3>
                 <p>Kidney, liver, thyroid, blood count, sugar and more: each compared with the range printed on your report.</p>
                 <a href="#tour" data-start-tour>See it in the demo <span aria-hidden="true">→</span></a>
-                <div class="lp-window"><header><span></span><span></span><span></span><b>CareWise</b><em>/ All tests on your report</em></header>
+                <div class="lp-window"><header><span></span><span></span><span></span><b>FollowThrough Health</b><em>/ All tests on your report</em></header>
                   <div class="lp-window-body"><div class="lp-pills"><span class="lp-dot-ok">9 within</span><span class="lp-dot-out">2 outside</span><span class="lp-dot-far">1 far outside</span></div>
                   <table class="lp-table"><tr><th>Test</th><th>Result</th><th>Status</th></tr><tr><td>TSH (thyroid)</td><td>9.8</td><td><i class="lp-tag lp-tag-far">Far above</i></td></tr><tr><td>Vitamin B12</td><td>150</td><td><i class="lp-tag lp-tag-out">Below</i></td></tr><tr><td>Sodium</td><td>139</td><td><i class="lp-tag lp-tag-ok">Within</i></td></tr></table></div></div>
               </article>
@@ -144,7 +144,7 @@
                 <h3>Know how urgent it is</h3>
                 <p>Routine, ask your doctor soon, or contact your doctor today. Dangerous levels are never called routine.</p>
                 <a href="#safety">How we keep it safe <span aria-hidden="true">→</span></a>
-                <div class="lp-window"><header><span></span><span></span><span></span><b>CareWise</b><em>/ Result</em></header>
+                <div class="lp-window"><header><span></span><span></span><span></span><b>FollowThrough Health</b><em>/ Result</em></header>
                   <div class="lp-window-body"><div class="lp-alert"><strong>Possible danger level</strong><span>Glucose 45 mg/dL; lab range 70-99. Labs often treat this level as urgent. Contact your doctor today, or seek emergency care if you feel very unwell.</span></div></div></div>
               </article>
               <article class="lp-flow lp-flow-4">
@@ -152,7 +152,7 @@
                 <h3>Walk in ready</h3>
                 <p>Questions from your own numbers and a one-page doctor brief. Switch the explanation to Spanish in one tap.</p>
                 <a href="#report-title">Make a doctor brief <span aria-hidden="true">→</span></a>
-                <div class="lp-window"><header><span></span><span></span><span></span><b>CareWise</b><em>/ Doctor brief</em></header>
+                <div class="lp-window"><header><span></span><span></span><span></span><b>FollowThrough Health</b><em>/ Doctor brief</em></header>
                   <div class="lp-window-body"><p class="lp-w-title">Lab summary for clinician review: Mum</p><ol class="lp-brief"><li>Is my TSH high enough to need treatment or a repeat test?</li><li>Should my B12 be rechecked?</li><li>When should I repeat these labs?</li></ol></div></div>
               </article>
             </div>
@@ -160,10 +160,10 @@
             <div class="lp-cards">
               <article><h3>A health record for the whole family</h3><p>Conditions, medicines and what didn't suit each person, kept in one timeline on your device.</p><a href="#record-title">Open the record <span aria-hidden="true">→</span></a></article>
               <article><h3>A 4-week plan from your numbers</h3><p>Food, movement and tracking tips that say why ("your LDL is 148") and where the advice comes from.</p><a href="#tour" data-start-tour>See a plan <span aria-hidden="true">→</span></a></article>
-              <article><h3>CT, MRI and X-ray reports</h3><p>The radiologist's words in plain language. CareWise never reads the images and never judges findings.</p><a href="#report-title">Explain a scan report <span aria-hidden="true">→</span></a></article>
+              <article><h3>CT, MRI and X-ray reports</h3><p>The radiologist's words in plain language. FollowThrough Health never reads the images and never judges findings.</p><a href="#report-title">Explain a scan report <span aria-hidden="true">→</span></a></article>
               <article><h3>Caregiver mode</h3><p>Keep Mum's, Dad's and your own reports apart, and filter history by person.</p><a href="#saved-title">See report history <span aria-hidden="true">→</span></a></article>
               <article><h3>Private by design</h3><p>Reports are read in your browser. An account is optional and only needed to sync between devices.</p><a href="legal/privacy.html">Read the privacy policy <span aria-hidden="true">→</span></a></article>
-              <article class="lp-card-accent"><h3>Works on your phone</h3><p>Add CareWise to your home screen, or use the CareWise app. Same explanations, same safety rules.</p><a href="#report-title">Start on this phone <span aria-hidden="true">→</span></a></article>
+              <article class="lp-card-accent"><h3>Works on your phone</h3><p>Add FollowThrough Health to your home screen, or use the FollowThrough Health app. Same explanations, same safety rules.</p><a href="#report-title">Start on this phone <span aria-hidden="true">→</span></a></article>
             </div>
           </section>
 
@@ -171,10 +171,10 @@
             <p class="lp-eyebrow">Safe by design</p>
             <h2 id="lp-safety-title">Education that sends you to your doctor, never around them.</h2>
             <div class="lp-safety-grid">
-              <div><h3>CareWise does</h3><ul><li>Compare each result with the lab's own range</li><li>Say "contact your doctor today" for dangerous levels</li><li>Ask you to check numbers read from a photo</li><li>Label general guides honestly when no range is printed</li></ul></div>
-              <div><h3>CareWise never</h3><ul><li>Diagnoses</li><li>Names medicines or doses</li><li>Reads scan images (only the radiologist's words)</li><li>Replaces your doctor</li></ul></div>
+              <div><h3>FollowThrough Health does</h3><ul><li>Compare each result with the lab's own range</li><li>Say "contact your doctor today" for dangerous levels</li><li>Ask you to check numbers read from a photo</li><li>Label general guides honestly when no range is printed</li></ul></div>
+              <div><h3>FollowThrough Health never</h3><ul><li>Diagnoses</li><li>Names medicines or doses</li><li>Reads scan images (only the radiologist's words)</li><li>Replaces your doctor</li></ul></div>
             </div>
-            <p class="lp-fine">CareWise is not a diagnosis, prescription, emergency service, or replacement for licensed medical care. If you feel very unwell, call your local emergency number.</p>
+            <p class="lp-fine">FollowThrough Health is not a diagnosis, prescription, emergency service, or replacement for licensed medical care. If you feel very unwell, call your local emergency number.</p>
           </section>
 
           <section class="lp-pricing" id="pricing" aria-labelledby="lp-pricing-title">
@@ -197,13 +197,13 @@
           </section>
 
           <footer class="lp-footer">
-            <div><strong>CareWise</strong><span>Educational health report explainer. Not a diagnosis.</span></div>
+            <div><strong>FollowThrough Health</strong><span>Educational health report explainer. Not a diagnosis.</span></div>
             <nav aria-label="Legal"><a href="glossary.html">Lab test glossary</a><a href="legal/security.html">Security</a><a href="legal/privacy.html">Privacy</a><a href="legal/terms.html">Terms</a><a href="legal/disclaimer.html">Disclaimer</a><a href="legal/data-deletion.html">Delete my data</a></nav>
           </footer>
         </div>
 
 
-        <section class="progress-rail" aria-label="CareWise progress">
+        <section class="progress-rail" aria-label="FollowThrough Health progress">
           <a href="#account-title"><strong>1</strong><span>Account</span></a>
           <a href="#consent-title"><strong>2</strong><span>Consent</span></a>
           <a href="#report-title"><strong>3</strong><span>Report</span></a>
@@ -217,7 +217,7 @@
               <p class="eyebrow">Version 1 focus</p>
               <h3 id="home-title">One clear place for lab reports</h3>
               <p>
-                CareWise V1 is intentionally simple: upload or paste a health
+                FollowThrough Health V1 is intentionally simple: upload or paste a health
                 report, get a plain-English explanation, see a health score,
                 and save the result for your next visit.
               </p>
@@ -225,13 +225,13 @@
                 <a class="primary-link" href="#report-title">Upload report</a>
                 <button id="run-demo-flow" class="secondary-button narrow-button" type="button">Run sample report</button>
               </div>
-              <div id="home-readiness" class="home-readiness" aria-label="CareWise live readiness">
+              <div id="home-readiness" class="home-readiness" aria-label="FollowThrough Health live readiness">
                 <article><strong>API</strong><span>Checking</span></article>
                 <article><strong>Database</strong><span>Checking</span></article>
                 <article><strong>Storage</strong><span>Checking</span></article>
               </div>
             </div>
-            <div class="flow-steps" aria-label="CareWise patient flow">
+            <div class="flow-steps" aria-label="FollowThrough Health patient flow">
               <article><strong>01</strong><span>Upload</span><small>Lab PDF or typed results</small></article>
               <article><strong>02</strong><span>Explain</span><small>Values translated into plain English</small></article>
               <article><strong>03</strong><span>Score</span><small>Simple score plus risk areas</small></article>
@@ -242,7 +242,7 @@
 
         <details class="team-tools">
           <summary>Team tools and launch setup</summary>
-          <nav class="team-nav" aria-label="CareWise team tools">
+          <nav class="team-nav" aria-label="FollowThrough Health team tools">
             <a href="#backend-title">Backend</a>
             <a href="#review-title">Clinician review</a>
             <a href="#support-title">Support</a>
@@ -288,8 +288,8 @@
             <span id="signed-in-detail">You can test report analysis without an account. Sign in when you want cloud sync.</span>
           </div>
           <details class="team-account-card">
-            <summary>CareWise team sign-in</summary>
-            <span>For clinicians and admins on the CareWise staff list only. Everyone else uses a patient account.</span>
+            <summary>FollowThrough Health team sign-in</summary>
+            <span>For clinicians and admins on the FollowThrough Health staff list only. Everyone else uses a patient account.</span>
             <label>
               Role
               <select id="auth-role">
@@ -376,7 +376,7 @@
           </div>
           <div class="billing-actions">
             <button id="manage-billing" class="secondary-button" type="button" hidden>Manage or cancel plan</button>
-            <p id="billing-status" class="status-line" role="status">Payments are handled by Stripe. CareWise never sees your card number.</p>
+            <p id="billing-status" class="status-line" role="status">Payments are handled by Stripe. FollowThrough Health never sees your card number.</p>
           </div>
         </section>
 
@@ -385,7 +385,7 @@
             <div>
               <p class="eyebrow">Account security</p>
               <h3 id="twofactor-title">Two-step sign-in</h3>
-              <p class="panel-intro">After your password, CareWise also asks for a 6-digit code from an authenticator app on your phone (Google Authenticator, Microsoft Authenticator, 1Password and others). Recommended for clinic accounts.</p>
+              <p class="panel-intro">After your password, FollowThrough Health also asks for a 6-digit code from an authenticator app on your phone (Google Authenticator, Microsoft Authenticator, 1Password and others). Recommended for clinic accounts.</p>
             </div>
             <span id="tf-badge" class="sync-badge offline">Off</span>
           </div>
@@ -438,13 +438,13 @@
         <section class="panel docbridge-panel" aria-labelledby="docbridge-title">
           <div class="panel-heading-row">
             <div>
-              <p class="eyebrow">CareWise for doctors · Pilot</p>
+              <p class="eyebrow">FollowThrough Health for doctors · Pilot</p>
               <h3 id="docbridge-title">DocBridge: lab explanations your patients understand</h3>
-              <p class="panel-intro">Drop in a lab PDF. CareWise drafts a plain-English explanation on this device. You edit and approve it, then the patient gets a private link with your name on it. Nothing goes to a patient without your approval.</p>
+              <p class="panel-intro">Drop in a lab PDF. FollowThrough Health drafts a plain-English explanation on this device. You edit and approve it, then the patient gets a private link with your name on it. Nothing goes to a patient without your approval.</p>
             </div>
             <span id="db-badge" class="sync-badge">Pilot</span>
           </div>
-          <p class="db-pilot-note">Pilot mode: use de-identified or sample labs only (no names, birth dates or record numbers) until your practice's HIPAA agreement with CareWise is signed.</p>
+          <p class="db-pilot-note">Pilot mode: use de-identified or sample labs only (no names, birth dates or record numbers) until your practice's HIPAA agreement with FollowThrough Health is signed.</p>
 
           <div class="db-pricing">
             <div><strong>Pilot</strong><span>Free for 30 days. We onboard you personally.</span></div>
@@ -461,7 +461,7 @@
                 <label>Work email<input id="db-wl-email" type="email" required placeholder="you@clinic.com" /></label>
                 <label>Practice (optional)<input id="db-wl-note" type="text" maxlength="200" placeholder="Practice name, city, number of clinicians" /></label>
               </div>
-              <label class="db-check"><input id="db-wl-consent" type="checkbox" required /> You can email me about the CareWise doctor pilot.</label>
+              <label class="db-check"><input id="db-wl-consent" type="checkbox" required /> You can email me about the FollowThrough Health doctor pilot.</label>
               <button class="secondary-button" type="submit">Join the waitlist</button>
               <p class="status-line" id="db-wl-status" role="status"></p>
             </form>
@@ -598,7 +598,7 @@
             <p class="eyebrow">Step 2</p>
             <h3 id="consent-title">Consent and medical limits</h3>
             <p>
-              CareWise is for education and care planning. It is not a
+              FollowThrough Health is for education and care planning. It is not a
               diagnosis, prescription, emergency service, or replacement for
               licensed medical care.
             </p>
@@ -606,7 +606,7 @@
           <div class="consent-action-card">
             <label class="check-line consent-check">
               <input id="privacy-consent" type="checkbox" />
-              I understand and consent to using CareWise for care planning.
+              I understand and consent to using FollowThrough Health for care planning.
             </label>
             <a class="primary-link" href="#patient-form">Continue to intake</a>
             <p id="consent-status" class="status-line" role="status"></p>
@@ -664,7 +664,7 @@
           </div>
           <div class="mvp-alert legacy-hidden">
             <strong>Safe by design</strong>
-            <span>CareWise explains reports for education only. It does not diagnose, prescribe, or replace a licensed clinician.</span>
+            <span>FollowThrough Health explains reports for education only. It does not diagnose, prescribe, or replace a licensed clinician.</span>
           </div>
           <div id="ocr-checks" class="ocr-checks" hidden></div>
           <div id="report-results" class="saved-plans-list">
@@ -673,12 +673,12 @@
               <span>Use the sample report or paste lab text to generate a health score, findings, wellness suggestions, and questions for your doctor.</span>
             </article>
           </div>
-          <div class="legacy-hidden privacy-assurance" aria-label="CareWise privacy and safety notes">
+          <div class="legacy-hidden privacy-assurance" aria-label="FollowThrough Health privacy and safety notes">
             <article><strong>Private by default</strong><span>Demo analysis can run locally before cloud sync.</span></article>
             <article><strong>No diagnosis claims</strong><span>Educational explanations only, with clinician follow-up prompts.</span></article>
             <article><strong>Built for history</strong><span>Save reports so changes are easier to discuss over time.</span></article>
           </div>
-          <div class="legacy-hidden v1-report-dashboard" aria-label="CareWise sample report result">
+          <div class="legacy-hidden v1-report-dashboard" aria-label="FollowThrough Health sample report result">
             <article class="health-score-card">
               <span>Health Score</span>
               <strong>73/100</strong>
@@ -719,9 +719,9 @@
           </div>
           <div class="v1-chat-card" aria-labelledby="v1-chat-title">
             <div>
-              <p class="eyebrow">Ask CareWise</p>
+              <p class="eyebrow">Ask FollowThrough Health</p>
               <h4 id="v1-chat-title">Ask a question about this report</h4>
-              <p>CareWise answers in simple, non-diagnostic language and suggests what to ask a licensed professional.</p>
+              <p>FollowThrough Health answers in simple, non-diagnostic language and suggests what to ask a licensed professional.</p>
             </div>
             <label>
               Question
@@ -1170,7 +1170,7 @@
             </div>
           </form>
           </details>
-          <p id="record-status" class="status-line" role="status">CareWise keeps what you enter. It does not check medicine interactions or give medical advice.</p>
+          <p id="record-status" class="status-line" role="status">FollowThrough Health keeps what you enter. It does not check medicine interactions or give medical advice.</p>
           <div class="record-toolbar">
             <label>
               Show
@@ -1197,7 +1197,7 @@
             <div>
               <p class="eyebrow">Reminders</p>
               <h3 id="reminders-title">Medicine reminders</h3>
-              <p class="panel-intro">Set medicine times for yourself or a parent. CareWise can phone them at each time and ask them to press 1 once it's taken, and email you if a reminder isn't confirmed.</p>
+              <p class="panel-intro">Set medicine times for yourself or a parent. FollowThrough Health can phone them at each time and ask them to press 1 once it's taken, and email you if a reminder isn't confirmed.</p>
             </div>
             <button id="rm-add" class="primary-button compact" type="button">Add a reminder</button>
           </div>
@@ -1209,7 +1209,7 @@
               </label>
               <label>Reminder name
                 <input id="rm-label" type="text" maxlength="60" placeholder="Morning tablets" />
-                <small>Shown only in CareWise. The phone call never says what the medicine is.</small>
+                <small>Shown only in FollowThrough Health. The phone call never says what the medicine is.</small>
               </label>
             </div>
             <fieldset class="rm-times">
@@ -1569,7 +1569,7 @@
           <div class="reminder-grid">
             <label>
               Reminder
-              <input id="reminder-title-input" type="text" placeholder="Weekly CareWise check-in" />
+              <input id="reminder-title-input" type="text" placeholder="Weekly FollowThrough Health check-in" />
             </label>
             <label>
               Type
@@ -1724,7 +1724,7 @@
             <div>
               <p class="eyebrow">Care team</p>
               <h3 id="care-team-title">Contact and question organizer</h3>
-              <p class="panel-intro">Keep care contacts, roles, and questions in one place before visits. CareWise does not verify provider credentials, availability, insurance network, or medical appropriateness.</p>
+              <p class="panel-intro">Keep care contacts, roles, and questions in one place before visits. FollowThrough Health does not verify provider credentials, availability, insurance network, or medical appropriateness.</p>
             </div>
             <button id="clear-care-team" class="secondary-button compact" type="button">Clear contacts</button>
           </div>
@@ -1756,7 +1756,7 @@
                 <option value="Prepare visit questions">Prepare visit questions</option>
                 <option value="Medication question">Medication question</option>
                 <option value="Report follow-up">Report follow-up</option>
-                <option value="Share CareWise summary">Share CareWise summary</option>
+                <option value="Share FollowThrough Health summary">Share FollowThrough Health summary</option>
               </select>
             </label>
             <label class="care-team-wide">
@@ -1822,7 +1822,7 @@
             <button id="build-care-packet" class="primary-button narrow-button" type="button">Build care packet</button>
             <button id="copy-care-packet" class="secondary-button" type="button">Copy packet</button>
           </div>
-          <p id="care-packet-status" class="status-line" role="status">Build this before sharing CareWise notes with a clinician, care team, or support person.</p>
+          <p id="care-packet-status" class="status-line" role="status">Build this before sharing FollowThrough Health notes with a clinician, care team, or support person.</p>
           <div id="care-packet-list" class="care-packet-list">
             <p>No care packet generated yet.</p>
           </div>
@@ -1834,7 +1834,7 @@
             <div>
               <p class="eyebrow">Support operations</p>
               <h3 id="support-title">User support inbox</h3>
-              <p class="panel-intro">Track prototype support requests before connecting a real help desk. CareWise does not handle emergencies in this inbox.</p>
+              <p class="panel-intro">Track prototype support requests before connecting a real help desk. FollowThrough Health does not handle emergencies in this inbox.</p>
             </div>
             <button id="clear-support" class="secondary-button compact" type="button">Clear inbox</button>
           </div>
@@ -2054,7 +2054,7 @@
             <article id="privacy-policy">
               <span>Draft ready</span>
               <strong>Privacy Policy</strong>
-              <p>CareWise should collect the minimum health data needed, encrypt protected fields, avoid health data in logs, and explain data use before signup.</p>
+              <p>FollowThrough Health should collect the minimum health data needed, encrypt protected fields, avoid health data in logs, and explain data use before signup.</p>
               <a class="inline-link" href="legal/privacy.html">Open privacy policy</a>
             </article>
             <article id="terms">
@@ -2130,13 +2130,13 @@
             </div>
             <span class="sync-badge online">MVP active</span>
           </div>
-          <div class="launch-metrics" aria-label="CareWise launch metrics">
+          <div class="launch-metrics" aria-label="FollowThrough Health launch metrics">
             <article><strong>Live</strong><span>Frontend + API</span></article>
             <article><strong>Private</strong><span>R2 report storage</span></article>
             <article><strong>Safe MVP</strong><span>No diagnosis claims</span></article>
             <article><strong>Next</strong><span>Clinical review</span></article>
           </div>
-          <div class="launch-blockers" aria-label="CareWise launch blockers">
+          <div class="launch-blockers" aria-label="FollowThrough Health launch blockers">
             <article class="blocked">
               <strong>Mobile GitHub push</strong>
               <span>Blocked until the GitHub token includes workflow permission.</span>
@@ -2150,7 +2150,7 @@
               <span>Legal, privacy, security, and licensed-clinician review are required.</span>
             </article>
           </div>
-          <div id="launch-proof" class="launch-proof" aria-label="CareWise launch proof">
+          <div id="launch-proof" class="launch-proof" aria-label="FollowThrough Health launch proof">
             <article><strong>Backend</strong><span>Checking</span></article>
             <article><strong>Review proof</strong><span>Waiting</span></article>
             <article><strong>Data safety</strong><span>Checking</span></article>
@@ -2161,7 +2161,7 @@
             <button id="refresh-launch-proof" class="secondary-button compact" type="button">Refresh proof</button>
           </div>
           <p id="launch-proof-status" class="status-line" role="status">Launch proof summarizes live readiness for demos.</p>
-          <div class="preflight-card" aria-label="CareWise launch preflight">
+          <div class="preflight-card" aria-label="FollowThrough Health launch preflight">
             <div>
               <strong>Launch preflight</strong>
               <span>Run this before showing the app to a user, clinician, or investor.</span>
@@ -2176,7 +2176,7 @@
             <div class="demo-script-heading">
               <div>
                 <strong>Demo walkthrough builder</strong>
-                <span>Generate a safe step-by-step script before showing CareWise to an advisor, clinician, investor, or tester.</span>
+                <span>Generate a safe step-by-step script before showing FollowThrough Health to an advisor, clinician, investor, or tester.</span>
               </div>
               <div class="demo-script-actions">
                 <button id="build-demo-script" class="primary-button compact" type="button">Build script</button>
@@ -2195,7 +2195,7 @@
             </div>
             <button id="generate-investor-brief" class="secondary-button compact" type="button">Generate brief</button>
           </div>
-          <textarea id="investor-brief-output" class="investor-brief-output" rows="9" readonly placeholder="Click Generate brief to create a one-page CareWise AI summary."></textarea>
+          <textarea id="investor-brief-output" class="investor-brief-output" rows="9" readonly placeholder="Click Generate brief to create a one-page FollowThrough Health summary."></textarea>
           <p id="investor-brief-status" class="status-line" role="status">Brief stays non-diagnostic and should be reviewed before sharing externally.</p>
           <div class="pilot-card" aria-label="Pilot interest tracker">
             <div>
@@ -2279,8 +2279,8 @@
           <div class="panel-heading-row">
             <div>
               <p class="eyebrow">Early access</p>
-              <h3 id="early-access-title">Help us build CareWise for your family</h3>
-              <p class="panel-intro">We are building CareWise with people who look after a parent's or partner's health. Join to try new features first and tell us what would help.</p>
+              <h3 id="early-access-title">Help us build FollowThrough Health for your family</h3>
+              <p class="panel-intro">We are building FollowThrough Health with people who look after a parent's or partner's health. Join to try new features first and tell us what would help.</p>
             </div>
           </div>
           <form id="early-access-form" class="early-access-form" novalidate>
@@ -2305,7 +2305,7 @@
             </label>
             <label class="check-line consent-check">
               <input id="early-access-consent" type="checkbox" />
-              CareWise can email me about early access. I can ask to be removed at any time.
+              FollowThrough Health can email me about early access. I can ask to be removed at any time.
             </label>
             <div class="primary-action-row">
               <button id="early-access-submit" class="primary-button narrow-button" type="submit">Join early access</button>
@@ -2318,8 +2318,8 @@
           <div class="panel-heading-row">
             <div>
               <p class="eyebrow">Founder view</p>
-              <h3 id="founder">How CareWise is being used</h3>
-              <p class="panel-intro">Only for the CareWise team. Enter the founder token set in the hosting dashboard. It is kept in this browser tab only.</p>
+              <h3 id="founder">How FollowThrough Health is being used</h3>
+              <p class="panel-intro">Only for the FollowThrough Health team. Enter the founder token set in the hosting dashboard. It is kept in this browser tab only.</p>
             </div>
           </div>
           <form id="founder-form" class="account-grid" novalidate>
@@ -2370,7 +2370,7 @@
             <h3>No care plan generated yet</h3>
             <p>
               Complete consent, add symptoms or report text, then generate a
-              plan. CareWise gives educational guidance only and should support,
+              plan. FollowThrough Health gives educational guidance only and should support,
               not replace, licensed medical care.
             </p>
             <div class="hero-actions">
@@ -2446,14 +2446,14 @@
       </form>
     </dialog>
     <div class="help-chat" id="help-chat">
-      <button class="help-chat-launcher" id="help-chat-open" type="button" aria-label="Open CareWise help" aria-expanded="false" aria-controls="help-chat-panel">
+      <button class="help-chat-launcher" id="help-chat-open" type="button" aria-label="Open FollowThrough Health help" aria-expanded="false" aria-controls="help-chat-panel">
         <span aria-hidden="true">?</span><span class="help-chat-launcher-text">Need help?</span>
       </button>
       <section class="help-chat-panel" id="help-chat-panel" role="dialog" aria-modal="false" aria-labelledby="help-chat-title" hidden>
         <header class="help-chat-head">
           <div>
-            <h2 id="help-chat-title">CareWise helper</h2>
-            <p id="help-chat-sub">Ask about your report or how to use CareWise.</p>
+            <h2 id="help-chat-title">FollowThrough Health helper</h2>
+            <p id="help-chat-sub">Ask about your report or how to use FollowThrough Health.</p>
           </div>
           <button class="help-chat-close" id="help-chat-close" type="button" aria-label="Close help">&times;</button>
         </header>
@@ -2471,12 +2471,12 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-152"></script>
-    <script src="help.js?v=carewise-product-152"></script>
-    <script src="doctor-share.js?v=carewise-product-152"></script>
-    <script src="docbridge.js?v=carewise-product-152"></script>
-    <script src="reminders.js?v=carewise-product-152"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-152"></script>
-    <script src="twofactor.js?v=carewise-product-152"></script>
+    <script src="script.js?v=carewise-product-153"></script>
+    <script src="help.js?v=carewise-product-153"></script>
+    <script src="doctor-share.js?v=carewise-product-153"></script>
+    <script src="docbridge.js?v=carewise-product-153"></script>
+    <script src="reminders.js?v=carewise-product-153"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-153"></script>
+    <script src="twofactor.js?v=carewise-product-153"></script>
   </body>
 </html>

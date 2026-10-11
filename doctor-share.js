@@ -164,7 +164,7 @@
       .catch(() => { statusLine.textContent = "Select the link above and copy it."; });
   });
   byId("share-native").addEventListener("click", () => {
-    navigator.share?.({ title: "CareWise summary", text: "A summary of my lab results, shared from CareWise:", url: urlInput.value }).catch(() => undefined);
+    navigator.share?.({ title: "FollowThrough Health summary", text: "A summary of my lab results, shared from FollowThrough Health:", url: urlInput.value }).catch(() => undefined);
   });
   byId("share-signin-link").addEventListener("click", () => dialog.close());
   document.addEventListener("click", (event) => {

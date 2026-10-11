@@ -1,6 +1,6 @@
 {
-  "name": "CareWise AI",
-  "short_name": "CareWise",
+  "name": "FollowThrough Health",
+  "short_name": "FollowThrough",
   "description": "Understand lab and scan reports in simple English, and get ready for the doctor.",
   "start_url": "/",
   "scope": "/",
@@ -16,5 +16,9 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["health", "medical", "productivity"]
+  "categories": [
+    "health",
+    "medical",
+    "productivity"
+  ]
 }
