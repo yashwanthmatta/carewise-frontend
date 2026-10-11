@@ -15,13 +15,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="CareWise" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-147" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-148" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-147" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-148" />
   </head>
   <body>
     <main class="app-shell">
@@ -1114,6 +1114,62 @@
             </label>
           </div>
           <div id="record-timeline" class="record-timeline"></div>
+        </section>
+
+        <section class="panel reminders-panel" aria-labelledby="reminders-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Reminders</p>
+              <h3 id="reminders-title">Medicine reminders</h3>
+              <p class="panel-intro">Set medicine times for yourself or a parent. CareWise can phone them at each time and ask them to press 1 once it's taken, and email you if a reminder isn't confirmed.</p>
+            </div>
+            <button id="rm-add" class="primary-button compact" type="button">Add a reminder</button>
+          </div>
+          <p id="rm-signin" class="rm-note" hidden>Sign in to set reminders. They are saved to your account so the phone calls can go out even when this page is closed.</p>
+          <form id="rm-form" class="rm-form" hidden>
+            <div class="rm-grid">
+              <label>Who is it for?
+                <input id="rm-person" type="text" maxlength="40" value="Me" list="report-people" />
+              </label>
+              <label>Reminder name
+                <input id="rm-label" type="text" maxlength="60" placeholder="Morning tablets" />
+                <small>Shown only in CareWise. The phone call never says what the medicine is.</small>
+              </label>
+            </div>
+            <fieldset class="rm-times">
+              <legend>Times</legend>
+              <div id="rm-time-list"></div>
+              <button id="rm-add-time" class="secondary-button compact" type="button">Add another time</button>
+            </fieldset>
+            <fieldset class="rm-days">
+              <legend>Days</legend>
+              <div id="rm-day-list"></div>
+            </fieldset>
+            <label class="rm-check"><input id="rm-call" type="checkbox" /> Phone them at these times</label>
+            <div id="rm-call-fields" class="rm-call" hidden>
+              <div class="rm-grid">
+                <label>Their phone number
+                  <input id="rm-phone" type="tel" maxlength="20" placeholder="+1 555 123 4567" autocomplete="off" />
+                </label>
+                <label>Your first name (said on the call)
+                  <input id="rm-caller" type="text" maxlength="40" placeholder="Priya" />
+                </label>
+                <label>Call language
+                  <select id="rm-language"><option value="en">English</option><option value="es">Español</option></select>
+                </label>
+              </div>
+              <label class="rm-check"><input id="rm-consent" type="checkbox" /> They agreed to get these calls. The first call asks them to press 1 to confirm, and they can press 9 any time to stop.</label>
+              <p id="rm-call-setup" class="rm-note" hidden>Phone calls are being switched on. Your reminder is saved now, and the first call goes out as soon as calling is live.</p>
+            </div>
+            <label class="rm-check"><input id="rm-alert" type="checkbox" /> Email me if a reminder isn't confirmed</label>
+            <div class="primary-action-row">
+              <button id="rm-cancel" class="secondary-button" type="button">Cancel</button>
+              <button id="rm-save" class="primary-button narrow-button" type="submit">Save reminder</button>
+            </div>
+          </form>
+          <p id="rm-status" class="status-line" role="status"></p>
+          <div id="rm-list" class="rm-list"></div>
+          <p class="rm-disclaimer">A reminder service, not a medical alert. It doesn't watch over anyone's health. In an emergency, call your local emergency number.</p>
         </section>
 
         <section class="panel medication-panel" aria-labelledby="medication-title">
@@ -2339,9 +2395,10 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-147"></script>
-    <script src="help.js?v=carewise-product-147"></script>
-    <script src="doctor-share.js?v=carewise-product-147"></script>
-    <script src="docbridge.js?v=carewise-product-147"></script>
+    <script src="script.js?v=carewise-product-148"></script>
+    <script src="help.js?v=carewise-product-148"></script>
+    <script src="doctor-share.js?v=carewise-product-148"></script>
+    <script src="docbridge.js?v=carewise-product-148"></script>
+    <script src="reminders.js?v=carewise-product-148"></script>
   </body>
 </html>
