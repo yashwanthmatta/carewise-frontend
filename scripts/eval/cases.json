@@ -116,6 +116,17 @@
       {"key":  "b12", "name":  "Vitamin B12", "value":  "180", "unit":  "pg/mL", "range":  "200-1100", "flag":  "L", "expect":  "low"},
       {"key":  "magnesium", "name":  "Magnesium", "value":  "2.0", "unit":  "mg/dL", "range":  "1.5-2.5", "flag":  "", "expect":  "normal"},
       {"key":  "ferritin", "name":  "Ferritin", "value":  "512", "unit":  "ng/mL", "range":  "16-232", "flag":  "H", "expect":  "high"}
+    ]},
+    { "id": "lipid-uk-mmol", "format": "table", "title": "Lipid Profile", "tests": [
+      { "key": "totalchol", "name": "Total Cholesterol", "value": "6.2", "shown": "240", "unit": "mmol/L", "range": "<5.0", "flag": "H", "expect": "high" },
+      { "key": "hdl", "name": "HDL Cholesterol", "value": "1.3", "unit": "mmol/L", "range": ">1.0", "flag": "", "expect": "normal" },
+      { "key": "ldl", "name": "LDL Cholesterol", "value": "4.1", "shown": "159", "unit": "mmol/L", "range": "<3.0", "flag": "H", "expect": "high" },
+      { "key": "trig", "name": "Triglycerides", "value": "1.4", "shown": "124", "unit": "mmol/L", "range": "<1.7", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "chem-eu-list-commas", "format": "list", "title": "Chemistry Panel", "tests": [
+      { "key": "potassium", "name": "Potassium", "value": "5,8", "unit": "mmol/L", "range": "3,5-5,1", "flag": "H", "expect": "high" },
+      { "key": "creatinine", "name": "Creatinine", "value": "0,9", "unit": "mg/dL", "range": "0,6-1,1", "flag": "", "expect": "normal" },
+      { "key": "glucose", "name": "Glucose", "value": "62", "unit": "mg/dL", "range": "70-99", "flag": "L", "expect": "low" }
     ]}
   ]
 }
