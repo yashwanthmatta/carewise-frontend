@@ -132,6 +132,11 @@
       { "key": "hemoglobin", "name": "Haemoglobin", "value": "128", "unit": "g/L", "range": "130-170", "flag": "L", "expect": "low" },
       { "key": "wbc", "name": "White Cell Count", "value": "11.6", "unit": "x10^9/L", "range": "4.0-11.0", "flag": "H", "expect": "high" },
       { "key": "platelets", "name": "Platelets", "value": "250", "unit": "x10^9/L", "range": "150-400", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "liver-uk-labcorp", "format": "labcorp", "title": "Liver Function Tests", "tests": [
+      { "key": "albumin", "name": "Albumin", "value": "32", "unit": "g/L", "range": "35-50", "flag": "Low", "expect": "low" },
+      { "key": "bilirubin", "name": "Bilirubin", "value": "25", "unit": "umol/L", "range": "0-21", "flag": "High", "expect": "high" },
+      { "key": "alt", "name": "ALT", "value": "30", "unit": "U/L", "range": "0-40", "flag": "", "expect": "normal" }
     ]}
   ]
 }
