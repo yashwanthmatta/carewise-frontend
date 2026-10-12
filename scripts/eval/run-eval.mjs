@@ -44,9 +44,9 @@ for (const r of reports) {
   for (const t of r.tests) {
     const got = found.get(t.key);
     rows.push({
-      report: r.id, format: r.format, test: t.name, key: t.key, expectValue: t.value, expectStatus: t.expect,
+      report: r.id, format: r.format, test: t.name, key: t.key, expectValue: t.shown ?? t.value, expectStatus: t.expect,
       gotValue: got?.value ?? null, gotStatus: got?.status ?? null,
-      read: Boolean(got), valueOk: Boolean(got && sameNumber(got.value, t.value)), statusOk: Boolean(got && got.status === t.expect),
+      read: Boolean(got), valueOk: Boolean(got && sameNumber(got.value, t.shown ?? t.value)), statusOk: Boolean(got && got.status === t.expect),
     });
   }
 }
