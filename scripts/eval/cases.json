@@ -146,6 +146,11 @@
       { "key": "creatinine", "name": "Creatinine", "value": "135", "unit": "umol/L", "range": "59-104", "flag": "H", "expect": "high" },
       { "key": "egfr", "name": "eGFR", "value": "52", "unit": "mL/min/1.73m2", "range": ">60", "flag": "L", "expect": "low" },
       { "key": "potassium", "name": "Potassium", "value": "4.2", "unit": "mmol/L", "range": "3.5-5.3", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "lipid-eu-quest-commas", "format": "quest", "title": "Lipid Panel", "tests": [
+      { "key": "totalchol", "name": "Total Cholesterol", "value": "5,4", "shown": "209", "unit": "mmol/L", "range": "<5,0", "flag": "H", "expect": "high" },
+      { "key": "hdl", "name": "HDL Cholesterol", "value": "1,6", "unit": "mmol/L", "range": ">1,0", "flag": "", "expect": "normal" },
+      { "key": "trig", "name": "Triglycerides", "value": "2,1", "shown": "186", "unit": "mmol/L", "range": "<1,7", "flag": "H", "expect": "high" }
     ]}
   ]
 }
