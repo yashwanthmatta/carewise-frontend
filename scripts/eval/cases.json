@@ -151,6 +151,11 @@
       { "key": "totalchol", "name": "Total Cholesterol", "value": "5,4", "shown": "209", "unit": "mmol/L", "range": "<5,0", "flag": "H", "expect": "high" },
       { "key": "hdl", "name": "HDL Cholesterol", "value": "1,6", "unit": "mmol/L", "range": ">1,0", "flag": "", "expect": "normal" },
       { "key": "trig", "name": "Triglycerides", "value": "2,1", "shown": "186", "unit": "mmol/L", "range": "<1,7", "flag": "H", "expect": "high" }
+    ]},
+    { "id": "iron-uk-list", "format": "list", "title": "Iron Studies", "tests": [
+      { "key": "ferritin", "name": "Ferritin", "value": "12", "unit": "ug/L", "range": "15-300", "flag": "L", "expect": "low" },
+      { "key": "iron", "name": "Serum Iron", "value": "8", "unit": "umol/L", "range": "10-30", "flag": "L", "expect": "low" },
+      { "key": "b12", "name": "Vitamin B12", "value": "320", "unit": "ng/L", "range": "197-771", "flag": "", "expect": "normal" }
     ]}
   ]
 }
