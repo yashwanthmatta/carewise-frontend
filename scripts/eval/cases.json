@@ -156,6 +156,10 @@
       { "key": "ferritin", "name": "Ferritin", "value": "12", "unit": "ug/L", "range": "15-300", "flag": "L", "expect": "low" },
       { "key": "iron", "name": "Serum Iron", "value": "8", "unit": "umol/L", "range": "10-30", "flag": "L", "expect": "low" },
       { "key": "b12", "name": "Vitamin B12", "value": "320", "unit": "ng/L", "range": "197-771", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "inflammation-quest-mgdl", "format": "quest", "title": "Inflammation Markers", "tests": [
+      { "key": "crp", "name": "C-Reactive Protein", "value": "1.8", "unit": "mg/dL", "range": "0.0-0.9", "flag": "H", "expect": "high" },
+      { "key": "esr", "name": "Sed Rate by Modified Westergren", "value": "12", "unit": "mm/h", "range": "0-20", "flag": "", "expect": "normal" }
     ]}
   ]
 }
