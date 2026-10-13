@@ -141,6 +141,11 @@
     { "id": "thyroid-eu-labcorp-commas", "format": "labcorp", "title": "Thyroid Panel", "tests": [
       { "key": "tsh", "name": "TSH", "value": "5,12", "unit": "mIU/L", "range": "0,27-4,20", "flag": "High", "expect": "high" },
       { "key": "ft4", "name": "Free T4", "value": "14,3", "unit": "pmol/L", "range": "12,0-22,0", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "kidney-uk-quest", "format": "quest", "title": "Renal Profile", "tests": [
+      { "key": "creatinine", "name": "Creatinine", "value": "135", "unit": "umol/L", "range": "59-104", "flag": "H", "expect": "high" },
+      { "key": "egfr", "name": "eGFR", "value": "52", "unit": "mL/min/1.73m2", "range": ">60", "flag": "L", "expect": "low" },
+      { "key": "potassium", "name": "Potassium", "value": "4.2", "unit": "mmol/L", "range": "3.5-5.3", "flag": "", "expect": "normal" }
     ]}
   ]
 }
