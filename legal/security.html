@@ -36,7 +36,7 @@
           <table>
             <tr><th>Service</th><th>What it does</th><th>What it can see</th></tr>
             <tr><td>Render</td><td>Hosts the website, API and database</td><td>Encrypted account and health data at rest</td></tr>
-            <tr><td>Anthropic</td><td>Writes help-chat answers when the online helper is on</td><td>The question asked, and a result summary only if the person ticks "share"</td></tr>
+            <tr><td>Anthropic</td><td>Writes help-chat answers when the online helper is on, and answers to patient follow-up questions when a DocBridge clinic turns them on</td><td>Help chat: the question asked, and a result summary only if the person ticks "share". DocBridge questions: the question (with detected identifiers removed), the clinician-approved summary and that patient's lab values from the clinic</td></tr>
             <tr><td>Stripe</td><td>Handles plan payments</td><td>Name, email and card details for paying customers</td></tr>
             <tr><td>Twilio</td><td>Places medicine reminder phone calls when someone turns calls on</td><td>The phone number called, the first name said on the call, and which key was pressed. Never the medicine name</td></tr>
             <tr><td>GitHub</td><td>Stores FollowThrough Health source code</td><td>No patient data</td></tr>
