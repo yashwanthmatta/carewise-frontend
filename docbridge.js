@@ -197,12 +197,52 @@
     return lines.join("\n");
   }
 
-  function renderReview(markers, patientRef) {
+
+  // ----- One-page doctor brief (stays in the clinic; never sent to the patient) -----
+  function briefHtml(markers, patientRef, labDate) {
+    const flagged = markers.filter(isFlagged);
+    const unsure = markers.filter((m) => m.low_confidence && !isFlagged(m));
+    const inRange = markers.length - flagged.length - unsure.length;
+    const questions = $("db-questions").value.split("\n").map((q) => q.trim()).filter(Boolean);
+    const words = $("db-summary").value.trim().split(/\s+/).filter(Boolean).length;
+    const row = (m) => `<tr><td>${escapeHtml(m.name)}</td><td>${escapeHtml(`${m.value} ${m.unit}`.trim())}</td><td>${escapeHtml(m.range || "none printed")}</td><td>${escapeHtml(m.status || "")}</td></tr>`;
+    return `<h5>Doctor brief · ${escapeHtml(patientRef)} · lab ${escapeHtml(labDate || "date not given")}</h5>
+      <p class="db-muted">Draft for clinician review. This brief stays in the clinic and is not sent to the patient.</p>
+      <p><b>${markers.length} results:</b> ${flagged.length} outside the lab's range, ${inRange} in range${unsure.length ? `, ${unsure.length} to confirm (no printed range)` : ""}.</p>
+      ${flagged.length ? `<div class="db-table"><table><tr><th>Outside range</th><th>Result</th><th>Lab range</th><th>Status</th></tr>${flagged.map(row).join("")}</table></div>` : "<p>No results outside the lab's printed range.</p>"}
+      ${unsure.length ? `<p><b>Confirm against the original:</b> ${unsure.map((m) => escapeHtml(`${m.name} ${m.value} ${m.unit}`.trim())).join("; ")}</p>` : ""}
+      <p><b>Patient explanation:</b> ${words ? `drafted (${words} words), waiting for your approval` : "not written yet"}.</p>
+      ${questions.length ? `<p><b>Questions the patient may ask:</b></p><ol>${questions.map((q) => `<li>${escapeHtml(q)}</li>`).join("")}</ol>` : ""}
+      <p class="db-muted">${escapeHtml(clinic?.name || "")}${clinic?.name ? " · " : ""}Prepared ${escapeHtml(new Date().toLocaleString())} from the lab as received. Values were read automatically; check them against the original report.</p>`;
+  }
+
+  function renderBrief() {
+    if (!current) return;
+    $("db-brief-body").innerHTML = briefHtml(current.markers || [], current.patientRef, current.labDate);
+  }
+
+  function printBrief() {
+    if (!current) return;
+    const win = window.open("", "_blank", "width=820,height=1000");
+    if (!win) return say("Allow pop-ups to print the brief.");
+    win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Doctor brief</title><style>
+      body{font:13px/1.45 system-ui,sans-serif;color:#1f2933;margin:28px}h5{font-size:17px;margin:0 0 6px}
+      table{width:100%;border-collapse:collapse;margin:6px 0}th,td{text-align:left;padding:4px 6px;border-bottom:1px solid #ddd}
+      th{background:#f1f8f6}.db-muted{color:#5b6670;font-size:12px}@page{size:letter;margin:14mm}</style></head>
+      <body>${briefHtml(current.markers || [], current.patientRef, current.labDate)}</body></html>`);
+    win.document.close();
+    win.focus();
+    win.print();
+  }
+
+  function renderReview(markers, patientRef, labDate = "") {
     $("db-review-ref").textContent = `· ${patientRef}`;
     $("db-values").innerHTML = markers.length ? `<div class="db-table"><table><tr><th>Test</th><th>Result</th><th>Range</th><th>Status</th></tr>${markers.map((m) => `
       <tr class="${isFlagged(m) ? "db-flag" : ""}"><td>${escapeHtml(m.name)}</td><td>${escapeHtml(`${m.value} ${m.unit}`.trim())}</td><td>${escapeHtml(m.range || "—")}</td><td>${escapeHtml(m.status || "—")}${m.low_confidence ? ' <em class="db-check-tag">check</em>' : ""}</td></tr>`).join("")}</table></div>` : "<p><b>Needs manual review:</b> no values could be read from this lab. Type the key values into the explanation yourself; nothing is guessed.</p>";
     $("db-review").hidden = false;
     $("db-link").hidden = true;
+    if (current) current.labDate = current.labDate || labDate;
+    renderBrief();
     $("db-approve").hidden = !canApprove();
     $("db-reject").hidden = !canApprove();
     $("db-approver-note").hidden = canApprove();
@@ -237,10 +277,10 @@
     const questions = (analysis.questions || []).slice(0, 3);
     try {
       const packet = await apiPost(`/clinics/${clinic.id}/packets`, { patient_ref: patientRef, lab_date: labDate, markers, summary, questions, deidentified_confirmed: true });
-      current = { packetId: packet.id, markers, patientRef };
+      current = { packetId: packet.id, markers, patientRef, labDate };
       $("db-summary").value = summary;
       $("db-questions").value = questions.join("\n");
-      renderReview(markers, patientRef);
+      renderReview(markers, patientRef, labDate);
       say("Draft ready. Edit anything, then approve. The review timer started when the draft was made.");
       refresh();
     } catch {
@@ -313,10 +353,10 @@
       const summary = markers.length ? draftText(analysis, markers, labDate) : "";
       const questions = (analysis.questions || []).slice(0, 3);
       const saved = await apiPut(`/clinics/${clinic.id}/packets/${p.id}`, { summary, questions, markers, lab_date: labDate });
-      current = { packetId: saved.id, markers: saved.markers, patientRef: saved.patient_ref };
+      current = { packetId: saved.id, markers: saved.markers, patientRef: saved.patient_ref, labDate: saved.lab_date || labDate };
       $("db-summary").value = saved.summary;
       $("db-questions").value = (saved.questions || []).join("\n");
-      renderReview(saved.markers, saved.patient_ref);
+      renderReview(saved.markers, saved.patient_ref, current.labDate);
       say(markers.length ? "Draft ready from the emailed lab. Edit anything, then approve." : "No values could be read from this PDF. Type the key values into the explanation yourself.");
       refresh();
     } catch {
@@ -332,10 +372,10 @@
       draftEmailedPacket(p);
       return;
     }
-    current = { packetId: p.id, markers: p.markers, patientRef: p.patient_ref };
+    current = { packetId: p.id, markers: p.markers, patientRef: p.patient_ref, labDate: p.lab_date || "" };
     $("db-summary").value = p.summary;
     $("db-questions").value = (p.questions || []).join("\n");
-    renderReview(p.markers, p.patient_ref);
+    renderReview(p.markers, p.patient_ref, current.labDate);
   }
 
   async function visitSummary(ref) {
@@ -568,6 +608,9 @@
   $("db-save").addEventListener("click", saveDraft);
   $("db-followup").addEventListener("click", followUp);
   $("db-refresh").addEventListener("click", refresh);
+  $("db-brief-print").addEventListener("click", printBrief);
+  $("db-brief").addEventListener("toggle", (event) => { if (event.target.open) renderBrief(); });
+  ["db-summary", "db-questions"].forEach((id) => $(id).addEventListener("input", () => { if ($("db-brief").open) renderBrief(); }));
   $("db-copy").addEventListener("click", () => {
     $("db-link-url").select();
     navigator.clipboard?.writeText($("db-link-url").value).then(() => say("Patient link copied.")).catch(() => say("Select the link and copy it."));
