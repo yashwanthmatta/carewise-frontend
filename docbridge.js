@@ -42,6 +42,10 @@
     return afterValue.match(RANGE_RE)?.[1]?.replace(/\s+/g, "") || "";
   }
 
+  // What generated the draft; stored with every doctor edit so drafts can be improved
+  // from what doctors change. Bump when the drafting rules or prompt change.
+  const DRAFT_VERSION = { model_version: "docbridge-rules-v1", prompt_version: "docbridge-draft-v1" };
+
   const say = (text) => { statusLine.textContent = text; };
   const today = () => new Date().toISOString().slice(0, 10);
 
@@ -93,6 +97,7 @@
       ["Approved this week", m.approved_this_week],
       ["Median review time", review],
       ["Patients who opened", m.patients_opened],
+      ["Approved with no edits", m.approved_without_edits ?? "–"],
     ].map(([label, value]) => `<div><strong>${escapeHtml(String(value))}</strong><span>${escapeHtml(label)}</span></div>`).join("");
   }
 
@@ -276,7 +281,7 @@
     const summary = draftText(analysis, markers, labDate);
     const questions = (analysis.questions || []).slice(0, 3);
     try {
-      const packet = await apiPost(`/clinics/${clinic.id}/packets`, { patient_ref: patientRef, lab_date: labDate, markers, summary, questions, deidentified_confirmed: true });
+      const packet = await apiPost(`/clinics/${clinic.id}/packets`, { patient_ref: patientRef, lab_date: labDate, markers, summary, questions, deidentified_confirmed: true, ...DRAFT_VERSION });
       current = { packetId: packet.id, markers, patientRef, labDate };
       $("db-summary").value = summary;
       $("db-questions").value = questions.join("\n");
@@ -352,7 +357,7 @@
       const labDate = p.lab_date || labDateFrom(text || "");
       const summary = markers.length ? draftText(analysis, markers, labDate) : "";
       const questions = (analysis.questions || []).slice(0, 3);
-      const saved = await apiPut(`/clinics/${clinic.id}/packets/${p.id}`, { summary, questions, markers, lab_date: labDate });
+      const saved = await apiPut(`/clinics/${clinic.id}/packets/${p.id}`, { summary, questions, markers, lab_date: labDate, ...DRAFT_VERSION });
       current = { packetId: saved.id, markers: saved.markers, patientRef: saved.patient_ref, labDate: saved.lab_date || labDate };
       $("db-summary").value = saved.summary;
       $("db-questions").value = (saved.questions || []).join("\n");
