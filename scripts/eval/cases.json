@@ -165,6 +165,11 @@
       { "key": "bilirubin", "name": "Total Bilirubin", "value": "1,4", "unit": "mg/dL", "range": "0,2-1,2", "flag": "H", "expect": "high" },
       { "key": "albumin", "name": "Albumin", "value": "4,1", "unit": "g/dL", "range": "3,5-5,2", "flag": "", "expect": "normal" },
       { "key": "alt", "name": "ALT", "value": "22", "unit": "U/L", "range": "0-41", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "kidney-eu-labcorp-commas", "format": "labcorp", "title": "Kidney Function", "tests": [
+      { "key": "creatinine", "name": "Creatinine", "value": "1,45", "unit": "mg/dL", "range": "0,70-1,30", "flag": "High", "expect": "high" },
+      { "key": "potassium", "name": "Potassium", "value": "4,1", "unit": "mmol/L", "range": "3,5-5,1", "flag": "", "expect": "normal" },
+      { "key": "sodium", "name": "Sodium", "value": "132", "unit": "mmol/L", "range": "136-145", "flag": "Low", "expect": "low" }
     ]}
   ]
 }
