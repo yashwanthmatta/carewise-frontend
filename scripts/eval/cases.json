@@ -160,6 +160,11 @@
     { "id": "inflammation-quest-mgdl", "format": "quest", "title": "Inflammation Markers", "tests": [
       { "key": "crp", "name": "C-Reactive Protein", "value": "1.8", "unit": "mg/dL", "range": "0.0-0.9", "flag": "H", "expect": "high" },
       { "key": "esr", "name": "Sed Rate by Modified Westergren", "value": "12", "unit": "mm/h", "range": "0-20", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "liver-eu-table-commas", "format": "table", "title": "Liver Panel", "tests": [
+      { "key": "bilirubin", "name": "Total Bilirubin", "value": "1,4", "unit": "mg/dL", "range": "0,2-1,2", "flag": "H", "expect": "high" },
+      { "key": "albumin", "name": "Albumin", "value": "4,1", "unit": "g/dL", "range": "3,5-5,2", "flag": "", "expect": "normal" },
+      { "key": "alt", "name": "ALT", "value": "22", "unit": "U/L", "range": "0-41", "flag": "", "expect": "normal" }
     ]}
   ]
 }
