@@ -6568,6 +6568,10 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .db-table th, .db-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--lp-line, #e2dcd2); }
 .db-table th { background: #f1f8f6; }
 .db-flag td { background: #fff4f2; font-weight: 600; }
+.db-brief { border-top: 1px solid var(--lp-line, #e2dcd2); padding-top: 10px; }
+.db-brief summary { cursor: pointer; font-weight: 600; }
+.db-brief h5 { margin: 10px 0 4px; font-size: 0.98rem; }
+.db-brief ol { margin: 4px 0 8px 18px; padding: 0; }
 .db-check-tag { font-style: normal; font-size: 0.75rem; padding: 1px 6px; border-radius: 999px; background: #fff7e6; border: 1px solid #f1d9a6; }
 .db-muted { color: #5b6064; font-weight: 400; font-size: 0.9rem; }
 .db-link { display: grid; gap: 8px; }
