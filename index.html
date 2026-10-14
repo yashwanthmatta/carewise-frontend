@@ -15,13 +15,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-156" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-157" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-156" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-157" />
   </head>
   <body>
     <main class="app-shell">
@@ -490,7 +490,7 @@
           <div id="db-workspace" hidden>
             <div class="db-intake" id="db-intake" hidden>
               <strong>Email labs to your inbox</strong>
-              <p>Forward a lab PDF from your work email to <code id="db-intake-address"></code>. Put <b>DEID</b> and the patient reference in the subject, for example <i>DEID REF-1042</i> (a made-up code, not initials). During the pilot, only de-identified or sample labs; emails without DEID, or from addresses not on your team, are ignored and not stored.</p>
+              <p>Forward a lab PDF from your work email to <code id="db-intake-address"></code>. Put <b>DEID</b> and the patient reference in the subject, for example <i>DEID REF-1042</i>: right after DEID, the letters REF, a dash and 3 to 10 digits you make up (never initials). Any other code is ignored and the lab gets its own code. During the pilot, only de-identified or sample labs; emails without DEID, or from addresses not on your team, are ignored and not stored.</p>
               <button class="secondary-button compact" type="button" id="db-intake-copy">Copy address</button>
             </div>
             <div class="db-metrics" id="db-metrics"></div>
@@ -573,6 +573,7 @@
                     <option value="180">180 days</option><option value="365">1 year</option>
                   </select>
                 </label>
+                <label class="db-check"><input id="db-set-qa" type="checkbox" /> Let patients ask follow-up questions on their approved results. Answers come only from the approved summary and their own lab values, are written by AI (Anthropic) without a clinician reading each one, and are kept for your review. Off by default; during the pilot use only with de-identified or sample labs.</label>
                 <div class="db-actions"><button class="secondary-button" type="submit">Save settings</button></div>
               </form>
               <p class="db-muted">Labs older than this are deleted automatically every night, including patient links. The activity log keeps who did what and when, never lab values.</p>
@@ -2476,12 +2477,12 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-156"></script>
-    <script src="help.js?v=carewise-product-156"></script>
-    <script src="doctor-share.js?v=carewise-product-156"></script>
-    <script src="docbridge.js?v=carewise-product-156"></script>
-    <script src="reminders.js?v=carewise-product-156"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-156"></script>
-    <script src="twofactor.js?v=carewise-product-156"></script>
+    <script src="script.js?v=carewise-product-157"></script>
+    <script src="help.js?v=carewise-product-157"></script>
+    <script src="doctor-share.js?v=carewise-product-157"></script>
+    <script src="docbridge.js?v=carewise-product-157"></script>
+    <script src="reminders.js?v=carewise-product-157"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-157"></script>
+    <script src="twofactor.js?v=carewise-product-157"></script>
   </body>
 </html>

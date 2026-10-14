@@ -468,6 +468,7 @@
     $("db-set-name").value = clinic.name;
     $("db-set-tone").value = clinic.tone || "friendly";
     $("db-set-retention").value = String(clinic.retention_days || 90);
+    $("db-set-qa").checked = Boolean(clinic.patient_qa_enabled);
   }
   $("db-settings-form").addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -476,6 +477,7 @@
         name: $("db-set-name").value.trim(),
         tone: $("db-set-tone").value,
         retention_days: Number($("db-set-retention").value),
+        patient_qa_enabled: $("db-set-qa").checked,
       });
       clinic = { ...clinic, ...saved };
       $("db-badge").textContent = `${clinic.name} · Pilot`;

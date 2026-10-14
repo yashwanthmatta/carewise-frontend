@@ -35,7 +35,7 @@
     $("sv-loading").hidden = true;
     $("sv-summary").hidden = false;
     $("sv-print").hidden = false;
-    setupQuestions(flagged);
+    if (p.questions_enabled) setupQuestions(flagged);
   }
 
   // ----- Follow-up questions, answered only from this approved summary and the patient's own labs -----
