@@ -15,7 +15,7 @@
         <section class="panel">
           <p class="eyebrow">Security</p>
           <h1>How FollowThrough Health protects health information</h1>
-          <p class="document-meta">Last updated: October 10, 2026</p>
+          <p class="document-meta">Last updated: October 14, 2026</p>
           <p><strong>Your report is read on your device.</strong> Explaining a report happens in your browser or app; nothing is uploaded unless you choose to save or share it.</p>
 
           <h2>What we do</h2>
@@ -38,6 +38,7 @@
             <tr><td>Render</td><td>Hosts the website, API and database</td><td>Encrypted account and health data at rest</td></tr>
             <tr><td>Anthropic</td><td>Writes help-chat answers when the online helper is on</td><td>The question asked, and a result summary only if the person ticks "share"</td></tr>
             <tr><td>Stripe</td><td>Handles plan payments</td><td>Name, email and card details for paying customers</td></tr>
+            <tr><td>Twilio</td><td>Places medicine reminder phone calls when someone turns calls on</td><td>The phone number called, the first name said on the call, and which key was pressed. Never the medicine name</td></tr>
             <tr><td>GitHub</td><td>Stores FollowThrough Health source code</td><td>No patient data</td></tr>
           </table>
           <p><strong>HIPAA status:</strong> FollowThrough Health has not yet signed Business Associate Agreements with these services. Until it does, DocBridge runs in pilot mode with de-identified or sample labs only, and FollowThrough Health does not claim to be HIPAA compliant.</p>
