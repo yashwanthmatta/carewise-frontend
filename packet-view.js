@@ -35,10 +35,74 @@
     $("sv-loading").hidden = true;
     $("sv-summary").hidden = false;
     $("sv-print").hidden = false;
+    setupQuestions(flagged);
+  }
+
+  // ----- Follow-up questions, answered only from this approved summary and the patient's own labs -----
+  let token = "";
+
+  function citationLabel(id) {
+    const para = id.match(/^summary:paragraph_(\d+)$/);
+    if (para) return `Your summary, part ${para[1]}`;
+    const lab = id.match(/^lab:(.+):([^:]+)$/);
+    if (lab) return `${lab[1]}${lab[2] !== "undated" ? `, ${date(lab[2]) || lab[2]}` : ""}`;
+    return id;
+  }
+
+  function addAnswer(question, body) {
+    const item = document.createElement("div");
+    item.className = `pv-qa-item${body.deflect_to_doctor ? " pv-qa-deflect" : ""}`;
+    item.innerHTML = `<p class="pv-qa-q">${esc(question)}</p><p>${esc(body.answer)}</p>${(body.citations || []).length ? `<p class="pv-qa-cite">From: ${body.citations.map((c) => `<span>${esc(citationLabel(c))}</span>`).join(" ")}</p>` : ""}`;
+    $("pv-qa-list").prepend(item);
+  }
+
+  async function askQuestion(question) {
+    const text = question.trim();
+    if (text.length < 2) return;
+    const status = $("pv-qa-status");
+    status.textContent = "Looking at your results…";
+    $("pv-qa-send").disabled = true;
+    try {
+      const response = await fetch(`${api}/clinics/packets/qa`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token, question: text }) });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        status.textContent = typeof body.detail === "string" ? body.detail : "We couldn't answer right now. Please ask your care team.";
+        return;
+      }
+      addAnswer(text, body);
+      $("pv-qa-input").value = "";
+      status.textContent = "";
+    } catch {
+      status.textContent = "We couldn't reach FollowThrough Health. Check your connection and try again.";
+    } finally {
+      $("pv-qa-send").disabled = false;
+    }
+  }
+
+  async function setupQuestions(flagged) {
+    try {
+      const features = await (await fetch(`${api}/features`)).json();
+      if (!features.patient_qa) return;
+    } catch {
+      return;
+    }
+    const first = flagged[0]?.name?.replace(/\s*\(.*\)$/, "");
+    const chips = [first ? `What does a high or low ${first} mean?` : "What do these numbers mean?", "What should I ask my doctor?", "Is this better than last time?"];
+    const section = document.createElement("section");
+    section.className = "sv-card pv-qa";
+    section.innerHTML = `<h2>Questions about your results</h2>
+      <p class="sv-muted">Answers come only from the summary your clinician approved and your own lab numbers. They are not medical advice. For diagnosis or treatment, ask your doctor.</p>
+      <div class="pv-qa-chips">${chips.map((c) => `<button type="button" class="pv-qa-chip">${esc(c)}</button>`).join("")}</div>
+      <form id="pv-qa-form" class="pv-qa-form"><label for="pv-qa-input" class="pv-sr">Your question</label><input id="pv-qa-input" type="text" maxlength="500" placeholder="Type a question about these results" autocomplete="off" /><button id="pv-qa-send" type="submit">Ask</button></form>
+      <p id="pv-qa-status" class="sv-muted" role="status"></p>
+      <div id="pv-qa-list"></div>`;
+    $("sv-summary").appendChild(section);
+    section.querySelectorAll(".pv-qa-chip").forEach((chip) => chip.addEventListener("click", () => askQuestion(chip.textContent)));
+    $("pv-qa-form").addEventListener("submit", (event) => { event.preventDefault(); askQuestion($("pv-qa-input").value); });
   }
 
   async function load() {
-    const token = new URLSearchParams(window.location.hash.slice(1)).get("t") || "";
+    token = new URLSearchParams(window.location.hash.slice(1)).get("t") || "";
     if (token.length < 20) return fail("This link is incomplete. Please ask your clinic to send it again.");
     try {
       const response = await fetch(`${api}/clinics/packets/view`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token }) });
