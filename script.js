@@ -234,7 +234,6 @@ const LAB_TESTS = [
     { key: "tibc", name: "Iron binding capacity (TIBC)", es: "Capacidad de fijación de hierro", aliases: ["iron binding capacity", "tibc"], what: "How much iron your blood could carry.", whatEs: "Cuánto hierro podría transportar la sangre." },
     { key: "iron", name: "Iron", es: "Hierro", aliases: ["iron, total", "serum iron", "iron(?! binding| saturation|,? sat)"], what: "The iron in your blood, needed to make hemoglobin.", whatEs: "El hierro en la sangre, necesario para formar hemoglobina." },
     { key: "b12", name: "Vitamin B12", es: "Vitamina B12", aliases: ["vitamin b12", "vitamin b-12", "b12", "cobalamin"], what: "A vitamin needed for nerves and red blood cells.", whatEs: "Una vitamina necesaria para los nervios y los glóbulos rojos." },
-    { key: "vitamin_d", name: "Vitamin D", es: "Vitamina D", aliases: ["vitamin d,? 25[- ]?(?:hydroxy|oh)", "vitamin d \\(25[- ]?(?:hydroxy|oh)(?=\\))", "25[- ]?(?:hydroxy|oh) vitamin d", "vitamin d(?:3)?(?![a-z0-9])"], what: "A vitamin that helps keep bones and muscles strong.", whatEs: "Una vitamina que ayuda a mantener fuertes los huesos y los músculos." },
     { key: "folate", name: "Folate", es: "Folato", aliases: ["folate", "folic acid"], what: "A B vitamin needed to make new cells.", whatEs: "Una vitamina B necesaria para formar células nuevas." },
     { key: "uricacid", name: "Uric acid", es: "Ácido úrico", aliases: ["uric acid"], what: "A waste product; high levels can be linked to gout.", whatEs: "Un desecho; si está alto puede relacionarse con la gota." },
     { key: "magnesium", name: "Magnesium", es: "Magnesio", aliases: ["magnesium"], what: "A mineral for muscles, nerves and heart rhythm.", whatEs: "Un mineral para los músculos, los nervios y el ritmo cardíaco." },
@@ -915,7 +914,10 @@ const SOURCES = {
 };
 function planNumber(values, label) {
     const found = values.find((item) => item.label === label);
-    const value = found ? Number(found.value) : NaN;
+    let value = found ? Number(found.value) : NaN;
+    // Plan rules use ng/mL for vitamin D; convert nmol/L results.
+    if (label === "Vitamin D" && /nmol/i.test(found?.unit || ""))
+        value = Math.round((value / 2.496) * 10) / 10;
     return Number.isFinite(value) ? value : null;
 }
 function buildPersonalPlan(analysis, language = "en", reactions = []) {
@@ -5282,7 +5284,7 @@ function readA1cPercent(text) {
 // common target would call the value fine.
 const OUTSIDE_LAB_RANGE = { above: "Above the lab's range", below: "Below the lab's range" };
 
-function buildDetectedReportValues({ ldl, totalCholesterol, triglycerides, a1c, vitaminD, systolic, diastolic }, outside = {}) {
+function buildDetectedReportValues({ ldl, totalCholesterol, triglycerides, a1c, vitaminD, vitaminDUnit = "ng/mL", vitaminDNg = vitaminD, systolic, diastolic }, outside = {}) {
   const useLabRange = (item, key) => {
     if (item && outside[key] && item.flag === "In range discussion") item.flag = OUTSIDE_LAB_RANGE[outside[key]];
     return item;
@@ -5292,7 +5294,7 @@ function buildDetectedReportValues({ ldl, totalCholesterol, triglycerides, a1c, 
     useLabRange(totalCholesterol !== null ? { label: "Total cholesterol", value: totalCholesterol, unit: "mg/dL", flag: totalCholesterol >= 200 ? "Above common target" : "In range discussion" } : null, "totalCholesterol"),
     useLabRange(triglycerides !== null ? { label: "Triglycerides", value: triglycerides, unit: "mg/dL", flag: triglycerides >= 150 ? "Needs attention" : "In range discussion" } : null, "triglycerides"),
     useLabRange(a1c !== null ? { label: "A1C", value: a1c, unit: "%", flag: a1c >= 6.5 ? "Clinician review" : a1c >= 5.7 ? "Needs attention" : "In range discussion" } : null, "a1c"),
-    useLabRange(vitaminD !== null ? { label: "Vitamin D", value: vitaminD, unit: "ng/mL", flag: vitaminD < 30 ? "Needs attention" : "In range discussion" } : null, "vitaminD"),
+    useLabRange(vitaminD !== null ? { label: "Vitamin D", value: vitaminD, unit: vitaminDUnit, flag: vitaminDNg < 30 ? "Needs attention" : "In range discussion" } : null, "vitaminD"),
     systolic !== null ? { label: "Blood pressure", value: `${systolic}/${diastolic || "?"}`, unit: "mmHg", flag: systolic >= 180 ? "Urgent if confirmed" : systolic >= 130 ? "Needs tracking" : "In range discussion" } : null,
   ].filter(Boolean);
 }
@@ -5321,6 +5323,9 @@ function analyzeReportTextLocally(rawText) {
   const systolic = readReportNumber(lower, [/(?:blood pressure|\bbp\b)\D{0,60}(\d{2,3})\s*\/\s*\d{2,3}/i]);
   const diastolic = readReportNumber(lower, [/(?:blood pressure|\bbp\b)\D{0,60}\d{2,3}\s*\/\s*(\d{2,3})/i]);
   const vitaminDMatch = lower.match(/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?\D{0,24}\d+(?:\.\d+)?([^\n]{0,60})/i);
+  // European and UK labs report vitamin D in nmol/L; the common 30 ng/mL cut-off is about 75 nmol/L.
+  const vitaminDUnit = vitaminDMatch && /^\s*nmol\s*\/\s*l/i.test(vitaminDMatch[1]) ? "nmol/L" : "ng/mL";
+  const vitaminDNg = vitaminD === null ? null : vitaminDUnit === "nmol/L" ? Math.round((vitaminD / 2.496) * 10) / 10 : vitaminD;
   const outside = {
     ldl: printedRangeStatus(lower, String.raw`\bldl(?: cholesterol)?`),
     totalCholesterol: printedRangeStatus(lower, String.raw`(?:total cholesterol|cholesterol,?\s*total)`),
@@ -5328,7 +5333,7 @@ function analyzeReportTextLocally(rawText) {
     a1c: printedRangeStatus(lower, String.raw`(?:hemoglobin\s*)?a1c`, 40),
     vitaminD: vitaminDMatch && vitaminD !== null ? compareWithPrintedRange(vitaminD, vitaminDMatch[1]) : null,
   };
-  const labValues = buildDetectedReportValues({ ldl, totalCholesterol, triglycerides, a1c, vitaminD, systolic, diastolic }, outside);
+  const labValues = buildDetectedReportValues({ ldl, totalCholesterol, triglycerides, a1c, vitaminD, vitaminDUnit, vitaminDNg, systolic, diastolic }, outside);
   const labRangeDetail = (key) => {
     const item = labValues.find((value) => value.flag === OUTSIDE_LAB_RANGE[outside[key]]);
     return item ? ` That is ${outside[key]} the range printed on the report.` : "";
@@ -5407,15 +5412,15 @@ function analyzeReportTextLocally(rawText) {
   }
 
   if (vitaminD !== null) {
-    if (vitaminD < 30) {
+    if (vitaminDNg < 30) {
       score -= 4;
-      findings.push({ label: "Vitamin D", level: "Needs attention", detail: `Vitamin D appears around ${vitaminD}.` });
+      findings.push({ label: "Vitamin D", level: "Needs attention", detail: `Vitamin D appears around ${vitaminD} ${vitaminDUnit}.` });
       questions.push("Should I repeat Vitamin D testing or discuss supplementation dose and duration?");
     } else if (outside.vitaminD) {
       score -= 2;
-      findings.push({ label: "Vitamin D", level: OUTSIDE_LAB_RANGE[outside.vitaminD], detail: `Vitamin D appears around ${vitaminD}.${labRangeDetail("vitaminD")}` });
+      findings.push({ label: "Vitamin D", level: OUTSIDE_LAB_RANGE[outside.vitaminD], detail: `Vitamin D appears around ${vitaminD} ${vitaminDUnit}.${labRangeDetail("vitaminD")}` });
     } else {
-      findings.push({ label: "Vitamin D", level: "No obvious issue in pasted text", detail: `Vitamin D appears around ${vitaminD}.` });
+      findings.push({ label: "Vitamin D", level: "No obvious issue in pasted text", detail: `Vitamin D appears around ${vitaminD} ${vitaminDUnit}.` });
     }
   } else if (lower.includes("vitamin d")) {
     findings.push({ label: "Vitamin D", level: "Mentioned", detail: "Vitamin D appears in the report text, but FollowThrough Health could not confidently read the value." });
@@ -5519,7 +5524,7 @@ function analyzeReportTextLocally(rawText) {
   const riskAreas = {
     heart: ldl >= 160 || systolic >= 140 ? "Medium Risk" : ldl >= 130 || totalCholesterol >= 200 || triglycerides >= 150 || systolic >= 130 ? "Needs Attention" : "Low Risk",
     diabetes: a1c >= 6.5 ? "Needs Review" : a1c >= 5.7 ? "Needs Attention" : "Low Risk",
-    vitamins: vitaminD !== null && vitaminD < 30 ? "Needs Attention" : lower.includes("vitamin d") ? "Review Value" : "No clear issue",
+    vitamins: vitaminDNg !== null && vitaminDNg < 30 ? "Needs Attention" : lower.includes("vitamin d") ? "Review Value" : "No clear issue",
   };
 
   return {
