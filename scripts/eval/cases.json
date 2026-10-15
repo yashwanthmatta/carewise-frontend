@@ -182,6 +182,15 @@
     { "id": "inflammation-uk-quest", "format": "quest", "title": "Inflammation Markers", "tests": [
       { "key": "crp", "name": "CRP", "value": "14", "unit": "mg/L", "range": "0-5", "flag": "H", "expect": "high" },
       { "key": "esr", "name": "ESR", "value": "9", "unit": "mm/hr", "range": "1-20", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "coag-quest", "format": "quest", "title": "Coagulation Panel", "tests": [
+      { "key": "pt", "name": "Prothrombin Time", "value": "14.8", "unit": "sec", "range": "9.4-12.5", "flag": "H", "expect": "high" },
+      { "key": "inr", "name": "INR", "value": "1.1", "unit": "", "range": "0.8-1.2", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "minerals-uk-labcorp", "format": "labcorp", "title": "Bone Profile", "tests": [
+      { "key": "magnesium", "name": "Magnesium", "value": "0.62", "unit": "mmol/L", "range": "0.70-1.00", "flag": "Low", "expect": "low" },
+      { "key": "phosphorus", "name": "Phosphate", "value": "1.62", "unit": "mmol/L", "range": "0.81-1.45", "flag": "High", "expect": "high" },
+      { "key": "calcium", "name": "Adjusted Calcium", "value": "2.38", "unit": "mmol/L", "range": "2.20-2.60", "flag": "", "expect": "normal" }
     ]}
   ]
 }
