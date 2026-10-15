@@ -15,13 +15,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-159" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-160" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-159" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-160" />
   </head>
   <body>
     <main class="app-shell">
@@ -511,7 +511,7 @@
             </details>
 
             <div class="db-review" id="db-review" hidden>
-              <div class="db-pane">
+              <div class="db-pane db-wide">
                 <h4>Lab values <span class="db-muted" id="db-review-ref"></span></h4>
                 <div id="db-values"></div>
                 <p class="db-muted">Rows marked "check" had no range printed on the lab, so please confirm them against the original.</p>
@@ -521,20 +521,41 @@
                   <button class="secondary-button compact" type="button" id="db-brief-print">Print brief</button>
                 </details>
               </div>
+              <div class="db-pane db-original-pane">
+                <h4>AI draft <span class="db-muted">as generated, read-only</span></h4>
+                <div class="db-original" id="db-original"></div>
+                <p class="db-muted db-original-q-head">Suggested questions</p>
+                <ul class="db-original-q" id="db-original-questions"></ul>
+              </div>
               <div class="db-pane">
-                <h4>Patient explanation (edit freely)</h4>
-                <textarea id="db-summary" rows="12"></textarea>
+                <h4>Your version <span class="db-muted">edit freely</span></h4>
+                <textarea id="db-summary" rows="12" aria-label="Patient explanation, your version"></textarea>
                 <label>Questions for the visit (one per line)<textarea id="db-questions" rows="3"></textarea></label>
+                <p class="db-muted" id="db-edit-note">No changes yet. Approving now sends the AI draft as it is.</p>
                 <div class="db-actions">
                   <button class="primary-button" type="button" id="db-approve">Approve and create patient link</button>
                   <button class="secondary-button" type="button" id="db-followup">Needs follow-up call</button>
                   <button class="text-button" type="button" id="db-save">Save draft</button>
+                  <button class="text-button" type="button" id="db-reset">Reset to AI draft</button>
                   <button class="text-button db-reject" type="button" id="db-reject">Reject</button>
                 </div>
                 <p class="db-muted" id="db-approver-note" hidden>Front desk can prepare drafts. A clinician approves or rejects them.</p>
+                <p class="db-muted">Every save and approval keeps both versions, so your edits can improve future drafts.</p>
                 <div class="db-link" id="db-link" hidden>
                   <label>Patient link (works 30 days)<input id="db-link-url" type="text" readonly /></label>
-                  <button class="secondary-button" type="button" id="db-copy">Copy link</button>
+                  <div class="db-actions">
+                    <a class="primary-button" id="db-email-patient" href="#">Email to patient</a>
+                    <button class="secondary-button" type="button" id="db-copy">Copy link</button>
+                  </div>
+                  <p class="db-muted">"Email to patient" opens your own email app with the message written for you; add the patient's address there. FollowThrough Health never sees or stores it.</p>
+                </div>
+                <div class="db-link" id="db-link-tools" hidden>
+                  <p class="db-muted" id="db-link-state"></p>
+                  <div class="db-actions">
+                    <button class="secondary-button" type="button" id="db-new-link">Send a new link</button>
+                    <button class="text-button db-reject" type="button" id="db-revoke-link">Turn off patient link</button>
+                  </div>
+                  <p class="db-muted">A new link replaces the old one; turning it off stops it working at once (for a link sent to the wrong person).</p>
                 </div>
               </div>
             </div>
@@ -2477,12 +2498,12 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-159"></script>
-    <script src="help.js?v=carewise-product-159"></script>
-    <script src="doctor-share.js?v=carewise-product-159"></script>
-    <script src="docbridge.js?v=carewise-product-159"></script>
-    <script src="reminders.js?v=carewise-product-159"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-159"></script>
-    <script src="twofactor.js?v=carewise-product-159"></script>
+    <script src="script.js?v=carewise-product-160"></script>
+    <script src="help.js?v=carewise-product-160"></script>
+    <script src="doctor-share.js?v=carewise-product-160"></script>
+    <script src="docbridge.js?v=carewise-product-160"></script>
+    <script src="reminders.js?v=carewise-product-160"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-160"></script>
+    <script src="twofactor.js?v=carewise-product-160"></script>
   </body>
 </html>
