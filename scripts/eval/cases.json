@@ -191,6 +191,14 @@
       { "key": "magnesium", "name": "Magnesium", "value": "0.62", "unit": "mmol/L", "range": "0.70-1.00", "flag": "Low", "expect": "low" },
       { "key": "phosphorus", "name": "Phosphate", "value": "1.62", "unit": "mmol/L", "range": "0.81-1.45", "flag": "High", "expect": "high" },
       { "key": "calcium", "name": "Adjusted Calcium", "value": "2.38", "unit": "mmol/L", "range": "2.20-2.60", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "glucose-uk-quest-mmol", "format": "quest", "title": "Fasting Glucose and Lipids", "tests": [
+      { "key": "glucose", "name": "Fasting Glucose", "value": "7.2", "unit": "mmol/L", "range": "3.9-5.5", "flag": "H", "expect": "high" },
+      { "key": "hdl", "name": "HDL Cholesterol", "value": "1.3", "unit": "mmol/L", "range": ">1.0", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "a1c-eu-table-commas", "format": "table", "title": "Diabetes Monitoring", "tests": [
+      { "key": "a1c", "name": "HbA1c", "value": "6,4", "unit": "%", "range": "4,0-5,6", "flag": "H", "expect": "high" },
+      { "key": "creatinine", "name": "Creatinine", "value": "0,82", "unit": "mg/dL", "range": "0,50-0,90", "flag": "", "expect": "normal" }
     ]}
   ]
 }
