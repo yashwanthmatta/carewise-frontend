@@ -6563,6 +6563,12 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .db-pane { padding: 16px; border: 2px solid var(--lp-teal, #0f766e); border-radius: 16px; background: #fff; display: grid; gap: 10px; align-content: start; }
 .db-pane h4 { margin: 0; }
 .db-pane textarea#db-summary { min-height: 260px; line-height: 1.5; }
+.db-pane.db-wide { grid-column: 1 / -1; }
+.db-original-pane { background: #f6f8f8; border-style: dashed; }
+.db-original { white-space: pre-wrap; line-height: 1.5; min-height: 120px; color: #26323a; }
+.db-original-q-head { margin: 4px 0 0; }
+.db-original-q { margin: 0; padding-left: 20px; }
+#db-link-tools[hidden] { display: none !important; }
 .db-table { overflow-x: auto; }
 .db-table table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 .db-table th, .db-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--lp-line, #e2dcd2); }

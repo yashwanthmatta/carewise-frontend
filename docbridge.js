@@ -240,6 +240,91 @@
     win.print();
   }
 
+  // Left pane: the draft exactly as generated. Right pane: the doctor's version.
+  function showOriginal(summary, questions) {
+    if (current) current.original = { summary: summary || "", questions: questions || [] };
+    $("db-original").textContent = summary || "No draft text: nothing could be read from this lab.";
+    $("db-original-questions").innerHTML = (questions || []).map((q) => `<li>${escapeHtml(q)}</li>`).join("") || "<li>None</li>";
+    updateEditNote();
+  }
+
+  function updateEditNote() {
+    const original = current?.original;
+    if (!original) return;
+    const { summary, questions } = editPayload();
+    const changed = summary.trim() !== original.summary.trim() || questions.join("\n") !== original.questions.join("\n");
+    $("db-edit-note").textContent = changed
+      ? "You changed the draft. Approving sends your version; the AI draft and your edits are both kept."
+      : "No changes yet. Approving now sends the AI draft as it is.";
+  }
+
+  function resetToOriginal() {
+    if (!current?.original) return;
+    $("db-summary").value = current.original.summary;
+    $("db-questions").value = current.original.questions.join("\n");
+    updateEditNote();
+    say("Your version is back to the AI draft. Nothing is saved until you save or approve.");
+  }
+
+  function patientUrl(token) {
+    return `${window.location.origin}/packet.html#t=${encodeURIComponent(token)}`;
+  }
+
+  function showPatientLink(token) {
+    $("db-link-url").value = patientUrl(token);
+    $("db-email-patient").href = patientEmailHref(patientUrl(token));
+    $("db-link").hidden = false;
+  }
+
+  // A mailto link that opens the doctor's own email app; the patient's address is typed
+  // there and never reaches FollowThrough Health.
+  function patientEmailHref(url) {
+    const office = clinic?.name || "your care team";
+    const signoff = [clinic?.clinician_name, clinic?.name].filter(Boolean).join(", ");
+    const subject = `Your lab results from ${office}`;
+    const body = `Hello,\n\nYour clinician has reviewed your recent lab results and written a short explanation for you. You can read it here (the link works for 30 days):\n\n${url}\n\nThis explanation is educational and is not a diagnosis. If you have questions, please contact our office.\n\n${signoff}`.trim();
+    return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  function setReviewMode(packet) {
+    const approved = packet?.status === "approved";
+    const closed = approved || packet?.status === "rejected";
+    ["db-summary", "db-questions"].forEach((id) => { $(id).readOnly = closed; });
+    ["db-save", "db-followup", "db-reset"].forEach((id) => { $(id).hidden = closed; });
+    $("db-approve").hidden = closed || !canApprove();
+    $("db-reject").hidden = closed || !canApprove();
+    $("db-edit-note").hidden = closed;
+    $("db-link-tools").hidden = !(approved && canApprove());
+    if (approved) $("db-link-state").textContent = packet.link_active ? "The patient link is on." : "The patient link is off. Send a new link if the patient still needs it.";
+  }
+
+  async function newPatientLink() {
+    if (!current) return;
+    try {
+      const packet = await apiPost(`/clinics/${clinic.id}/packets/${current.packetId}/new-link`, {});
+      showPatientLink(packet.patient_token);
+      setReviewMode(packet);
+      say("New patient link ready. Any earlier link for this lab no longer works.");
+      refresh();
+    } catch {
+      say("Could not create a new link. Please try again.");
+    }
+  }
+
+  async function revokePatientLink() {
+    if (!current) return;
+    if (!window.confirm("Turn off the patient link? Anyone who has it will no longer be able to open it.")) return;
+    try {
+      const packet = await apiPost(`/clinics/${clinic.id}/packets/${current.packetId}/revoke-link`, {});
+      $("db-link").hidden = true;
+      setReviewMode(packet);
+      say("Patient link turned off. It stopped working right away.");
+      refresh();
+    } catch {
+      say("Could not turn off the link. Please try again.");
+    }
+  }
+
   function renderReview(markers, patientRef, labDate = "") {
     $("db-review-ref").textContent = `· ${patientRef}`;
     $("db-values").innerHTML = markers.length ? `<div class="db-table"><table><tr><th>Test</th><th>Result</th><th>Range</th><th>Status</th></tr>${markers.map((m) => `
@@ -248,8 +333,7 @@
     $("db-link").hidden = true;
     if (current) current.labDate = current.labDate || labDate;
     renderBrief();
-    $("db-approve").hidden = !canApprove();
-    $("db-reject").hidden = !canApprove();
+    setReviewMode(current?.packet);
     $("db-approver-note").hidden = canApprove();
     if (typeof scrollBelowHeader === "function") scrollBelowHeader($("db-review"));
     else $("db-review").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -282,9 +366,10 @@
     const questions = (analysis.questions || []).slice(0, 3);
     try {
       const packet = await apiPost(`/clinics/${clinic.id}/packets`, { patient_ref: patientRef, lab_date: labDate, markers, summary, questions, deidentified_confirmed: true, ...DRAFT_VERSION });
-      current = { packetId: packet.id, markers, patientRef, labDate };
+      current = { packetId: packet.id, markers, patientRef, labDate, packet };
       $("db-summary").value = summary;
       $("db-questions").value = questions.join("\n");
+      showOriginal(packet.draft || summary, packet.draft_questions || questions);
       renderReview(markers, patientRef, labDate);
       say("Draft ready. Edit anything, then approve. The review timer started when the draft was made.");
       refresh();
@@ -302,10 +387,10 @@
     if (!$("db-summary").value.trim()) return say("Add the patient explanation before approving.");
     try {
       const packet = await apiPost(`/clinics/${clinic.id}/packets/${current.packetId}/approve`, editPayload());
-      $("db-link-url").value = `${window.location.origin}/packet.html#t=${encodeURIComponent(packet.patient_token)}`;
-      $("db-link").hidden = false;
-      say(`Approved by ${packet.approved_by_name} in ${packet.review_seconds < 120 ? `${packet.review_seconds} seconds` : `${Math.round(packet.review_seconds / 60)} minutes`}. Send the link to the patient through your usual secure channel.`);
-      current = null;
+      showPatientLink(packet.patient_token);
+      current.packet = packet;
+      setReviewMode(packet);
+      say(`Approved by ${packet.approved_by_name} in ${packet.review_seconds < 120 ? `${packet.review_seconds} seconds` : `${Math.round(packet.review_seconds / 60)} minutes`}. Tap "Email to patient" or copy the link into your usual secure channel.`);
       refresh();
     } catch (error) {
       say(/409/.test(String(error?.message)) ? "This lab was already approved." : "Approval failed. Please try again.");
@@ -358,9 +443,10 @@
       const summary = markers.length ? draftText(analysis, markers, labDate) : "";
       const questions = (analysis.questions || []).slice(0, 3);
       const saved = await apiPut(`/clinics/${clinic.id}/packets/${p.id}`, { summary, questions, markers, lab_date: labDate, ...DRAFT_VERSION });
-      current = { packetId: saved.id, markers: saved.markers, patientRef: saved.patient_ref, labDate: saved.lab_date || labDate };
+      current = { packetId: saved.id, markers: saved.markers, patientRef: saved.patient_ref, labDate: saved.lab_date || labDate, packet: saved };
       $("db-summary").value = saved.summary;
       $("db-questions").value = (saved.questions || []).join("\n");
+      showOriginal(saved.draft || saved.summary, saved.draft_questions || saved.questions || []);
       renderReview(saved.markers, saved.patient_ref, current.labDate);
       say(markers.length ? "Draft ready from the emailed lab. Edit anything, then approve." : "No values could be read from this PDF. Type the key values into the explanation yourself.");
       refresh();
@@ -377,9 +463,10 @@
       draftEmailedPacket(p);
       return;
     }
-    current = { packetId: p.id, markers: p.markers, patientRef: p.patient_ref, labDate: p.lab_date || "" };
+    current = { packetId: p.id, markers: p.markers, patientRef: p.patient_ref, labDate: p.lab_date || "", packet: p };
     $("db-summary").value = p.summary;
     $("db-questions").value = (p.questions || []).join("\n");
+    showOriginal(p.draft || p.summary, p.draft_questions || p.questions || []);
     renderReview(p.markers, p.patient_ref, current.labDate);
   }
 
@@ -617,7 +704,10 @@
   $("db-refresh").addEventListener("click", refresh);
   $("db-brief-print").addEventListener("click", printBrief);
   $("db-brief").addEventListener("toggle", (event) => { if (event.target.open) renderBrief(); });
-  ["db-summary", "db-questions"].forEach((id) => $(id).addEventListener("input", () => { if ($("db-brief").open) renderBrief(); }));
+  ["db-summary", "db-questions"].forEach((id) => $(id).addEventListener("input", () => { updateEditNote(); if ($("db-brief").open) renderBrief(); }));
+  $("db-reset").addEventListener("click", resetToOriginal);
+  $("db-new-link").addEventListener("click", newPatientLink);
+  $("db-revoke-link").addEventListener("click", revokePatientLink);
   $("db-copy").addEventListener("click", () => {
     $("db-link-url").select();
     navigator.clipboard?.writeText($("db-link-url").value).then(() => say("Patient link copied.")).catch(() => say("Select the link and copy it."));
