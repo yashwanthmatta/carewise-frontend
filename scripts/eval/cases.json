@@ -176,7 +176,7 @@
       { "key": "ft4", "name": "Free T4", "value": "25.1", "unit": "pmol/L", "range": "12.0-22.0", "flag": "H", "expect": "high" }
     ]},
     { "id": "vitamins-eu-list-commas", "format": "list", "title": "Vitamin Panel", "tests": [
-      { "key": "vitamin_d", "name": "Vitamin D (25-OH)", "value": "38,5", "unit": "nmol/L", "range": "50,0-125,0", "flag": "L", "expect": "low" },
+      { "key": "vitd", "name": "Vitamin D (25-OH)", "value": "38,5", "unit": "nmol/L", "range": "50,0-125,0", "flag": "L", "expect": "low" },
       { "key": "b12", "name": "Vitamin B12", "value": "310", "unit": "pmol/L", "range": "145-569", "flag": "", "expect": "normal" }
     ]},
     { "id": "inflammation-uk-quest", "format": "quest", "title": "Inflammation Markers", "tests": [
