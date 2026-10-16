@@ -15,13 +15,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-160" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-161" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-160" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-161" />
   </head>
   <body>
     <main class="app-shell">
@@ -85,7 +85,7 @@
           </section>
 
           <section class="lp-strip" aria-label="What FollowThrough Health does">
-            <p class="lp-strip-label">Built for <b>families</b>, not clinics</p>
+            <p class="lp-strip-label">Built for <b>families</b></p>
             <ul>
               <li><strong>PDFs and photos</strong><span>Snap the WhatsApp photo or drop the lab PDF.</span></li>
               <li><strong>Your lab's own range</strong><span>Every result compared with the range on the report.</span></li>
@@ -104,17 +104,36 @@
                 <li><button type="button" aria-expanded="false">"I forgot what to ask."</button><p>Questions written from your numbers, and a short one-page brief for your doctor.</p><span class="lp-acc-bar" aria-hidden="true"></span></li>
               </ol>
             </div>
-            <div class="lp-result" aria-live="polite">
-              <p class="lp-eyebrow lp-eyebrow-light">Result</p>
+            <div class="lp-result" aria-live="polite" data-lp-card data-index="0">
+              <p class="lp-eyebrow lp-eyebrow-light">With FollowThrough Health</p>
               <p class="lp-result-big" data-lp-result>Plain words</p>
               <p class="lp-result-sub" data-lp-result-sub>Every result, in language your family uses.</p>
+              <div class="lp-ba" aria-hidden="true">
+                <div class="lp-ba-panel" data-panel="0">
+                  <p class="lp-ba-label">What the lab printed</p>
+                  <p class="lp-ba-raw">eGFR <b>28</b> mL/min/1.73m² <span>L</span> <em>(&gt;60)</em></p>
+                  <p class="lp-ba-label">What you read</p>
+                  <p class="lp-ba-plain">Kidney filtering is far below the lab's range. One to ask your doctor about soon.</p>
+                </div>
+                <div class="lp-ba-panel" data-panel="1">
+                  <p class="lp-ba-label">What the lab printed</p>
+                  <p class="lp-ba-raw">Glucose <b>45</b> mg/dL <span>LL</span> <em>(70-99)</em></p>
+                  <p class="lp-ba-label">What you read</p>
+                  <p class="lp-ba-plain lp-ba-urgent">Possible danger level. Contact your doctor today, or seek emergency care if you feel very unwell.</p>
+                </div>
+                <div class="lp-ba-panel" data-panel="2">
+                  <p class="lp-ba-label">Questions for the visit</p>
+                  <ol class="lp-ba-q"><li>Which results are far outside the range?</li><li>How soon should I be seen about them?</li><li>When should these labs be repeated?</li></ol>
+                  <p class="lp-ba-plain">Plus a one-page doctor brief to print or share.</p>
+                </div>
+              </div>
               <a class="lp-result-link" href="#report-title">Try it on a sample report <span aria-hidden="true">→</span></a>
             </div>
           </section>
 
           <section class="lp-sentence" aria-label="Watch the demo">
             <p><span>From a photo</span>
-              <button class="lp-pill-video" type="button" data-start-tour><span class="lp-pill-lines" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="lp-pill-label">Watch the 1-minute demo <span class="lp-play" aria-hidden="true"></span></span></button>
+              <button class="lp-pill-video" type="button" data-start-tour><span class="lp-pill-play" aria-hidden="true"></span><span class="lp-pill-label">Watch the 1-minute demo</span></button>
               <span>to your doctor</span></p>
           </section>
 
@@ -177,6 +196,33 @@
             <p class="lp-fine">FollowThrough Health is not a diagnosis, prescription, emergency service, or replacement for licensed medical care. If you feel very unwell, call your local emergency number.</p>
           </section>
 
+          <section class="lp-doctors" id="for-doctors" aria-labelledby="lp-doctors-title">
+            <div class="lp-doctors-copy">
+              <p class="lp-eyebrow">For clinics · DocBridge pilot</p>
+              <h2 id="lp-doctors-title">Lab results explained to patients, approved by you.</h2>
+              <p class="lp-doctors-lede">DocBridge drafts a plain-language explanation of each lab. You edit it, approve it, and your patient gets a private link. Nothing reaches a patient without a clinician's approval.</p>
+              <ul class="lp-doctors-list">
+                <li><b>Draft in seconds.</b> Upload or forward a lab PDF; the draft is ready to review.</li>
+                <li><b>You stay in charge.</b> The AI draft sits beside your version; change any word, then approve.</li>
+                <li><b>Send in one tap.</b> Email the private link from your own inbox; turn it off any time.</li>
+              </ul>
+              <div class="lp-actions lp-actions-left">
+                <a class="lp-btn lp-btn-dark" href="#docbridge-title">Join the doctor pilot</a>
+              </div>
+              <p class="lp-fine">Pilot: de-identified or sample labs only.</p>
+            </div>
+            <div class="lp-doctors-visual" aria-label="Example: the DocBridge review screen">
+              <article class="lp-mock lp-mock-db">
+                <header class="lp-mock-bar"><span></span><span></span><span></span><b>DocBridge · REF-1042</b></header>
+                <div class="lp-db-panes">
+                  <div class="lp-db-pane lp-db-ai"><p class="lp-db-h">AI draft</p><p>Hi, here are your lab results from October 1, explained in plain words.</p><p>Your LDL cholesterol is 148 mg/dL, above the usual range (&lt;100).</p></div>
+                  <div class="lp-db-pane lp-db-you"><p class="lp-db-h">Your version</p><p>Hi, here are your lab results from October 1, explained in plain words.</p><p>Your LDL cholesterol is 148 mg/dL, above the usual range (&lt;100). <mark>We'll go over it together at your next visit.</mark></p></div>
+                </div>
+                <footer class="lp-db-foot"><span class="lp-db-note">You changed the draft. Both versions are kept.</span><span class="lp-db-approve">Approve and send</span></footer>
+              </article>
+            </div>
+          </section>
+
           <section class="lp-pricing" id="pricing" aria-labelledby="lp-pricing-title">
             <p class="lp-eyebrow">Pricing</p>
             <h2 id="lp-pricing-title">Free to start. Families pay for the whole family.</h2>
@@ -198,7 +244,7 @@
 
           <footer class="lp-footer">
             <div><strong>FollowThrough Health</strong><span>Educational health report explainer. Not a diagnosis and not medical advice.</span></div>
-            <nav aria-label="Legal"><a href="glossary.html">Lab test glossary</a><a href="legal/security.html">Security</a><a href="legal/privacy.html">Privacy</a><a href="legal/terms.html">Terms</a><a href="legal/disclaimer.html">Disclaimer</a><a href="legal/data-deletion.html">Delete my data</a></nav>
+            <nav aria-label="Legal"><a href="#for-doctors">For doctors</a><a href="glossary.html">Lab test glossary</a><a href="legal/security.html">Security</a><a href="legal/privacy.html">Privacy</a><a href="legal/terms.html">Terms</a><a href="legal/disclaimer.html">Disclaimer</a><a href="legal/data-deletion.html">Delete my data</a></nav>
           </footer>
         </div>
 
@@ -2498,12 +2544,12 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-160"></script>
-    <script src="help.js?v=carewise-product-160"></script>
-    <script src="doctor-share.js?v=carewise-product-160"></script>
-    <script src="docbridge.js?v=carewise-product-160"></script>
-    <script src="reminders.js?v=carewise-product-160"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-160"></script>
-    <script src="twofactor.js?v=carewise-product-160"></script>
+    <script src="script.js?v=carewise-product-161"></script>
+    <script src="help.js?v=carewise-product-161"></script>
+    <script src="doctor-share.js?v=carewise-product-161"></script>
+    <script src="docbridge.js?v=carewise-product-161"></script>
+    <script src="reminders.js?v=carewise-product-161"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-161"></script>
+    <script src="twofactor.js?v=carewise-product-161"></script>
   </body>
 </html>
