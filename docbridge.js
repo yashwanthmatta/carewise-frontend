@@ -273,6 +273,9 @@
   function showPatientLink(token) {
     $("db-link-url").value = patientUrl(token);
     $("db-email-patient").href = patientEmailHref(patientUrl(token));
+    const short = patientShortMessage(patientUrl(token));
+    $("db-whatsapp-patient").href = `https://wa.me/?text=${encodeURIComponent(short)}`;
+    $("db-sms-patient").href = `sms:?&body=${encodeURIComponent(short)}`;
     $("db-link").hidden = false;
   }
 
@@ -284,6 +287,11 @@
     const subject = `Your lab results from ${office}`;
     const body = `Hello,\n\nYour clinician has reviewed your recent lab results and written a short explanation for you. You can read it here (the link works for 30 days):\n\n${url}\n\nThis explanation is educational and is not a diagnosis. If you have questions, please contact our office.\n\n${signoff}`.trim();
     return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  function patientShortMessage(url) {
+    const office = clinic?.name || "your care team";
+    return `Your lab results from ${office}, explained in plain words by your clinician (link works 30 days): ${url} This is educational and not a diagnosis. Questions? Please contact our office.`;
   }
 
   function setReviewMode(packet) {
@@ -346,8 +354,42 @@
     return $("db-text").value;
   }
 
+  // Many PDFs at once: each is read on this device and saved as its own draft with a
+  // fresh reference code. File names stay on this device (they may hold patient names).
+  async function createBatchDrafts(files) {
+    if (!$("db-deid").checked) return say("Please confirm the labs are de-identified or samples. That's required during the pilot.");
+    const rows = [];
+    let made = 0;
+    for (const [index, file] of files.entries()) {
+      say(`Reading lab ${index + 1} of ${files.length} on this device…`);
+      const ref = `REF-${String(Math.floor(100000 + Math.random() * 900000))}`;
+      try {
+        const text = (/pdf$/i.test(file.name || "") ? await extractPdfText(file) : await file.text()).trim();
+        if (!text) throw new Error("empty");
+        const analysis = analyzeReportTextLocally(text);
+        const markers = markersFrom(analysis, text);
+        const labDate = $("db-lab-date").value || labDateFrom(text);
+        const summary = markers.length ? draftText(analysis, markers, labDate) : "";
+        const questions = (analysis.questions || []).slice(0, 3);
+        await apiPost(`/clinics/${clinic.id}/packets`, { patient_ref: ref, lab_date: labDate, markers, summary, questions, deidentified_confirmed: true, ...DRAFT_VERSION });
+        const flagged = markers.filter(isFlagged).length;
+        rows.push({ name: file.name, ref, note: markers.length ? `${markers.length} results, ${flagged} to check` : "no values read: needs manual review" });
+        made += 1;
+      } catch {
+        rows.push({ name: file.name, ref: "", note: "could not be read or saved" });
+      }
+    }
+    $("db-batch").innerHTML = `<h4>${made} of ${files.length} drafts ready</h4><p class="db-muted">Match each code to your patient. This list is only on this screen and is not saved.</p><table><tr><th>File</th><th>Code</th><th>Result</th></tr>${rows.map((row) => `<tr><td>${escapeHtml(row.name)}</td><td>${escapeHtml(row.ref || "—")}</td><td>${escapeHtml(row.note)}</td></tr>`).join("")}</table>`;
+    $("db-batch").hidden = false;
+    $("db-file").value = "";
+    say(`${made} drafts are in the inbox below. Open each one to review and approve.`);
+    refresh();
+  }
+
   async function createDraft() {
     if (!clinic) return;
+    const files = [...($("db-file").files || [])];
+    if (files.length > 1) return createBatchDrafts(files);
     const patientRef = $("db-patient-ref").value.trim();
     if (!patientRef) return say("Add a patient reference (an ID or initials, never a full name).");
     if (!$("db-deid").checked) return say("Please confirm the lab is de-identified or a sample. That's required during the pilot.");

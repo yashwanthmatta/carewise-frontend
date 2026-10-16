@@ -6748,3 +6748,9 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
   .lp-db-foot { flex-direction: column; align-items: flex-start; }
   .lp-result { padding: 32px 22px; min-height: 0; }
 }
+
+.db-batch { margin-top: 12px; padding: 16px; border: 1px solid var(--lp-line, #e5e1da); border-radius: 14px; background: #fff; display: grid; gap: 8px; }
+.db-batch[hidden] { display: none !important; }
+.db-batch h4 { margin: 0; }
+.db-batch table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.db-batch th, .db-batch td { text-align: left; padding: 6px 8px; border-top: 1px solid #eee; }
