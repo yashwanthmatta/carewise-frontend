@@ -199,6 +199,15 @@
     { "id": "a1c-eu-table-commas", "format": "table", "title": "Diabetes Monitoring", "tests": [
       { "key": "a1c", "name": "HbA1c", "value": "6,4", "unit": "%", "range": "4,0-5,6", "flag": "H", "expect": "high" },
       { "key": "creatinine", "name": "Creatinine", "value": "0,82", "unit": "mg/dL", "range": "0,50-0,90", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "psa-eu-list-commas", "format": "list", "title": "Prostate and Liver Check", "tests": [
+      { "key": "psa", "name": "PSA total", "value": "4,6", "unit": "ng/mL", "range": "0,0-4,0", "flag": "H", "expect": "high" },
+      { "key": "bilirubin", "name": "Bilirubin total", "value": "9", "unit": "umol/L", "range": "3-21", "flag": "", "expect": "normal" },
+      { "key": "protein", "name": "Total protein", "value": "58", "unit": "g/L", "range": "60-80", "flag": "L", "expect": "low" }
+    ]},
+    { "id": "coag-eu-table-commas", "format": "table", "title": "Clotting Screen", "tests": [
+      { "key": "pt", "name": "Prothrombin time", "value": "11,9", "unit": "s", "range": "9,5-13,5", "flag": "", "expect": "normal" },
+      { "key": "inr", "name": "INR", "value": "1,6", "unit": "", "range": "0,8-1,2", "flag": "H", "expect": "high" }
     ]}
   ]
 }
