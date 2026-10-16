@@ -15,13 +15,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-161" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-162" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-161" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-162" />
   </head>
   <body>
     <main class="app-shell">
@@ -546,7 +546,7 @@
               <div class="db-grid">
                 <label>Patient reference<input id="db-patient-ref" type="text" maxlength="60" placeholder="e.g. REF-1042 (no names or initials)" /></label>
                 <label>Lab date<input id="db-lab-date" type="date" /></label>
-                <label>Lab PDF<input id="db-file" type="file" accept="application/pdf,.pdf,.txt,text/plain" /></label>
+                <label>Lab PDFs (one or many)<input id="db-file" type="file" multiple accept="application/pdf,.pdf,.txt,text/plain" /></label>
               </div>
               <label>Or paste the lab text<textarea id="db-text" rows="4" placeholder="LDL cholesterol 148 mg/dL (ref <100) H"></textarea></label>
               <label class="db-check"><input id="db-deid" type="checkbox" /> This lab is de-identified or a sample (pilot rule)</label>
@@ -591,9 +591,11 @@
                   <label>Patient link (works 30 days)<input id="db-link-url" type="text" readonly /></label>
                   <div class="db-actions">
                     <a class="primary-button" id="db-email-patient" href="#">Email to patient</a>
+                    <a class="secondary-button" id="db-whatsapp-patient" href="#" target="_blank" rel="noopener">WhatsApp</a>
+                    <a class="secondary-button" id="db-sms-patient" href="#">Text message</a>
                     <button class="secondary-button" type="button" id="db-copy">Copy link</button>
                   </div>
-                  <p class="db-muted">"Email to patient" opens your own email app with the message written for you; add the patient's address there. FollowThrough Health never sees or stores it.</p>
+                  <p class="db-muted">Email, WhatsApp and Text message open your own app with the message written for you; you pick the patient there. FollowThrough Health never sees or stores their address or number.</p>
                 </div>
                 <div class="db-link" id="db-link-tools" hidden>
                   <p class="db-muted" id="db-link-state"></p>
@@ -606,6 +608,7 @@
               </div>
             </div>
             <p class="status-line" id="db-status" role="status"></p>
+            <div class="db-batch" id="db-batch" hidden></div>
 
             <div class="db-block">
               <div class="db-list-head"><h4>Inbox</h4><button class="text-button" type="button" id="db-refresh">Refresh</button></div>
@@ -2544,12 +2547,12 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-161"></script>
-    <script src="help.js?v=carewise-product-161"></script>
-    <script src="doctor-share.js?v=carewise-product-161"></script>
-    <script src="docbridge.js?v=carewise-product-161"></script>
-    <script src="reminders.js?v=carewise-product-161"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-161"></script>
-    <script src="twofactor.js?v=carewise-product-161"></script>
+    <script src="script.js?v=carewise-product-162"></script>
+    <script src="help.js?v=carewise-product-162"></script>
+    <script src="doctor-share.js?v=carewise-product-162"></script>
+    <script src="docbridge.js?v=carewise-product-162"></script>
+    <script src="reminders.js?v=carewise-product-162"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-162"></script>
+    <script src="twofactor.js?v=carewise-product-162"></script>
   </body>
 </html>
