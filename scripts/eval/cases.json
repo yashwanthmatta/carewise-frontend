@@ -216,6 +216,15 @@
     { "id": "urate-uk-list", "format": "list", "title": "Gout Screen", "tests": [
       { "key": "uricacid", "name": "Urate", "value": "472", "unit": "umol/L", "range": "200-430", "flag": "H", "expect": "high" },
       { "key": "creatinine", "name": "Creatinine", "value": "88", "unit": "umol/L", "range": "59-104", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "fbc-uk-list", "format": "list", "title": "Full Blood Count", "tests": [
+      { "key": "hemoglobin", "name": "Haemoglobin", "value": "128", "unit": "g/L", "range": "115-165", "flag": "", "expect": "normal" },
+      { "key": "wbc", "name": "White cell count", "value": "3.2", "unit": "x10^9/L", "range": "4.0-11.0", "flag": "L", "expect": "low" },
+      { "key": "platelets", "name": "Platelet count", "value": "452", "unit": "x10^9/L", "range": "150-400", "flag": "H", "expect": "high" }
+    ]},
+    { "id": "lipid-quest-nonhdl-mmol", "format": "quest", "title": "Lipid Profile", "tests": [
+      { "key": "totalchol", "name": "Total Cholesterol", "value": "6.1", "unit": "mmol/L", "range": "<5.0", "flag": "H", "expect": "high", "shown": "236" },
+      { "key": "trig", "name": "Triglycerides", "value": "1.4", "unit": "mmol/L", "range": "<1.7", "flag": "", "expect": "normal", "shown": "124" }
     ]}
   ]
 }
