@@ -24,6 +24,18 @@ function extractEventIds(script) {
   return [...script.matchAll(/addEventListener\(\s*["'][^"']+["'][\s\S]*?document\.querySelector\(\s*["']#([A-Za-z][A-Za-z0-9_-]*)["']\s*\)/g)].map((match) => match[1]);
 }
 
+function nullSafeEverywhere(script, id) {
+  const escaped = id.replace(/[-]/g, "\\-");
+  const uses = [...script.matchAll(new RegExp(`(const (\\w+) = )?document\\.querySelector\\(\\s*["']#${escaped}["']\\s*\\)`, "g"))];
+  return uses.length > 0 && uses.every((match) => {
+    const after = script.slice(match.index + match[0].length, match.index + match[0].length + 160);
+    const before = script.slice(Math.max(0, match.index - 8), match.index);
+    if (after.startsWith("?.") || after.startsWith(" || detachedElement()") || after.startsWith(" &&") || before.endsWith("Boolean(") || before.endsWith("&& ")) return true;
+    if (before.endsWith("if (!") && after.startsWith(")) return;")) return true;
+    return Boolean(match[2]) && new RegExp(`^;\\s*\\n\\s*if \\(${match[2]}\\)`).test(after);
+  });
+}
+
 function extractServiceWorkerAssets(serviceWorker) {
   const assetList = serviceWorker.match(/const STATIC_ASSETS = \[([\s\S]*?)\];/);
   if (!assetList) return [];
@@ -40,7 +52,8 @@ async function main() {
   const ids = extractIds(html);
   const dynamicResultIds = new Set(["doctor-summary", "save-status"]);
   const usedIds = unique([...extractQuerySelectorIds(script), ...extractEventIds(script)]).filter((id) => !dynamicResultIds.has(id));
-  const missingIds = usedIds.filter((id) => !ids.has(id));
+  // Ids of removed panels are allowed only when every reference is null-safe.
+  const missingIds = usedIds.filter((id) => !ids.has(id) && !nullSafeEverywhere(script, id));
 
   const cachedAssets = unique(extractServiceWorkerAssets(serviceWorker));
   const missingCachedAssets = [];
