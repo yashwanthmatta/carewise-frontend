@@ -9968,6 +9968,8 @@ document.querySelectorAll("[data-start-tour]").forEach((element) => element.addE
     });
     if (big) big.textContent = results[index][0];
     if (sub) sub.textContent = results[index][1];
+    const card = document.querySelector("[data-lp-card]");
+    if (card) card.dataset.index = String(index);
   };
   items.forEach((item, index) => item.querySelector("button").addEventListener("click", () => select(index)));
   list.addEventListener("mouseenter", () => { paused = true; });
