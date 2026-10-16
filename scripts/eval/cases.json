@@ -208,6 +208,14 @@
     { "id": "coag-eu-table-commas", "format": "table", "title": "Clotting Screen", "tests": [
       { "key": "pt", "name": "Prothrombin time", "value": "11,9", "unit": "s", "range": "9,5-13,5", "flag": "", "expect": "normal" },
       { "key": "inr", "name": "INR", "value": "1,6", "unit": "", "range": "0,8-1,2", "flag": "H", "expect": "high" }
+    ]},
+    { "id": "iron-eu-table-commas", "format": "table", "title": "Iron Studies", "tests": [
+      { "key": "iron", "name": "Serum iron", "value": "8,2", "unit": "umol/L", "range": "10,0-30,0", "flag": "L", "expect": "low" },
+      { "key": "ferritin", "name": "Ferritin", "value": "12", "unit": "ug/L", "range": "15-150", "flag": "L", "expect": "low" }
+    ]},
+    { "id": "urate-uk-list", "format": "list", "title": "Gout Screen", "tests": [
+      { "key": "uricacid", "name": "Urate", "value": "472", "unit": "umol/L", "range": "200-430", "flag": "H", "expect": "high" },
+      { "key": "creatinine", "name": "Creatinine", "value": "88", "unit": "umol/L", "range": "59-104", "flag": "", "expect": "normal" }
     ]}
   ]
 }
