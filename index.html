@@ -15,13 +15,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-162" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-163" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-162" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-163" />
   </head>
   <body>
     <main class="app-shell">
@@ -71,7 +71,7 @@
               <article class="lp-mock lp-mock-hero">
                 <header class="lp-mock-bar"><span></span><span></span><span></span><b>Dad's kidney panel</b></header>
                 <div class="lp-mock-body">
-                  <div class="lp-score"><strong>64</strong><small>/100</small><em>Needs clinician review</em></div>
+                  <div class="lp-score"><strong>3</strong><small>of 4 results outside the lab's range</small><em>Ask your doctor soon</em></div>
                   <ul class="lp-rows">
                     <li><span>eGFR (kidney filtering)</span><b>28</b><i class="lp-tag lp-tag-far">Far below the lab's range</i></li>
                     <li><span>Creatinine</span><b>2.3</b><i class="lp-tag lp-tag-far">Far above the lab's range</i></li>
@@ -244,7 +244,7 @@
 
           <footer class="lp-footer">
             <div><strong>FollowThrough Health</strong><span>Educational health report explainer. Not a diagnosis and not medical advice.</span></div>
-            <nav aria-label="Legal"><a href="#for-doctors">For doctors</a><a href="glossary.html">Lab test glossary</a><a href="legal/security.html">Security</a><a href="legal/privacy.html">Privacy</a><a href="legal/terms.html">Terms</a><a href="legal/disclaimer.html">Disclaimer</a><a href="legal/data-deletion.html">Delete my data</a></nav>
+            <nav aria-label="Legal"><a href="#for-doctors">For doctors</a><a href="glossary.html">Lab test glossary</a><a href="legal/security.html">Security</a><a href="legal/privacy.html">Privacy</a><a href="legal/terms.html">Terms</a><a href="legal/disclaimer.html">Disclaimer</a><a href="legal/data-deletion.html">Delete my data</a><a href="legal/app-store-disclosures.html">App privacy details</a></nav>
           </footer>
         </div>
 
@@ -286,20 +286,7 @@
           </div>
         </section>
 
-        <details class="team-tools">
-          <summary>Team tools and launch setup</summary>
-          <nav class="team-nav" aria-label="FollowThrough Health team tools">
-            <a href="#backend-title">Backend</a>
-            <a href="#review-title">Clinician review</a>
-            <a href="#support-title">Support</a>
-            <a href="#qa-title">QA</a>
-            <a href="#legal-title">Legal</a>
-            <a href="#launch-title">Launch</a>
-            <a href="#export-title">Export</a>
-          </nav>
-        </details>
-
-        <section class="panel account-panel" aria-labelledby="account-title">
+<section class="panel account-panel" aria-labelledby="account-title">
           <div class="panel-heading-row">
             <div>
               <p class="eyebrow">Profile</p>
@@ -333,22 +320,7 @@
             <strong id="signed-in-label">Signed out</strong>
             <span id="signed-in-detail">You can test report analysis without an account. Sign in when you want cloud sync.</span>
           </div>
-          <details class="team-account-card">
-            <summary>FollowThrough Health team sign-in</summary>
-            <span>For clinicians and admins on the FollowThrough Health staff list only. Everyone else uses a patient account.</span>
-            <label>
-              Role
-              <select id="auth-role">
-                <option value="patient" selected>Patient</option>
-                <option value="clinician">Clinician</option>
-                <option value="admin">Admin</option>
-              </select>
-            </label>
-            <div class="team-account-actions">
-              <button id="fill-clinician-account" class="secondary-button compact" type="button">Clinician test</button>
-              <button id="fill-admin-account" class="secondary-button compact" type="button">Admin test</button>
-            </div>
-          </details>
+          <input type="hidden" id="auth-role" value="patient" />
           <details class="advanced-actions">
             <summary>Log out, verify email or reset password</summary>
             <div class="sync-grid secondary-actions">
@@ -380,14 +352,8 @@
               </label>
             </div>
           </details>
-          <details class="connection-settings">
-            <summary>Connection settings</summary>
-            <label>
-              API URL
-              <input id="api-url" type="text" value="https://carewise-api.onrender.com" />
-            </label>
-          </details>
-          <p id="auth-status" class="status-line" role="status">Use the live production backend at carewise-api.onrender.com.</p>
+          <input type="hidden" id="api-url" value="https://carewise-api.onrender.com" />
+          <p id="auth-status" class="status-line" role="status"></p>
         </section>
 
         <section class="panel billing-panel" id="your-plan" aria-labelledby="billing-title">
@@ -652,24 +618,7 @@
             <p class="db-muted">For your security, DocBridge signs you out after 15 minutes without activity.</p>
           </div>
         </section>
-        <section class="panel backend-panel" aria-labelledby="backend-title">
-          <div class="panel-heading-row">
-            <div>
-              <p class="eyebrow">Product foundation</p>
-              <h3 id="backend-title">Backend sync</h3>
-            </div>
-            <span id="backend-badge" class="sync-badge offline">Offline mode</span>
-          </div>
-          <div class="sync-grid">
-            <button id="check-backend" class="secondary-button" type="button">Check backend</button>
-            <button id="sync-profile" class="secondary-button" type="button">Sync profile</button>
-            <button id="sync-plan" class="secondary-button" type="button">Sync latest plan</button>
-            <button id="load-audit-events" class="secondary-button" type="button">Load consent history</button>
-          </div>
-          <p id="backend-status" class="status-line" role="status">Local browser storage is active. Start the backend to sync data.</p>
-        </section>
-
-        <section class="panel consent-panel" aria-labelledby="consent-title">
+<section class="panel consent-panel" aria-labelledby="consent-title">
           <div>
             <p class="eyebrow">Step 2</p>
             <h3 id="consent-title">Consent and medical limits</h3>
@@ -756,8 +705,8 @@
           </div>
           <div class="legacy-hidden v1-report-dashboard" aria-label="FollowThrough Health sample report result">
             <article class="health-score-card">
-              <span>Health Score</span>
-              <strong>73/100</strong>
+              <span>Results outside range</span>
+              <strong>3 of 7 results outside the lab's range</strong>
               <p>Sample result only. A licensed professional should interpret reports with your full history.</p>
             </article>
             <article>
@@ -1905,453 +1854,7 @@
           <textarea id="care-packet-output" class="care-packet-output" rows="14" readonly placeholder="Click Build care packet to generate the full handoff packet."></textarea>
         </section>
 
-        <section class="panel support-panel" aria-labelledby="support-title">
-          <div class="panel-heading-row">
-            <div>
-              <p class="eyebrow">Support operations</p>
-              <h3 id="support-title">User support inbox</h3>
-              <p class="panel-intro">Track prototype support requests before connecting a real help desk. FollowThrough Health does not handle emergencies in this inbox.</p>
-            </div>
-            <button id="clear-support" class="secondary-button compact" type="button">Clear inbox</button>
-          </div>
-          <div class="support-grid">
-            <label>
-              Request type
-              <select id="support-type">
-                <option value="Technical issue">Technical issue</option>
-                <option value="Report upload concern">Report upload concern</option>
-                <option value="Care plan feedback">Care plan feedback</option>
-                <option value="Privacy or deletion">Privacy or deletion</option>
-                <option value="Billing question">Billing question</option>
-                <option value="Clinician review request">Clinician review request</option>
-              </select>
-            </label>
-            <label>
-              Priority
-              <select id="support-priority">
-                <option value="Normal">Normal</option>
-                <option value="High">High</option>
-                <option value="Privacy-sensitive">Privacy-sensitive</option>
-                <option value="Needs clinician review">Needs clinician review</option>
-              </select>
-            </label>
-            <label>
-              Contact email
-              <input id="support-email" type="email" placeholder="user@example.com" />
-            </label>
-            <label>
-              Consent to contact
-              <select id="support-contact">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
-            </label>
-            <label class="support-wide">
-              Request details
-              <textarea id="support-notes" rows="3" placeholder="Describe what happened, what the user expected, and any safe next step. Do not paste sensitive records into prototype notes."></textarea>
-            </label>
-          </div>
-          <div class="primary-action-row">
-            <button id="sample-support" class="secondary-button" type="button">Use sample request</button>
-            <button id="save-support" class="primary-button narrow-button" type="button">Save request</button>
-            <button id="copy-support" class="secondary-button" type="button">Copy inbox</button>
-          </div>
-          <p id="support-status" class="status-line" role="status">For severe or fast-worsening symptoms, use emergency services instead of this prototype inbox.</p>
-          <div id="support-list" class="support-list">
-            <p>No support requests saved yet.</p>
-          </div>
-        </section>
-
-        <section class="panel qa-panel" aria-labelledby="qa-title">
-          <div class="panel-heading-row">
-            <div>
-              <p class="eyebrow">Quality checks</p>
-              <h3 id="qa-title">MVP test checklist</h3>
-              <p class="panel-intro">Run a local readiness check for the patient flow, backend sync, safety wording, privacy controls, review queue, and support operations.</p>
-            </div>
-            <button id="clear-qa" class="secondary-button compact" type="button">Clear QA</button>
-          </div>
-          <div class="qa-actions">
-            <button id="run-qa-checklist" class="primary-button compact" type="button">Run QA checklist</button>
-            <button id="copy-qa-report" class="secondary-button compact" type="button">Copy QA report</button>
-          </div>
-          <p id="qa-status" class="status-line" role="status">Run this after changing the app or before a demo.</p>
-          <div id="qa-results" class="qa-results" aria-live="polite">
-            <p>No QA report generated yet.</p>
-          </div>
-        </section>
-
-        <section class="panel review-panel" aria-labelledby="review-title">
-          <div class="panel-heading-row">
-            <div>
-              <p class="eyebrow">Clinician workflow</p>
-              <h3 id="review-title">Clinician dashboard</h3>
-            </div>
-            <div class="toolbar-actions">
-              <button id="sample-review-item" class="secondary-button compact" type="button">Sample item</button>
-              <button id="load-backend-review" class="secondary-button compact" type="button">Load backend queue</button>
-              <button id="load-admin-summary" class="secondary-button compact" type="button">Admin summary</button>
-              <button id="clear-review-queue" class="secondary-button compact" type="button">Clear queue</button>
-            </div>
-          </div>
-          <div class="dashboard-stats" id="dashboard-stats" aria-label="Dashboard metrics">
-            <article><strong>0</strong><span>Backend items</span></article>
-            <article><strong>0</strong><span>Local review items</span></article>
-            <article><strong>0</strong><span>Reports</span></article>
-            <article><strong>0</strong><span>Consent records</span></article>
-          </div>
-          <div class="review-pipeline" aria-label="Clinician review pipeline">
-            <article><strong>1</strong><span>Flagged by plan or report</span></article>
-            <article><strong>2</strong><span>Clinician reviews context</span></article>
-            <article><strong>3</strong><span>Approve or request changes</span></article>
-            <article><strong>4</strong><span>Audit trail records action</span></article>
-          </div>
-          <div id="review-sync-summary" class="review-sync-summary" aria-label="Review sync summary">
-            <article><strong>Local</strong><span>0 queued</span></article>
-            <article><strong>Backend</strong><span>0 synced</span></article>
-            <article><strong>Role</strong><span>Not signed in</span></article>
-          </div>
-          <div class="review-demo-card" aria-label="End-to-end review demo">
-            <div>
-              <strong>End-to-end review demo</strong>
-              <span id="review-demo-status">Fill a team role, create a high-risk sample plan, sync it, then load the backend queue.</span>
-            </div>
-            <div class="review-demo-actions">
-              <button id="review-demo-run-all" class="primary-button compact" type="button">Run demo</button>
-              <button id="review-demo-team" class="secondary-button compact" type="button">Team role</button>
-              <button id="review-demo-session" class="secondary-button compact" type="button">Create/Login</button>
-              <button id="review-demo-profile" class="secondary-button compact" type="button">Sync profile</button>
-              <button id="review-demo-plan" class="secondary-button compact" type="button">High-risk plan</button>
-              <button id="review-demo-sync" class="secondary-button compact" type="button">Sync plan</button>
-              <button id="review-demo-load" class="secondary-button compact" type="button">Load queue</button>
-              <button id="review-demo-approve" class="secondary-button compact" type="button">Approve demo</button>
-            </div>
-          </div>
-          <div id="review-demo-checklist" class="review-demo-checklist" aria-label="Review demo checklist">
-            <article><strong>1</strong><span>Choose team role</span></article>
-            <article><strong>2</strong><span>Create/Login</span></article>
-            <article><strong>3</strong><span>Sync profile</span></article>
-            <article><strong>4</strong><span>Generate review plan</span></article>
-            <article><strong>5</strong><span>Sync backend ID</span></article>
-            <article><strong>6</strong><span>Load clinician queue</span></article>
-            <article><strong>7</strong><span>Approve review</span></article>
-          </div>
-          <div id="review-demo-guidance" class="review-demo-guidance" aria-label="Review demo guidance">
-            <strong>Next required step</strong>
-            <span>Use the buttons above from left to right.</span>
-          </div>
-          <div id="review-demo-outcome" class="review-demo-outcome" aria-label="Review demo outcome">
-            <strong>Demo outcome</strong>
-            <span>Run or approve a review to see the backend decision receipt.</span>
-          </div>
-          <div id="review-demo-timeline" class="review-demo-timeline" aria-label="Review proof timeline">
-            <article><strong>Account</strong><span>Waiting</span></article>
-            <article><strong>Patient</strong><span>Waiting</span></article>
-            <article><strong>Plan</strong><span>Waiting</span></article>
-            <article><strong>Decision</strong><span>Waiting</span></article>
-          </div>
-          <div class="review-filter-bar" aria-label="Review queue filters">
-            <button class="review-filter active" type="button" data-review-filter="all">All</button>
-            <button class="review-filter" type="button" data-review-filter="pending">Pending</button>
-            <button class="review-filter" type="button" data-review-filter="changes">Needs changes</button>
-            <button class="review-filter" type="button" data-review-filter="approved">Approved</button>
-          </div>
-          <div id="review-queue" class="saved-plans-list">
-            <p>No review items yet.</p>
-          </div>
-          <p id="review-status" class="status-line" role="status"></p>
-          <div class="audit-block">
-            <h4>Audit trail</h4>
-            <div id="audit-trail" class="saved-plans-list">
-              <p>No audit events yet.</p>
-            </div>
-          </div>
-        </section>
-
-        <section class="panel payment-panel" aria-labelledby="payment-title">
-          <div class="panel-heading-row">
-            <div>
-              <p class="eyebrow">Subscription</p>
-              <h3 id="payment-title">Checkout readiness</h3>
-            </div>
-            <span id="payment-badge" class="sync-badge offline">Manual checkout</span>
-          </div>
-          <div class="payment-grid">
-            <article>
-              <strong>Free</strong>
-              <span>Free</span>
-              <p>Explain any report, take a doctor brief, keep a health record.</p>
-              <ul>
-                <li>Explain any lab or scan report</li>
-                <li>One-page doctor brief</li>
-                <li>Long-term health record, saved on your device</li>
-              </ul>
-            </article>
-            <article>
-              <strong>Plus</strong>
-              <span>$7/mo</span>
-              <p>Personal plans, reminders and trends over the years.</p>
-              <ul>
-                <li>Personal plan from your own results</li>
-                <li>Reminders</li>
-                <li>Trends over the years</li>
-              </ul>
-            </article>
-            <article>
-              <strong>Family</strong>
-              <span>$12/mo</span>
-              <p>Everything in Plus for up to 5 people, shared with caregivers.</p>
-              <ul>
-                <li>Everything in Plus</li>
-                <li>Up to 5 family members</li>
-                <li>Shared with siblings and caregivers</li>
-              </ul>
-            </article>
-          </div>
-          <div class="payment-note">
-            <strong>Launch-safe checkout</strong>
-            <span>Subscriptions are represented safely for MVP demos. Real charging should begin only after Stripe keys, webhooks, refund policy, terms, and clinical/legal review are complete.</span>
-          </div>
-          <div class="sync-grid">
-            <button id="create-checkout" class="primary-button narrow-button" type="button">Create checkout</button>
-            <button id="copy-checkout" class="secondary-button" type="button">Copy checkout link</button>
-          </div>
-          <p id="payment-status" class="status-line" role="status">Stripe can replace this manual checkout placeholder later.</p>
-        </section>
-
-        <section class="panel legal-panel" aria-labelledby="legal-title">
-          <div class="panel-heading-row">
-            <div>
-              <p class="eyebrow">Launch documents</p>
-              <h3 id="legal-title">Privacy, terms, disclaimer, deletion</h3>
-            </div>
-          </div>
-          <div class="legal-grid">
-            <article id="privacy-policy">
-              <span>Draft ready</span>
-              <strong>Privacy Policy</strong>
-              <p>FollowThrough Health should collect the minimum health data needed, encrypt protected fields, avoid health data in logs, and explain data use before signup.</p>
-              <a class="inline-link" href="legal/privacy.html">Open privacy policy</a>
-            </article>
-            <article id="terms">
-              <span>Draft ready</span>
-              <strong>Terms of Service</strong>
-              <p>Users must understand this is a care-planning tool, not emergency care, diagnosis, prescription, or a replacement for licensed professionals.</p>
-              <a class="inline-link" href="legal/terms.html">Open terms</a>
-            </article>
-            <article id="medical-disclaimer">
-              <span>Required</span>
-              <strong>Medical Disclaimer</strong>
-              <p>AI output is educational and must route high-risk cases to licensed clinicians or emergency services. It should not claim to cure disease.</p>
-              <a class="inline-link" href="legal/disclaimer.html">Open disclaimer</a>
-            </article>
-            <article id="data-deletion">
-              <span>Required</span>
-              <strong>Data Deletion Request</strong>
-              <p>Users need a clear way to request deletion of account, report, consent, and profile records before app store review.</p>
-              <a class="inline-link" href="legal/data-deletion.html">Open deletion page</a>
-            </article>
-            <article id="app-store-disclosures">
-              <span>Store prep</span>
-              <strong>App Store Privacy Draft</strong>
-              <p>Apple privacy labels and Google Play Data Safety answers should reflect real account, report, health, storage, AI, and deletion behavior.</p>
-              <a class="inline-link" href="legal/app-store-disclosures.html">Open disclosure draft</a>
-            </article>
-          </div>
-          <div class="legal-checklist">
-            <strong>Before public launch</strong>
-            <span>Licensed clinical review</span>
-            <span>Attorney review</span>
-            <span>HIPAA/security review</span>
-            <span>Apple Privacy details</span>
-            <span>Google Data Safety form</span>
-          </div>
-        </section>
-
-        <section class="panel mobile-panel" aria-labelledby="mobile-title">
-          <div class="panel-heading-row">
-            <div>
-              <p class="eyebrow">Mobile app</p>
-              <h3 id="mobile-title">iOS and Android preparation</h3>
-            </div>
-          </div>
-          <div class="mobile-roadmap">
-            <article><strong>Reusable now</strong><span>Backend API, auth flow, report upload, saved plans, check-ins, and medication organizer.</span></article>
-            <article><strong>Build next</strong><span>Native React Native screens for Account, Consent, Reports, Results, Saved, Meds, and Check-ins.</span></article>
-            <article><strong>App stores</strong><span>Apple Developer, Google Play Console, privacy labels, data safety form, screenshots, and review notes.</span></article>
-            <article><strong>Testing</strong><span>TestFlight, Android internal testing, doctor/nutritionist review, and real-user feedback.</span></article>
-          </div>
-          <div class="store-disclosure-card" aria-label="App store privacy disclosure draft">
-            <div>
-              <strong>App store privacy draft</strong>
-              <span>Use this as a starting checklist for Apple Privacy details and Google Play Data Safety. Final answers still need legal and security review.</span>
-            </div>
-            <button id="copy-store-disclosure" class="secondary-button compact" type="button">Copy draft</button>
-          </div>
-          <div id="store-disclosure" class="store-disclosure-grid">
-            <article><strong>Data collected</strong><span>Account email, consent history, intake answers, report uploads, care plans, check-ins, medications, subscription status.</span></article>
-            <article><strong>Purpose</strong><span>Account management, care-plan education, report organization, reminders, clinical review workflow, support, and safety audit trail.</span></article>
-            <article><strong>Security</strong><span>Backend auth, encrypted patient fields, private report storage, audit records, and no health data in analytics logs.</span></article>
-            <article><strong>User controls</strong><span>Export local data, request backend export, request deletion, revoke demo data locally, and review consent before care planning.</span></article>
-          </div>
-          <textarea id="store-disclosure-output" class="store-disclosure-output" rows="8" readonly placeholder="Click Copy draft to generate the app-store privacy draft here."></textarea>
-          <p id="store-disclosure-status" class="status-line" role="status">Draft is not legal advice. Review before submitting app-store forms.</p>
-        </section>
-
-        <section class="panel launch-panel" aria-labelledby="launch-title">
-          <div class="panel-heading-row">
-            <div>
-              <p class="eyebrow">Launch readiness</p>
-              <h3 id="launch-title">What is ready and what is next</h3>
-            </div>
-            <span class="sync-badge online">MVP active</span>
-          </div>
-          <div class="launch-metrics" aria-label="FollowThrough Health launch metrics">
-            <article><strong>Live</strong><span>Frontend + API</span></article>
-            <article><strong>Private</strong><span>R2 report storage</span></article>
-            <article><strong>Safe MVP</strong><span>No diagnosis claims</span></article>
-            <article><strong>Next</strong><span>Clinical review</span></article>
-          </div>
-          <div class="launch-blockers" aria-label="FollowThrough Health launch blockers">
-            <article class="blocked">
-              <strong>Mobile GitHub push</strong>
-              <span>Blocked until the GitHub token includes workflow permission.</span>
-            </article>
-            <article class="blocked">
-              <strong>Backend smoke</strong>
-              <span>Run production smoke with synthetic data before real patient use.</span>
-            </article>
-            <article class="blocked">
-              <strong>Human reviews</strong>
-              <span>Legal, privacy, security, and licensed-clinician review are required.</span>
-            </article>
-          </div>
-          <div id="launch-proof" class="launch-proof" aria-label="FollowThrough Health launch proof">
-            <article><strong>Backend</strong><span>Checking</span></article>
-            <article><strong>Review proof</strong><span>Waiting</span></article>
-            <article><strong>Data safety</strong><span>Checking</span></article>
-            <article><strong>Launch posture</strong><span>MVP</span></article>
-          </div>
-          <div class="launch-proof-actions">
-            <button id="copy-launch-proof" class="secondary-button compact" type="button">Copy launch proof</button>
-            <button id="refresh-launch-proof" class="secondary-button compact" type="button">Refresh proof</button>
-          </div>
-          <p id="launch-proof-status" class="status-line" role="status">Launch proof summarizes live readiness for demos.</p>
-          <div class="preflight-card" aria-label="FollowThrough Health launch preflight">
-            <div>
-              <strong>Launch preflight</strong>
-              <span>Run this before showing the app to a user, clinician, or investor.</span>
-            </div>
-            <button id="run-preflight" class="primary-button compact" type="button">Run preflight</button>
-          </div>
-          <div id="preflight-report" class="preflight-report" aria-live="polite">
-            <article class="pending"><strong>Preflight</strong><span>Not run yet</span></article>
-          </div>
-          <p id="preflight-status" class="status-line" role="status">Preflight checks API, database, storage, account session, patient sync, review proof, and safe wording.</p>
-          <div class="demo-script">
-            <div class="demo-script-heading">
-              <div>
-                <strong>Demo walkthrough builder</strong>
-                <span>Generate a safe step-by-step script before showing FollowThrough Health to an advisor, clinician, investor, or tester.</span>
-              </div>
-              <div class="demo-script-actions">
-                <button id="build-demo-script" class="primary-button compact" type="button">Build script</button>
-                <button id="copy-demo-script" class="secondary-button compact" type="button">Copy script</button>
-              </div>
-            </div>
-            <div id="demo-script-results" class="demo-script-results" aria-live="polite">
-              <article><strong>Not built yet</strong><span>Run the builder to see the recommended demo path.</span></article>
-            </div>
-            <p id="demo-script-status" class="status-line" role="status">Use this to keep demos focused and safe.</p>
-          </div>
-          <div class="investor-brief-card" aria-label="Investor brief generator">
-            <div>
-              <strong>Investor one-page brief</strong>
-              <span>Generate a safe, copyable summary for advisor, clinician, or investor conversations.</span>
-            </div>
-            <button id="generate-investor-brief" class="secondary-button compact" type="button">Generate brief</button>
-          </div>
-          <textarea id="investor-brief-output" class="investor-brief-output" rows="9" readonly placeholder="Click Generate brief to create a one-page FollowThrough Health summary."></textarea>
-          <p id="investor-brief-status" class="status-line" role="status">Brief stays non-diagnostic and should be reviewed before sharing externally.</p>
-          <div class="pilot-card" aria-label="Pilot interest tracker">
-            <div>
-              <strong>Pilot interest tracker</strong>
-              <span>Capture early users, clinician advisors, and investor follow-ups locally before using a CRM.</span>
-            </div>
-            <button id="add-sample-pilot" class="secondary-button compact" type="button">Sample lead</button>
-          </div>
-          <div class="pilot-grid">
-            <label>
-              Name
-              <input id="pilot-name" type="text" placeholder="Dr. Patel or Maya R." />
-            </label>
-            <label>
-              Email
-              <input id="pilot-email" type="email" placeholder="name@example.com" />
-            </label>
-            <label>
-              Role
-              <select id="pilot-role">
-                <option value="Early user">Early user</option>
-                <option value="Clinician advisor">Clinician advisor</option>
-                <option value="Nutrition advisor">Nutrition advisor</option>
-                <option value="Privacy/security advisor">Privacy/security advisor</option>
-                <option value="Investor/advisor">Investor/advisor</option>
-              </select>
-            </label>
-            <label>
-              Follow-up
-              <select id="pilot-followup">
-                <option value="This week">This week</option>
-                <option value="Next week">Next week</option>
-                <option value="After MVP review">After MVP review</option>
-              </select>
-            </label>
-            <label class="pilot-wide">
-              Notes
-              <textarea id="pilot-notes" rows="3" placeholder="What they care about, safety concerns, pilot fit, next action."></textarea>
-            </label>
-          </div>
-          <div class="launch-proof-actions">
-            <button id="save-pilot-lead" class="primary-button compact" type="button">Save lead</button>
-            <button id="copy-pilot-list" class="secondary-button compact" type="button">Copy list</button>
-          </div>
-          <div id="pilot-leads" class="pilot-leads" aria-live="polite">
-            <p>No pilot leads saved yet.</p>
-          </div>
-          <p id="pilot-status" class="status-line" role="status">Pilot leads are stored locally in this browser until a CRM/backend workflow is added.</p>
-          <div class="launch-grid">
-            <article>
-              <strong>Ready now</strong>
-              <ul>
-                <li>Live frontend and FastAPI backend</li>
-                <li>Private Cloudflare R2 report storage</li>
-                <li>Auth, consent, audit trail, privacy export</li>
-              </ul>
-            </article>
-            <article>
-              <strong>Needs account config</strong>
-              <ul>
-                <li>OpenAI key for image OCR</li>
-                <li>Stripe keys and webhook secret for real subscriptions</li>
-                <li>Email provider credentials for password reset</li>
-              </ul>
-            </article>
-            <article>
-              <strong>Before public launch</strong>
-              <ul>
-                <li>Clinical review with a licensed professional</li>
-                <li>Privacy policy, terms, medical disclaimer review</li>
-                <li>Apple Privacy and Google Data Safety forms</li>
-              </ul>
-            </article>
-          </div>
-          <div id="security-readiness" class="readiness-grid" aria-label="Live security readiness">
-            <article><strong>Backend check</strong><span>Waiting for live features.</span></article>
-          </div>
-        </section>
-
-        <section class="panel early-access-panel" aria-labelledby="early-access-title">
+<section class="panel early-access-panel" aria-labelledby="early-access-title">
           <div class="panel-heading-row">
             <div>
               <p class="eyebrow">Early access</p>
@@ -2412,35 +1915,7 @@
           <div id="founder-results" class="founder-results"></div>
         </section>
 
-        <section class="panel export-panel" aria-labelledby="export-title">
-          <div class="panel-heading-row">
-            <div>
-              <p class="eyebrow">Data portability</p>
-              <h3 id="export-title">Data controls</h3>
-              <p class="panel-intro">Export local demo data, copy it for review, request backend export, or submit a deletion request.</p>
-            </div>
-            <button id="clear-all-data" class="secondary-button compact" type="button">Clear all local data</button>
-          </div>
-          <div class="data-control-grid">
-            <article><strong>Local export</strong><span>Browser-only profile, plans, check-ins, meds, and reports.</span></article>
-            <article><strong>Backend export</strong><span>Requires login and includes profile, reports, saved explanations, medications, intakes, care plans, consent, and audit metadata.</span></article>
-            <article><strong>Deletion request</strong><span>Creates a backend request for account/report deletion review.</span></article>
-          </div>
-          <div id="export-summary" class="readiness-grid" aria-label="Backend export summary">
-            <article><strong>Backend data</strong><span>Sign in, then check safe backend counts before full export.</span></article>
-          </div>
-          <div class="export-actions">
-            <button id="export-data" class="secondary-button" type="button">Export local JSON</button>
-            <button id="copy-data" class="secondary-button" type="button">Copy local JSON</button>
-            <button id="check-backend-data" class="secondary-button" type="button">Check backend data</button>
-            <button id="export-backend-data" class="secondary-button" type="button">Export backend data</button>
-            <button id="request-delete-data" class="secondary-button" type="button">Request deletion</button>
-          </div>
-          <textarea id="export-output" rows="8" readonly placeholder="Exported local data appears here."></textarea>
-          <p id="export-status" class="status-line" role="status"></p>
-        </section>
-
-        <section id="results" class="results-grid" aria-live="polite">
+<section id="results" class="results-grid" aria-live="polite">
           <article class="result-card warning-card empty-results-card">
             <span class="badge blue">Ready when you are</span>
             <h3>No care plan generated yet</h3>
@@ -2547,12 +2022,12 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-162"></script>
-    <script src="help.js?v=carewise-product-162"></script>
-    <script src="doctor-share.js?v=carewise-product-162"></script>
-    <script src="docbridge.js?v=carewise-product-162"></script>
-    <script src="reminders.js?v=carewise-product-162"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-162"></script>
-    <script src="twofactor.js?v=carewise-product-162"></script>
+    <script src="script.js?v=carewise-product-163"></script>
+    <script src="help.js?v=carewise-product-163"></script>
+    <script src="doctor-share.js?v=carewise-product-163"></script>
+    <script src="docbridge.js?v=carewise-product-163"></script>
+    <script src="reminders.js?v=carewise-product-163"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-163"></script>
+    <script src="twofactor.js?v=carewise-product-163"></script>
   </body>
 </html>

@@ -1011,6 +1011,17 @@ fetch("disease_precaution_diet_matrix.json")
     diseaseCarePlans = [];
   });
 
+// Old prototype panels were removed from the page; their status lines write to a
+// detached element so the remaining code keeps working without them.
+function setFieldValue(selector, value) {
+  const field = document.querySelector(selector);
+  if (field) field.value = value;
+}
+
+function detachedElement() {
+  return document.createElement("div");
+}
+
 const form = document.querySelector("#patient-form");
 const results = document.querySelector("#results");
 const apiUrlInput = document.querySelector("#api-url");
@@ -1018,8 +1029,8 @@ const authBadge = document.querySelector("#auth-badge");
 const authStatus = document.querySelector("#auth-status");
 const signedInLabel = document.querySelector("#signed-in-label");
 const signedInDetail = document.querySelector("#signed-in-detail");
-const backendBadge = document.querySelector("#backend-badge");
-const backendStatus = document.querySelector("#backend-status");
+const backendBadge = document.querySelector("#backend-badge") || detachedElement();
+const backendStatus = document.querySelector("#backend-status") || detachedElement();
 const reportBadge = document.querySelector("#report-badge");
 const reportStatus = document.querySelector("#report-status");
 const ocrStatus = document.querySelector("#ocr-status");
@@ -1030,9 +1041,9 @@ const reportEvalResults = document.querySelector("#report-eval-results");
 const reportEvalStatus = document.querySelector("#report-eval-status");
 const labTrendStatus = document.querySelector("#lab-trend-status");
 const labTrendList = document.querySelector("#lab-trend-list");
-const paymentBadge = document.querySelector("#payment-badge");
-const paymentStatus = document.querySelector("#payment-status");
-const dashboardStats = document.querySelector("#dashboard-stats");
+const paymentBadge = document.querySelector("#payment-badge") || detachedElement();
+const paymentStatus = document.querySelector("#payment-status") || detachedElement();
+const dashboardStats = document.querySelector("#dashboard-stats") || detachedElement();
 const profileStatus = document.querySelector("#profile-status");
 const reportHistoryList = document.querySelector(".v1-history-list");
 const savedPlans = document.querySelector("#saved-plans");
@@ -1064,41 +1075,41 @@ const carePacketStatus = document.querySelector("#care-packet-status");
 const carePacketList = document.querySelector("#care-packet-list");
 const carePacketOutput = document.querySelector("#care-packet-output");
 const carePacketReadiness = document.querySelector("#care-packet-readiness");
-const supportStatus = document.querySelector("#support-status");
-const supportList = document.querySelector("#support-list");
-const qaStatus = document.querySelector("#qa-status");
-const qaResults = document.querySelector("#qa-results");
+const supportStatus = document.querySelector("#support-status") || detachedElement();
+const supportList = document.querySelector("#support-list") || detachedElement();
+const qaStatus = document.querySelector("#qa-status") || detachedElement();
+const qaResults = document.querySelector("#qa-results") || detachedElement();
 const medicationStatus = document.querySelector("#medication-status");
 const medicationList = document.querySelector("#medication-list");
-const reviewQueue = document.querySelector("#review-queue");
-const reviewStatus = document.querySelector("#review-status");
+const reviewQueue = document.querySelector("#review-queue") || detachedElement();
+const reviewStatus = document.querySelector("#review-status") || detachedElement();
 const reviewFilters = document.querySelectorAll("[data-review-filter]");
-const reviewSyncSummary = document.querySelector("#review-sync-summary");
-const reviewDemoStatus = document.querySelector("#review-demo-status");
-const reviewDemoChecklist = document.querySelector("#review-demo-checklist");
-const reviewDemoGuidance = document.querySelector("#review-demo-guidance");
-const reviewDemoOutcome = document.querySelector("#review-demo-outcome");
-const reviewDemoTimeline = document.querySelector("#review-demo-timeline");
-const auditTrail = document.querySelector("#audit-trail");
-const exportStatus = document.querySelector("#export-status");
-const exportOutput = document.querySelector("#export-output");
-const exportSummary = document.querySelector("#export-summary");
-const securityReadiness = document.querySelector("#security-readiness");
+const reviewSyncSummary = document.querySelector("#review-sync-summary") || detachedElement();
+const reviewDemoStatus = document.querySelector("#review-demo-status") || detachedElement();
+const reviewDemoChecklist = document.querySelector("#review-demo-checklist") || detachedElement();
+const reviewDemoGuidance = document.querySelector("#review-demo-guidance") || detachedElement();
+const reviewDemoOutcome = document.querySelector("#review-demo-outcome") || detachedElement();
+const reviewDemoTimeline = document.querySelector("#review-demo-timeline") || detachedElement();
+const auditTrail = document.querySelector("#audit-trail") || detachedElement();
+const exportStatus = document.querySelector("#export-status") || detachedElement();
+const exportOutput = document.querySelector("#export-output") || detachedElement();
+const exportSummary = document.querySelector("#export-summary") || detachedElement();
+const securityReadiness = document.querySelector("#security-readiness") || detachedElement();
 const networkStatus = document.querySelector("#network-status");
 const installAppButton = document.querySelector("#install-app");
 const homeReadiness = document.querySelector("#home-readiness");
-const launchProof = document.querySelector("#launch-proof");
-const launchProofStatus = document.querySelector("#launch-proof-status");
-const preflightReport = document.querySelector("#preflight-report");
-const preflightStatus = document.querySelector("#preflight-status");
-const storeDisclosureOutput = document.querySelector("#store-disclosure-output");
-const storeDisclosureStatus = document.querySelector("#store-disclosure-status");
-const demoScriptResults = document.querySelector("#demo-script-results");
-const demoScriptStatus = document.querySelector("#demo-script-status");
-const investorBriefOutput = document.querySelector("#investor-brief-output");
-const investorBriefStatus = document.querySelector("#investor-brief-status");
-const pilotLeads = document.querySelector("#pilot-leads");
-const pilotStatus = document.querySelector("#pilot-status");
+const launchProof = document.querySelector("#launch-proof") || detachedElement();
+const launchProofStatus = document.querySelector("#launch-proof-status") || detachedElement();
+const preflightReport = document.querySelector("#preflight-report") || detachedElement();
+const preflightStatus = document.querySelector("#preflight-status") || detachedElement();
+const storeDisclosureOutput = document.querySelector("#store-disclosure-output") || detachedElement();
+const storeDisclosureStatus = document.querySelector("#store-disclosure-status") || detachedElement();
+const demoScriptResults = document.querySelector("#demo-script-results") || detachedElement();
+const demoScriptStatus = document.querySelector("#demo-script-status") || detachedElement();
+const investorBriefOutput = document.querySelector("#investor-brief-output") || detachedElement();
+const investorBriefStatus = document.querySelector("#investor-brief-status") || detachedElement();
+const pilotLeads = document.querySelector("#pilot-leads") || detachedElement();
+const pilotStatus = document.querySelector("#pilot-status") || detachedElement();
 let deferredInstallPrompt = null;
 let activeReviewFilter = "all";
 
@@ -1140,45 +1151,45 @@ initializeInstallAndNetworkStatus();
 initializeWorkspaceNavigation();
 wakeBackendOnLoad();
 
-document.querySelector("#signup").addEventListener("click", () => {
+document.querySelector("#signup")?.addEventListener("click", () => {
   signup();
 });
 
 document.querySelector("#tf-login-submit")?.addEventListener("click", submitTwoFactorCode);
 document.querySelector("#tf-login-code")?.addEventListener("keydown", (event) => { if (event.key === "Enter") submitTwoFactorCode(); });
-document.querySelector("#login").addEventListener("click", () => {
+document.querySelector("#login")?.addEventListener("click", () => {
   login();
 });
 
-document.querySelector("#logout").addEventListener("click", () => {
+document.querySelector("#logout")?.addEventListener("click", () => {
   logout();
 });
 
-document.querySelector("#fill-clinician-account").addEventListener("click", () => {
+document.querySelector("#fill-clinician-account")?.addEventListener("click", () => {
   fillTeamAccount("clinician");
 });
 
-document.querySelector("#fill-admin-account").addEventListener("click", () => {
+document.querySelector("#fill-admin-account")?.addEventListener("click", () => {
   fillTeamAccount("admin");
 });
 
-document.querySelector("#record-consent").addEventListener("click", () => {
+document.querySelector("#record-consent")?.addEventListener("click", () => {
   recordConsentToBackend(true);
 });
 
-document.querySelector("#request-email-verification").addEventListener("click", () => {
+document.querySelector("#request-email-verification")?.addEventListener("click", () => {
   requestEmailVerification();
 });
 
-document.querySelector("#confirm-email-verification").addEventListener("click", () => {
+document.querySelector("#confirm-email-verification")?.addEventListener("click", () => {
   confirmEmailVerification();
 });
 
-document.querySelector("#password-reset").addEventListener("click", () => {
+document.querySelector("#password-reset")?.addEventListener("click", () => {
   requestPasswordReset();
 });
 
-document.querySelector("#confirm-password-reset").addEventListener("click", () => {
+document.querySelector("#confirm-password-reset")?.addEventListener("click", () => {
   confirmPasswordReset();
 });
 
@@ -1188,58 +1199,58 @@ apiUrlInput.addEventListener("change", () => {
   checkBackend(true);
 });
 
-document.querySelector("#check-backend").addEventListener("click", () => {
+document.querySelector("#check-backend")?.addEventListener("click", () => {
   checkBackend(true);
 });
 
-document.querySelector("#sync-profile").addEventListener("click", () => {
+document.querySelector("#sync-profile")?.addEventListener("click", () => {
   syncProfileToBackend();
 });
 
-document.querySelector("#copy-launch-proof").addEventListener("click", () => {
+document.querySelector("#copy-launch-proof")?.addEventListener("click", () => {
   copyLaunchProof();
 });
 
-document.querySelector("#refresh-launch-proof").addEventListener("click", async () => {
+document.querySelector("#refresh-launch-proof")?.addEventListener("click", async () => {
   launchProofStatus.textContent = "Refreshing live proof checks.";
   await checkBackend(false);
   renderLaunchProof();
   launchProofStatus.textContent = "Launch proof refreshed.";
 });
 
-document.querySelector("#run-preflight").addEventListener("click", () => {
+document.querySelector("#run-preflight")?.addEventListener("click", () => {
   runLaunchPreflight();
 });
 
-document.querySelector("#copy-store-disclosure").addEventListener("click", () => {
+document.querySelector("#copy-store-disclosure")?.addEventListener("click", () => {
   copyStoreDisclosure();
 });
 
-document.querySelector("#build-demo-script").addEventListener("click", () => {
+document.querySelector("#build-demo-script")?.addEventListener("click", () => {
   buildDemoScript();
 });
 
-document.querySelector("#copy-demo-script").addEventListener("click", () => {
+document.querySelector("#copy-demo-script")?.addEventListener("click", () => {
   copyDemoScript();
 });
 
-document.querySelector("#generate-investor-brief").addEventListener("click", () => {
+document.querySelector("#generate-investor-brief")?.addEventListener("click", () => {
   generateInvestorBrief();
 });
 
-document.querySelector("#save-pilot-lead").addEventListener("click", () => {
+document.querySelector("#save-pilot-lead")?.addEventListener("click", () => {
   savePilotLead();
 });
 
-document.querySelector("#add-sample-pilot").addEventListener("click", () => {
+document.querySelector("#add-sample-pilot")?.addEventListener("click", () => {
   fillSamplePilotLead();
 });
 
-document.querySelector("#copy-pilot-list").addEventListener("click", () => {
+document.querySelector("#copy-pilot-list")?.addEventListener("click", () => {
   copyPilotList();
 });
 
-document.querySelector("#upload-report").addEventListener("click", () => {
+document.querySelector("#upload-report")?.addEventListener("click", () => {
   uploadReport();
 });
 
@@ -1251,7 +1262,7 @@ document.querySelector("#report-file")?.addEventListener("change", () => {
   handleReportFileSelection();
 });
 
-document.querySelector("#analyze-report").addEventListener("click", () => {
+document.querySelector("#analyze-report")?.addEventListener("click", () => {
   analyzeAndShowReport();
 });
 
@@ -1273,7 +1284,7 @@ function scrollBelowHeader(element) {
   window.scrollTo({ top: Math.max(0, element.getBoundingClientRect().top + window.scrollY - header - 16), behavior: "smooth" });
 }
 
-document.querySelector("#load-reports").addEventListener("click", () => {
+document.querySelector("#load-reports")?.addEventListener("click", () => {
   loadReports();
 });
 
@@ -1303,288 +1314,288 @@ reportHistoryList?.addEventListener("click", (event) => {
   if (action === "open-history") openReportHistoryItem(event.target.closest("[data-report-id]")?.dataset.reportId || "");
 });
 
-document.querySelector("#run-report-eval").addEventListener("click", () => {
+document.querySelector("#run-report-eval")?.addEventListener("click", () => {
   runReportSafetyEvaluation();
 });
 
-document.querySelector("#copy-report-eval").addEventListener("click", () => {
+document.querySelector("#copy-report-eval")?.addEventListener("click", () => {
   copyReportEvaluation();
 });
 
-document.querySelector("#sample-lab-trend").addEventListener("click", () => {
+document.querySelector("#sample-lab-trend")?.addEventListener("click", () => {
   fillSampleLabTrends();
 });
 
-document.querySelector("#save-lab-trend").addEventListener("click", () => {
+document.querySelector("#save-lab-trend")?.addEventListener("click", () => {
   saveLabTrend();
 });
 
-document.querySelector("#copy-lab-trends").addEventListener("click", () => {
+document.querySelector("#copy-lab-trends")?.addEventListener("click", () => {
   copyLabTrends();
 });
 
-document.querySelector("#load-lab-trends").addEventListener("click", () => {
+document.querySelector("#load-lab-trends")?.addEventListener("click", () => {
   loadLabTrendsFromBackend();
 });
 
-document.querySelector("#clear-lab-trends").addEventListener("click", () => {
+document.querySelector("#clear-lab-trends")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseLabTrends");
   renderLabTrends();
   labTrendStatus.textContent = "Lab values cleared.";
 });
 
-document.querySelector("#sample-meal-plan").addEventListener("click", () => {
+document.querySelector("#sample-meal-plan")?.addEventListener("click", () => {
   fillSampleMealPlanPreferences();
 });
 
-document.querySelector("#build-meal-plan").addEventListener("click", () => {
+document.querySelector("#build-meal-plan")?.addEventListener("click", () => {
   buildMealPlan();
 });
 
-document.querySelector("#copy-meal-plan").addEventListener("click", () => {
+document.querySelector("#copy-meal-plan")?.addEventListener("click", () => {
   copyMealPlan();
 });
 
-document.querySelector("#clear-meal-plans").addEventListener("click", () => {
+document.querySelector("#clear-meal-plans")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseMealPlans");
   renderMealPlans();
   mealPlannerStatus.textContent = "Meal plans cleared.";
 });
 
-document.querySelector("#sample-safety-check").addEventListener("click", () => {
+document.querySelector("#sample-safety-check")?.addEventListener("click", () => {
   addSampleSafetyData();
 });
 
-document.querySelector("#run-safety-check").addEventListener("click", () => {
+document.querySelector("#run-safety-check")?.addEventListener("click", () => {
   runSafetyCheck();
 });
 
-document.querySelector("#copy-safety-check").addEventListener("click", () => {
+document.querySelector("#copy-safety-check")?.addEventListener("click", () => {
   copySafetyCheck();
 });
 
-document.querySelector("#clear-safety-checks").addEventListener("click", () => {
+document.querySelector("#clear-safety-checks")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseSafetyChecks");
   renderSafetyChecks();
   safetyCheckStatus.textContent = "Safety check history cleared.";
 });
 
-document.querySelector("#sample-symptom").addEventListener("click", () => {
+document.querySelector("#sample-symptom")?.addEventListener("click", () => {
   fillSampleSymptom();
 });
 
-document.querySelector("#save-symptom").addEventListener("click", () => {
+document.querySelector("#save-symptom")?.addEventListener("click", () => {
   saveSymptomEntry();
 });
 
-document.querySelector("#copy-symptoms").addEventListener("click", () => {
+document.querySelector("#copy-symptoms")?.addEventListener("click", () => {
   copySymptomTimeline();
 });
 
-document.querySelector("#clear-symptoms").addEventListener("click", () => {
+document.querySelector("#clear-symptoms")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseSymptomTimeline");
   renderSymptomTimeline();
   symptomStatus.textContent = "Symptom timeline cleared.";
 });
 
-document.querySelector("#sample-goal").addEventListener("click", () => {
+document.querySelector("#sample-goal")?.addEventListener("click", () => {
   fillSampleGoal();
 });
 
-document.querySelector("#save-goal").addEventListener("click", () => {
+document.querySelector("#save-goal")?.addEventListener("click", () => {
   saveGoal();
 });
 
-document.querySelector("#copy-goals").addEventListener("click", () => {
+document.querySelector("#copy-goals")?.addEventListener("click", () => {
   copyGoals();
 });
 
-document.querySelector("#clear-goals").addEventListener("click", () => {
+document.querySelector("#clear-goals")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseGoals");
   renderGoals();
   goalStatus.textContent = "Weekly goals cleared.";
 });
 
-document.querySelector("#sample-barrier").addEventListener("click", () => {
+document.querySelector("#sample-barrier")?.addEventListener("click", () => {
   fillSampleBarrier();
 });
 
-document.querySelector("#save-barrier").addEventListener("click", () => {
+document.querySelector("#save-barrier")?.addEventListener("click", () => {
   saveBarrier();
 });
 
-document.querySelector("#copy-barriers").addEventListener("click", () => {
+document.querySelector("#copy-barriers")?.addEventListener("click", () => {
   copyBarriers();
 });
 
-document.querySelector("#clear-barriers").addEventListener("click", () => {
+document.querySelector("#clear-barriers")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseBarriers");
   renderBarriers();
   barrierStatus.textContent = "Barrier list cleared.";
 });
 
-document.querySelector("#sample-reminder").addEventListener("click", () => {
+document.querySelector("#sample-reminder")?.addEventListener("click", () => {
   fillSampleReminder();
 });
 
-document.querySelector("#save-reminder").addEventListener("click", () => {
+document.querySelector("#save-reminder")?.addEventListener("click", () => {
   saveReminder();
 });
 
-document.querySelector("#copy-reminders").addEventListener("click", () => {
+document.querySelector("#copy-reminders")?.addEventListener("click", () => {
   copyReminders();
 });
 
-document.querySelector("#clear-reminders").addEventListener("click", () => {
+document.querySelector("#clear-reminders")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseReminders");
   renderReminders();
   reminderStatus.textContent = "Reminder plan cleared.";
 });
 
-document.querySelector("#sample-monthly-calendar").addEventListener("click", () => {
+document.querySelector("#sample-monthly-calendar")?.addEventListener("click", () => {
   fillSampleMonthlyCalendar();
 });
 
-document.querySelector("#build-monthly-calendar").addEventListener("click", () => {
+document.querySelector("#build-monthly-calendar")?.addEventListener("click", () => {
   buildMonthlyCalendar();
 });
 
-document.querySelector("#copy-monthly-calendar").addEventListener("click", () => {
+document.querySelector("#copy-monthly-calendar")?.addEventListener("click", () => {
   copyMonthlyCalendar();
 });
 
-document.querySelector("#clear-monthly-calendar").addEventListener("click", () => {
+document.querySelector("#clear-monthly-calendar")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseMonthlyCalendars");
   renderMonthlyCalendars();
   monthlyCalendarStatus.textContent = "Monthly calendars cleared.";
 });
 
-document.querySelector("#sample-navigation").addEventListener("click", () => {
+document.querySelector("#sample-navigation")?.addEventListener("click", () => {
   fillSampleNavigationPrep();
 });
 
-document.querySelector("#save-navigation").addEventListener("click", () => {
+document.querySelector("#save-navigation")?.addEventListener("click", () => {
   saveNavigationPrep();
 });
 
-document.querySelector("#copy-navigation").addEventListener("click", () => {
+document.querySelector("#copy-navigation")?.addEventListener("click", () => {
   copyNavigationPrep();
 });
 
-document.querySelector("#clear-navigation").addEventListener("click", () => {
+document.querySelector("#clear-navigation")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseNavigationPrep");
   renderNavigationPrep();
   navigationStatus.textContent = "Care navigation prep cleared.";
 });
 
-document.querySelector("#sample-care-team").addEventListener("click", () => {
+document.querySelector("#sample-care-team")?.addEventListener("click", () => {
   fillSampleCareTeamContact();
 });
 
-document.querySelector("#save-care-team").addEventListener("click", () => {
+document.querySelector("#save-care-team")?.addEventListener("click", () => {
   saveCareTeamContact();
 });
 
-document.querySelector("#copy-care-team").addEventListener("click", () => {
+document.querySelector("#copy-care-team")?.addEventListener("click", () => {
   copyCareTeamContacts();
 });
 
-document.querySelector("#clear-care-team").addEventListener("click", () => {
+document.querySelector("#clear-care-team")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseCareTeamContacts");
   renderCareTeamContacts();
   careTeamStatus.textContent = "Care team contacts cleared.";
 });
 
-document.querySelector("#sample-visit-brief").addEventListener("click", () => {
+document.querySelector("#sample-visit-brief")?.addEventListener("click", () => {
   addSampleVisitBriefData();
 });
 
-document.querySelector("#build-visit-brief").addEventListener("click", () => {
+document.querySelector("#build-visit-brief")?.addEventListener("click", () => {
   buildVisitBrief();
 });
 
-document.querySelector("#copy-visit-brief").addEventListener("click", () => {
+document.querySelector("#copy-visit-brief")?.addEventListener("click", () => {
   copyVisitBrief();
 });
 
-document.querySelector("#clear-visit-briefs").addEventListener("click", () => {
+document.querySelector("#clear-visit-briefs")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseVisitBriefs");
   renderVisitBriefs();
   visitBriefStatus.textContent = "Visit briefs cleared.";
 });
 
-document.querySelector("#sample-care-packet").addEventListener("click", () => {
+document.querySelector("#sample-care-packet")?.addEventListener("click", () => {
   addSampleCarePacketData();
 });
 
-document.querySelector("#build-care-packet").addEventListener("click", () => {
+document.querySelector("#build-care-packet")?.addEventListener("click", () => {
   buildCarePacket();
 });
 
-document.querySelector("#copy-care-packet").addEventListener("click", () => {
+document.querySelector("#copy-care-packet")?.addEventListener("click", () => {
   copyCarePacket();
 });
 
-document.querySelector("#clear-care-packets").addEventListener("click", () => {
+document.querySelector("#clear-care-packets")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseCarePackets");
   renderCarePackets();
   carePacketStatus.textContent = "Care packets cleared.";
 });
 
-document.querySelector("#sample-support").addEventListener("click", () => {
+document.querySelector("#sample-support")?.addEventListener("click", () => {
   fillSampleSupportRequest();
 });
 
-document.querySelector("#save-support").addEventListener("click", () => {
+document.querySelector("#save-support")?.addEventListener("click", () => {
   saveSupportRequest();
 });
 
-document.querySelector("#copy-support").addEventListener("click", () => {
+document.querySelector("#copy-support")?.addEventListener("click", () => {
   copySupportRequests();
 });
 
-document.querySelector("#clear-support").addEventListener("click", () => {
+document.querySelector("#clear-support")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseSupportRequests");
   renderSupportRequests();
   supportStatus.textContent = "Support inbox cleared.";
 });
 
-document.querySelector("#run-qa-checklist").addEventListener("click", () => {
+document.querySelector("#run-qa-checklist")?.addEventListener("click", () => {
   runQaChecklist();
 });
 
-document.querySelector("#copy-qa-report").addEventListener("click", () => {
+document.querySelector("#copy-qa-report")?.addEventListener("click", () => {
   copyQaReport();
 });
 
-document.querySelector("#clear-qa").addEventListener("click", () => {
+document.querySelector("#clear-qa")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseQaReports");
   renderQaReport();
   qaStatus.textContent = "QA report cleared.";
 });
 
-document.querySelector("#run-demo-flow").addEventListener("click", () => {
+document.querySelector("#run-demo-flow")?.addEventListener("click", () => {
   runSampleCarePlanDemo();
 });
 
-document.querySelector("#sample-report-text").addEventListener("click", () => {
+document.querySelector("#sample-report-text")?.addEventListener("click", () => {
   trackReportUsage("sample_opened");
   fillSampleReportText();
   latestReportId = "";
   analyzeAndShowReport();
 });
 
-document.querySelector("#sample-intake").addEventListener("click", () => {
+document.querySelector("#sample-intake")?.addEventListener("click", () => {
   fillSampleIntake();
 });
 
-document.querySelector("#save-profile").addEventListener("click", () => {
+document.querySelector("#save-profile")?.addEventListener("click", () => {
   saveProfile();
   profileStatus.textContent = "Profile saved on this device.";
   syncProfileToBackend(false);
 });
 
-document.querySelector("#clear-saved").addEventListener("click", () => {
+document.querySelector("#clear-saved")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseReports");
   localStorage.removeItem("carewiseLatestReportId");
   latestReportId = "";
@@ -1593,21 +1604,21 @@ document.querySelector("#clear-saved").addEventListener("click", () => {
   reportStatus.textContent = "Report history cleared on this device.";
 });
 
-document.querySelector("#save-checkin").addEventListener("click", () => {
+document.querySelector("#save-checkin")?.addEventListener("click", () => {
   saveCheckin();
 });
 
-document.querySelector("#sample-checkin").addEventListener("click", () => {
+document.querySelector("#sample-checkin")?.addEventListener("click", () => {
   fillSampleCheckin();
 });
 
-document.querySelector("#clear-checkins").addEventListener("click", () => {
+document.querySelector("#clear-checkins")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseCheckins");
   renderCheckins();
   checkinStatus.textContent = "Check-ins cleared on this device.";
 });
 
-document.querySelector("#privacy-consent").addEventListener("change", () => {
+document.querySelector("#privacy-consent")?.addEventListener("change", () => {
   localStorage.setItem("carewiseConsent", JSON.stringify({
     accepted: document.querySelector("#privacy-consent").checked,
     updatedAt: new Date().toISOString(),
@@ -1617,21 +1628,21 @@ document.querySelector("#privacy-consent").addEventListener("change", () => {
   if (document.querySelector("#privacy-consent").checked) recordConsentToBackend(false);
 });
 
-document.querySelector("#save-medication").addEventListener("click", () => {
+document.querySelector("#save-medication")?.addEventListener("click", () => {
   saveMedication();
 });
 
-document.querySelector("#sample-medication").addEventListener("click", () => {
+document.querySelector("#sample-medication")?.addEventListener("click", () => {
   fillSampleMedication();
 });
 
-document.querySelector("#clear-medications").addEventListener("click", () => {
+document.querySelector("#clear-medications")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseMedications");
   renderMedications();
   medicationStatus.textContent = "Medications cleared on this device.";
 });
 
-document.querySelector("#clear-review-queue").addEventListener("click", () => {
+document.querySelector("#clear-review-queue")?.addEventListener("click", () => {
   localStorage.removeItem("carewiseReviewQueue");
   addAuditEvent("review_queue_cleared", "Clinician review queue cleared locally.");
   renderReviewQueue();
@@ -1639,7 +1650,7 @@ document.querySelector("#clear-review-queue").addEventListener("click", () => {
   renderDashboardStats();
 });
 
-document.querySelector("#sample-review-item").addEventListener("click", () => {
+document.querySelector("#sample-review-item")?.addEventListener("click", () => {
   addSampleReviewItem();
 });
 
@@ -1651,26 +1662,26 @@ reviewFilters.forEach((button) => {
   });
 });
 
-document.querySelector("#load-backend-review").addEventListener("click", () => {
+document.querySelector("#load-backend-review")?.addEventListener("click", () => {
   loadBackendReviewQueue();
 });
 
-document.querySelector("#load-admin-summary").addEventListener("click", () => {
+document.querySelector("#load-admin-summary")?.addEventListener("click", () => {
   loadAdminSummary();
 });
 
-document.querySelector("#review-demo-run-all").addEventListener("click", () => {
+document.querySelector("#review-demo-run-all")?.addEventListener("click", () => {
   runFullReviewDemo();
 });
 
-document.querySelector("#review-demo-team").addEventListener("click", () => {
+document.querySelector("#review-demo-team")?.addEventListener("click", () => {
   fillTeamAccount("clinician", false);
   reviewDemoStatus.textContent = "Clinician role filled. Create the account once or log in, then continue the demo.";
   renderReviewSyncSummary();
   renderReviewDemoChecklist();
 });
 
-document.querySelector("#review-demo-session").addEventListener("click", async () => {
+document.querySelector("#review-demo-session")?.addEventListener("click", async () => {
   reviewDemoStatus.textContent = "Creating or logging in to the team account.";
   await ensureTeamReviewSession();
   renderReviewSyncSummary();
@@ -1678,7 +1689,7 @@ document.querySelector("#review-demo-session").addEventListener("click", async (
   renderReviewDemoGuidance();
 });
 
-document.querySelector("#review-demo-profile").addEventListener("click", async () => {
+document.querySelector("#review-demo-profile")?.addEventListener("click", async () => {
   reviewDemoStatus.textContent = "Syncing profile to create backend patient record.";
   await syncProfileToBackend(true);
   reviewDemoStatus.textContent = backendPatientId
@@ -1689,14 +1700,14 @@ document.querySelector("#review-demo-profile").addEventListener("click", async (
   renderReviewDemoGuidance();
 });
 
-document.querySelector("#review-demo-plan").addEventListener("click", () => {
+document.querySelector("#review-demo-plan")?.addEventListener("click", () => {
   runSampleCarePlanDemo();
   reviewDemoStatus.textContent = "High-risk sample plan generated. It should create a local review item.";
   window.showCareWiseSection?.("review-title");
   renderReviewDemoChecklist();
 });
 
-document.querySelector("#review-demo-sync").addEventListener("click", async () => {
+document.querySelector("#review-demo-sync")?.addEventListener("click", async () => {
   reviewDemoStatus.textContent = "Syncing latest plan to backend.";
   await syncLatestPlanToBackend(true);
   reviewDemoStatus.textContent = lastGeneratedPlan?.backendCarePlanId
@@ -1707,7 +1718,7 @@ document.querySelector("#review-demo-sync").addEventListener("click", async () =
   renderReviewDemoGuidance();
 });
 
-document.querySelector("#review-demo-load").addEventListener("click", async () => {
+document.querySelector("#review-demo-load")?.addEventListener("click", async () => {
   reviewDemoStatus.textContent = "Loading backend clinician queue.";
   await loadBackendReviewQueue();
   renderReviewSyncSummary();
@@ -1715,15 +1726,15 @@ document.querySelector("#review-demo-load").addEventListener("click", async () =
   renderReviewDemoGuidance();
 });
 
-document.querySelector("#review-demo-approve").addEventListener("click", () => {
+document.querySelector("#review-demo-approve")?.addEventListener("click", () => {
   approveDemoReviewItem();
 });
 
-document.querySelector("#create-checkout").addEventListener("click", () => {
+document.querySelector("#create-checkout")?.addEventListener("click", () => {
   createCheckout();
 });
 
-document.querySelector("#copy-checkout").addEventListener("click", () => {
+document.querySelector("#copy-checkout")?.addEventListener("click", () => {
   copyCheckoutLink();
 });
 
@@ -1740,27 +1751,27 @@ reviewDemoOutcome.addEventListener("click", (event) => {
   if (action === "reset") resetReviewDemoReceipt();
 });
 
-document.querySelector("#export-data").addEventListener("click", () => {
+document.querySelector("#export-data")?.addEventListener("click", () => {
   exportLocalData(false);
 });
 
-document.querySelector("#copy-data").addEventListener("click", () => {
+document.querySelector("#copy-data")?.addEventListener("click", () => {
   exportLocalData(true);
 });
 
-document.querySelector("#check-backend-data").addEventListener("click", () => {
+document.querySelector("#check-backend-data")?.addEventListener("click", () => {
   checkBackendDataSummary();
 });
 
-document.querySelector("#export-backend-data").addEventListener("click", () => {
+document.querySelector("#export-backend-data")?.addEventListener("click", () => {
   exportBackendData();
 });
 
-document.querySelector("#request-delete-data").addEventListener("click", () => {
+document.querySelector("#request-delete-data")?.addEventListener("click", () => {
   requestBackendDataDeletion();
 });
 
-document.querySelector("#clear-all-data").addEventListener("click", () => {
+document.querySelector("#clear-all-data")?.addEventListener("click", () => {
 ["carewiseProfile", "carewiseSavedPlans", "carewiseMealPlans", "carewiseCheckins", "carewiseSymptomTimeline", "carewiseMedications", "carewiseSafetyChecks", "carewiseGoals", "carewiseBarriers", "carewiseReminders", "carewiseMonthlyCalendars", "carewiseNavigationPrep", "carewiseCareTeamContacts", "carewiseVisitBriefs", "carewiseCarePackets", "carewiseSupportRequests", "carewiseQaReports", "carewiseDemoScripts", "carewiseReviewQueue", "carewiseAuditEvents", "carewiseConsent", "carewiseBackendPatientId", "carewiseAuthToken", "carewiseAuthEmail", "carewiseAuthRole", "carewiseReports", "carewiseLabTrends", "carewiseLatestReportId", "carewiseCheckoutUrl", "carewiseAdminSummary", "carewiseBackendReviewCount", "carewiseReviewDecisionSynced", "carewiseReviewDemoOutcome", "carewiseReportSafetyEval"].forEach((key) => localStorage.removeItem(key));
   backendPatientId = "";
   authToken = "";
@@ -3700,11 +3711,11 @@ function savePilotLead() {
 }
 
 function fillSamplePilotLead() {
-  document.querySelector("#pilot-name").value = "Dr. Maya Patel";
-  document.querySelector("#pilot-email").value = "maya.patel@example.com";
-  document.querySelector("#pilot-role").value = "Clinician advisor";
-  document.querySelector("#pilot-followup").value = "This week";
-  document.querySelector("#pilot-notes").value = "Review report-summary wording, red-flag routing, and clinician dashboard before any public pilot.";
+  setFieldValue("#pilot-name", "Dr. Maya Patel");
+  setFieldValue("#pilot-email", "maya.patel@example.com");
+  setFieldValue("#pilot-role", "Clinician advisor");
+  setFieldValue("#pilot-followup", "This week");
+  setFieldValue("#pilot-notes", "Review report-summary wording, red-flag routing, and clinician dashboard before any public pilot.");
   pilotStatus.textContent = "Sample clinician advisor lead filled. Save it when ready.";
 }
 
@@ -4718,7 +4729,7 @@ function renderReportHistory() {
           <strong>${escapeHtml(report.fileName || "Untitled report")}</strong>
           <span>${escapeHtml(report.status || "uploaded")} · ${escapeHtml(new Date(report.createdAt || report.updatedAt || Date.now()).toLocaleString())}</span>
         </div>
-        ${report.score ? `<b>${escapeHtml(String(report.score))}/100</b>` : ""}
+
       </div>
       ${report.storageUrl ? `<p><strong>Storage:</strong> ${escapeHtml(report.storageUrl.startsWith("s3://") ? "Private cloud storage" : "Backend storage")} ${report.fileSizeBytes ? `· ${Math.round(Number(report.fileSizeBytes) / 1024) || 1} KB` : ""}</p>` : ""}
       ${report.riskLevel ? `<p><strong>Risk:</strong> ${escapeHtml(report.riskLevel)} · ${escapeHtml(report.message || "Report education summary generated.")}</p>` : "<p>Uploaded. Analysis not run yet.</p>"}
@@ -4735,7 +4746,7 @@ function renderReportHistory() {
       <article>
         <div>
           <strong>${escapeHtml(report.fileName || "Untitled report")}</strong>
-          <span>${escapeHtml(`For ${normalizeReportPerson(report.person)} · `)}${escapeHtml(report.score ? `Health Score ${report.score}` : report.riskLevel ? `Risk: ${report.riskLevel}` : report.status || "uploaded")}</span>
+          <span>${escapeHtml(`For ${normalizeReportPerson(report.person)} · `)}${escapeHtml(report.riskLevel ? `Follow-up: ${report.riskLevel}` : report.status || "uploaded")}</span>
         </div>
         <p>${escapeHtml(report.message || "Saved report. Run or load analysis to see a plain-English explanation.")}</p>
         ${report.questions?.length ? `<p><strong>Doctor question:</strong> ${escapeHtml(report.questions[0])}</p>` : ""}
@@ -5718,6 +5729,20 @@ const CHANGE_TEXT = {
   es: { title: "Qué cambió desde su último informe", since: (d) => `Comparado con su informe del ${d}`, improved: "mejoraron", worse: "requieren atención", same: "sin cambios", improving: "mejorando", worsening: "alejándose del rango", backIn: "de vuelta en el rango", stillOut: "todavía fuera del rango", newOut: "ahora fuera del rango", steady: "sin cambios" },
 };
 
+// A plain count instead of a 0-100 score: how many results sit outside the lab's range.
+function outsideRangeCount(analysis) {
+  const markers = reportMarkers(analysis);
+  return { outside: markers.filter((m) => m.out).length, total: markers.length };
+}
+
+function outsideRangeText(analysis, language = "en") {
+  const { outside, total } = outsideRangeCount(analysis);
+  if (!total) return "";
+  return language === "es"
+    ? `${outside} de ${total} resultados fuera del rango del laboratorio`
+    : `${outside} of ${total} results outside the lab's range`;
+}
+
 function reportMarkers(analysis) {
   const markers = [];
   (analysis.labValues || []).forEach((item) => {
@@ -5875,8 +5900,8 @@ function renderLocalReportAnalysis(analysis) {
           ${ui.draftNotice ? `<p class="status-line" role="note">${escapeHtml(ui.draftNotice)}</p>` : ""}
         </div>
         <div class="result-score">
-          <strong>${escapeHtml(analysis.noData ? "—" : analysis.scanOnly ? SCAN_TEXT[reportLanguage === "es" ? "es" : "en"].scoreLabel : String(analysis.score))}</strong>
-          ${analysis.scanOnly || analysis.noData ? "" : "<span>/100</span>"}
+          <strong>${escapeHtml(analysis.noData ? "—" : analysis.scanOnly ? SCAN_TEXT[reportLanguage === "es" ? "es" : "en"].scoreLabel : String(outsideRangeCount(analysis).outside))}</strong>
+          ${analysis.scanOnly || analysis.noData || !outsideRangeCount(analysis).total ? "" : `<span>${escapeHtml(reportLanguage === "es" ? `de ${outsideRangeCount(analysis).total} fuera de rango` : `of ${outsideRangeCount(analysis).total} outside range`)}</span>`}
           <small>${escapeHtml(riskLabelText)}</small>
         </div>
       </div>
@@ -5928,7 +5953,7 @@ function renderLocalReportAnalysis(analysis) {
   document.querySelector(".report-panel")?.classList.add("has-result");
   syncWhoseChips();
   const scoreCard = document.querySelector(".health-score-card strong");
-  if (scoreCard) scoreCard.textContent = `${analysis.score}/100`;
+  if (scoreCard) scoreCard.textContent = outsideRangeText(analysis);
   const dashboardCards = document.querySelectorAll(".v1-report-dashboard article");
   if (dashboardCards[1]) dashboardCards[1].querySelector("strong").textContent = analysis.riskAreas.heart;
   if (dashboardCards[2]) dashboardCards[2].querySelector("strong").textContent = analysis.riskAreas.diabetes;
@@ -5999,7 +6024,7 @@ function buildDoctorBriefHtml(analysis, person = "Me") {
   @media print { button { display: none; } body { margin: 0 auto; } }
 </style></head><body>
 <header><h1>${person === "Me" ? "Patient lab summary for clinician review" : `Lab summary for clinician review: ${escapeHtml(person)}`}</h1><span>${escapeHtml(today)}</span></header>
-<p>${person === "Me" ? "Prepared by the patient with FollowThrough Health from their own report text." : `Prepared by a family caregiver for ${escapeHtml(person)} with FollowThrough Health from the report text.`}${analysis.scanOnly || analysis.noData ? "" : ` Health score ${escapeHtml(String(analysis.score))}/100 (educational estimate).`}</p>
+<p>${person === "Me" ? "Prepared by the patient with FollowThrough Health from their own report text." : `Prepared by a family caregiver for ${escapeHtml(person)} with FollowThrough Health from the report text.`}${analysis.scanOnly || analysis.noData || !outsideRangeCount(analysis).total ? "" : ` ${escapeHtml(outsideRangeText(analysis))}.`}</p>
 ${rows ? `<h2>Values detected in the report</h2><table><tr><th>Test</th><th>Value</th><th>FollowThrough Health note</th></tr>${rows}</table>` : ""}
 ${(analysis.panelResults || []).length ? `<h2>Other tests on the report (compared with the lab's printed range)</h2><table><tr><th>Test</th><th>Result</th><th>Lab range</th><th>Status</th></tr>${analysis.panelResults.map((item) => `<tr><td>${escapeHtml(item.name)}</td><td>${escapeHtml(`${item.valueText} ${item.unit}`.trim())}</td><td>${escapeHtml(item.rangeText || "not printed")}</td><td>${escapeHtml(LAB_PANEL_TEXT.en[`status_${item.status}`])}</td></tr>`).join("")}</table>` : ""}
 ${analysis.scan ? `<h2>Imaging report (${escapeHtml(analysis.scan.en.modality || "imaging")}), explained from the radiologist's text only</h2>${analysis.scan.en.followUps.length ? `<p>Lines the patient would like to discuss:</p><ul>${analysis.scan.en.followUps.map((item) => `<li>“${escapeHtml(item.sentence)}”</li>`).join("")}</ul>` : "<p>No follow-up lines were flagged in the report text.</p>"}` : ""}
@@ -6033,7 +6058,7 @@ function buildReportSummaryPack(analysis) {
   return [
     "FollowThrough Health report summary",
     "Educational prep only. This is not a diagnosis or treatment plan.",
-    `Health Score: ${analysis.score}/100`,
+    outsideRangeText(analysis) || "No lab values read",
     `Follow-up level: ${analysis.riskLevel}`,
     "",
     ...(analysis.labValues?.length ? [
@@ -6210,7 +6235,7 @@ function runLocalReportAnalysis() {
     status: "analyzed locally",
     riskLevel: analysis.riskLevel,
     score: analysis.score,
-    message: `Health Score ${analysis.score}/100. ${analysis.findings[0]?.label || "Report text reviewed"}.`,
+    message: `${outsideRangeText(analysis) || "Report text reviewed"}. ${analysis.findings[0]?.label || ""}`.trim(),
     nextSteps: analysis.questions.slice(0, 3),
     questions: analysis.questions,
     labValues: analysis.labValues,
@@ -9145,11 +9170,11 @@ function getSupportForm() {
 }
 
 function fillSampleSupportRequest() {
-  document.querySelector("#support-type").value = "Report upload concern";
-  document.querySelector("#support-priority").value = "High";
-  document.querySelector("#support-email").value = authEmail || "";
-  document.querySelector("#support-contact").value = "Yes";
-  document.querySelector("#support-notes").value = "User uploaded a lab report but wants the summary language reviewed for clarity before sharing with a doctor.";
+  setFieldValue("#support-type", "Report upload concern");
+  setFieldValue("#support-priority", "High");
+  setFieldValue("#support-email", authEmail || "");
+  setFieldValue("#support-contact", "Yes");
+  setFieldValue("#support-notes", "User uploaded a lab report but wants the summary language reviewed for clarity before sharing with a doctor.");
   supportStatus.textContent = "Sample support request filled. Save it when ready.";
 }
 
@@ -9173,7 +9198,8 @@ function saveSupportRequest() {
   requests.unshift(request);
   localStorage.setItem("carewiseSupportRequests", JSON.stringify(requests.slice(0, 30)));
   supportStatus.textContent = `${request.type} request saved locally. This prototype inbox is not monitored for emergencies.`;
-  document.querySelector("#support-notes").value = "";
+  const supportNotes = document.querySelector("#support-notes");
+  if (supportNotes) supportNotes.value = "";
   addAuditEvent("support_request_saved", `${request.type} support request saved with ${request.priority} priority.`);
   renderSupportRequests();
   renderAuditTrail();

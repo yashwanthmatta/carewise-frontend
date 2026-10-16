@@ -67,11 +67,10 @@ async function main() {
   assertIncludes("index.html", html, "legal/disclaimer.html");
   assertIncludes("index.html", html, "legal/data-deletion.html");
   assertIncludes("index.html", html, "legal/app-store-disclosures.html");
-  assertIncludes("index.html", html, "check-backend-data");
-  assertIncludes("index.html", html, "Check backend data");
-  assertIncludes("index.html", html, "Mobile GitHub push");
-  assertIncludes("index.html", html, "workflow permission");
-  assertIncludes("index.html", html, "Run production smoke with synthetic data");
+  // Internal team and launch tools must not ship in the public page.
+  for (const internal of ["Mobile GitHub push", "workflow permission", "Check backend data", "Local browser storage is active", "No review items yet"]) {
+    if (html.includes(internal)) throw new Error(`index.html still contains internal text: ${internal}`);
+  }
   const script = await readAsset("script.js", baseUrl);
   assertIncludes("script.js", script, "/privacy/me/export-summary");
   assertIncludes("script.js", script, "Backend summary is not live yet.");
@@ -102,7 +101,7 @@ async function main() {
   assertIncludes("script.js", script, "renderLocalReportAnalysis(displayAnalysis)");
   assertIncludes("script.js", script, "Saved doctor questions");
   assertIncludes("script.js", script, "Doctor question:");
-  assertIncludes("script.js", script, "Health Score ${report.score}");
+  assertIncludes("script.js", script, "function outsideRangeText(analysis");
   assertIncludes("script.js", script, "data-report-action=\"open-history\"");
   assertIncludes("script.js", script, "reportHistoryList?.addEventListener");
   assertIncludes("script.js", script, "openReportHistoryItem");
