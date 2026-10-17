@@ -234,6 +234,15 @@
     { "id": "thyroid-quest-pmol", "format": "quest", "title": "Thyroid Function", "tests": [
       { "key": "tsh", "name": "TSH", "value": "0.21", "unit": "mIU/L", "range": "0.40-4.50", "flag": "L", "expect": "low" },
       { "key": "ft4", "name": "Free T4", "value": "24.8", "unit": "pmol/L", "range": "12.0-22.0", "flag": "H", "expect": "high" }
+    ]},
+    { "id": "liver-uk-list-gl", "format": "list", "title": "Liver Function Tests", "tests": [
+      { "key": "albumin", "name": "Albumin", "value": "33", "unit": "g/L", "range": "35-50", "flag": "L", "expect": "low" },
+      { "key": "alp", "name": "Alkaline phosphatase", "value": "98", "unit": "IU/L", "range": "30-130", "flag": "", "expect": "normal" },
+      { "key": "alt", "name": "ALT", "value": "61", "unit": "IU/L", "range": "0-40", "flag": "H", "expect": "high" }
+    ]},
+    { "id": "b12-folate-eu-table-commas", "format": "table", "title": "Vitamin Levels", "tests": [
+      { "key": "b12", "name": "Vitamin B12", "value": "142", "unit": "pmol/L", "range": "145-569", "flag": "L", "expect": "low" },
+      { "key": "vitd", "name": "25-OH Vitamin D", "value": "62,5", "unit": "nmol/L", "range": "50,0-125,0", "flag": "", "expect": "normal" }
     ]}
   ]
 }
