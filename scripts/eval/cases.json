@@ -225,6 +225,15 @@
     { "id": "lipid-quest-nonhdl-mmol", "format": "quest", "title": "Lipid Profile", "tests": [
       { "key": "totalchol", "name": "Total Cholesterol", "value": "6.1", "unit": "mmol/L", "range": "<5.0", "flag": "H", "expect": "high", "shown": "236" },
       { "key": "trig", "name": "Triglycerides", "value": "1.4", "unit": "mmol/L", "range": "<1.7", "flag": "", "expect": "normal", "shown": "124" }
+    ]},
+    { "id": "electrolytes-eu-labcorp-commas", "format": "labcorp", "title": "Electrolytes", "tests": [
+      { "key": "sodium", "name": "Sodium", "value": "131", "unit": "mmol/L", "range": "136-145", "flag": "Low", "expect": "low" },
+      { "key": "potassium", "name": "Potassium", "value": "5,6", "unit": "mmol/L", "range": "3,5-5,1", "flag": "High", "expect": "high" },
+      { "key": "chloride", "name": "Chloride", "value": "101", "unit": "mmol/L", "range": "98-107", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "thyroid-quest-pmol", "format": "quest", "title": "Thyroid Function", "tests": [
+      { "key": "tsh", "name": "TSH", "value": "0.21", "unit": "mIU/L", "range": "0.40-4.50", "flag": "L", "expect": "low" },
+      { "key": "ft4", "name": "Free T4", "value": "24.8", "unit": "pmol/L", "range": "12.0-22.0", "flag": "H", "expect": "high" }
     ]}
   ]
 }
