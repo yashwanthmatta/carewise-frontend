@@ -1,0 +1,15 @@
+Sample lab report for the FollowThrough Health demo. Made-up patient: Raj, 78. Requested by his GP.
+UREA AND ELECTROLYTES
+Sodium 137 mmol/L (ref 133-146)
+Potassium 5.4 mmol/L (ref 3.5-5.3) H
+Creatinine 132 umol/L (ref 64-104) H
+eGFR 44 mL/min/1.73m2 (ref >60) L
+LIPIDS
+Total cholesterol 5.9 mmol/L (ref <5.0) H
+HDL cholesterol 1.1 mmol/L (ref >1.0)
+LDL cholesterol 3.6 mmol/L (ref <3.0) H
+DIABETES
+HbA1c 52 mmol/mol (ref 20-41) H
+FULL BLOOD COUNT
+Haemoglobin 118 g/L (ref 130-170) L
+Platelets 210 x10^9/L (ref 150-400)

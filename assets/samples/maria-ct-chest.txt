@@ -1,0 +1,9 @@
+CT CHEST WITHOUT CONTRAST
+Sample radiology report for the FollowThrough Health demo. Made-up patient: Maria, 54.
+CLINICAL HISTORY: Cough for 3 weeks.
+FINDINGS: There is a 5 mm solid nodule in the right upper lobe. No pleural effusion. No lymphadenopathy. Mild atelectasis at both lung bases. The heart is normal in size.
+IMPRESSION:
+1. 5 mm right upper lobe pulmonary nodule, likely benign.
+2. Mild bibasilar atelectasis.
+3. No pleural effusion.
+Follow-up chest CT in 12 months is recommended.
