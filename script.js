@@ -9808,7 +9808,7 @@ const TOUR_SCAN_REPORT = [
 const TOUR_STEPS = [
   {
     title: "A blood test, explained in seconds",
-    caption: "Maria (made up, 54) adds her lab report. FollowThrough Health reads it on the device and shows a simple score and what to watch.",
+    caption: "Maria (made up, 54) adds her lab report. FollowThrough Health reads it on the device and shows how many results are outside the lab's range and which to ask about first.",
     report: "lab",
     target: ".v1-result-card",
   },
@@ -10034,9 +10034,43 @@ document.addEventListener("keydown", (event) => {
     showTourStep(Math.max(0, tourStep - 1));
   }
 });
+// Links from demo.html (#try=<sample>) fill in a made-up report so the visitor presses
+// "Explain report" themselves and walks the real flow.
+const TRY_SAMPLES = {
+  "maria-blood-test": { person: "Maria (sample)", file: "maria-blood-test.pdf" },
+  "raj-kidney-heart-uk": { person: "Dad (sample)", file: "raj-kidney-heart-uk.pdf" },
+  "maria-ct-chest": { person: "Maria (sample)", file: "maria-ct-chest.pdf" },
+};
+
+async function loadTrySample() {
+  const id = window.location.hash.match(/^#try=([a-z0-9-]+)$/)?.[1];
+  const sample = id && TRY_SAMPLES[id];
+  if (!sample) return;
+  if (tourStep >= 0) endTour();
+  window.showCareWiseSection?.("report-title", false);
+  try {
+    const response = await fetch(`assets/samples/${id}.txt`);
+    if (!response.ok) throw new Error(String(response.status));
+    document.querySelector("#report-text").value = (await response.text()).trim();
+  } catch {
+    reportStatus.textContent = "The sample report could not load. Check your connection and try again.";
+    return;
+  }
+  document.querySelector("#report-person").value = sample.person;
+  document.querySelector("#report-name").value = sample.file;
+  syncWhoseChips();
+  trackUsage("sample_opened");
+  reportStatus.textContent = `Sample report for a made-up person is filled in. Press "Explain report" to see what FollowThrough Health does with it.`;
+  if (history.replaceState) history.replaceState(null, "", "#report-title");
+  scrollBelowHeader(document.querySelector(".report-panel"));
+  document.querySelector("#analyze-report")?.focus({ preventScroll: true });
+}
+
 if (window.location.hash === "#tour") startTour();
+loadTrySample();
 window.addEventListener("hashchange", () => {
   if (window.location.hash === "#tour" && tourStep < 0) startTour();
+  loadTrySample();
 });
 
 function registerCareWiseServiceWorker() {

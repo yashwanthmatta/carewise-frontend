@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Try it yourself | FollowThrough Health</title>
+    <meta name="description" content="Try FollowThrough Health in 3 minutes with a made-up lab or scan report. No sign-up. See the plain-English explanation, the doctor brief, questions to ask and a reminder for the next test." />
+    <link rel="canonical" href="https://carewise-frontend.onrender.com/demo.html" />
+    <link rel="icon" href="assets/carewise-app-icon.svg" />
+    <link rel="stylesheet" href="share.css?v=carewise-product-165" />
+    <style>
+      .dm-samples { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+      .dm-sample { border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+      .dm-sample h3 { margin: 0; font-size: 1rem; }
+      .dm-sample p { margin: 0; font-size: 0.92rem; }
+      .dm-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 8px; }
+      .dm-btn { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 16px; border-radius: 999px; background: var(--ink); color: #fff; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+      .dm-btn-light { background: #fff; color: var(--ink); border: 1px solid var(--ink); }
+      .dm-steps { list-style: none; padding: 0; margin: 0; }
+      .dm-steps li { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--line); margin: 0; }
+      .dm-steps li:last-child { border-bottom: 0; }
+      .dm-steps input { width: 22px; height: 22px; margin-top: 2px; flex: none; accent-color: var(--teal); }
+      .dm-steps label { cursor: pointer; }
+      .dm-steps b { display: block; }
+      .dm-steps span { color: var(--muted); font-size: 0.92rem; }
+      .dm-done { margin: 12px 0 0; padding: 10px 12px; border-radius: 12px; background: #eaf6f2; border: 1px solid #b6dccf; font-weight: 600; }
+      .dm-done[hidden] { display: none; }
+      .dm-progress { font-weight: 600; color: var(--teal); }
+      .dm-note { font-size: 0.9rem; }
+      @media (max-width: 760px) { .dm-samples { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <main class="sv">
+      <header class="sv-head"><a class="sv-brand" href="/"><img src="assets/carewise-logo.svg" alt="" width="28" height="28" /> FollowThrough Health</a><a class="dm-btn dm-btn-light" href="/#tour">Watch instead</a></header>
+
+      <section class="sv-card sv-hero">
+        <p class="sv-eyebrow">Try it yourself · about 3 minutes · no sign-up</p>
+        <h1>Walk through a parent's lab report, start to finish</h1>
+        <p class="sv-muted">Pick a made-up report below, then follow the steps. You will see what FollowThrough Health does: explain each result in plain words, say how soon to ask the doctor, make a one-page brief for the visit, and remind you about the next test.</p>
+        <p class="sv-muted dm-note">The people and numbers are made up. Without an account, reports are read and kept only in your browser. This is education, not a diagnosis.</p>
+      </section>
+
+      <section class="sv-card" aria-labelledby="dm-pick">
+        <h2 id="dm-pick">1. Pick a sample report</h2>
+        <div class="dm-samples">
+          <article class="dm-sample">
+            <h3>Mom's blood test</h3>
+            <p class="sv-muted">Maria, 54. Cholesterol, blood sugar, vitamin D, kidney, liver, thyroid and blood count. US units.</p>
+            <div class="dm-actions">
+              <a class="dm-btn" href="/#try=maria-blood-test" target="_blank" rel="noopener">Open in the app</a>
+              <a class="dm-btn dm-btn-light" href="assets/samples/maria-blood-test.pdf" download>Download PDF</a>
+            </div>
+          </article>
+          <article class="dm-sample">
+            <h3>Dad's kidney and heart check</h3>
+            <p class="sv-muted">Raj, 78. Kidney function, potassium, cholesterol, HbA1c and haemoglobin. UK units (mmol/L).</p>
+            <div class="dm-actions">
+              <a class="dm-btn" href="/#try=raj-kidney-heart-uk" target="_blank" rel="noopener">Open in the app</a>
+              <a class="dm-btn dm-btn-light" href="assets/samples/raj-kidney-heart-uk.pdf" download>Download PDF</a>
+            </div>
+          </article>
+          <article class="dm-sample">
+            <h3>Mom's CT scan report</h3>
+            <p class="sv-muted">Maria, 54. A chest CT written report with a small nodule and a follow-up date. The words only, no images.</p>
+            <div class="dm-actions">
+              <a class="dm-btn" href="/#try=maria-ct-chest" target="_blank" rel="noopener">Open in the app</a>
+              <a class="dm-btn dm-btn-light" href="assets/samples/maria-ct-chest.pdf" download>Download PDF</a>
+            </div>
+          </article>
+        </div>
+        <p class="sv-muted dm-note">Want the real upload? Download a PDF, open <a href="/#report-title">Add a report</a>, choose the file and press "Explain report".</p>
+      </section>
+
+      <section class="sv-card" aria-labelledby="dm-steps">
+        <h2 id="dm-steps">2. Follow these steps in the app</h2>
+        <p class="dm-progress" id="dm-progress" aria-live="polite">0 of 6 done</p>
+        <ol class="dm-steps">
+          <li><input type="checkbox" id="dm-1" /><label for="dm-1"><b>Press "Explain report"</b><span>Read the top of the result: how many results are outside the lab's range, and how soon to ask the doctor.</span></label></li>
+          <li><input type="checkbox" id="dm-2" /><label for="dm-2"><b>Open "All tests on your report"</b><span>Every result in plain words, next to the range the lab printed.</span></label></li>
+          <li><input type="checkbox" id="dm-3" /><label for="dm-3"><b>Press "Doctor brief"</b><span>One page for the visit. Print it or save it as a PDF.</span></label></li>
+          <li><input type="checkbox" id="dm-4" /><label for="dm-4"><b>Press "Copy questions"</b><span>Paste them into your notes or a message, so nothing is forgotten at the appointment.</span></label></li>
+          <li><input type="checkbox" id="dm-5" /><label for="dm-5"><b>Under "Remind me about my next labs", press "Add to calendar"</b><span>Saves the next test date to your phone or computer calendar.</span></label></li>
+          <li><input type="checkbox" id="dm-6" /><label for="dm-6"><b>Switch to "Español"</b><span>The same explanation in Spanish, for family members who prefer it. (Draft wording, pending review.)</span></label></li>
+        </ol>
+        <p class="dm-done" id="dm-done" hidden>That's the whole flow: understand the report, know what to ask, and remember the next step.</p>
+      </section>
+
+      <section class="sv-card" aria-labelledby="dm-own">
+        <h2 id="dm-own">3. Now try your own report</h2>
+        <p class="sv-muted">Upload a PDF or a photo of a real lab report, or type the numbers. Text PDFs and photos are read on your device. Create a free account only if you want to keep reports across devices or share a link with a doctor.</p>
+        <div class="dm-actions">
+          <a class="dm-btn" href="/#report-title">Explain my own report</a>
+          <a class="dm-btn dm-btn-light" href="/#for-doctors">I'm a doctor</a>
+        </div>
+      </section>
+
+      <p class="sv-foot">FollowThrough Health explains reports for education. It does not diagnose and does not replace your doctor. In an emergency, call 911 or your local emergency number. <a href="legal/privacy.html">Privacy</a> · <a href="legal/terms.html">Terms</a> · <a href="legal/disclaimer.html">Disclaimer</a></p>
+    </main>
+    <script>
+      // Checklist progress is a per-browser convenience only; the page works without storage.
+      (function () {
+        const boxes = Array.from(document.querySelectorAll(".dm-steps input"));
+        const progress = document.getElementById("dm-progress");
+        const done = document.getElementById("dm-done");
+        let saved = [];
+        try { saved = JSON.parse(localStorage.getItem("ftDemoSteps") || "[]"); } catch (e) { saved = []; }
+        boxes.forEach(function (box) { box.checked = saved.indexOf(box.id) !== -1; });
+        function update() {
+          const checked = boxes.filter(function (box) { return box.checked; });
+          progress.textContent = checked.length + " of " + boxes.length + " done";
+          done.hidden = checked.length !== boxes.length;
+          try { localStorage.setItem("ftDemoSteps", JSON.stringify(checked.map(function (box) { return box.id; }))); } catch (e) {}
+        }
+        boxes.forEach(function (box) { box.addEventListener("change", update); });
+        update();
+      })();
+    </script>
+  </body>
+</html>

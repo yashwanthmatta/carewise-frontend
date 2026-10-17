@@ -106,6 +106,14 @@ async function main() {
   assertIncludes("script.js", script, "reportHistoryList?.addEventListener");
   assertIncludes("script.js", script, "openReportHistoryItem");
   assertIncludes("script.js", script, "renderReportHistoryResult");
+  const demo = await readAsset("demo.html", baseUrl);
+  for (const id of ["maria-blood-test", "raj-kidney-heart-uk", "maria-ct-chest"]) {
+    assertIncludes("demo.html", demo, `/#try=${id}`);
+    assertIncludes("demo.html", demo, `assets/samples/${id}.pdf`);
+    assertIncludes("script.js", script, `"${id}": {`);
+    await readAsset(`assets/samples/${id}.txt`, baseUrl);
+  }
+  assertIncludes("script.js", script, "loadTrySample();");
   const styles = await readAsset("styles.css", baseUrl);
   assertIncludes("styles.css", styles, ".section-heading-action");
   assertIncludes("styles.css", styles, ".inline-action-group");
