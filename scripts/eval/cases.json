@@ -243,6 +243,14 @@
     { "id": "b12-folate-eu-table-commas", "format": "table", "title": "Vitamin Levels", "tests": [
       { "key": "b12", "name": "Vitamin B12", "value": "142", "unit": "pmol/L", "range": "145-569", "flag": "L", "expect": "low" },
       { "key": "vitd", "name": "25-OH Vitamin D", "value": "62,5", "unit": "nmol/L", "range": "50,0-125,0", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "diff-uk-labcorp-absolute", "format": "labcorp", "title": "White Cell Differential", "tests": [
+      { "key": "neutrophils", "name": "Neutrophils", "value": "1.2", "unit": "x10^9/L", "range": "2.0-7.5", "flag": "Low", "expect": "low" },
+      { "key": "lymphocytes", "name": "Lymphocytes", "value": "3.1", "unit": "x10^9/L", "range": "1.5-4.0", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "urea-uk-quest-mmol", "format": "quest", "title": "Renal Profile", "tests": [
+      { "key": "bun", "name": "Urea", "value": "9.8", "unit": "mmol/L", "range": "2.5-7.8", "flag": "H", "expect": "high" },
+      { "key": "potassium", "name": "Potassium", "value": "4.2", "unit": "mmol/L", "range": "3.5-5.3", "flag": "", "expect": "normal" }
     ]}
   ]
 }
