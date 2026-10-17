@@ -251,6 +251,14 @@
     { "id": "urea-uk-quest-mmol", "format": "quest", "title": "Renal Profile", "tests": [
       { "key": "bun", "name": "Urea", "value": "9.8", "unit": "mmol/L", "range": "2.5-7.8", "flag": "H", "expect": "high" },
       { "key": "potassium", "name": "Potassium", "value": "4.2", "unit": "mmol/L", "range": "3.5-5.3", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "calcium-eu-quest-commas", "format": "quest", "title": "Bone and Mineral Panel", "tests": [
+      { "key": "calcium", "name": "Calcium", "value": "2,71", "unit": "mmol/L", "range": "2,15-2,55", "flag": "H", "expect": "high" },
+      { "key": "phosphorus", "name": "Phosphate", "value": "0,95", "unit": "mmol/L", "range": "0,81-1,45", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "esr-crp-uk-table", "format": "table", "title": "Inflammatory Markers", "tests": [
+      { "key": "esr", "name": "ESR", "value": "48", "unit": "mm/hr", "range": "1-20", "flag": "H", "expect": "high" },
+      { "key": "crp", "name": "C reactive protein", "value": "3", "unit": "mg/L", "range": "0-5", "flag": "", "expect": "normal" }
     ]}
   ]
 }
