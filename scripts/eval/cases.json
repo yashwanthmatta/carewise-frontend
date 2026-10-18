@@ -287,6 +287,16 @@
       { "key": "potassium", "name": "Potassium", "value": "5.6", "unit": "mmol/L", "range": "3.5-5.1", "flag": "H", "expect": "high" },
       { "key": "creatinine", "name": "Creatinine", "value": "1.42", "unit": "mg/dL", "range": "0.57-1.00", "flag": "H", "expect": "high" },
       { "key": "calcium", "name": "Calcium", "value": "9.4", "unit": "mg/dL", "range": "8.7-10.2", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "lipid-twocol-mmol-commas", "format": "twocol", "title": "Lipid and Diabetes Profile", "tests": [
+      { "key": "totalchol", "name": "Total cholesterol", "value": "4,6", "unit": "mmol/L", "range": "<5,0", "flag": "", "expect": "normal", "shown": "178" },
+      { "key": "trig", "name": "Triglycerides", "value": "2,4", "unit": "mmol/L", "range": "<1,7", "flag": "H", "expect": "high", "shown": "213" },
+      { "key": "hdl", "name": "HDL cholesterol", "value": "1,3", "unit": "mmol/L", "range": ">1,0", "flag": "", "expect": "normal" },
+      { "key": "a1c", "name": "HbA1c", "value": "53", "unit": "mmol/mol", "range": "20-41", "flag": "H", "expect": "high", "shown": "7" }
+    ]},
+    { "id": "thyroid-twocol-quest", "format": "twocol", "title": "Thyroid and Vitamins", "tests": [
+      { "key": "tsh", "name": "TSH", "value": "3.1", "unit": "mIU/L", "range": "0.40-4.50", "flag": "", "expect": "normal" },
+      { "key": "b12", "name": "Vitamin B12", "value": "180", "unit": "pg/mL", "range": "200-1100", "flag": "L", "expect": "low" }
     ]}
   ]
 }
