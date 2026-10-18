@@ -267,6 +267,14 @@
     { "id": "thyroid-labcorp-ft3", "format": "labcorp", "title": "Thyroid Panel", "tests": [
       { "key": "tsh", "name": "TSH", "value": "6.8", "unit": "uIU/mL", "range": "0.450-4.500", "flag": "High", "expect": "high" },
       { "key": "ft4", "name": "Free T4 (Direct)", "value": "1.05", "unit": "ng/dL", "range": "0.82-1.77", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "iron-quest-tibc", "format": "quest", "title": "Iron Panel", "tests": [
+      { "key": "iron", "name": "Iron, Total", "value": "212", "unit": "mcg/dL", "range": "45-160", "flag": "H", "expect": "high" },
+      { "key": "ferritin", "name": "Ferritin", "value": "98", "unit": "ng/mL", "range": "16-232", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "magnesium-eu-table-commas", "format": "table", "title": "Electrolytes Extended", "tests": [
+      { "key": "magnesium", "name": "Magnesium", "value": "0,88", "unit": "mmol/L", "range": "0,66-1,07", "flag": "", "expect": "normal" },
+      { "key": "sodium", "name": "Sodium", "value": "147", "unit": "mmol/L", "range": "136-145", "flag": "H", "expect": "high" }
     ]}
   ]
 }
