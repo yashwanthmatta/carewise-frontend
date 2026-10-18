@@ -275,6 +275,18 @@
     { "id": "magnesium-eu-table-commas", "format": "table", "title": "Electrolytes Extended", "tests": [
       { "key": "magnesium", "name": "Magnesium", "value": "0,88", "unit": "mmol/L", "range": "0,66-1,07", "flag": "", "expect": "normal" },
       { "key": "sodium", "name": "Sodium", "value": "147", "unit": "mmol/L", "range": "136-145", "flag": "H", "expect": "high" }
+    ]},
+    { "id": "cbc-twocol", "format": "twocol", "title": "Complete Blood Count", "tests": [
+      { "key": "hemoglobin", "name": "Hemoglobin", "value": "10.9", "unit": "g/dL", "range": "12.0-15.5", "flag": "L", "expect": "low" },
+      { "key": "wbc", "name": "WBC", "value": "7.1", "unit": "x10^3/uL", "range": "4.0-11.0", "flag": "", "expect": "normal" },
+      { "key": "platelets", "name": "Platelets", "value": "455", "unit": "x10^3/uL", "range": "150-400", "flag": "H", "expect": "high" },
+      { "key": "mcv", "name": "MCV", "value": "76", "unit": "fL", "range": "80-100", "flag": "L", "expect": "low" }
+    ]},
+    { "id": "cmp-twocol", "format": "twocol", "title": "Metabolic Panel", "tests": [
+      { "key": "sodium", "name": "Sodium", "value": "139", "unit": "mmol/L", "range": "136-145", "flag": "", "expect": "normal" },
+      { "key": "potassium", "name": "Potassium", "value": "5.6", "unit": "mmol/L", "range": "3.5-5.1", "flag": "H", "expect": "high" },
+      { "key": "creatinine", "name": "Creatinine", "value": "1.42", "unit": "mg/dL", "range": "0.57-1.00", "flag": "H", "expect": "high" },
+      { "key": "calcium", "name": "Calcium", "value": "9.4", "unit": "mg/dL", "range": "8.7-10.2", "flag": "", "expect": "normal" }
     ]}
   ]
 }
