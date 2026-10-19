@@ -487,7 +487,9 @@ const LAB_PANEL_TEXT = {
         status_below: "Below the lab's range",
         status_critical: "Marked critical by the lab",
         status_outside: "Marked abnormal by the lab",
-        status_unknown: "No range printed"
+        status_unknown: "No range printed",
+        status_target_above: "Above the usual target",
+        status_target_below: "Below the usual target"
     },
     es: {
         title: "Todas las pruebas de su informe",
@@ -503,7 +505,9 @@ const LAB_PANEL_TEXT = {
         status_below: "Por debajo del rango del laboratorio",
         status_critical: "Marcado como crítico por el laboratorio",
         status_outside: "Marcado como anormal por el laboratorio",
-        status_unknown: "Sin rango impreso"
+        status_unknown: "Sin rango impreso",
+        status_target_above: "Por encima del objetivo habitual",
+        status_target_below: "Por debajo del objetivo habitual"
     }
 };
 // Spanish names for the translation layer: English test name -> Spanish name.
@@ -5385,6 +5389,46 @@ function getNonNegatedEmergencyMatches(text) {
   });
 }
 
+// The printed reference range after a value read by its own rule ("<100", "4.0-5.6"),
+// cut at the next test on the line so a two-column report never lends its neighbour's range.
+function printedRangeFor(text, namePattern, maxGap = 24) {
+  const match = text.match(new RegExp(`${namePattern}\\D{0,${maxGap}}?${LAB_FOOTNOTE}(?<![a-z])(\\d+(?:\\.\\d+)?)${LAB_UNIT}`, "i"));
+  if (!match || match.index === undefined) return "";
+  const rest = cutAtNextTest(text.slice(match.index + match[0].length).split("\n")[0].slice(0, 60));
+  return rest.match(RANGE_PATTERN)?.[0].replace(/\s+/g, " ").trim() || "";
+}
+
+const PRINTED_UNIT_LABEL = { "mmol/l": "mmol/L", "mmol/mol": "mmol/mol", "mg/dl": "mg/dL", "%": "%" };
+
+// Rows for the tests read by their own rules (cholesterol, triglycerides, A1C, vitamin D),
+// shaped like lab panel rows so "All tests on your report" lists every result the
+// headline counts. Status follows the lab's printed range; a value inside it that misses
+// a common target is "usual target", which is explained but not counted as outside.
+function buildRuleRows(lower, labValues, outside, vitaminDRange) {
+  const specs = {
+    "LDL cholesterol": { key: "ldl", pattern: String.raw`\bldl(?: cholesterol)?` },
+    "Total cholesterol": { key: "totalCholesterol", pattern: String.raw`(?:total cholesterol|cholesterol,?\s*total)` },
+    Triglycerides: { key: "triglycerides", pattern: "triglycerides" },
+    A1C: { key: "a1c", pattern: String.raw`(?:hemoglobin\s*)?a1c`, gap: 40 },
+    "Vitamin D": { key: "vitaminD" },
+  };
+  return labValues.filter((item) => specs[item.label]).map((item) => {
+    const spec = specs[item.label];
+    const measure = spec.pattern ? readLabMeasure(lower, spec.pattern, spec.gap) : null;
+    const rangeText = spec.pattern ? printedRangeFor(lower, spec.pattern, spec.gap) : vitaminDRange;
+    const printedUnit = measure?.unit ? PRINTED_UNIT_LABEL[measure.unit] || measure.unit : "";
+    const converted = measure && printedUnit && printedUnit.toLowerCase() !== String(item.unit).toLowerCase();
+    const valueText = converted ? `${measure.value} ${printedUnit} (about ${item.value} ${item.unit})` : `${item.value} ${item.unit}`;
+    const inRange = /in range discussion/i.test(item.flag);
+    const lowIsBad = item.label === "Vitamin D";
+    let status = "within";
+    if (outside[spec.key]) status = outside[spec.key];
+    // Flagged only by a general guideline, not by the range the lab printed.
+    else if (!inRange) status = lowIsBad ? "target_below" : "target_above";
+    return { key: spec.key, name: item.label, valueText, unit: "", rangeText, status, rule: true };
+  });
+}
+
 function analyzeReportTextLocally(rawText) {
   // Decimal commas ("1,4"), thousands commas and common misspellings are fixed first.
   const text = normalizeReportText(rawText);
@@ -5619,6 +5663,7 @@ function analyzeReportTextLocally(rawText) {
     riskAreas,
     labValues,
     panelResults,
+    ruleRows: buildRuleRows(lower, labValues, outside, vitaminDHasRange && vitaminDMatch ? vitaminDMatch[1].match(RANGE_PATTERN)?.[0].replace(/\s+/g, " ").trim() || "" : ""),
     scan,
     scanOnly,
     noData,
@@ -5721,7 +5766,7 @@ function renderResultMore(content, title, detail) {
 }
 
 function renderLabPanelSection(analysis) {
-  const results = analysis.panelResults || [];
+  const results = allTestRows(analysis) || analysis.panelResults || [];
   if (!results.length) return "";
   const t = LAB_PANEL_TEXT[reportLanguage === "es" ? "es" : "en"];
   return `
@@ -5733,7 +5778,7 @@ function renderLabPanelSection(analysis) {
               <span role="columnheader">${escapeHtml(t.test)}</span><span role="columnheader">${escapeHtml(t.result)}</span><span role="columnheader">${escapeHtml(t.range)}</span><span role="columnheader">${escapeHtml(t.status)}</span>
             </div>
             ${results.map((item) => {
-              const info = labTestInfo(item.key);
+              const info = item.rule ? null : labTestInfo(item.key);
               const name = reportLanguage === "es" && info ? info.es : item.name;
               const what = info ? (reportLanguage === "es" ? info.whatEs : info.what) : "";
               return `
@@ -5801,8 +5846,17 @@ const CHANGE_TEXT = {
 };
 
 // A plain count instead of a 0-100 score: how many results sit outside the lab's range.
+// The headline count and "All tests on your report" use the same rows, so they always agree.
+// Blood pressure is not a lab result and is not counted.
+const OUTSIDE_STATUSES = new Set(["above", "below", "critical", "outside"]);
+function allTestRows(analysis) {
+  if (Array.isArray(analysis.ruleRows)) return [...analysis.ruleRows, ...(analysis.panelResults || [])];
+  return null;
+}
 function outsideRangeCount(analysis) {
-  const markers = reportMarkers(analysis);
+  const rows = allTestRows(analysis);
+  if (rows) return { outside: rows.filter((row) => OUTSIDE_STATUSES.has(row.status)).length, total: rows.length };
+  const markers = reportMarkers(analysis).filter((m) => !/blood pressure/i.test(m.name));
   return { outside: markers.filter((m) => m.out).length, total: markers.length };
 }
 
@@ -6009,7 +6063,7 @@ function renderLocalReportAnalysis(analysis) {
         </section>
         ` : ""}
         ${renderScanSection(analysis)}
-        ${renderResultMore(renderLabPanelSection(analysis), LAB_PANEL_TEXT[reportLanguage === "es" ? "es" : "en"].title, (analysis.panelResults || []).length ? ui.allTests(analysis.panelResults.length, analysis.panelResults.filter((item) => item.status !== "within" && item.status !== "unknown").length) : "")}
+        ${renderResultMore(renderLabPanelSection(analysis), LAB_PANEL_TEXT[reportLanguage === "es" ? "es" : "en"].title, (allTestRows(analysis) || analysis.panelResults || []).length ? ui.allTests((allTestRows(analysis) || analysis.panelResults).length, (allTestRows(analysis) || analysis.panelResults).filter((item) => OUTSIDE_STATUSES.has(item.status)).length) : "")}
         ${renderResultMore(renderPersonalPlanSection(analysis), getLatestPersonalPlan(analysis)?.title || "", "")}
         ${renderResultMore(`<section class="result-suggestions">
           <h4>${escapeHtml(ui.suggestions)}</h4>
@@ -6314,7 +6368,7 @@ function runLocalReportAnalysis() {
   });
   renderLocalReportAnalysis(analysis);
   trackReportUsage("report_explained");
-  reportStatus.textContent = "Analysis complete. Review the summary, health score, and doctor questions below.";
+  reportStatus.textContent = "Analysis complete. Review what needs attention, the questions for your doctor and every test below.";
   if (reportAnswer) reportAnswer.textContent = 'Ask a question about this report, such as "Why is my LDL high?"';
   return analysis;
 }

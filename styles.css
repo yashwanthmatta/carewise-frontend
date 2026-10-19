@@ -5518,6 +5518,11 @@ body::before {
   color: #9a3b17;
 }
 
+.lab-status-target_above em,
+.lab-status-target_below em {
+  color: #8a5a00;
+}
+
 .lab-status-critical {
   background: #fdf2f2;
 }
