@@ -793,7 +793,7 @@ const REPORT_TRANSLATIONS = {
       "What LDL goal is appropriate for me based on my age, family history, blood pressure, and other risks?": "¿Qué meta de LDL es adecuada para mí según mi edad, mis antecedentes familiares, mi presión arterial y otros riesgos?",
       "Does my A1C need repeat testing or a diabetes care plan?": "¿Necesito repetir la prueba de A1C o un plan de atención para la diabetes?",
       "What changes would help lower my A1C safely over the next 3 months?": "¿Qué cambios me ayudarían a bajar mi A1C de forma segura en los próximos 3 meses?",
-      "Should I repeat my vitamin D test, and do I need a supplement? If so, how much should I take and for how long?": "¿Debo repetir la prueba de vitamina D o hablar sobre la dosis y la duración de un suplemento?",
+      "Should I repeat my vitamin D test, and is this level a concern for me?": "¿Debo repetir la prueba de vitamina D o hablar sobre la dosis y la duración de un suplemento?",
       "Which results matter most for me, and when should I repeat labs?": "¿Qué resultados son más importantes para mí y cuándo debo repetir los análisis?",
       "Should I see primary care, a dietitian, or a specialist based on these results?": "Según estos resultados, ¿debo ver a mi médico de cabecera, a un nutricionista o a un especialista?",
       "Which values from my original report should I focus on first?": "¿En qué valores de mi informe original debo fijarme primero?",
@@ -901,16 +901,16 @@ const PLAN_TEXT = {
         move: "Movement",
         track: "Track",
         safety: "Before you start",
-        heartFat: "Swap saturated fats: use olive or canola oil instead of butter, and choose fish, beans, skinless poultry or low-fat dairy more often than fatty red or processed meat.",
-        heartFiber: "Add soluble fiber every day: oats, beans, lentils, barley, apples or citrus fruit.",
+        heartFat: "Cut back on fats found in foods like butter, fatty meat and cheese: cook with olive or canola oil, and choose fish, beans, skinless chicken or low-fat dairy more often.",
+        heartFiber: "Eat fiber from foods like oats, beans and apples every day.",
         heartFish: "Eat fish such as salmon or sardines about twice a week.",
         trigSugar: "Cut back on sugary drinks, sweets and white bread, rice or pasta; choose whole grains instead.",
         trigAlcohol: "Limit alcohol, which can raise triglycerides.",
-        a1cPlate: "Use the plate method: half vegetables like broccoli, spinach and carrots, a quarter lean protein and a quarter whole grains or starchy food.",
+        a1cPlate: "Fill half your plate with vegetables, one quarter with protein, and one quarter with whole grains or other starchy foods.",
         a1cDrinks: "Drink water or unsweetened tea or coffee instead of soda and juice.",
         a1cWeight: "If you are overweight, losing 5 to 7% of your body weight can lower your chance of type 2 diabetes.",
         kidneyPotassium: "Your potassium or kidney result is outside the lab's range. Ask your doctor or a kidney dietitian before eating more fruit, vegetables, beans, lentils, nuts or dairy: many are high in potassium.",
-        bpDash: "Follow a DASH-style eating pattern: plenty of fruit, vegetables, beans, nuts, whole grains and low-fat dairy.",
+        bpDash: "Eat more vegetables, fruits and whole grains while cutting back on salt.",
         bpSalt: "Keep salt (sodium) under 2,300 mg a day; check labels on bread, soups, sauces and restaurant food.",
         vitdFood: "Include vitamin D foods such as fatty fish, eggs, and fortified milk or cereal.",
         balanced: "Keep a balanced pattern: vegetables and fruit at most meals, whole grains, and protein from fish, beans, nuts or poultry.",
@@ -944,16 +944,16 @@ const PLAN_TEXT = {
         move: "Actividad física",
         track: "Seguimiento",
         safety: "Antes de empezar",
-        heartFat: "Cambie las grasas saturadas: use aceite de oliva o de canola en vez de mantequilla, y elija pescado, frijoles, pollo sin piel o lácteos bajos en grasa más a menudo que carnes rojas grasas o procesadas.",
-        heartFiber: "Añada fibra soluble cada día: avena, frijoles, lentejas, cebada, manzanas o cítricos.",
+        heartFat: "Coma menos grasas de alimentos como la mantequilla, la carne grasosa y el queso: cocine con aceite de oliva o de canola, y elija pescado, frijoles, pollo sin piel o lácteos bajos en grasa más a menudo.",
+        heartFiber: "Coma cada día fibra de alimentos como la avena, los frijoles y las manzanas.",
         heartFish: "Coma pescado, como salmón o sardinas, unas dos veces por semana.",
         trigSugar: "Reduzca las bebidas azucaradas, los dulces y el pan, arroz o pasta blancos; elija granos integrales.",
         trigAlcohol: "Limite el alcohol, que puede subir los triglicéridos.",
-        a1cPlate: "Use el método del plato: la mitad verduras como brócoli, espinaca y zanahoria, un cuarto proteína magra y un cuarto granos integrales o alimentos con almidón.",
+        a1cPlate: "Llene la mitad del plato con verduras, un cuarto con proteína y un cuarto con granos integrales u otros alimentos con almidón.",
         a1cDrinks: "Tome agua, o té o café sin azúcar, en lugar de refrescos y jugos.",
         a1cWeight: "Si tiene sobrepeso, perder del 5 al 7 % de su peso puede reducir la probabilidad de diabetes tipo 2.",
         kidneyPotassium: "Su resultado de potasio o de riñón está fuera del rango del laboratorio. Pregunte a su médico o a un dietista renal antes de comer más fruta, verduras, frijoles, lentejas, nueces o lácteos: muchos tienen mucho potasio.",
-        bpDash: "Siga un patrón de alimentación tipo DASH: muchas frutas, verduras, frijoles, nueces, granos integrales y lácteos bajos en grasa.",
+        bpDash: "Coma más verduras, frutas y granos integrales, y menos sal.",
         bpSalt: "Mantenga la sal (sodio) por debajo de 2,300 mg al día; revise las etiquetas del pan, sopas, salsas y comida de restaurante.",
         vitdFood: "Incluya alimentos con vitamina D, como pescado graso, huevos y leche o cereal fortificados.",
         balanced: "Mantenga un patrón equilibrado: verduras y fruta en la mayoría de las comidas, granos integrales y proteína de pescado, frijoles, nueces o pollo.",
@@ -1388,7 +1388,12 @@ reportResults?.addEventListener("click", (event) => {
   if (action === "copy-plan") copyPersonalPlan();
   if (action === "doctor-brief") openDoctorBrief();
   if (action === "share-doctor") window.openDoctorShare?.();
-  if (action === "lab-reminder") downloadLabReminder(Number(reportResults.querySelector("[data-lab-reminder]")?.value) || 6);
+  if (action === "lab-reminder") {
+    // The date comes from the person's doctor; FollowThrough Health never picks one.
+    const date = reportResults.querySelector("[data-lab-reminder]")?.value;
+    if (!date) reportStatus.textContent = VIEW_TEXT[reportLanguage === "es" ? "es" : "en"].reminderNeedDate;
+    else downloadLabReminder(date);
+  }
   if (action === "save-detected-values") saveDetectedValuesToTrends();
   if (action === "open-history") openReportHistoryItem(event.target.closest("[data-report-id]")?.dataset.reportId || "");
 });
@@ -4266,7 +4271,7 @@ async function readPdfTextLocally(file) {
     updateProgressRail();
     trackReportUsage("pdf_read");
     await analyzeAndShowReport();
-    reportStatus.textContent = `PDF read on this device. Nothing was uploaded. ${reportStatus.textContent}`;
+    reportStatus.textContent = `PDF read on this device; the file was not uploaded. It only leaves this device if you choose to save or share it. ${reportStatus.textContent}`;
   } catch {
     reportStatus.textContent = "FollowThrough Health could not read this PDF. Paste the lab values as text below.";
   }
@@ -4569,7 +4574,7 @@ async function showOcrResult(rawText, sourceLabel) {
   trackReportUsage("photo_read");
   await analyzeAndShowReport();
   renderOcrChecks();
-  reportStatus.textContent = `Read from your ${sourceLabel} on this device. Nothing was uploaded. Photos can be misread, so please check the numbers in the text box against the report.`;
+  reportStatus.textContent = `Read from your ${sourceLabel} on this device; the file was not uploaded. It only leaves this device if you choose to save or share it. Photos can be misread, so please check the numbers against the report.`;
 }
 
 async function readPhotoTextLocally(file) {
@@ -5387,7 +5392,9 @@ function readLabMeasure(text, namePattern, maxGap = 24) {
   if (!match) return null;
   const value = Number(match[1]);
   const rest = cutAtNextTest(text.slice(match.index + match[0].length).split("\n")[0].slice(0, 60));
-  return { value, unit: (match[2] || "").replace(/\s+/g, "").toLowerCase(), outside: compareWithPrintedRange(value, rest) };
+  // The unit can come after a previous-result column ("17 L 17 03/2026 mmol/mol").
+  const unit = match[2] || rest.match(/(mmol\s*\/\s*mol|mmol\s*\/\s*l|mg\s*\/\s*dl)/i)?.[1] || "";
+  return { value, unit: unit.replace(/\s+/g, "").toLowerCase(), outside: compareWithPrintedRange(value, rest) };
 }
 
 // Reads the reference range printed on the same line after a value ("0-99", "<5.7",
@@ -5519,6 +5526,21 @@ function buildRuleRows(lower, labValues, outside, vitaminDRange) {
   });
 }
 
+// Whether the glucose on the report was taken fasting: true, false, or null when not stated.
+function readGlucoseFasting(lower) {
+  // The result line itself (with a number), not a section heading such as "BLOOD SUGAR".
+  const line = lower.split("\n").find((item) => /glucose|blood sugar|\bfbs\b|\brbs\b|\bfpg\b/.test(item) && /\d/.test(item) && !/a1c/.test(item)) || "";
+  if (/random|non[- ]?fasting|\brbs\b|post[- ]?prandial|\bpp(?:bs)?\b|after (?:a )?meal/.test(line)) return false;
+  if (/fasting|\bfbs\b|\bfpg\b|\bfbg\b/.test(line) || /\bfasting\s*[:=]?\s*(?:yes|y)\b/.test(lower)) return true;
+  if (/\bfasting\s*[:=]?\s*(?:no|n)\b/.test(lower)) return false;
+  return null;
+}
+
+// True when the report text says the blood pressure was measured at home.
+function readBpAtHome(lower) {
+  return /(?:home|self[- ]?measured|at home)[^\n]{0,40}(?:blood pressure|\bbp\b)|(?:blood pressure|\bbp\b)[^\n]{0,40}(?:at home|home reading|self[- ]?measured)/.test(lower);
+}
+
 function analyzeReportTextLocally(rawText) {
   // Decimal commas ("1,4"), thousands commas and common misspellings are fixed first.
   const text = normalizeReportText(rawText);
@@ -5537,7 +5559,7 @@ function analyzeReportTextLocally(rawText) {
   const vitaminDMatch = lower.match(/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?\D{0,24}\d+(?:\.\d+)?([^\n]{0,60})/i);
   if (vitaminDMatch) vitaminDMatch[1] = cutAtNextTest(vitaminDMatch[1]);
   // European and UK labs report vitamin D in nmol/L; the common 30 ng/mL cut-off is about 75 nmol/L.
-  const vitaminDUnit = vitaminDMatch && /^\s*(?:(?:h|l|hi|lo|high|low|\*)\s+)?nmol\s*\/\s*l/i.test(vitaminDMatch[1]) ? "nmol/L" : "ng/mL";
+  const vitaminDUnit = vitaminDMatch && /^[^a-z]*(?:(?:h|l|hi|lo|high|low|\*)\s+)?(?:[\d.,/\s]*)nmol\s*\/\s*l/i.test(vitaminDMatch[1]) ? "nmol/L" : "ng/mL";
   const vitaminDNg = vitaminD === null ? null : vitaminDUnit === "nmol/L" ? Math.round((vitaminD / 2.496) * 10) / 10 : vitaminD;
   // Follow the range the lab printed; use the common 30 ng/mL target only when none is printed.
   const vitaminDHasRange = Boolean(vitaminDMatch && /\d\s*[-–]\s*\d|[<>≤≥]\s*=?\s*\d/.test(vitaminDMatch[1]));
@@ -5631,7 +5653,7 @@ function analyzeReportTextLocally(rawText) {
     if (vitaminDLow) {
       score -= 4;
       findings.push({ label: "Vitamin D", level: "Needs attention", detail: `Vitamin D appears around ${vitaminD} ${vitaminDUnit}.` });
-      questions.push("Should I repeat my vitamin D test, and do I need a supplement? If so, how much should I take and for how long?");
+      questions.push("Should I repeat my vitamin D test, and is this level a concern for me?");
     } else if (outside.vitaminD) {
       score -= 2;
       findings.push({ label: "Vitamin D", level: OUTSIDE_LAB_RANGE[outside.vitaminD], detail: `Vitamin D appears around ${vitaminD} ${vitaminDUnit}.${labRangeDetail("vitaminD")}` });
@@ -5753,6 +5775,8 @@ function analyzeReportTextLocally(rawText) {
     riskAreas,
     labValues,
     panelResults,
+    glucoseFasting: readGlucoseFasting(lower),
+    bpAtHome: readBpAtHome(lower),
     ruleRows: buildRuleRows(lower, labValues, outside, vitaminDHasRange && vitaminDMatch ? vitaminDMatch[1].match(RANGE_PATTERN)?.[0].replace(/\s+/g, " ").trim() || "" : ""),
     scan,
     scanOnly,
@@ -5878,14 +5902,14 @@ function renderLabPanelSection(analysis, view = buildReportView(analysis, report
 }
 
 // Summary first: what matters, in plain words, before any numbers.
-function renderReportSummary(view) {
+function renderReportSummary(view, nextStep = "") {
   if (!view.headline && !view.body.length) return "";
   return `
       <section class="report-summary report-summary-${view.urgent ? "urgent" : view.outside || view.cards.length ? "attention" : "clear"}" aria-labelledby="report-summary-title">
         <span class="report-summary-eyebrow">${escapeHtml(view.title)}</span>
         <h3 id="report-summary-title">${escapeHtml(view.headline)}</h3>
         ${view.body.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}
-        ${view.count ? `<p class="report-summary-count">${escapeHtml(view.count)}</p>` : ""}
+        ${nextStep ? `<p class="report-summary-next">${escapeHtml(nextStep)}</p>` : ""}
       </section>`;
 }
 
@@ -5895,7 +5919,8 @@ function renderResultCard(card, text) {
           <article class="result-card-item result-card-${escapeHtml(card.tone)}">
             <header><strong>${escapeHtml(card.name)}</strong><em>${escapeHtml(card.label)}</em></header>
             <p class="result-card-value"><b>${escapeHtml(card.value)}</b>${card.unitHint ? `<small>${escapeHtml(card.unitHint)}</small>` : ""}</p>
-            <p class="result-card-range">${escapeHtml(card.rangeLabel)}: ${escapeHtml(card.range || text.noRangePrinted)}</p>
+            ${card.rangeLabel ? `<p class="result-card-range">${escapeHtml(card.rangeLabel)}: ${escapeHtml(card.range || text.noRangePrinted)}</p>` : ""}
+            ${card.note ? `<p class="result-card-range">${escapeHtml(card.note)}</p>` : ""}
             ${card.what ? `<h5>${escapeHtml(text.whatIs)}</h5><p>${escapeHtml(card.what)}</p>` : ""}
             ${card.meaning ? `<h5>${escapeHtml(text.whatMeans)}</h5><p>${escapeHtml(card.meaning)}</p>` : ""}
             ${card.ask ? `<h5>${escapeHtml(text.askDoctor)}</h5><p class="result-card-ask">“${escapeHtml(card.ask)}”</p>` : ""}
@@ -5911,6 +5936,16 @@ function renderResultCards(view) {
       </section>`;
 }
 
+// Information that is not a lab result (for now, a blood pressure found in the report text).
+function renderOtherInfo(view) {
+  if (!view.other.length) return "";
+  return `
+      <section class="result-cards result-other" aria-label="${escapeHtml(view.text.otherTitle)}">
+        <h4>${escapeHtml(view.text.otherTitle)}</h4>
+        <div class="result-cards-grid">${view.other.map((card) => renderResultCard(card, view.text)).join("")}</div>
+      </section>`;
+}
+
 function renderNextSteps(view) {
   const ui = reportUiText();
   return `
@@ -5921,7 +5956,7 @@ function renderNextSteps(view) {
         </div>
         <ol class="next-steps-list">${view.steps.map((step) => `<li><strong>${escapeHtml(step.title)}</strong><span>${escapeHtml(step.body)}</span></li>`).join("")}</ol>
         <p class="next-steps-note">${escapeHtml(view.text.stepsNote)}</p>
-        ${view.more.length ? `<details class="next-steps-more"><summary><span class="more-open">${escapeHtml(view.text.moreIdeas)}</span><span class="more-close">${escapeHtml(view.text.showLess)}</span></summary><ul>${view.more.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></details>` : ""}
+        ${view.more.length ? `<details class="next-steps-more"><summary><span class="more-open">${escapeHtml(view.text.moreIdeas)}</span><span class="more-close">${escapeHtml(view.text.showLess)}</span></summary>${view.more.map((group) => `<h5>${escapeHtml(group.title)}</h5><ul>${group.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`).join("")}</details>` : ""}
       </section>`;
 }
 
@@ -5993,7 +6028,7 @@ function allTestRows(analysis) {
 }
 function outsideRangeCount(analysis) {
   const rows = allTestRows(analysis);
-  if (rows) return { outside: rows.filter((row) => OUTSIDE_STATUSES.has(row.status)).length, total: rows.length };
+  if (rows) return { outside: rows.filter((row) => OUTSIDE_STATUSES.has(row.status) && !(row.generalRange && (row.status === "above" || row.status === "below"))).length, total: rows.length };
   const markers = reportMarkers(analysis).filter((m) => !/blood pressure/i.test(m.name));
   return { outside: markers.filter((m) => m.out).length, total: markers.length };
 }
@@ -6100,9 +6135,8 @@ function renderReportChanges(analysis) {
 }
 
 // "Remind me about my next labs": a calendar file made on this device, nothing sent.
-function downloadLabReminder(months) {
-  const date = new Date();
-  date.setMonth(date.getMonth() + months);
+function downloadLabReminder(dateText) {
+  const date = new Date(`${dateText}T12:00:00`);
   const day = date.toISOString().slice(0, 10).replace(/-/g, "");
   const next = new Date(date.getTime() + 86400000).toISOString().slice(0, 10).replace(/-/g, "");
   const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
@@ -6112,7 +6146,7 @@ function downloadLabReminder(months) {
     "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//FollowThrough Health//Lab reminder//EN", "BEGIN:VEVENT",
     `UID:carewise-${Date.now()}@carewise`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${day}`, `DTEND;VALUE=DATE:${next}`,
     `SUMMARY:Time for your next labs${who}`,
-    "DESCRIPTION:Ask your doctor whether it's time to repeat your lab tests. Then explain the new report on FollowThrough Health to see what changed.",
+    "DESCRIPTION:The date your doctor gave for your next lab test. After the test, explain the new report on FollowThrough Health to see what changed.",
     "BEGIN:VALARM", "TRIGGER:-P2D", "ACTION:DISPLAY", "DESCRIPTION:Lab reminder", "END:VALARM",
     "END:VEVENT", "END:VCALENDAR",
   ].join("\r\n");
@@ -6122,7 +6156,7 @@ function downloadLabReminder(months) {
   document.body.appendChild(link);
   link.click();
   link.remove();
-  reportStatus.textContent = `Reminder added for ${date.toLocaleDateString(undefined, { month: "long", year: "numeric" })}. Open the file to save it in your calendar.`;
+  reportStatus.textContent = `Reminder made for ${date.toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}. Open the file to save it in your calendar.`;
 }
 
 // Plain-language guide per test: what it is, what a high or low result can mean, and a
@@ -6133,7 +6167,7 @@ const TEST_GUIDE = {
   totalCholesterol: { name: "Total cholesterol", nameEs: "Colesterol total", what: "The overall amount of cholesterol in your blood.", whatEs: "La cantidad total de colesterol en la sangre.", high: "High total cholesterol can raise heart risk, depending on how much is LDL and how much is HDL.", highEs: "Un colesterol total alto puede aumentar el riesgo del corazón, según cuánto sea LDL y cuánto HDL.", askHigh: "How do my LDL and HDL change what my total cholesterol means?", askHighEs: "¿Cómo cambian mi LDL y mi HDL lo que significa mi colesterol total?" },
   triglycerides: { name: "Triglycerides (blood fats)", nameEs: "Triglicéridos (grasas en la sangre)", what: "A type of fat in your blood that comes from food and extra calories.", whatEs: "Un tipo de grasa en la sangre que viene de la comida y de las calorías de más.", high: "High triglycerides can add to heart risk. Sugary food, alcohol and not fasting before the test can raise them.", highEs: "Los triglicéridos altos pueden sumar riesgo para el corazón. El azúcar, el alcohol y no estar en ayunas antes del análisis pueden subirlos.", askHigh: "Was I supposed to fast for this test, and what would help bring my triglycerides down?", askHighEs: "¿Debía estar en ayunas para este análisis y qué me ayudaría a bajar los triglicéridos?" },
   a1c: { name: "A1C (average blood sugar)", nameEs: "A1C (azúcar promedio)", what: "Shows your average blood sugar over the past two to three months.", whatEs: "Muestra su nivel promedio de azúcar en la sangre de los últimos dos o tres meses.", high: "A higher A1C means your blood sugar has been running high. 5.7% to 6.4% is called the prediabetes range; 6.5% or higher is the diabetes range, which a doctor confirms with repeat testing.", highEs: "Un A1C más alto significa que el azúcar ha estado alto. De 5.7% a 6.4% se llama rango de prediabetes; 6.5% o más es el rango de diabetes, que el médico confirma repitiendo el análisis.", askHigh: "What does my A1C mean for me, and when should I test it again?", askHighEs: "¿Qué significa mi A1C para mí y cuándo debo repetirlo?" },
-  vitaminD: { name: "Vitamin D", nameEs: "Vitamina D", what: "A vitamin your body needs for healthy bones and muscles.", whatEs: "Una vitamina que el cuerpo necesita para tener huesos y músculos sanos.", low: "Low vitamin D is common, especially with little sun. Over time it can affect bone strength.", lowEs: "La vitamina D baja es común, sobre todo con poco sol. Con el tiempo puede afectar la fuerza de los huesos.", high: "Very high vitamin D usually comes from taking a lot of supplements.", highEs: "La vitamina D muy alta suele venir de tomar muchos suplementos.", askLow: "Do I need a vitamin D supplement? If so, how much should I take and for how long?", askLowEs: "¿Necesito un suplemento de vitamina D? Si es así, ¿cuánto debo tomar y por cuánto tiempo?", askHigh: "Should I change the vitamin D I take?", askHighEs: "¿Debo cambiar la vitamina D que tomo?" },
+  vitaminD: { name: "Vitamin D", nameEs: "Vitamina D", what: "A vitamin your body needs for healthy bones and muscles.", whatEs: "Una vitamina que el cuerpo necesita para tener huesos y músculos sanos.", low: "Your result is below this lab's range. Guidelines don't all use the same cutoff for low vitamin D, so this result alone doesn't confirm a deficiency.", lowEs: "Su resultado está por debajo del rango de este laboratorio. Las guías no usan todas el mismo límite para la vitamina D baja, así que este resultado por sí solo no confirma una deficiencia.", high: "Very high vitamin D usually comes from taking a lot of supplements.", highEs: "La vitamina D muy alta suele venir de tomar muchos suplementos.", askLow: "Is my vitamin D level a concern for me, and should I do anything about it?", askLowEs: "¿Mi nivel de vitamina D es motivo de preocupación para mí y debo hacer algo al respecto?", askHigh: "Should I change the vitamin D I take?", askHighEs: "¿Debo cambiar la vitamina D que tomo?" },
   hdl: { name: "HDL (good cholesterol)", nameEs: "HDL (colesterol bueno)", what: "The type of cholesterol that helps remove other cholesterol from your blood.", whatEs: "El tipo de colesterol que ayuda a quitar otro colesterol de la sangre.", low: "Low HDL can add to heart risk. Activity and not smoking can help raise it.", lowEs: "Un HDL bajo puede sumar riesgo para el corazón. La actividad física y no fumar pueden ayudar a subirlo.", askLow: "What would help raise my HDL?", askLowEs: "¿Qué me ayudaría a subir el HDL?" },
   nonhdl: { high: "Higher non-HDL cholesterol can raise your risk of heart problems over time.", highEs: "Un colesterol no HDL más alto puede aumentar con el tiempo el riesgo de problemas del corazón.", askHigh: "What should my cholesterol goals be?", askHighEs: "¿Cuáles deberían ser mis metas de colesterol?" },
   glucose: { high: "Blood sugar can be high after eating, with stress or illness, or with diabetes. Whether you had fasted matters.", highEs: "El azúcar puede estar alto después de comer, con estrés o enfermedad, o con diabetes. Importa si estaba en ayunas.", low: "Low blood sugar can cause shakiness, sweating or confusion.", lowEs: "El azúcar bajo puede causar temblores, sudor o confusión.", askHigh: "Was this a fasting test, and do I need an A1C or a repeat test?", askHighEs: "¿Fue un análisis en ayunas y necesito un A1C o repetir la prueba?", askLow: "What could cause my low blood sugar, and what should I do if I feel shaky?", askLowEs: "¿Qué puede causar mi azúcar bajo y qué hago si me siento tembloroso?" },
@@ -6202,6 +6236,29 @@ function unitHint(unit, language = "en") {
 const VIEW_TEXT = {
   en: {
     summaryTitle: "Your lab report summary",
+    allInLabs: "Your lab results are within the lab's ranges",
+    guideMeaning: "Your report didn't print a range for this test, so it was compared with a common general guide. Your lab's own range may differ.",
+    guideSentence: (names) => `${names} had no range on your report and ${names.includes(" and ") ? "are" : "is"} outside a common guide; ask your doctor what range applies to you.`,
+    count: (o, t) => `${o} of your ${t} lab results ${o === 1 ? "is" : "are"} outside the lab's ranges.`,
+    discussLabs: (groups) => `Your ${groups} results deserve a conversation with your doctor.`,
+    othersLabs: "The other lab results are within the lab's ranges.",
+    bpMention: (value, home) => `Your report also mentions ${home ? "home blood pressure readings" : "a blood pressure reading"} around ${value}, which ${home ? "are" : "is"} worth discussing.`,
+    bpMentionOk: (value, home) => `Your report also mentions ${home ? "home blood pressure readings" : "a blood pressure reading"} around ${value}.`,
+    otherTitle: "Other health information found in your report",
+    bpTitle: (home) => home ? "Blood pressure (home readings in your report)" : "Blood pressure (mentioned in your report)",
+    bpNotLab: "Not a lab test result.",
+    bpCategory: { normal: "Normal range", elevated: "Elevated range", stage1: "Stage 1 high blood pressure range", stage2: "Stage 2 high blood pressure range", severe: "Very high — get medical care now" },
+    bpMeaningCat: (category) => `Readings like this fall in the American Heart Association's "${category}" category when they are repeated and measured correctly. One reading is not a diagnosis; your doctor looks at several readings over time.`,
+    bpAskLog: "Should I keep a log of my blood pressure, and how do I measure it correctly at home?",
+    fasting: { yes: "Taken while fasting", no: "Not a fasting test", unknown: "Your report doesn't say if this was a fasting test" },
+    glucoseMeaning: { yes: "This was a fasting test, so a result above the lab's range can be an early sign of high blood sugar. A doctor confirms it with repeat tests or an A1C.", no: "This was not a fasting test, and blood sugar rises after eating, so a result above a fasting range may not mean much on its own.", unknown: "Blood sugar depends on whether you had eaten. Your report doesn't say if this was a fasting test, so this result alone doesn't show prediabetes." },
+    glucoseAsk: { withA1c: "Was this a fasting test, and how does my glucose fit with my A1C?", noA1cUnknown: "Was this a fasting test, and do I need an A1C test?", noA1c: "Do I need an A1C test to look at this further?", withA1cKnown: "How do my glucose and A1C fit together?" },
+    totalAskAlone: "What does my total cholesterol mean for my heart, and do I need a full cholesterol test?",
+    thyroidTogether: "What do my TSH and free T4 mean together?",
+    ft4Alone: "What could explain my free T4 result, and do I need other thyroid tests?",
+    moreGroups: { kidney: "Kidney and potassium", cholesterol: "Cholesterol", sugar: "Blood sugar", bp: "Blood pressure", vitd: "Vitamin D", habits: "Everyday habits" },
+    reminderLabel: "Did your doctor give a date for your next test? Add it to your calendar (optional).",
+    reminderNeedDate: "Enter the date your doctor gave you first.",
     allIn: "Your results are within the lab's ranges",
     allInBody: (n) => `All ${n} results are inside the ranges printed on your report. Bring the report to your next regular visit.`,
     few: "A few results need attention",
@@ -6213,12 +6270,11 @@ const VIEW_TEXT = {
     goal: (names) => `${names} ${names.includes(" and ") ? "are" : "is"} within the lab's range but above a common health goal.`,
     noRange: (n) => `${n === 1 ? "One result has" : `${n} results have`} no range printed; ask your doctor what ${n === 1 ? "it means" : "they mean"}.`,
     noneCompared: (n) => `We read ${n} result${n === 1 ? "" : "s"}, but your report printed no ranges to compare with. Ask your doctor what they mean for you.`,
-    count: (o, t) => `${o} of ${t} results ${o === 1 ? "is" : "are"} outside the lab's ranges.`,
     and: "and",
     attentionTitle: "Results to talk about",
     whatIs: "What is it?", whatMeans: "What does this mean?", askDoctor: "Ask your doctor", yourResult: "Your result",
     labRange: "Lab's range", noRangePrinted: "Not printed on your report", generalGuide: "Common guide (no range on your report)",
-    labels: { check: "Check this number", high: "High", low: "Low", in: "In range", none: "No range printed", critical: "Critical", abnormal: "Flagged by the lab", goalAbove: "In range, above a common goal", goalBelow: "In range, below a common goal", pre: "High — prediabetes range", diabetes: "High — diabetes range" },
+    labels: { guideHigh: "High compared with a common guide", guideLow: "Low compared with a common guide", lowLab: "Low — below this lab's range", check: "Check this number", high: "High", low: "Low", in: "In range", none: "No range printed", critical: "Critical", abnormal: "Flagged by the lab", goalAbove: "In range, above a common goal", goalBelow: "In range, below a common goal", pre: "High — prediabetes range", diabetes: "High — diabetes range" },
     photoNote: "These numbers were read from a photo, which can misread a decimal point. Check each one against your report before relying on this summary.",
     checkMeaning: "This number may have been misread from the photo, for example a missing decimal point. Compare it with your report and confirm it in the box above the result.",
     checkFirst: (n) => `${n === 1 ? "One number" : `${n} numbers`} from your photo may be misread. Please confirm ${n === 1 ? "it" : "them"} against the report first.`,
@@ -6244,6 +6300,29 @@ const VIEW_TEXT = {
   },
   es: {
     summaryTitle: "Resumen de su análisis",
+    allInLabs: "Sus resultados de laboratorio están dentro de los rangos del laboratorio",
+    guideMeaning: "Su informe no trae un rango para esta prueba, así que se comparó con una guía general común. El rango de su laboratorio puede ser distinto.",
+    guideSentence: (names) => `${names} no ${names.includes(" y ") ? "tienen" : "tiene"} rango en su informe y ${names.includes(" y ") ? "están" : "está"} fuera de una guía común; pregunte a su médico qué rango le corresponde.`,
+    count: (o, t) => `${o} de sus ${t} resultados de laboratorio ${o === 1 ? "está" : "están"} fuera de los rangos del laboratorio.`,
+    discussLabs: (groups) => `Conviene hablar con su médico sobre sus resultados de ${groups}.`,
+    othersLabs: "Los demás resultados de laboratorio están dentro de los rangos del laboratorio.",
+    bpMention: (value, home) => `Su informe también menciona ${home ? "mediciones de presión arterial en casa" : "una presión arterial"} de alrededor de ${value}, que conviene comentar.`,
+    bpMentionOk: (value, home) => `Su informe también menciona ${home ? "mediciones de presión arterial en casa" : "una presión arterial"} de alrededor de ${value}.`,
+    otherTitle: "Otra información de salud en su informe",
+    bpTitle: (home) => home ? "Presión arterial (mediciones en casa de su informe)" : "Presión arterial (mencionada en su informe)",
+    bpNotLab: "No es un resultado de laboratorio.",
+    bpCategory: { normal: "Rango normal", elevated: "Rango elevado", stage1: "Rango de presión alta en etapa 1", stage2: "Rango de presión alta en etapa 2", severe: "Muy alta: busque atención médica ahora" },
+    bpMeaningCat: (category) => `Mediciones así están en la categoría "${category}" de la Asociación Americana del Corazón cuando se repiten y se toman correctamente. Una sola medición no es un diagnóstico; su médico mira varias mediciones con el tiempo.`,
+    bpAskLog: "¿Debo llevar un registro de mi presión arterial y cómo la mido correctamente en casa?",
+    fasting: { yes: "Tomada en ayunas", no: "No fue en ayunas", unknown: "Su informe no dice si fue en ayunas" },
+    glucoseMeaning: { yes: "Fue un análisis en ayunas, así que un resultado por encima del rango puede ser una señal temprana de azúcar alto. El médico lo confirma repitiendo el análisis o con un A1C.", no: "No fue en ayunas, y el azúcar sube después de comer, así que un resultado por encima de un rango en ayunas puede no significar mucho por sí solo.", unknown: "El azúcar depende de si había comido. Su informe no dice si fue en ayunas, así que este resultado por sí solo no indica prediabetes." },
+    glucoseAsk: { withA1c: "¿Fue un análisis en ayunas y cómo encaja mi glucosa con mi A1C?", noA1cUnknown: "¿Fue un análisis en ayunas y necesito un A1C?", noA1c: "¿Necesito un A1C para revisar esto mejor?", withA1cKnown: "¿Cómo encajan mi glucosa y mi A1C?" },
+    totalAskAlone: "¿Qué significa mi colesterol total para mi corazón y necesito un análisis completo de colesterol?",
+    thyroidTogether: "¿Qué significan juntas mi TSH y mi T4 libre?",
+    ft4Alone: "¿Qué podría explicar mi resultado de T4 libre y necesito otros análisis de tiroides?",
+    moreGroups: { kidney: "Riñón y potasio", cholesterol: "Colesterol", sugar: "Azúcar en la sangre", bp: "Presión arterial", vitd: "Vitamina D", habits: "Hábitos diarios" },
+    reminderLabel: "¿Su médico le dio una fecha para el próximo análisis? Añádala a su calendario (opcional).",
+    reminderNeedDate: "Primero escriba la fecha que le dio su médico.",
     allIn: "Sus resultados están dentro de los rangos del laboratorio",
     allInBody: (n) => `Los ${n} resultados están dentro de los rangos impresos en su informe. Lleve el informe a su próxima consulta de rutina.`,
     few: "Algunos resultados necesitan atención",
@@ -6255,12 +6334,11 @@ const VIEW_TEXT = {
     goal: (names) => `${names} ${names.includes(" y ") ? "están" : "está"} dentro del rango del laboratorio, pero por encima de una meta de salud común.`,
     noRange: (n) => `${n === 1 ? "Un resultado no tiene" : `${n} resultados no tienen`} rango impreso; pregunte a su médico qué ${n === 1 ? "significa" : "significan"}.`,
     noneCompared: (n) => `Leímos ${n} resultado${n === 1 ? "" : "s"}, pero su informe no trae rangos para comparar. Pregunte a su médico qué significan para usted.`,
-    count: (o, t) => `${o} de ${t} resultados ${o === 1 ? "está" : "están"} fuera de los rangos del laboratorio.`,
     and: "y",
     attentionTitle: "Resultados para hablar con su médico",
     whatIs: "¿Qué es?", whatMeans: "¿Qué significa?", askDoctor: "Pregunte a su médico", yourResult: "Su resultado",
     labRange: "Rango del laboratorio", noRangePrinted: "No aparece en su informe", generalGuide: "Guía común (su informe no trae rango)",
-    labels: { check: "Revise este número", high: "Alto", low: "Bajo", in: "En rango", none: "Sin rango impreso", critical: "Crítico", abnormal: "Marcado por el laboratorio", goalAbove: "En rango, por encima de una meta común", goalBelow: "En rango, por debajo de una meta común", pre: "Alto — rango de prediabetes", diabetes: "Alto — rango de diabetes" },
+    labels: { guideHigh: "Alto según una guía común", guideLow: "Bajo según una guía común", lowLab: "Bajo — por debajo del rango de este laboratorio", check: "Revise este número", high: "Alto", low: "Bajo", in: "En rango", none: "Sin rango impreso", critical: "Crítico", abnormal: "Marcado por el laboratorio", goalAbove: "En rango, por encima de una meta común", goalBelow: "En rango, por debajo de una meta común", pre: "Alto — rango de prediabetes", diabetes: "Alto — rango de diabetes" },
     photoNote: "Estos números se leyeron de una foto, que puede confundir el punto decimal. Compare cada uno con su informe antes de confiar en este resumen.",
     checkMeaning: "Es posible que este número se haya leído mal en la foto, por ejemplo sin el punto decimal. Compárelo con su informe y confírmelo en el recuadro de arriba.",
     checkFirst: (n) => `${n === 1 ? "Un número" : `${n} números`} de su foto ${n === 1 ? "podría estar mal leído" : "podrían estar mal leídos"}. Confírme${n === 1 ? "lo" : "los"} primero con el informe.`,
@@ -6304,94 +6382,160 @@ function describeTestRow(row, language, a1cPercent) {
   let label = row.status === "above" ? t.labels.high : row.status === "below" ? t.labels.low : row.status === "within" ? t.labels.in : row.status === "critical" ? t.labels.critical : row.status === "outside" ? t.labels.abnormal : row.status === "target_above" ? t.labels.goalAbove : row.status === "target_below" ? t.labels.goalBelow : t.labels.none;
   if (row.key === "a1c" && row.status === "above" && a1cPercent !== null) label = a1cPercent >= 6.5 ? t.labels.diabetes : a1cPercent >= 5.7 ? t.labels.pre : label;
   if (row.status === "check") label = t.labels.check;
+  if (row.key === "vitaminD" && row.status === "below") label = t.labels.lowLab;
+  // No range printed: compared with a common guide, which is not the lab's own range.
+  const byGuide = Boolean(row.generalRange) && (row.status === "above" || row.status === "below");
+  if (byGuide) label = row.status === "above" ? t.labels.guideHigh : t.labels.guideLow;
   const goal = row.status === "target_above" || row.status === "target_below";
   const meaning = row.status === "check" ? t.checkMeaning : row.status === "critical" ? t.criticalMeaning : row.status === "outside" ? t.abnormalMeaning : goal ? t.goalMeaning
     : dir === "high" ? (es ? guide.highEs : guide.high) || t.genericHigh : dir === "low" ? (es ? guide.lowEs : guide.low) || t.genericLow : "";
   const plainName = name.replace(/\s*\(.*\)$/, "");
   const ask = row.status === "check" ? "" : goal ? t.goalAsk(plainName) : dir === "high" || row.status === "critical" ? (es ? guide.askHighEs : guide.askHigh) || t.genericAsk(plainName)
     : dir === "low" ? (es ? guide.askLowEs : guide.askLow) || t.genericAsk(plainName) : row.status === "outside" ? t.genericAsk(plainName) : "";
+  const shownMeaning = byGuide && meaning ? `${t.guideMeaning} ${meaning}` : meaning;
   const value = (row.rule ? String(row.valueText) : `${row.valueText} ${row.unit || ""}`.trim()).replace("(about ", es ? "(unos " : "(about ");
   return {
-    key: row.key, name, plainName, what, label, meaning, ask, value,
+    key: row.key, name, plainName, what, label, meaning: shownMeaning, ask, value, note: "",
     unit: row.rule ? "" : row.unit || "", unitHint: unitHint(row.rule ? "" : row.unit, language),
     range: row.rangeText || "", rangeLabel: row.generalRange ? t.generalGuide : t.labRange,
     status: row.status, attention: row.status !== "within" && row.status !== "unknown",
-    tone: row.status === "check" ? "check" : row.status === "critical" ? "critical" : goal ? "goal" : row.status === "within" ? "in" : row.status === "unknown" ? "none" : "out",
+    tone: row.status === "check" ? "check" : row.status === "critical" ? "critical" : byGuide ? "guide" : goal ? "goal" : row.status === "within" ? "in" : row.status === "unknown" ? "none" : "out",
   };
 }
 
 // Everything the result screen shows, built from the analysis rows only.
+// American Heart Association blood pressure categories, for a reading found in the report text.
+function bloodPressureCategory(systolic, diastolic) {
+  if (systolic > 180 || diastolic > 120) return "severe";
+  if (systolic >= 140 || diastolic >= 90) return "stage2";
+  if (systolic >= 130 || diastolic >= 80) return "stage1";
+  if (systolic >= 120) return "elevated";
+  return "normal";
+}
+
+// Plan tips shown under "More ideas", grouped and limited so the list stays short.
+const MORE_IDEA_GROUPS = [
+  ["kidney", ["kidneyPotassium"]],
+  ["cholesterol", ["heartFat", "heartFiber", "trigSugar", "trigAlcohol"]],
+  ["sugar", ["a1cPlate", "a1cDrinks", "a1cWeight", "moveMeals"]],
+  ["bp", ["bpSalt", "bpDash", "trackBp"]],
+  ["vitd", ["vitdFood", "safetyVitd"]],
+];
+const FOOD_STEP_TIP = { drinks: "a1cDrinks", oil: "heartFat", salt: "bpSalt", vitd: "vitdFood", kidney: "kidneyPotassium" };
+
+// Everything the result screen shows, built from the analysis rows only.
 function buildReportView(analysis, language = "en", plan = null, unsure = [], fromPhoto = false) {
   const es = language === "es";
-  const t = VIEW_TEXT[es ? "es" : "en"];
+  const lang = es ? "es" : "en";
+  const t = VIEW_TEXT[lang];
   const rows = allTestRows(analysis) || analysis.panelResults || [];
+  const present = new Set(rows.map((row) => row.key));
   const a1cValue = (analysis.labValues || []).find((item) => item.label === "A1C");
   const a1cPercent = a1cValue ? Number(a1cValue.value) : null;
   // A number read from a photo that may be misread is shown as "check this number" until confirmed.
-  const tests = rows.map((row) => describeTestRow(unsure.includes(row.key) ? { ...row, status: "check" } : row, es ? "es" : "en", Number.isFinite(a1cPercent) ? a1cPercent : null));
+  const tests = rows.map((row) => describeTestRow(unsure.includes(row.key) ? { ...row, status: "check" } : row, lang, Number.isFinite(a1cPercent) ? a1cPercent : null));
+  // Questions and meanings that depend on what else is on the report.
+  const fasting = analysis.glucoseFasting === true ? "yes" : analysis.glucoseFasting === false ? "no" : "unknown";
+  tests.forEach((item) => {
+    if (item.key === "glucose") {
+      item.note = t.fasting[fasting];
+      if (item.status === "above" || item.status === "target_above") {
+        item.meaning = t.glucoseMeaning[fasting];
+        item.ask = present.has("a1c") ? (fasting === "unknown" ? t.glucoseAsk.withA1c : t.glucoseAsk.withA1cKnown) : fasting === "unknown" ? t.glucoseAsk.noA1cUnknown : t.glucoseAsk.noA1c;
+      }
+    }
+    if (item.key === "totalCholesterol" && item.ask && !present.has("ldl") && !present.has("hdl")) item.ask = t.totalAskAlone;
+    if (item.key === "tsh" && item.ask && present.has("ft4")) item.ask = t.thyroidTogether;
+    if (item.key === "ft4" && item.ask) item.ask = present.has("tsh") ? t.thyroidTogether : t.ft4Alone;
+  });
+  const order = { check: 0, critical: 1, out: 2, guide: 3, goal: 4 };
+  const cards = tests.filter((item) => item.attention && item.tone !== "none").sort((a, b) => order[a.tone] - order[b.tone]);
+
+  // Blood pressure is not a lab result: it goes in its own section, labelled by its source.
   const bpValue = (analysis.labValues || []).find((item) => item.label === "Blood pressure");
   const [sys, dia] = String(bpValue?.value || "").split("/").map(Number);
-  const bpHigh = Number.isFinite(sys) && (sys >= 130 || dia >= 80);
-  const order = { check: 0, critical: 1, out: 2, goal: 3 };
-  const cards = tests.filter((item) => item.attention && item.tone !== "none").sort((a, b) => order[a.tone] - order[b.tone]);
-  if (bpHigh) cards.push({ key: "bp", name: t.bpName, plainName: t.bpName, what: t.bpWhat, label: t.labels.high, meaning: t.bpMeaning, ask: t.bpAsk, value: `${bpValue?.value} mmHg`, unit: "", unitHint: "", range: t.bpRange, rangeLabel: t.bpRangeLabel, status: "above", attention: true, tone: "out" });
+  const bpKnown = Number.isFinite(sys) && Number.isFinite(dia);
+  const bpCategory = bpKnown ? bloodPressureCategory(sys, dia) : "";
+  const bpHigh = bpKnown && (bpCategory === "stage1" || bpCategory === "stage2" || bpCategory === "severe");
+  const home = Boolean(analysis.bpAtHome);
+  const other = bpKnown ? [{
+    key: "bp", name: t.bpTitle(home), value: `${bpValue?.value} mmHg`, label: t.bpCategory[bpCategory], note: t.bpNotLab,
+    what: t.bpWhat, meaning: bpCategory === "normal" ? "" : t.bpMeaningCat(t.bpCategory[bpCategory]), ask: bpHigh ? t.bpAskLog : "",
+    tone: bpCategory === "severe" ? "critical" : bpHigh ? "out" : "in",
+  }] : [];
 
   const outside = tests.filter((item) => item.tone === "out" || item.tone === "critical").length;
   const noRange = tests.filter((item) => item.tone === "none").length;
   const goals = tests.filter((item) => item.tone === "goal");
+  const guided = tests.filter((item) => item.tone === "guide");
   const critical = tests.filter((item) => item.tone === "critical");
   const urgent = analysis.riskLevel === "urgent" || critical.length > 0;
   const groupNames = [...new Set(cards.filter((item) => item.tone !== "goal" && item.tone !== "check").map((item) => GROUP_OF[item.key] || item.key))]
-    .map((group) => TEST_GROUPS[group]?.[es ? "es" : "en"] || cards.find((item) => item.key === group)?.plainName || group);
-  const groupText = listWords(groupNames, es ? "es" : "en");
-  const criticalNames = listWords(critical.map((item) => item.plainName), es ? "es" : "en");
+    .map((group) => TEST_GROUPS[group]?.[lang] || cards.find((item) => item.key === group)?.plainName || group);
+  const groupText = listWords(groupNames, lang);
+  const criticalNames = listWords(critical.map((item) => item.plainName), lang);
+  const goalNames = listWords(goals.map((item) => item.plainName), lang);
+  const bpSentence = bpKnown ? (bpHigh ? t.bpMention(String(bpValue?.value), home) : "") : "";
 
-  let headline; const body = [];
+  let headline = ""; const body = [];
   if (!tests.length) {
     headline = urgent ? t.prompt : bpHigh ? t.few : "";
-    if (bpHigh) body.push(t.discuss(groupText));
-  } else if (urgent) {
-    headline = t.prompt;
-    if (critical.length) body.push(t.promptBody(criticalNames));
-    if (groupNames.length) body.push(t.discuss(groupText));
-  } else if (!outside && !goals.length && !bpHigh && noRange === tests.length) {
-    headline = t.few; body.push(t.noneCompared(tests.length));
-  } else if (!outside && !goals.length && !bpHigh) {
-    headline = t.allIn; body.push(t.allInBody(tests.length - noRange));
+    if (bpSentence) body.push(bpSentence);
+  } else if (!outside && !goals.length && noRange + guided.length === tests.length && !guided.length) {
+    headline = urgent ? t.prompt : t.few;
+    body.push(t.noneCompared(tests.length));
+    if (bpSentence) body.push(bpSentence);
+  } else if (!urgent && !outside && !goals.length && !guided.length) {
+    headline = t.allInLabs;
+    body.push(t.allInBody(tests.length - noRange));
+    if (bpSentence) body.push(bpSentence);
   } else {
-    headline = outside > tests.length / 2 ? t.several : t.few;
-    if (groupNames.length) body.push(t.discuss(groupText));
-    if (goals.length) body.push(t.goal(listWords(goals.map((item) => item.plainName), es ? "es" : "en")));
-    if (outside + noRange < tests.length) body.push(t.others);
+    headline = urgent ? t.prompt : outside > tests.length / 2 ? t.several : t.few;
+    if (critical.length) body.push(t.promptBody(criticalNames));
+    body.push(t.count(outside, tests.length));
+    if (groupNames.length) body.push(t.discussLabs(groupText));
+    if (goals.length) body.push(t.goal(goalNames));
+    if (guided.length) body.push(t.guideSentence(listWords(guided.map((item) => item.plainName), lang)));
+    if (bpSentence) body.push(bpSentence);
+    if (outside + noRange + goals.length + guided.length < tests.length) body.push(t.othersLabs);
   }
   if (noRange && noRange < tests.length) body.push(t.noRange(noRange));
   const toCheck = tests.filter((item) => item.tone === "check").length;
   if (toCheck) body.unshift(t.checkFirst(toCheck));
   if (fromPhoto && tests.length) body.push(t.photoNote);
 
-  // Three steps first; the rest of the plan is available under "More ideas".
+  // Three steps first; a short, grouped list of other ideas under "More ideas".
   const kidney = (analysis.panelResults || []).some((item) => (item.key === "potassium" && (item.status === "above" || item.status === "critical")) || (item.key === "creatinine" && (item.status === "above" || item.status === "critical")) || (item.key === "egfr" && (item.status === "below" || item.status === "critical")));
   const has = (key, statuses) => tests.some((item) => item.key === key && statuses.includes(item.status));
-  const food = kidney ? t.food.kidney
-    : has("triglycerides", ["above", "target_above"]) || has("a1c", ["above", "target_above"]) || has("glucose", ["above"]) ? t.food.drinks
-    : has("ldl", ["above", "target_above"]) || has("totalCholesterol", ["above", "target_above"]) ? t.food.oil
-    : bpHigh ? t.food.salt
-    : has("vitaminD", ["below", "target_below"]) ? t.food.vitd : t.food.veg;
+  const foodKey = kidney ? "kidney"
+    : has("triglycerides", ["above", "target_above"]) || has("a1c", ["above", "target_above"]) || has("glucose", ["above"]) ? "drinks"
+    : has("ldl", ["above", "target_above"]) || has("totalCholesterol", ["above", "target_above"]) ? "oil"
+    : bpHigh ? "salt"
+    : has("vitaminD", ["below", "target_below"]) ? "vitd" : "veg";
+  const discussText = [...(groupNames.length ? groupNames : goals.map((item) => item.plainName)), ...(bpHigh ? [TEST_GROUPS.bp[lang]] : [])];
   const steps = [
-    urgent ? { title: t.stepDoctorToday, body: t.stepDoctorTodayBody(criticalNames || groupText) }
-      : groupNames.length || goals.length ? { title: t.stepDoctor, body: t.stepDoctorBody(groupText || listWords(goals.map((item) => item.plainName), es ? "es" : "en")) }
+    urgent ? { title: t.stepDoctorToday, body: t.stepDoctorTodayBody(criticalNames || groupText || TEST_GROUPS.bp[lang]) }
+      : discussText.length ? { title: t.stepDoctor, body: t.stepDoctorBody(listWords(discussText, lang)) }
       : { title: t.stepCheckup, body: t.stepCheckupBody },
     urgent ? { title: t.stepHold, body: t.stepHoldBody } : { title: t.stepWalk, body: t.stepWalkBody },
-    { title: t.stepFood, body: food },
+    { title: t.stepFood, body: t.food[foodKey] },
   ];
-  const more = [...(cards.length ? [t.repeatTest] : []), ...(plan ? plan.sections.flatMap((section) => section.items.map((item) => item.text)) : [])]
-    .filter((text, index, list) => list.indexOf(text) === index && text !== food);
+  const planText = PLAN_TEXT[lang] || PLAN_TEXT.en;
+  const inPlan = new Set(plan ? plan.sections.flatMap((section) => section.items.map((item) => item.text)) : []);
+  const more = [];
+  let count = 0;
+  MORE_IDEA_GROUPS.forEach(([group, keys]) => {
+    const items = keys.filter((key) => key !== FOOD_STEP_TIP[foodKey] && inPlan.has(planText[key])).map((key) => planText[key]).slice(0, 2);
+    const room = Math.max(0, 6 - count);
+    if (items.length && room) { more.push({ title: t.moreGroups[group], items: items.slice(0, room) }); count += Math.min(items.length, room); }
+  });
+  if (plan) more.push({ title: t.moreGroups.habits, items: [planText.safetyAsk, cards.length ? t.repeatTest : planText.move150].filter((text) => text && (text === t.repeatTest || inPlan.has(text))) });
 
-  const questions = [...new Set(cards.map((item) => item.ask).filter(Boolean))];
+  const questions = [...new Set([...cards, ...other].map((item) => item.ask).filter(Boolean))];
   return {
     title: t.summaryTitle, headline, body, urgent,
     count: tests.length ? t.count(outside, tests.length) : "",
-    outside, total: tests.length, cards, tests, steps, more, questions, text: t,
+    outside, total: tests.length, cards, other, tests, steps, more: more.filter((group) => group.items.length), questions, text: t,
   };
 }
 
@@ -6437,11 +6581,16 @@ function renderLocalReportAnalysis(analysis) {
         </div>
         ${analysis.scanOnly || analysis.noData ? `<div class="result-score"><strong>${escapeHtml(analysis.noData ? "—" : SCAN_TEXT[reportLanguage === "es" ? "es" : "en"].scoreLabel)}</strong><small>${escapeHtml(riskLabelText)}</small></div>` : ""}
       </div>
-      ${analysis.noData || analysis.scanOnly ? "" : renderReportSummary(reportView)}
-      ${analysis.noData ? "" : `<p class="result-next result-next-${escapeHtml(analysis.riskLevel)}">${escapeHtml(analysis.riskLevel === "urgent" ? ui.nextUrgent : analysis.riskLevel === "needs_review" ? ui.nextReview : analysis.riskLevel === "attention" ? ui.nextAttention : ui.nextRoutine)}</p>`}
+      ${(() => {
+        // One clear line on when to contact the doctor: inside the summary when there is one.
+        const nextStep = analysis.noData ? "" : analysis.riskLevel === "urgent" ? ui.nextUrgent : analysis.riskLevel === "needs_review" ? ui.nextReview : analysis.riskLevel === "attention" ? ui.nextAttention : ui.nextRoutine;
+        const summary = analysis.noData || analysis.scanOnly ? "" : renderReportSummary(reportView, nextStep);
+        return summary || (nextStep ? `<p class="result-next result-next-${escapeHtml(analysis.riskLevel)}">${escapeHtml(nextStep)}</p>` : "");
+      })()}
       ${renderReportChanges(analysis)}
       <div class="result-sections">
         ${analysis.noData || analysis.scanOnly ? "" : renderResultCards(reportView)}
+        ${analysis.noData || analysis.scanOnly ? "" : renderOtherInfo(reportView)}
         ${plan ? renderNextSteps(reportView) : ""}
         ${(() => {
           const list = `
@@ -6455,7 +6604,7 @@ function renderLocalReportAnalysis(analysis) {
           // With result cards on screen the questions are already shown once, so the full list folds away.
           return reportView.cards.length ? renderResultMore(list, ui.questions, String(questions.length)) : list;
         })()}
-        ${analysis.noData ? "" : `<div class="lab-reminder"><span>${reportLanguage === "es" ? "Recordatorio de próximos análisis" : "Remind me about my next labs"}</span><select data-lab-reminder aria-label="Reminder interval"><option value="3">${reportLanguage === "es" ? "en 3 meses" : "in 3 months"}</option><option value="6" selected>${reportLanguage === "es" ? "en 6 meses" : "in 6 months"}</option><option value="12">${reportLanguage === "es" ? "en 12 meses" : "in 12 months"}</option></select><button class="secondary-button compact" type="button" data-report-action="lab-reminder">${reportLanguage === "es" ? "Añadir al calendario" : "Add to calendar"}</button></div>`}
+        ${analysis.noData ? "" : `<div class="lab-reminder"><label for="lab-reminder-date">${escapeHtml(reportView.text.reminderLabel)}</label><input id="lab-reminder-date" type="date" data-lab-reminder min="${new Date().toISOString().slice(0, 10)}" /><button class="secondary-button compact" type="button" data-report-action="lab-reminder">${reportLanguage === "es" ? "Añadir al calendario" : "Add to calendar"}</button></div>`}
         ${showFindings ? `
         <section>
           <h4>${escapeHtml(ui.keyFindings)}</h4>
@@ -6466,7 +6615,6 @@ function renderLocalReportAnalysis(analysis) {
         ${view.labValues?.length ? renderResultMore(`
         <section>
           <div class="section-heading-action">
-            <h4>${escapeHtml(ui.detectedValues)}</h4>
             <button class="secondary-button compact" type="button" data-report-action="save-detected-values">${escapeHtml(ui.saveToTrends)}</button>
           </div>
           <div class="detected-values-grid">
@@ -6477,7 +6625,7 @@ function renderLocalReportAnalysis(analysis) {
               </article>
             `).join("")}
           </div>
-        </section>`, ui.saveToTrends, "") : ""}
+        </section>`, ui.detectedValues, "") : ""}
       </div>
       <div class="safety-note"><strong>${escapeHtml(ui.safetyTitle)}</strong><span>${escapeHtml(ui.safetyText)}</span></div>
       ${analysis.noData ? "" : renderFeedbackBox(ui)}
@@ -6596,12 +6744,13 @@ function buildReportSummaryPack(analysis) {
     "FollowThrough Health report summary",
     "Educational prep only. This is not a diagnosis or treatment plan.",
     "",
-    ...(view.headline ? [view.headline.toUpperCase(), ...view.body, view.count, ""] : [outsideRangeText(analysis) || "No lab values read", ""]),
+    ...(view.headline ? [view.headline.toUpperCase(), ...view.body, ""] : [outsideRangeText(analysis) || "No lab values read", ""]),
     ...(view.cards.length ? [
       "Results to talk about:",
       ...view.cards.map((card) => `- ${card.name}: ${card.value} (${card.label}; ${card.rangeLabel.toLowerCase()} ${card.range || "not printed"})`),
       "",
     ] : []),
+    ...(view.other.length ? ["Other health information:", ...view.other.map((item) => `- ${item.name}: ${item.value} (${item.label}; ${item.note})`), ""] : []),
     ...(plan ? ["Next 3 steps:", ...view.steps.map((step, index) => `${index + 1}. ${step.title}: ${step.body}`), ""] : []),
     ...(view.tests.length ? ["All tests:", ...view.tests.map((item) => `- ${item.name}: ${item.value} (${item.label}${item.range ? `; lab range ${item.range}` : ""})`), ""] : []),
     "Questions to ask your doctor:",
