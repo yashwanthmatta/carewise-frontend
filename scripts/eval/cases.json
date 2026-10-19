@@ -326,6 +326,16 @@
     { "id": "sugar-india-list", "format": "list", "title": "Blood Sugar", "tests": [
       { "key": "glucose", "name": "Fasting Blood Sugar", "value": "132", "unit": "mg/dl", "range": "70-110", "flag": "H", "expect": "high" },
       { "key": "creatinine", "name": "Serum Creatinine", "value": "0.9", "unit": "mg/dl", "range": "0.6-1.2", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "lft-india-table", "format": "table", "title": "Liver Function Test", "tests": [
+      { "key": "alt", "name": "SGPT (ALT)", "value": "78", "unit": "U/L", "range": "0-40", "flag": "H", "expect": "high" },
+      { "key": "ast", "name": "SGOT (AST)", "value": "35", "unit": "U/L", "range": "0-40", "flag": "", "expect": "normal" },
+      { "key": "bilirubin", "name": "Serum Bilirubin (Total)", "value": "0.8", "unit": "mg/dl", "range": "0.2-1.2", "flag": "", "expect": "normal" },
+      { "key": "ggt", "name": "Gamma GT", "value": "92", "unit": "U/L", "range": "0-55", "flag": "H", "expect": "high" }
+    ]},
+    { "id": "misc-india-list", "format": "list", "title": "Biochemistry", "tests": [
+      { "key": "uricacid", "name": "S. Uric Acid", "value": "8.1", "unit": "mg/dl", "range": "3.5-7.2", "flag": "H", "expect": "high" },
+      { "key": "tsh", "name": "TSH (Ultrasensitive)", "value": "2.4", "unit": "uIU/ml", "range": "0.35-5.5", "flag": "", "expect": "normal" }
     ]}
   ]
 }
