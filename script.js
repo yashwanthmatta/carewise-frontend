@@ -389,6 +389,18 @@ function splitSideBySide(line) {
         return [line];
     return [0, ...cuts].map((start, i) => line.slice(start, cuts[i] ?? line.length));
 }
+// Cuts a line's tail at the next test name followed by its own number, so a range or flag
+// read after a value never comes from the test printed beside it.
+function cutAtNextTest(rest) {
+    let cut = rest.length;
+    COMPILED_GLOBAL.forEach((pattern) => {
+        for (const match of rest.matchAll(pattern)) {
+            if (match.index < cut && /^[^\d\n<>()]{0,25}\d/.test(rest.slice(match.index + match[0].length)) && depthBefore(rest, match.index) === 0)
+                cut = match.index;
+        }
+    });
+    return rest.slice(0, cut);
+}
 // One result per test; each line is matched to the test named earliest on it.
 function readLabPanel(text) {
     const results = [];
@@ -5255,7 +5267,7 @@ function readLabMeasure(text, namePattern, maxGap = 24) {
   const match = text.match(new RegExp(`${namePattern}\\D{0,${maxGap}}?${LAB_FOOTNOTE}(?<![a-z])(\\d+(?:\\.\\d+)?)${LAB_UNIT}`, "i"));
   if (!match) return null;
   const value = Number(match[1]);
-  const rest = text.slice(match.index + match[0].length).split("\n")[0].slice(0, 60);
+  const rest = cutAtNextTest(text.slice(match.index + match[0].length).split("\n")[0].slice(0, 60));
   return { value, unit: (match[2] || "").replace(/\s+/g, "").toLowerCase(), outside: compareWithPrintedRange(value, rest) };
 }
 
@@ -5363,6 +5375,7 @@ function analyzeReportTextLocally(rawText) {
   const systolic = readReportNumber(lower, [/(?:blood pressure|\bbp\b)\D{0,60}(\d{2,3})\s*\/\s*\d{2,3}/i]);
   const diastolic = readReportNumber(lower, [/(?:blood pressure|\bbp\b)\D{0,60}\d{2,3}\s*\/\s*(\d{2,3})/i]);
   const vitaminDMatch = lower.match(/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?\D{0,24}\d+(?:\.\d+)?([^\n]{0,60})/i);
+  if (vitaminDMatch) vitaminDMatch[1] = cutAtNextTest(vitaminDMatch[1]);
   // European and UK labs report vitamin D in nmol/L; the common 30 ng/mL cut-off is about 75 nmol/L.
   const vitaminDUnit = vitaminDMatch && /^\s*nmol\s*\/\s*l/i.test(vitaminDMatch[1]) ? "nmol/L" : "ng/mL";
   const vitaminDNg = vitaminD === null ? null : vitaminDUnit === "nmol/L" ? Math.round((vitaminD / 2.496) * 10) / 10 : vitaminD;
