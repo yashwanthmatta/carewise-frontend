@@ -114,6 +114,11 @@ async function main() {
     await readAsset(`assets/samples/${id}.txt`, baseUrl);
   }
   assertIncludes("script.js", script, "loadTrySample();");
+  for (const page of ["safety.html", "faq.html", "about.html", "support.html", "accessibility.html"]) {
+    const text = await readAsset(page, baseUrl);
+    assertIncludes(page, text, "It does not diagnose and does not replace your doctor.");
+    assertIncludes("index.html", html, `href="${page}"`);
+  }
   const styles = await readAsset("styles.css", baseUrl);
   assertIncludes("styles.css", styles, ".section-heading-action");
   assertIncludes("styles.css", styles, ".inline-action-group");

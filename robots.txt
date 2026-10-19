@@ -3,4 +3,4 @@ Allow: /
 Disallow: /share.html
 Disallow: /packet.html
 
-Sitemap: https://carewise-frontend.onrender.com/sitemap.xml
+Sitemap: https://followthroughhealth.com/sitemap.xml
