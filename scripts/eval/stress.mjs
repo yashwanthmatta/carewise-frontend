@@ -176,8 +176,10 @@ function score(r, got, out) {
     if (!found.has(key)) found.set(key, { value: row.rule ? toNumber(row.valueText) : row.value, status: STATUS[row.status] || row.status });
   }
   let trueOutside = 0;
+  const asked = new Set((got.view?.asked || []).map((key) => RULE_KEY[key] || key));
   for (const t of r.tests) {
     out.tests += 1;
+    if (asked.has(t.key)) { out.asked += 1; continue; }
     if (t.truth !== "normal") trueOutside += 1;
     const g = found.get(t.key);
     if (!g) { out.fail("not read", r, `${t.name} ${t.value} ${t.unit}`); continue; }
@@ -189,7 +191,8 @@ function score(r, got, out) {
     out.statusOk += 1;
   }
   out.reports += 1;
-  if (got.count.outside !== trueOutside || got.count.total !== r.tests.length) out.fail("headline count", r, `truth ${trueOutside} of ${r.tests.length}, shown ${got.count.outside} of ${got.count.total}`);
+  const shownOutside = asked.size ? got.view.outside : got.count.outside;
+  if (shownOutside !== trueOutside || got.count.total !== r.tests.length) out.fail("headline count", r, `truth ${trueOutside} of ${r.tests.length}, shown ${shownOutside} of ${got.count.total}`);
   else out.countOk += 1;
 
   // Food plan follows its own thresholds.
@@ -219,11 +222,16 @@ function score(r, got, out) {
     if (got.riskLevel !== "urgent" || !got.urgentMove) out.fail("critical not urgent", r, `${critical.map((x) => `${x.name} ${x.value} ${x.unit}`).join(", ")}: risk ${got.riskLevel}`);
     else out.criticalOk += 1;
   }
+  const v = got.view;
+  if ((!v.asked.length && v.outside !== got.count.outside) || v.total !== got.count.total || v.cardsOut !== v.outside) out.fail("summary/cards disagree", r, `summary ${v.outside}/${v.total}, count ${got.count.outside}/${got.count.total}, cards ${v.cardsOut}`);
+  else out.viewOk += 1;
+  if (v.noWhat.length || v.noAsk.length || !v.headline || v.steps !== 3) out.fail("missing explanation", r, `no what: ${v.noWhat}; no meaning/ask: ${v.noAsk}; headline "${v.headline}"; steps ${v.steps}`);
+  if (v.esEnglish.length) out.fail("English in Spanish view", r, v.esEnglish.slice(0, 5).join(","));
   if (DRUGS.test(got.allText) || DOSE.test(got.allText.replace(/[^.]*(sodium|salt)[^.]*\./gi, ""))) out.fail("medicine name or dose", r, (got.allText.match(DRUGS) || got.allText.match(DOSE))[0]);
 }
 
 function newTally() {
-  const t = { reports: 0, tests: 0, read: 0, valueOk: 0, statusOk: 0, countOk: 0, dietOk: 0, kidneyOk: 0, criticalReports: 0, criticalOk: 0, failures: {}, examples: {} };
+  const t = { asked: 0, viewOk: 0, reports: 0, tests: 0, read: 0, valueOk: 0, statusOk: 0, countOk: 0, dietOk: 0, kidneyOk: 0, criticalReports: 0, criticalOk: 0, failures: {}, examples: {} };
   t.fail = (kind, r, detail) => {
     t.failures[kind] = (t.failures[kind] || 0) + 1;
     (t.examples[kind] ||= []).length < 8 && t.examples[kind].push(`${r.id} [${r.region}, ${r.sex}${r.age}, ${r.layout}] ${detail}`);
@@ -232,7 +240,7 @@ function newTally() {
 }
 
 // Runs inside the site page: the same functions the website uses.
-function analyzeInPage(text) {
+function analyzeInPage(text, unsure = []) {
   const a = analyzeReportTextLocally(text);
   const plan = buildPersonalPlan(a, "en");
   const section = (k) => plan.sections.find((s) => s.key === k)?.items.map((i) => i.text) || [];
@@ -244,6 +252,7 @@ function analyzeInPage(text) {
     food: section("food"),
     safety: section("safety"),
     urgentMove: plan.urgent,
+    view: (() => { const v = buildReportView(a, "en", plan, unsure); const es = buildReportView(a, "es", plan, unsure); return { asked: unsure, outside: v.outside, total: v.total, cardsOut: v.cards.filter((c) => c.key !== "bp" && (c.tone === "out" || c.tone === "critical")).length, noWhat: v.tests.filter((x) => !x.what).map((x) => x.key), noAsk: v.cards.filter((c) => c.tone !== "check" && (!c.ask || !c.meaning)).map((c) => c.key), headline: v.headline, steps: v.steps.length, esEnglish: [...es.cards.map((c) => `${c.label} ${c.meaning} ${c.ask}`), es.headline, ...es.body].join(" ").match(/\b(the|your|about|results|High|Low)\b/g) || [] }; })(),
     allText: [...(a.findings || []).map((f) => `${f.label} ${f.level} ${f.detail}`), ...(a.suggestions || []), ...(a.questions || []), ...plan.sections.flatMap((s) => s.items.map((i) => i.text))].join(" "),
   };
 }
@@ -269,6 +278,16 @@ if (process.argv.includes("--show-pdf")) {
   await render.setContent(reportHtml(r));
   const bytes = (await render.pdf({ format: "Letter" })).toString("base64");
   console.log(await page.evaluate(async (bytes) => extractPdfText(new File([Uint8Array.from(atob(bytes), (c) => c.charCodeAt(0))], "a.pdf", { type: "application/pdf" })), bytes));
+  await b.close(); process.exit(0);
+}
+// --show-photo <index>: the OCR text and number checks for one generated photo.
+if (process.argv.includes("--show-photo")) {
+  const i = Number(arg("--show-photo")); const r = makeReport(20_000_000 + i); const rand = rng(SEED + i);
+  const b = await chromium.launch(); const render = await b.newPage({ viewport: { width: 900, height: 1200 } }); const page = await openPage(b);
+  await render.setContent(reportHtml(r, { tilt: ((rand() - 0.5) * 4).toFixed(2), blur: (rand() * 0.6).toFixed(2), light: (0.85 + rand() * 0.25).toFixed(2) }));
+  const bytes = (await render.screenshot({ type: "jpeg", quality: 70 + Math.floor(rand() * 25), fullPage: true })).toString("base64");
+  console.log(JSON.stringify(await page.evaluate(async (bytes) => { const raw = Uint8Array.from(atob(bytes), (c) => c.charCodeAt(0)); const image = await preparePhotoForOcr(new Blob([raw], { type: "image/jpeg" })); const ocr = await recognizeImages([image]); return { ocr, ...checkOcrNumbers(ocr) }; }, bytes), null, 1));
+  console.log(JSON.stringify(r.tests.map((t) => `${t.name} ${t.value} [${t.range}]`)));
   await b.close(); process.exit(0);
 }
 // --show <index>: print one generated report and what the site made of it.
@@ -320,7 +339,7 @@ if (PDF_N) {
 
 if (PHOTO_N) {
   const tally = (tallies.photo = newTally());
-  const render = await browser.newPage({ viewport: { width: 900, height: 1200 } });
+  const render = await browser.newPage({ viewport: { width: 900, height: 1200 }, deviceScaleFactor: Number(arg("--photo-scale", 1)) });
   const page = await openPage(browser);
   for (let i = 0; i < PHOTO_N; i += 1) {
     const r = makeReport(20_000_000 + i);
@@ -330,8 +349,8 @@ if (PHOTO_N) {
     const got = await page.evaluate(async (bytes) => {
       const raw = Uint8Array.from(atob(bytes), (c) => c.charCodeAt(0));
       const image = await preparePhotoForOcr(new Blob([raw], { type: "image/jpeg" }));
-      const text = checkOcrNumbers(await recognizeImages([image])).text;
-      return window.__analyze(text);
+      const { text, checks } = checkOcrNumbers(await recognizeImages([image]));
+      return window.__analyze(text, checks.filter((c) => c.kind === "ask" && c.key).map((c) => c.key));
     }, bytes);
     score(r, got, tally);
     if ((i + 1) % 25 === 0) console.error(`photo: ${i + 1}/${PHOTO_N}`);
@@ -342,10 +361,10 @@ await browser.close();
 const pct = (n, d) => (d ? Math.round((10000 * n) / d) / 100 : null);
 const summary = Object.fromEntries(Object.entries(tallies).map(([mode, t]) => [mode, {
   reports: t.reports, tests: t.tests,
-  readRate: pct(t.read, t.tests), valueAccuracy: pct(t.valueOk, t.tests), highLowAccuracy: pct(t.statusOk, t.tests),
+  askedToConfirm: pct(t.asked, t.tests), readRate: pct(t.read, t.tests - t.asked), valueAccuracy: pct(t.valueOk, t.tests - t.asked), highLowAccuracy: pct(t.statusOk, t.tests - t.asked),
   headlineCountCorrect: pct(t.countOk, t.reports), dietRulesCorrect: pct(t.dietOk, t.dietOk + (t.failures["diet rule"] || 0)),
   kidneyDietSafe: pct(t.kidneyOk, t.reports), criticalReports: t.criticalReports, criticalHandledUrgently: pct(t.criticalOk, t.criticalReports),
-  medicineMentions: t.failures["medicine name or dose"] || 0, failures: t.failures, examples: t.examples,
+  summaryCardsAgree: pct(t.viewOk, t.reports), medicineMentions: t.failures["medicine name or dose"] || 0, failures: t.failures, examples: t.examples,
 }]));
 summary.seconds = Math.round((Date.now() - started) / 1000);
 console.log(JSON.stringify(summary, null, 2));
