@@ -20,3 +20,11 @@ the converted number the app should display.
 
 CI runs it on every pull request. To add a case, add it to `cases.json`, rebuild the
 PDFs and commit both.
+
+## Large randomized check
+
+`node scripts/eval/stress.mjs --text 100000 --pdf 500 --photo 50` generates synthetic reports for
+different ages, sexes and regions (US, UK/EU and India units, decimal commas, five layouts) with
+known answers, and checks values, high/low against the printed range, the headline count, the food
+plan's rules (including the kidney/potassium caution), urgent handling of critical values and that
+no medicine names or doses appear. `--show <n>` prints one report and the result; `--seed` changes the set.
