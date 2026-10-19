@@ -6159,6 +6159,10 @@ function downloadLabReminder(dateText) {
   reportStatus.textContent = `Reminder made for ${date.toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}. Open the file to save it in your calendar.`;
 }
 
+// Version of the interpretation rules and wording below. Change it whenever a rule, threshold or
+// explanation changes, so every output can be traced to the rules that produced it.
+const EXPLANATION_RULES_VERSION = "2026-10-20.1";
+
 // Plain-language guide per test: what it is, what a high or low result can mean, and a
 // question for the doctor. Educational wording only: no diagnosis, medicine names or doses.
 // Tests not listed here use the LAB_TESTS name and description and the general wording.
@@ -6536,6 +6540,7 @@ function buildReportView(analysis, language = "en", plan = null, unsure = [], fr
     title: t.summaryTitle, headline, body, urgent,
     count: tests.length ? t.count(outside, tests.length) : "",
     outside, total: tests.length, cards, other, tests, steps, more: more.filter((group) => group.items.length), questions, text: t,
+    rulesVersion: EXPLANATION_RULES_VERSION,
   };
 }
 
@@ -6558,6 +6563,11 @@ function renderLocalReportAnalysis(analysis) {
         : "Routine follow-up";
   const riskLabelText = translateReportText(riskLabel);
 
+  // Safety switch: the team can pause explanations from the server if a problem is found.
+  if (typeof backendFeatures === "object" && backendFeatures && backendFeatures.report_explanations === false) {
+    reportResults.innerHTML = `<article class="saved-plan-row v1-result-card"><div class="report-summary report-summary-attention"><h3>${escapeHtml(reportLanguage === "es" ? "Las explicaciones están en pausa" : "Explanations are paused")}</h3><p>${escapeHtml(reportLanguage === "es" ? "Pausamos las explicaciones mientras revisamos un problema. Su informe sigue en el cuadro de texto. Hable con su médico sobre sus resultados." : "We have paused explanations while we check a problem. Your report text is still in the box above. Please talk to your doctor about your results.")}</p></div></article>`;
+    return;
+  }
   const plan = analysis.noData || analysis.scanOnly ? null : getLatestPersonalPlan(analysis);
   const reportView = buildReportView(analysis, reportLanguage, plan, unsureOcrKeys(), reportFromPhoto);
   const questions = reportQuestions(analysis, reportView);
@@ -6716,7 +6726,7 @@ ${analysis._changes?.rows?.length ? `<h2>Changes since the previous report (${es
 ${buildHealthHistoryBriefSection(person)}
 <h2>Patient questions</h2><ol>${questions}</ol>
 <h2>Clinician notes</h2><div class="notes-box"></div>
-<p class="note">Educational summary only, not a diagnosis. Values were read automatically from pasted report text; please confirm them against the original report.</p>
+<p class="note">Educational summary only, not a diagnosis. Values were read automatically from pasted report text; please confirm them against the original report. Explanation rules version ${escapeHtml(view.rulesVersion)}.</p>
 <button type="button" onclick="window.print()">Print or save as PDF</button>
 </body></html>`;
 }
@@ -6757,6 +6767,7 @@ function buildReportSummaryPack(analysis) {
     ...reportQuestions(analysis, view, "en").map((item, index) => `${index + 1}. ${item}`),
     "",
     "Review the original report with a doctor before making care decisions.",
+    `Explanation rules version ${view.rulesVersion}.`,
   ].filter((line) => line !== undefined).join("\n");
 }
 
