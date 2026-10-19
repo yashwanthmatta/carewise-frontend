@@ -34,6 +34,19 @@
           <h2>Help Chat</h2>
           <p>When the online helper is switched on, your question (and, only if you tick the box, a summary of your latest result) is sent to our AI provider, Anthropic, to write the answer. FollowThrough Health does not store the chat. Please leave out names and other identifying details.</p>
           <p>If your clinic uses DocBridge and has turned on follow-up questions, a question you ask on your results page is sent to Anthropic together with the summary your clinician approved and your own lab values from that clinic, so the answer can use them. Names, birth dates and contact details you type are removed first where we can detect them. The question and the answer are stored encrypted so your clinic can review them, and they are deleted when the clinic deletes the lab.</p>
+          <h2>Services That Handle Your Data</h2>
+          <p>Only these services receive your information, and only for the feature named:</p>
+          <ul>
+            <li><b>Render</b> (United States): runs our servers and database for accounts and anything you choose to save.</li>
+            <li><b>Amazon Web Services S3</b> (United States): stores report files you choose to save to your account, encrypted.</li>
+            <li><b>Anthropic</b>: writes help-chat answers and, for clinics that turn it on, DocBridge follow-up answers (see above).</li>
+            <li><b>OpenAI</b>: only if photo reading on our servers is switched on, reads the text of a photo you save to your account. Photos you explain without saving are read on your device.</li>
+            <li><b>Twilio</b>: places medicine reminder calls you set up. The call says the first name you entered, never the medicine.</li>
+            <li><b>Our email provider</b>: sends sign-in, password and reminder emails. Reminder emails never include the medicine name.</li>
+            <li><b>Stripe</b>: handles payments. Card details never reach FollowThrough Health.</li>
+            <li><b>Cloudflare</b>: runs our web address and, for clinics using DocBridge, receives lab emails sent to their intake address.</li>
+          </ul>
+          <p>Usage counts we keep (for example, "a report was explained") contain no report content.</p>
           <h2>No Training, No Selling</h2>
           <p>FollowThrough Health does not use your health information to train AI models, and does not sell or rent your information to anyone.</p>
           <h2>FollowThrough Health For Doctors (DocBridge)</h2>

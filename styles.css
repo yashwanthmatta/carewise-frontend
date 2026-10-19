@@ -6809,3 +6809,9 @@ a.secondary-button {
 .next-steps-more[open] .more-close { display: inline; }
 .next-steps-more ul { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 6px; }
 .lab-status-target_above em, .lab-status-target_below em { color: #8a5a00; }
+.report-summary-next { margin-top: 8px !important; padding-top: 8px; border-top: 1px solid rgba(0, 0, 0, 0.08); font-weight: 700; }
+.result-other .result-card-item { border-left-color: #64748b; }
+.result-other .result-card-out { border-left-color: #d97706; }
+.next-steps-more h5 { margin: 12px 0 4px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--lp-ink-soft); }
+.lab-reminder label { flex: 1 1 100%; font-weight: 600; }
+.lab-reminder input[type="date"] { min-height: 44px; padding: 6px 10px; border: 1px solid var(--lp-line); border-radius: 10px; font: inherit; }

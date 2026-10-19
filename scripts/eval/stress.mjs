@@ -23,6 +23,8 @@ const PDF_N = Number(arg("--pdf", 0));
 const PHOTO_N = Number(arg("--photo", 0));
 const SEED = Number(arg("--seed", 1));
 const WORKERS = Number(arg("--workers", 4));
+// --hard: some units and ranges missing, previous results printed beside current ones, handwritten-style notes.
+const HARD = process.argv.includes("--hard");
 const base = process.env.CAREWISE_EVAL_URL || "http://localhost:4173/";
 
 // Seeded random numbers so a failing report can be rebuilt from its id.
@@ -119,8 +121,18 @@ function makeReport(index) {
     const flag = made.truth === "normal" || flagStyle < 0.3 ? "" : flagStyle < 0.75 ? (made.truth === "high" ? "H" : "L") : made.truth === "high" ? "High" : "Low";
     tests.push({ key, name: t.name, unit: t.unit, range: rangeText, value: show(made.value), number: Number(made.value), flag, truth: made.truth });
   }
+  let note = "";
+  if (HARD) {
+    const x = rng(SEED * 7_000_003 + index + 99);
+    for (const t of tests) {
+      if (x() < 0.08) t.unit = "";
+      if (x() < 0.06) { t.range = ""; t.flag = ""; t.truth = "unknown"; }
+      if (x() < 0.5) { const d = (String(t.value).split(/[.,]/)[1] || "").length; t.prev = `${(t.number * (0.8 + x() * 0.4)).toFixed(d)} 03/2026`; }
+    }
+    if (x() < 0.2) note = ["Dr note: pt c/o fatigue, recheck 3 mo", "Fasting? not sure - pt had coffee", "Seen by: Dr. R. 10/02"][Math.floor(x() * 3)];
+  }
   const bp = rand() < 0.4 ? `${100 + Math.floor(rand() * 75)}/${60 + Math.floor(rand() * 40)}` : "";
-  return { id: `s${SEED}-${index}`, region: region.name, lab: region.lab, sex, age, person, layout: LAYOUTS[Math.floor(rand() * LAYOUTS.length)], tests, bp };
+  return { note, id: `s${SEED}-${index}`, region: region.name, lab: region.lab, sex, age, person, layout: LAYOUTS[Math.floor(rand() * LAYOUTS.length)], tests, bp };
 }
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -128,13 +140,13 @@ function rowsOf(r) {
   const T = r.tests;
   switch (r.layout) {
     case "quest": return [["Test Name", "In Range", "Out Of Range", "Reference Range", "Lab"], ...T.map((t) => [t.name, t.flag ? "" : `${t.value} ${t.unit}`, t.flag ? `${t.value} ${t.flag} ${t.unit}` : "", t.range, "EN"])];
-    case "labcorp": return [["Test", "Current Result and Flag", "Previous Result and Date", "Units", "Reference Interval"], ...T.map((t) => [t.name, `${t.value} ${t.flag}`.trim(), "", t.unit, t.range])];
+    case "labcorp": return [["Test", "Current Result and Flag", "Previous Result and Date", "Units", "Reference Interval"], ...T.map((t) => [t.name, `${t.value} ${t.flag}`.trim(), t.prev || "", t.unit, t.range])];
     case "twocol": return [["Test", "Result", "Range", "Test", "Result", "Range"], ...Array.from({ length: Math.ceil(T.length / 2) }, (_, i) => T.slice(i * 2, i * 2 + 2).flatMap((t) => [t.name, `${t.value} ${t.unit} ${t.flag}`.trim(), t.range]))];
     case "list": return T.map((t) => [`${t.name}: ${t.value} ${t.unit} (Ref: ${t.range}) ${t.flag}`.trim()]);
     default: return [["Test", "Result", "Flag", "Units", "Reference Range"], ...T.map((t) => [t.name, t.value, t.flag, t.unit, t.range])];
   }
 }
-const headerLines = (r) => [r.lab, `Patient: ${r.person}  Age/Sex: ${r.age} Y / ${r.sex}  Collected: 10/01/2026 08:12`, ...(r.bp ? [`Blood Pressure: ${r.bp} mmHg`] : [])];
+const headerLines = (r) => [r.lab, `Patient: ${r.person}  Age/Sex: ${r.age} Y / ${r.sex}  Collected: 10/01/2026 08:12`, ...(r.bp ? [`Blood Pressure: ${r.bp} mmHg`] : []), ...(r.note ? [r.note] : [])];
 const reportText = (r) => [...headerLines(r), "", ...rowsOf(r).map((row) => row.filter(Boolean).join("  ")), "", "Synthetic report for software testing."].join("\n");
 const css = "body{font-family:Arial,sans-serif;font-size:11pt;color:#111;margin:36px;background:#fff} h1{font-size:15pt;margin:0} .meta{font-size:9pt;color:#444} table{border-collapse:collapse;width:100%} th,td{border-bottom:1px solid #ccc;padding:5px 6px;text-align:left;font-size:10pt} th{background:#eee}";
 function reportHtml(r, photo) {
@@ -162,6 +174,7 @@ function usValue(t) {
 const near = (v, limit) => Math.abs(v - limit) / limit < 0.03;
 const CRITICAL = (t) => {
   const v = toNumber(t.value); const u = t.unit.toLowerCase();
+  if (!u) return false;
   if (t.key === "potassium") return v >= 6.5;
   if (t.key === "sodium") return v < 120;
   if (t.key === "glucose") return u.includes("mmol") ? v < 3.0 : v < 54;
@@ -180,12 +193,13 @@ function score(r, got, out) {
   for (const t of r.tests) {
     out.tests += 1;
     if (asked.has(t.key)) { out.asked += 1; continue; }
-    if (t.truth !== "normal") trueOutside += 1;
+    if (t.truth === "high" || t.truth === "low") trueOutside += 1;
     const g = found.get(t.key);
     if (!g) { out.fail("not read", r, `${t.name} ${t.value} ${t.unit}`); continue; }
     out.read += 1;
     if (Math.abs(toNumber(g.value) - toNumber(t.value)) > 1e-9) { out.fail("wrong value", r, `${t.name}: report ${t.value}, read ${g.value}`); continue; }
     out.valueOk += 1;
+    if (t.truth === "unknown") { out.statusOk += 1; if (g.status === "high" || g.status === "low") out.fail("no range but called high/low", r, `${t.name} ${t.value} ${t.unit}: said ${g.status}`); continue; }
     const ok = g.status === t.truth || (g.status === "outside" && t.truth !== "normal");
     if (!ok) { out.fail("wrong high/low", r, `${t.name} ${t.value} ${t.unit} range ${t.range}: truth ${t.truth}, said ${g.status}`); continue; }
     out.statusOk += 1;
@@ -197,15 +211,19 @@ function score(r, got, out) {
 
   // Food plan follows its own thresholds.
   const has = (text) => got.food.some((f) => f.includes(text));
-  const t = Object.fromEntries(r.tests.map((x) => [x.key, x]));
+  const t = Object.fromEntries(r.tests.filter((x) => x.unit).map((x) => [x.key, x]));
   const checks = [
-    ["heart foods", (t.ldl && !near(usValue(t.ldl), 130)) || (t.totalchol && !near(usValue(t.totalchol), 200)) ? (t.ldl && usValue(t.ldl) >= 130) || (t.totalchol && usValue(t.totalchol) >= 200) : null, "soluble fiber"],
+    ["heart foods", (t.ldl && !near(usValue(t.ldl), 130)) || (t.totalchol && !near(usValue(t.totalchol), 200)) ? (t.ldl && usValue(t.ldl) >= 130) || (t.totalchol && usValue(t.totalchol) >= 200) : null, "oats, beans and apples"],
     ["triglyceride foods", t.trig && !near(usValue(t.trig), 150) ? usValue(t.trig) >= 150 : null, "sugary drinks, sweets"],
-    ["blood sugar foods", t.a1c && !near(usValue(t.a1c), 5.7) ? usValue(t.a1c) >= 5.7 : null, "plate method"],
+    ["blood sugar foods", t.a1c && !near(usValue(t.a1c), 5.7) ? usValue(t.a1c) >= 5.7 : null, "Fill half your plate"],
     ["vitamin D foods", t.vitd && !near(usValue(t.vitd), 30) ? usValue(t.vitd) < 30 : null, "vitamin D foods"],
   ];
+  // A test printed without a unit can be read either way; its food rule is not scored.
+  const noUnit = new Set(r.tests.filter((x) => !x.unit).map((x) => x.key));
+  const involved = { "heart foods": ["ldl", "totalchol"], "triglyceride foods": ["trig"], "blood sugar foods": ["a1c"], "vitamin D foods": ["vitd"] };
   for (const [name, expected, marker] of checks) {
     if (expected === null || expected === undefined) continue;
+    if (involved[name].some((key) => noUnit.has(key))) continue;
     // A conflicting lab rule (heart vs. both missing) is only checked when the test is on the report.
     if (expected !== has(marker)) out.fail("diet rule", r, `${name}: expected ${expected ? "present" : "absent"}`);
     else out.dietOk += 1;
@@ -246,7 +264,7 @@ function analyzeInPage(text, unsure = []) {
   const section = (k) => plan.sections.find((s) => s.key === k)?.items.map((i) => i.text) || [];
   const rows = allTestRows(a) || a.panelResults || [];
   return {
-    rows: rows.map((x) => ({ key: x.key, rule: Boolean(x.rule), value: x.value, valueText: x.valueText, status: x.status })),
+    rows: rows.map((x) => ({ key: x.key, rule: Boolean(x.rule), value: x.value, valueText: x.valueText, status: x.generalRange && (x.status === "above" || x.status === "below") ? "guide" : x.status })),
     count: outsideRangeCount(a),
     riskLevel: a.riskLevel,
     food: section("food"),
