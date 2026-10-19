@@ -415,11 +415,27 @@ function cutAtNextTest(rest) {
     });
     return rest.slice(0, cut);
 }
+// A long test name can wrap in a PDF table cell, leaving the name on the line above its
+// value ("Sed Rate by Modified" / "12 mm/h 0-20"). Join a short line with no numbers to
+// the next line when that line starts with the value.
+function joinWrappedNames(lines) {
+    const out = [];
+    for (let i = 0; i < lines.length; i += 1) {
+        const line = lines[i];
+        if (!/\d/.test(line) && line.trim().length > 1 && line.trim().length <= 40 && /^\s*[<>]?\d/.test(lines[i + 1] || "")) {
+            out.push(`${line.trim()} ${lines[i + 1].trim()}`);
+            i += 1;
+        }
+        else
+            out.push(line);
+    }
+    return out;
+}
 // One result per test; each line is matched to the test named earliest on it.
 function readLabPanel(text) {
     const results = [];
     const seen = new Set();
-    normalizeReportText(text).split(/\r?\n/).flatMap(splitTypedLine).flatMap(splitSideBySide).forEach((line) => {
+    joinWrappedNames(normalizeReportText(text).split(/\r?\n/)).flatMap(splitTypedLine).flatMap(splitSideBySide).forEach((line) => {
         let best = null;
         COMPILED.forEach(({ test, patterns }) => {
             if (seen.has(test.key))

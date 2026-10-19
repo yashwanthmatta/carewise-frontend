@@ -262,6 +262,15 @@ if (process.argv.includes("--dump")) {
   fs.writeFileSync(file, JSON.stringify(Array.from({ length: n }, (_, i) => reportText(makeReport(i)))));
   process.exit(0);
 }
+// --show-pdf <index>: the same, through a rendered PDF and the site's PDF reader.
+if (process.argv.includes("--show-pdf")) {
+  const r = makeReport(Number(arg("--show-pdf")));
+  const b = await chromium.launch(); const render = await b.newPage(); const page = await openPage(b);
+  await render.setContent(reportHtml(r));
+  const bytes = (await render.pdf({ format: "Letter" })).toString("base64");
+  console.log(await page.evaluate(async (bytes) => extractPdfText(new File([Uint8Array.from(atob(bytes), (c) => c.charCodeAt(0))], "a.pdf", { type: "application/pdf" })), bytes));
+  await b.close(); process.exit(0);
+}
 // --show <index>: print one generated report and what the site made of it.
 if (process.argv.includes("--show")) {
   const r = makeReport(Number(arg("--show")));
