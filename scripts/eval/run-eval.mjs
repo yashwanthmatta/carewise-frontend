@@ -17,7 +17,9 @@ function statusOfLabValue(key, flag) {
   return key === "vitd" ? "low" : "high";
 }
 const statusOfPanel = (s) => ({ above: "high", below: "low", within: "normal" }[s] || s || "unknown");
-const sameNumber = (a, b) => Math.abs(parseFloat(String(a).replace(",", ".")) - parseFloat(String(b).replace(",", "."))) < 1e-9;
+// "11,200" is a thousands separator; "6,4" is a decimal comma.
+const toNumber = (v) => parseFloat(String(v).replace(/,(?=\d{3}(?!\d))/g, "").replace(",", "."));
+const sameNumber = (a, b) => Math.abs(toNumber(a) - toNumber(b)) < 1e-9;
 
 const browser = await chromium.launch();
 const page = await browser.newPage();
