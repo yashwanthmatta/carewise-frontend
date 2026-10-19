@@ -307,6 +307,16 @@
     { "id": "vitd-left-twocol-eu", "format": "twocol", "title": "Bone Health", "tests": [
       { "key": "vitd", "name": "Vitamin D", "value": "80,5", "unit": "nmol/L", "range": "50,0-125,0", "flag": "", "expect": "normal" },
       { "key": "calcium", "name": "Calcium", "value": "2,68", "unit": "mmol/L", "range": "2,15-2,55", "flag": "H", "expect": "high" }
+    ]},
+    { "id": "a1c-left-twocol-uk", "format": "twocol", "title": "Diabetes Review", "tests": [
+      { "key": "a1c", "name": "HbA1c", "value": "38", "unit": "mmol/mol", "range": "20-41", "flag": "", "expect": "normal", "shown": "5.6" },
+      { "key": "glucose", "name": "Glucose", "value": "8.4", "unit": "mmol/L", "range": "3.9-5.5", "flag": "H", "expect": "high" },
+      { "key": "trig", "name": "Triglycerides", "value": "1.1", "unit": "mmol/L", "range": "<1.7", "flag": "", "expect": "normal", "shown": "97" },
+      { "key": "egfr", "name": "eGFR", "value": "52", "unit": "mL/min/1.73m2", "range": ">60", "flag": "L", "expect": "low" }
+    ]},
+    { "id": "kidney-twocol-umol", "format": "twocol", "title": "Kidney Function", "tests": [
+      { "key": "creatinine", "name": "Creatinine", "value": "142", "unit": "umol/L", "range": "59-104", "flag": "H", "expect": "high" },
+      { "key": "bun", "name": "Urea", "value": "6.1", "unit": "mmol/L", "range": "2.5-7.8", "flag": "", "expect": "normal" }
     ]}
   ]
 }
