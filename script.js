@@ -1663,6 +1663,7 @@ document.querySelector("#run-demo-flow")?.addEventListener("click", () => {
 });
 
 document.querySelector("#sample-report-text")?.addEventListener("click", () => {
+  reportFromPhoto = false;
   trackReportUsage("sample_opened");
   fillSampleReportText();
   latestReportId = "";
@@ -4130,6 +4131,7 @@ function handleReportFileSelection() {
   if (!file) return;
   latestReportId = "";
   ocrChecks = [];
+  reportFromPhoto = false;
   renderOcrChecks();
   document.querySelector("#report-name").value = file.name;
   updateProgressRail();
@@ -4383,8 +4385,14 @@ const OCR_GRAM_PER_LITRE_KEYS = new Set(["hemoglobin", "albumin", "protein"]);
 
 function ocrSkipsLine(key, line) {
   if (OCR_SI_UNIT_KEYS.has(key) && /mmol|[uµμ]mol|pmol/i.test(line)) return true;
-  return OCR_GRAM_PER_LITRE_KEYS.has(key) && /\bg\/l\b/i.test(line);
+  if (!OCR_GRAM_PER_LITRE_KEYS.has(key)) return false;
+  // g/L, also when OCR drops the slash ("gL"), or a printed range only g/L uses (115-155).
+  const rangeHigh = Number(line.match(/\d+(?:\.\d+)?\s*(?:-|–|to)\s*(\d+(?:\.\d+)?)/)?.[1]);
+  return /\bg\s*\/?\s*l\b/i.test(line) || rangeHigh >= 20;
 }
+
+// Usual upper limits in mmol/L. A printed limit far above these lost its decimal point.
+const OCR_SI_LIPID_LIMITS = { triglycerides: 1.7, ldl: 3.0, totalCholesterol: 5.0 };
 
 function withDecimal(token) {
   return token.length > 1 ? `${token.slice(0, -1)}.${token.slice(-1)}` : `0.${token}`;
@@ -4426,7 +4434,7 @@ function checkOcrNumbers(rawText) {
     if (colonLayout && !line.includes(":")) {
       const lost = fixed.match(/^([^\d]*?[a-z)]\s+)1(\d+(?:\.\d+)?)(?![\d.])/i);
       if (lost) {
-        checks.push({ line: index, name, read: `1${lost[2]}`, value: `1${lost[2]}`, other: lost[2], kind: "ask" });
+        checks.push({ line: index, key, name, read: `1${lost[2]}`, value: `1${lost[2]}`, other: lost[2], kind: "ask" });
         return fixed;
       }
     }
@@ -4446,19 +4454,64 @@ function checkOcrNumbers(rawText) {
       const valueNearRange = value >= low * 0.5 && value <= high * 2;
       if (!isPossible && tenthPossible) {
         fixed = `${fixed.slice(0, at)}${withDecimal(token)}${fixed.slice(at + token.length)}`;
-        checks.push({ line: index, name, read: token, value: withDecimal(token), kind: "fixed" });
+        checks.push({ line: index, key, name, read: token, value: withDecimal(token), kind: "fixed" });
       } else if ((rangeFixed || rangeHasDecimals) && tenthNearRange && !valueNearRange) {
         // Labs print a result with the same decimals as its range, so a whole number
         // far outside a decimal range most likely lost its point: ask.
-        checks.push({ line: index, name, read: token, value: token, other: withDecimal(token), kind: "ask" });
+        checks.push({ line: index, key, name, read: token, value: token, other: withDecimal(token), kind: "ask" });
       }
     }
     return fixed;
   });
+  // Any test with a printed range: a value far outside it that fits once a decimal point
+  // is moved (1.4 read as 14, 2.75 as 275, 139 as 13.9) is asked about, never assumed.
+  lines.forEach((line, index) => {
+    if (checks.some((check) => check.line === index)) return;
+    const row = readLabPanel(line)[0] || ruleLineRow(line);
+    if (!row || !row.rangeText || row.generalRange) return;
+    const token0 = String(row.valueText);
+    // Lipids in mmol/L whose printed limit lost its point too ("1,5 <1,7" read as "15 <17").
+    const siLimit = OCR_SI_LIPID_LIMITS[row.key];
+    const printedLimit = Number(row.rangeText.match(/(\d+(?:\.\d+)?)\s*$/)?.[1]);
+    if (siLimit && /mmol/i.test(line) && printedLimit > siLimit * 5 && /^\d{2,3}$/.test(token0)) {
+      checks.push({ line: index, key: row.key, name: TEST_GUIDE[row.key]?.name || row.name, read: token0, value: token0, other: withDecimal(token0), kind: "ask" });
+      return;
+    }
+    const dash = row.rangeText.match(/^(\d+(?:\.\d+)?)\s*(?:-|–|to)\s*(\d+(?:\.\d+)?)$/);
+    const comparator = row.rangeText.match(/^(<=?|>=?|≤|≥)\s*(\d+(?:\.\d+)?)$/);
+    if (!dash && !comparator) return;
+    const [low, high] = dash ? [Number(dash[1]), Number(dash[2])] : /[<≤]/.test(comparator[1]) ? [0, Number(comparator[2])] : [Number(comparator[2]), Number(comparator[2]) * 10];
+    const near = (value) => value >= low * 0.5 && value <= high * 2;
+    const token = String(row.valueText);
+    if (near(row.value) || !/^\d+(?:\.\d)?$/.test(token)) return;
+    const rangeDecimals = /\./.test(row.rangeText);
+    let other = null;
+    if (!token.includes(".")) {
+      if (near(row.value / 10)) other = withDecimal(token);
+      else if (token.length > 2 && near(row.value / 100)) other = `${token.slice(0, -2)}.${token.slice(-2)}`;
+    } else if (!rangeDecimals && near(row.value * 10)) other = token.replace(".", "");
+    if (other) checks.push({ line: index, key: row.key, name: TEST_GUIDE[row.key]?.name || labTestInfo(row.key)?.name || row.name, read: token, value: token, other, kind: "ask" });
+  });
   return { text: lines.join("\n"), checks };
 }
 
+// The tests read by their own rules (cholesterol, triglycerides, A1C), as a row for one line.
+function ruleLineRow(line) {
+  const lower = normalizeReportText(line).toLowerCase();
+  const specs = [["ldl", String.raw`\bldl(?: cholesterol)?`], ["totalCholesterol", String.raw`(?:total cholesterol|cholesterol,?\s*total)`], ["triglycerides", "triglycerides"], ["a1c", String.raw`(?:hemoglobin\s*)?a1c`]];
+  for (const [key, pattern] of specs) {
+    const measure = readLabMeasure(lower, pattern, key === "a1c" ? 40 : 24);
+    const rangeText = measure ? printedRangeFor(lower, pattern, key === "a1c" ? 40 : 24) : "";
+    if (measure && rangeText) return { key, name: key, value: measure.value, valueText: lower.match(new RegExp(`${pattern}\\D{0,40}?(\\d+(?:\\.\\d+)?)`, "i"))?.[1] || String(measure.value), rangeText };
+  }
+  return null;
+}
+
 let ocrChecks = [];
+// True while the report text came from a photo or scanned page read on the device.
+let reportFromPhoto = false;
+// Tests whose number is waiting for the person to confirm it against the report.
+const unsureOcrKeys = () => ocrChecks.filter((check) => check.kind === "ask" && check.key).map((check) => check.key);
 
 function renderOcrChecks() {
   const box = document.querySelector("#ocr-checks");
@@ -4497,9 +4550,9 @@ document.querySelector("#ocr-checks")?.addEventListener("click", (event) => {
   if (lines[check.line] !== undefined && choice !== current) {
     lines[check.line] = lines[check.line].replace(new RegExp(`(^|[^\\d.])${current.replace(".", "\\.")}(?![\\d.])`), `$1${choice}`);
     textArea.value = lines.join("\n");
-    runLocalReportAnalysis();
   }
   ocrChecks = ocrChecks.filter((item) => item !== check);
+  runLocalReportAnalysis();
   renderOcrChecks();
 });
 
@@ -4510,6 +4563,7 @@ async function showOcrResult(rawText, sourceLabel) {
   }
   const { text, checks } = checkOcrNumbers(rawText);
   ocrChecks = checks;
+  reportFromPhoto = true;
   document.querySelector("#report-text").value = text.slice(0, 12000);
   updateProgressRail();
   trackReportUsage("photo_read");
@@ -6164,7 +6218,10 @@ const VIEW_TEXT = {
     attentionTitle: "Results to talk about",
     whatIs: "What is it?", whatMeans: "What does this mean?", askDoctor: "Ask your doctor", yourResult: "Your result",
     labRange: "Lab's range", noRangePrinted: "Not printed on your report", generalGuide: "Common guide (no range on your report)",
-    labels: { high: "High", low: "Low", in: "In range", none: "No range printed", critical: "Critical", abnormal: "Flagged by the lab", goalAbove: "In range, above a common goal", goalBelow: "In range, below a common goal", pre: "High — prediabetes range", diabetes: "High — diabetes range" },
+    labels: { check: "Check this number", high: "High", low: "Low", in: "In range", none: "No range printed", critical: "Critical", abnormal: "Flagged by the lab", goalAbove: "In range, above a common goal", goalBelow: "In range, below a common goal", pre: "High — prediabetes range", diabetes: "High — diabetes range" },
+    photoNote: "These numbers were read from a photo, which can misread a decimal point. Check each one against your report before relying on this summary.",
+    checkMeaning: "This number may have been misread from the photo, for example a missing decimal point. Compare it with your report and confirm it in the box above the result.",
+    checkFirst: (n) => `${n === 1 ? "One number" : `${n} numbers`} from your photo may be misread. Please confirm ${n === 1 ? "it" : "them"} against the report first.`,
     goalMeaning: "It is inside your lab's range, but many guidelines suggest a different goal for some people, depending on your other health risks. Your lab's range is not the same as your personal goal.",
     criticalMeaning: "Your lab marked this result as critical. Call your doctor today, or get urgent care if you feel unwell.",
     abnormalMeaning: "Your lab flagged this result as outside its usual values.",
@@ -6203,7 +6260,10 @@ const VIEW_TEXT = {
     attentionTitle: "Resultados para hablar con su médico",
     whatIs: "¿Qué es?", whatMeans: "¿Qué significa?", askDoctor: "Pregunte a su médico", yourResult: "Su resultado",
     labRange: "Rango del laboratorio", noRangePrinted: "No aparece en su informe", generalGuide: "Guía común (su informe no trae rango)",
-    labels: { high: "Alto", low: "Bajo", in: "En rango", none: "Sin rango impreso", critical: "Crítico", abnormal: "Marcado por el laboratorio", goalAbove: "En rango, por encima de una meta común", goalBelow: "En rango, por debajo de una meta común", pre: "Alto — rango de prediabetes", diabetes: "Alto — rango de diabetes" },
+    labels: { check: "Revise este número", high: "Alto", low: "Bajo", in: "En rango", none: "Sin rango impreso", critical: "Crítico", abnormal: "Marcado por el laboratorio", goalAbove: "En rango, por encima de una meta común", goalBelow: "En rango, por debajo de una meta común", pre: "Alto — rango de prediabetes", diabetes: "Alto — rango de diabetes" },
+    photoNote: "Estos números se leyeron de una foto, que puede confundir el punto decimal. Compare cada uno con su informe antes de confiar en este resumen.",
+    checkMeaning: "Es posible que este número se haya leído mal en la foto, por ejemplo sin el punto decimal. Compárelo con su informe y confírmelo en el recuadro de arriba.",
+    checkFirst: (n) => `${n === 1 ? "Un número" : `${n} números`} de su foto ${n === 1 ? "podría estar mal leído" : "podrían estar mal leídos"}. Confírme${n === 1 ? "lo" : "los"} primero con el informe.`,
     goalMeaning: "Está dentro del rango de su laboratorio, pero muchas guías sugieren otra meta para algunas personas, según sus otros riesgos de salud. El rango del laboratorio no es lo mismo que su meta personal.",
     criticalMeaning: "Su laboratorio marcó este resultado como crítico. Llame hoy a su médico o busque atención urgente si se siente mal.",
     abnormalMeaning: "Su laboratorio marcó este resultado como fuera de sus valores habituales.",
@@ -6243,11 +6303,12 @@ function describeTestRow(row, language, a1cPercent) {
   const dir = row.status === "above" || row.status === "target_above" ? "high" : row.status === "below" || row.status === "target_below" ? "low" : "";
   let label = row.status === "above" ? t.labels.high : row.status === "below" ? t.labels.low : row.status === "within" ? t.labels.in : row.status === "critical" ? t.labels.critical : row.status === "outside" ? t.labels.abnormal : row.status === "target_above" ? t.labels.goalAbove : row.status === "target_below" ? t.labels.goalBelow : t.labels.none;
   if (row.key === "a1c" && row.status === "above" && a1cPercent !== null) label = a1cPercent >= 6.5 ? t.labels.diabetes : a1cPercent >= 5.7 ? t.labels.pre : label;
+  if (row.status === "check") label = t.labels.check;
   const goal = row.status === "target_above" || row.status === "target_below";
-  const meaning = row.status === "critical" ? t.criticalMeaning : row.status === "outside" ? t.abnormalMeaning : goal ? t.goalMeaning
+  const meaning = row.status === "check" ? t.checkMeaning : row.status === "critical" ? t.criticalMeaning : row.status === "outside" ? t.abnormalMeaning : goal ? t.goalMeaning
     : dir === "high" ? (es ? guide.highEs : guide.high) || t.genericHigh : dir === "low" ? (es ? guide.lowEs : guide.low) || t.genericLow : "";
   const plainName = name.replace(/\s*\(.*\)$/, "");
-  const ask = goal ? t.goalAsk(plainName) : dir === "high" || row.status === "critical" ? (es ? guide.askHighEs : guide.askHigh) || t.genericAsk(plainName)
+  const ask = row.status === "check" ? "" : goal ? t.goalAsk(plainName) : dir === "high" || row.status === "critical" ? (es ? guide.askHighEs : guide.askHigh) || t.genericAsk(plainName)
     : dir === "low" ? (es ? guide.askLowEs : guide.askLow) || t.genericAsk(plainName) : row.status === "outside" ? t.genericAsk(plainName) : "";
   const value = (row.rule ? String(row.valueText) : `${row.valueText} ${row.unit || ""}`.trim()).replace("(about ", es ? "(unos " : "(about ");
   return {
@@ -6255,22 +6316,23 @@ function describeTestRow(row, language, a1cPercent) {
     unit: row.rule ? "" : row.unit || "", unitHint: unitHint(row.rule ? "" : row.unit, language),
     range: row.rangeText || "", rangeLabel: row.generalRange ? t.generalGuide : t.labRange,
     status: row.status, attention: row.status !== "within" && row.status !== "unknown",
-    tone: row.status === "critical" ? "critical" : goal ? "goal" : row.status === "within" ? "in" : row.status === "unknown" ? "none" : "out",
+    tone: row.status === "check" ? "check" : row.status === "critical" ? "critical" : goal ? "goal" : row.status === "within" ? "in" : row.status === "unknown" ? "none" : "out",
   };
 }
 
 // Everything the result screen shows, built from the analysis rows only.
-function buildReportView(analysis, language = "en", plan = null) {
+function buildReportView(analysis, language = "en", plan = null, unsure = [], fromPhoto = false) {
   const es = language === "es";
   const t = VIEW_TEXT[es ? "es" : "en"];
   const rows = allTestRows(analysis) || analysis.panelResults || [];
   const a1cValue = (analysis.labValues || []).find((item) => item.label === "A1C");
   const a1cPercent = a1cValue ? Number(a1cValue.value) : null;
-  const tests = rows.map((row) => describeTestRow(row, es ? "es" : "en", Number.isFinite(a1cPercent) ? a1cPercent : null));
+  // A number read from a photo that may be misread is shown as "check this number" until confirmed.
+  const tests = rows.map((row) => describeTestRow(unsure.includes(row.key) ? { ...row, status: "check" } : row, es ? "es" : "en", Number.isFinite(a1cPercent) ? a1cPercent : null));
   const bpValue = (analysis.labValues || []).find((item) => item.label === "Blood pressure");
   const [sys, dia] = String(bpValue?.value || "").split("/").map(Number);
   const bpHigh = Number.isFinite(sys) && (sys >= 130 || dia >= 80);
-  const order = { critical: 0, out: 1, goal: 2 };
+  const order = { check: 0, critical: 1, out: 2, goal: 3 };
   const cards = tests.filter((item) => item.attention && item.tone !== "none").sort((a, b) => order[a.tone] - order[b.tone]);
   if (bpHigh) cards.push({ key: "bp", name: t.bpName, plainName: t.bpName, what: t.bpWhat, label: t.labels.high, meaning: t.bpMeaning, ask: t.bpAsk, value: `${bpValue?.value} mmHg`, unit: "", unitHint: "", range: t.bpRange, rangeLabel: t.bpRangeLabel, status: "above", attention: true, tone: "out" });
 
@@ -6279,7 +6341,7 @@ function buildReportView(analysis, language = "en", plan = null) {
   const goals = tests.filter((item) => item.tone === "goal");
   const critical = tests.filter((item) => item.tone === "critical");
   const urgent = analysis.riskLevel === "urgent" || critical.length > 0;
-  const groupNames = [...new Set(cards.filter((item) => item.tone !== "goal").map((item) => GROUP_OF[item.key] || item.key))]
+  const groupNames = [...new Set(cards.filter((item) => item.tone !== "goal" && item.tone !== "check").map((item) => GROUP_OF[item.key] || item.key))]
     .map((group) => TEST_GROUPS[group]?.[es ? "es" : "en"] || cards.find((item) => item.key === group)?.plainName || group);
   const groupText = listWords(groupNames, es ? "es" : "en");
   const criticalNames = listWords(critical.map((item) => item.plainName), es ? "es" : "en");
@@ -6303,6 +6365,9 @@ function buildReportView(analysis, language = "en", plan = null) {
     if (outside + noRange < tests.length) body.push(t.others);
   }
   if (noRange && noRange < tests.length) body.push(t.noRange(noRange));
+  const toCheck = tests.filter((item) => item.tone === "check").length;
+  if (toCheck) body.unshift(t.checkFirst(toCheck));
+  if (fromPhoto && tests.length) body.push(t.photoNote);
 
   // Three steps first; the rest of the plan is available under "More ideas".
   const kidney = (analysis.panelResults || []).some((item) => (item.key === "potassium" && (item.status === "above" || item.status === "critical")) || (item.key === "creatinine" && (item.status === "above" || item.status === "critical")) || (item.key === "egfr" && (item.status === "below" || item.status === "critical")));
@@ -6350,7 +6415,7 @@ function renderLocalReportAnalysis(analysis) {
   const riskLabelText = translateReportText(riskLabel);
 
   const plan = analysis.noData || analysis.scanOnly ? null : getLatestPersonalPlan(analysis);
-  const reportView = buildReportView(analysis, reportLanguage, plan);
+  const reportView = buildReportView(analysis, reportLanguage, plan, unsureOcrKeys(), reportFromPhoto);
   const questions = reportQuestions(analysis, reportView);
   const showFindings = !reportView.tests.length && !reportView.cards.length && !analysis.scanOnly;
   reportResults.innerHTML = `
@@ -10510,6 +10575,7 @@ const TRY_SAMPLES = {
 };
 
 async function loadTrySample() {
+  reportFromPhoto = false;
   const id = window.location.hash.match(/^#try=([a-z0-9-]+)$/)?.[1];
   const sample = id && TRY_SAMPLES[id];
   if (!sample) return;
@@ -10555,3 +10621,8 @@ function registerCareWiseServiceWorker() {
 }
 
 registerCareWiseServiceWorker();
+
+// Typing or pasting over photo text means the numbers are the person's own again.
+document.querySelector("#report-text")?.addEventListener("input", () => {
+  reportFromPhoto = false;
+});
