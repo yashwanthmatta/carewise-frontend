@@ -1207,6 +1207,10 @@ document.querySelector("#logout")?.addEventListener("click", () => {
   logout();
 });
 
+document.querySelector("#delete-account")?.addEventListener("click", () => {
+  deleteAccount();
+});
+
 document.querySelector("#fill-clinician-account")?.addEventListener("click", () => {
   fillTeamAccount("clinician");
 });
@@ -3139,6 +3143,27 @@ function logout() {
   renderAuditTrail();
   updateAuthStatus("Signed out. Local prototype data is still on this device.");
   setBackendStatus(backendAvailable, backendAvailable ? "Backend is available. Sign in again to sync." : "Signed out. Backend is offline.");
+}
+
+// Deletes the account and everything saved with it on the server, straight away
+// (the same self-service deletion the phone app offers).
+async function deleteAccount() {
+  if (!authToken) {
+    updateAuthStatus("Sign in to delete your account.");
+    return;
+  }
+  const confirmed = window.confirm("Delete your account? This deletes your account and everything saved with it on FollowThrough Health: saved reports, health record, reminders, doctor links and plan. It cannot be undone. A paid plan is not cancelled by this; cancel it first from \"Manage or cancel plan\".");
+  if (!confirmed) {
+    updateAuthStatus("Your account was not deleted.");
+    return;
+  }
+  try {
+    await requestJson("DELETE", "/privacy/me");
+    clearAuthSession();
+    updateAuthStatus("Your account and the data saved with it were deleted. Reports kept only in this browser stay here; use \"Clear history\" in History to remove them.");
+  } catch {
+    updateAuthStatus("Your account could not be deleted right now. Check your connection and try again, or contact FollowThrough Health support.");
+  }
 }
 
 function clearAuthSession() {
