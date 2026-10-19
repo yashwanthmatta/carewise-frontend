@@ -742,7 +742,7 @@ const REPORT_TRANSLATIONS = {
       helpfulOffline: "Gracias. No se pudo conectar con FollowThrough Health en este momento, así que no se envió nada.",
       earlyAccessLink: "¿Quiere probar las novedades primero? Únase al acceso anticipado",
       nextUrgent: "Comuníquese hoy con su médico. Si se siente muy mal, busque atención de emergencia.",
-      nextReview: "Pregunte pronto a su médico sobre estos resultados.",
+      nextReview: "Algunos resultados están bastante fuera del rango del laboratorio. Comparta este informe con su médico y pregúntele cuándo quiere hablar de ello.",
       nextAttention: "Comente estos resultados en su próxima consulta.",
       nextRoutine: "No se ve nada urgente. Guárdelo para su próximo chequeo.",
       allTests: (count, outside) => `${count} prueba${count === 1 ? "" : "s"}${outside ? ` · ${outside} fuera del rango` : " · todas dentro del rango"}`,
@@ -835,9 +835,9 @@ const REPORT_TRANSLATIONS = {
       [/^Systolic blood pressure appears around (.+)\.$/, "La presión arterial sistólica aparece alrededor de $1."],
       [/^Vitamin D appears around (.+)\.$/, "La vitamina D aparece alrededor de $1."],
       [/^(.+)\. The lab marked this result as critical\. Contact your doctor or the lab today\.$/, "$1. El laboratorio marcó este resultado como crítico. Comuníquese hoy con su médico o con el laboratorio."],
-      [/^(.+); no range printed, compared with a general guide: (.+)\. Ask your doctor about this result soon\.$/, "$1; sin rango impreso, comparado con una guía general: $2. Consulte pronto a su médico sobre este resultado."],
+      [/^(.+); no range printed, compared with a general guide: (.+)\. Ask your doctor how soon they want to discuss this result\.$/, "$1; sin rango impreso, comparado con una guía general: $2. Pregunte a su médico cuándo quiere hablar de este resultado."],
       [/^(.+); no range printed, compared with a general guide: (.+)\.$/, "$1; sin rango impreso, comparado con una guía general: $2."],
-      [/^(.+); lab range (.+)\. Ask your doctor about this result soon\.$/, "$1; rango del laboratorio $2. Consulte pronto a su médico sobre este resultado."],
+      [/^(.+); lab range (.+)\. Ask your doctor how soon they want to discuss this result\.$/, "$1; rango del laboratorio $2. Pregunte a su médico cuándo quiere hablar de este resultado."],
       [/^(.+); lab range not printed\.$/, "$1; rango del laboratorio no impreso."],
       [/^(.+); general guide (.+)\. Labs often treat this level as urgent\. Contact your doctor today, or seek emergency care if you feel very unwell\.$/, "$1; guía general $2. Los laboratorios suelen considerar urgente este nivel. Comuníquese hoy con su médico o busque atención de emergencia si se siente muy mal."],
       [/^(.+); lab range not printed\. Labs often treat this level as urgent\. Contact your doctor today, or seek emergency care if you feel very unwell\.$/, "$1; rango del laboratorio no impreso. Los laboratorios suelen considerar urgente este nivel. Comuníquese hoy con su médico o busque atención de emergencia si se siente muy mal."],
@@ -881,7 +881,7 @@ const REPORT_UI_EN = {
   helpfulOffline: "Thank you. FollowThrough Health could not be reached just now, so nothing was sent.",
   earlyAccessLink: "Want new features first? Join early access",
   nextUrgent: "Contact your doctor today. If you feel very unwell, seek emergency care.",
-  nextReview: "Ask your doctor about these results soon.",
+  nextReview: "Some results are well outside the lab's range. Share this report with your doctor and ask how soon they want to talk about it.",
   nextAttention: "Bring these results up at your next visit.",
   nextRoutine: "Nothing urgent stands out. Keep this for your next checkup.",
   allTests: (count, outside) => `${count} test${count === 1 ? "" : "s"}${outside ? ` · ${outside} outside the range` : " · all within range"}`,
@@ -5699,7 +5699,7 @@ function analyzeReportTextLocally(rawText) {
           : item.far
             ? item.status === "above" ? "Far above the lab's range" : "Far below the lab's range"
             : item.status === "above" ? "Above the lab's range" : item.status === "below" ? "Below the lab's range" : "Marked abnormal by the lab",
-        detail: `${shown}; ${item.generalRange ? `no range printed, compared with a general guide: ${item.rangeText}` : `lab range ${item.rangeText || "not printed"}`}.${item.far ? " Ask your doctor about this result soon." : ""}`,
+        detail: `${shown}; ${item.generalRange ? `no range printed, compared with a general guide: ${item.rangeText}` : `lab range ${item.rangeText || "not printed"}`}.${item.far ? " Ask your doctor how soon they want to discuss this result." : ""}`,
       });
     }
   });

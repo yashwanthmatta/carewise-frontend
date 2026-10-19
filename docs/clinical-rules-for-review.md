@@ -36,11 +36,11 @@ For each row: **Agree / Change / Remove**, with a note. Reviewer name, credentia
 
 When urgent: the summary says "Contact your doctor today. If you feel very unwell, seek emergency care", and no new exercise plan is given.
 
-## 3. "Ask your doctor soon" (not urgent)
+## 3. Results far outside the printed range (not urgent)
 
 | Rule | Current behaviour | Review |
 |---|---|---|
-| Far outside the printed range | Above 1.5× the upper limit or below 0.67× the lower limit, or more than half the range's width beyond it, sets "Ask your doctor about these results soon". Distance from the range is used as a rough signal only. **Needs clinician review: should any test use its own rule instead?** | |
+| Far outside the printed range | Above 1.5× the upper limit or below 0.67× the lower limit, or more than half the range's width beyond it. **Pending clinician review, this no longer claims urgency:** the summary says "Some results are well outside the lab's range. Share this report with your doctor and ask how soon they want to talk about it." Should any test use its own threshold or wording instead? | |
 | Any result outside the range | "Bring these results up at your next visit." | |
 
 ## 4. Common guides used only when no range is printed
