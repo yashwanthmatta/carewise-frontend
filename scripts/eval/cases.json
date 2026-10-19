@@ -317,6 +317,15 @@
     { "id": "kidney-twocol-umol", "format": "twocol", "title": "Kidney Function", "tests": [
       { "key": "creatinine", "name": "Creatinine", "value": "142", "unit": "umol/L", "range": "59-104", "flag": "H", "expect": "high" },
       { "key": "bun", "name": "Urea", "value": "6.1", "unit": "mmol/L", "range": "2.5-7.8", "flag": "", "expect": "normal" }
+    ]},
+    { "id": "cbc-india-table", "format": "table", "title": "Haemogram", "tests": [
+      { "key": "hemoglobin", "name": "Haemoglobin", "value": "9.8", "unit": "gm/dL", "range": "12.0-15.0", "flag": "L", "expect": "low" },
+      { "key": "wbc", "name": "Total Leucocyte Count", "value": "11,200", "unit": "/cumm", "range": "4000-11000", "flag": "H", "expect": "high" },
+      { "key": "platelets", "name": "Platelet Count", "value": "1.2", "unit": "lakhs/cumm", "range": "1.5-4.5", "flag": "L", "expect": "low" }
+    ]},
+    { "id": "sugar-india-list", "format": "list", "title": "Blood Sugar", "tests": [
+      { "key": "glucose", "name": "Fasting Blood Sugar", "value": "132", "unit": "mg/dl", "range": "70-110", "flag": "H", "expect": "high" },
+      { "key": "creatinine", "name": "Serum Creatinine", "value": "0.9", "unit": "mg/dl", "range": "0.6-1.2", "flag": "", "expect": "normal" }
     ]}
   ]
 }
