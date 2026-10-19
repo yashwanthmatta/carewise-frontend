@@ -26,7 +26,7 @@ def page(fname, title, desc, eyebrow, h1, lede, body):
     <meta name="description" content="{html.escape(desc)}" />
     <link rel="canonical" href="https://followthroughhealth.com/{fname}" />
     <link rel="icon" href="assets/carewise-app-icon.svg" />
-    <link rel="stylesheet" href="share.css?v=carewise-product-173" />
+    <link rel="stylesheet" href="share.css?v=carewise-product-174" />
     <style>
       {CSS}
     </style>

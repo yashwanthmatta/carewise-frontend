@@ -6754,3 +6754,16 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .db-batch h4 { margin: 0; }
 .db-batch table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
 .db-batch th, .db-batch td { text-align: left; padding: 6px 8px; border-top: 1px solid #eee; }
+
+/* Link styled as a button (e.g. DocBridge "Email to patient"): centre the label like a real button. */
+a.primary-button,
+a.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+}
+.lp-doctors-video { margin: 0; }
+.lp-doctors-video video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 16px; border: 1px solid var(--lp-line, #e2dcd2); background: #111314; box-shadow: 0 18px 40px rgba(17, 19, 20, 0.14); }
+.lp-doctors-video figcaption { margin-top: 10px; font-size: 0.85rem; color: var(--muted, #5b6064); }

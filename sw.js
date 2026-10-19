@@ -1,17 +1,17 @@
-const CAREWISE_CACHE = "carewise-shell-v173";
+const CAREWISE_CACHE = "carewise-shell-v174";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
   "/demo.html",
-  "/styles.css?v=carewise-product-173",
-  "/script.js?v=carewise-product-173",
-  "/help.js?v=carewise-product-173",
-  "/doctor-share.js?v=carewise-product-173",
-  "/docbridge.js?v=carewise-product-173",
-  "/reminders.js?v=carewise-product-173",
-  "/vendor/qrcode.js?v=carewise-product-173",
-  "/twofactor.js?v=carewise-product-173",
-  "/manifest.webmanifest?v=carewise-product-173",
+  "/styles.css?v=carewise-product-174",
+  "/script.js?v=carewise-product-174",
+  "/help.js?v=carewise-product-174",
+  "/doctor-share.js?v=carewise-product-174",
+  "/docbridge.js?v=carewise-product-174",
+  "/reminders.js?v=carewise-product-174",
+  "/vendor/qrcode.js?v=carewise-product-174",
+  "/twofactor.js?v=carewise-product-174",
+  "/manifest.webmanifest?v=carewise-product-174",
   "/legal/privacy.html",
   "/legal/terms.html",
   "/legal/disclaimer.html",
@@ -42,6 +42,8 @@ self.addEventListener("fetch", (event) => {
   const requestUrl = new URL(event.request.url);
   if (event.request.method !== "GET" || requestUrl.origin !== self.location.origin) return;
   if (requestUrl.pathname.startsWith("/auth") || requestUrl.pathname.startsWith("/reports") || requestUrl.pathname.startsWith("/patients")) return;
+  // Videos stream with range requests; let the browser handle them directly.
+  if (requestUrl.pathname.startsWith("/assets/video/")) return;
 
   // Pages are network-first so an update shows on the next visit; the saved
   // copy is only used offline. Versioned files (script.js?v=...) stay cache-first.
@@ -49,12 +51,14 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          if (!response.ok) return caches.match("/index.html").then((cached) => cached || response);
+          if (!response.ok) return caches.match(event.request).then((cached) => cached || response);
+          // Save each page under its own address, so the offline copy of the homepage
+          // is never replaced by another page (FAQ, demo, ...).
           const copy = response.clone();
-          caches.open(CAREWISE_CACHE).then((cache) => cache.put("/index.html", copy));
+          caches.open(CAREWISE_CACHE).then((cache) => cache.put(event.request, copy));
           return response;
         })
-        .catch(() => caches.match("/index.html").then((cached) => cached || caches.match("/")))
+        .catch(() => caches.match(event.request).then((cached) => cached || caches.match("/index.html")).then((cached) => cached || caches.match("/")))
     );
     return;
   }
