@@ -357,9 +357,22 @@ function normalizeReportText(text) {
 // Split those into parts; lab rows (which print a range) and "Cholesterol, Total 226" stay whole.
 function splitTypedLine(line) {
     const numbers = line.match(/\d+(?:\.\d+)?/g) || [];
-    if (numbers.length < 3 || /\d\s*(?:-|–|to)\s*\d/.test(line))
+    if (numbers.length < 3 || /\d\s*(?:-|–|to)\s*\d|[<>≤≥]=?\s*\d/.test(line))
         return [line];
-    return line.split(/\s*(?:[,;]|\band\b)\s*(?=[a-z])/i);
+    // A piece with no number is part of the next test's name ("PSA, Total 4.6"), so it is kept with it.
+    const pieces = line.split(/(\s*(?:[,;]|\band\b)\s*(?=[a-z]))/i);
+    const parts = [];
+    let current = pieces[0];
+    for (let i = 1; i < pieces.length; i += 2) {
+        if (/\d/.test(current)) {
+            parts.push(current);
+            current = pieces[i + 1];
+        }
+        else
+            current += pieces[i] + pieces[i + 1];
+    }
+    parts.push(current);
+    return parts;
 }
 // Some reports print two tests side by side ("Sodium 139 136-145   Potassium 5.6 H 3.5-5.1").
 // Split before a later test name when a number sits between it and the previous one and
@@ -381,7 +394,7 @@ function splitSideBySide(line) {
     names.slice(1).forEach((name) => {
         if (name.index < previousEnd)
             return;
-        if (/\d/.test(line.slice(previousEnd, name.index)) && /^[^\d\n<>()]{0,25}\d/.test(line.slice(name.end)) && !/\bref/i.test(line.slice(name.end, name.end + 25)) && depthBefore(line, name.index) === 0) {
+        if (/\d/.test(line.slice(previousEnd, name.index)) && /^[^\d\n<>()]{0,25}(?:\([^)\n]{1,20}\)[^\d\n<>()]{0,10})?\d/.test(line.slice(name.end)) && !/\bref/i.test(line.slice(name.end, name.end + 25)) && depthBefore(line, name.index) === 0) {
             cuts.push(name.index);
             previousEnd = name.end;
         }
@@ -396,17 +409,33 @@ function cutAtNextTest(rest) {
     let cut = rest.length;
     COMPILED_GLOBAL.forEach((pattern) => {
         for (const match of rest.matchAll(pattern)) {
-            if (match.index < cut && /^[^\d\n<>()]{0,25}\d/.test(rest.slice(match.index + match[0].length)) && depthBefore(rest, match.index) === 0)
+            if (match.index < cut && /^[^\d\n<>()]{0,25}(?:\([^)\n]{1,20}\)[^\d\n<>()]{0,10})?\d/.test(rest.slice(match.index + match[0].length)) && depthBefore(rest, match.index) === 0)
                 cut = match.index;
         }
     });
     return rest.slice(0, cut);
 }
+// A long test name can wrap in a PDF table cell, leaving the name on the line above its
+// value ("Sed Rate by Modified" / "12 mm/h 0-20"). Join a short line with no numbers to
+// the next line when that line starts with the value.
+function joinWrappedNames(lines) {
+    const out = [];
+    for (let i = 0; i < lines.length; i += 1) {
+        const line = lines[i];
+        if (!/\d/.test(line) && line.trim().length > 1 && line.trim().length <= 40 && /^\s*[<>]?\d/.test(lines[i + 1] || "")) {
+            out.push(`${line.trim()} ${lines[i + 1].trim()}`);
+            i += 1;
+        }
+        else
+            out.push(line);
+    }
+    return out;
+}
 // One result per test; each line is matched to the test named earliest on it.
 function readLabPanel(text) {
     const results = [];
     const seen = new Set();
-    normalizeReportText(text).split(/\r?\n/).flatMap(splitTypedLine).flatMap(splitSideBySide).forEach((line) => {
+    joinWrappedNames(normalizeReportText(text).split(/\r?\n/)).flatMap(splitTypedLine).flatMap(splitSideBySide).forEach((line) => {
         let best = null;
         COMPILED.forEach(({ test, patterns }) => {
             if (seen.has(test.key))
@@ -880,6 +909,7 @@ const PLAN_TEXT = {
         a1cPlate: "Use the plate method: half non-starchy vegetables, a quarter lean protein and a quarter whole grains or starchy food.",
         a1cDrinks: "Drink water or unsweetened tea or coffee instead of soda and juice.",
         a1cWeight: "If you are overweight, losing 5 to 7% of your body weight can lower your chance of type 2 diabetes.",
+        kidneyPotassium: "Your potassium or kidney result is outside the lab's range. Ask your clinician or a kidney dietitian before eating more fruit, vegetables, beans, lentils, nuts or dairy: many are high in potassium.",
         bpDash: "Follow a DASH-style eating pattern: plenty of fruit, vegetables, beans, nuts, whole grains and low-fat dairy.",
         bpSalt: "Keep salt (sodium) under 2,300 mg a day; check labels on bread, soups, sauces and restaurant food.",
         vitdFood: "Include vitamin D foods such as fatty fish, eggs, and fortified milk or cereal.",
@@ -922,6 +952,7 @@ const PLAN_TEXT = {
         a1cPlate: "Use el método del plato: la mitad verduras sin almidón, un cuarto proteína magra y un cuarto granos integrales o alimentos con almidón.",
         a1cDrinks: "Tome agua, o té o café sin azúcar, en lugar de refrescos y jugos.",
         a1cWeight: "Si tiene sobrepeso, perder del 5 al 7 % de su peso puede reducir la probabilidad de diabetes tipo 2.",
+        kidneyPotassium: "Su resultado de potasio o de riñón está fuera del rango del laboratorio. Pregunte a su médico o a un dietista renal antes de comer más fruta, verduras, frijoles, lentejas, nueces o lácteos: muchos tienen mucho potasio.",
         bpDash: "Siga un patrón de alimentación tipo DASH: muchas frutas, verduras, frijoles, nueces, granos integrales y lácteos bajos en grasa.",
         bpSalt: "Mantenga la sal (sodio) por debajo de 2,300 mg al día; revise las etiquetas del pan, sopas, salsas y comida de restaurante.",
         vitdFood: "Incluya alimentos con vitamina D, como pescado graso, huevos y leche o cereal fortificados.",
@@ -980,7 +1011,9 @@ function buildPersonalPlan(analysis, language = "en", reactions = []) {
     const urgent = analysis.riskLevel === "urgent" || (Number.isFinite(systolic) && systolic >= 180);
     const heart = (ldl !== null && ldl >= 130) || (total !== null && total >= 200);
     const heartWhy = ldl !== null && ldl >= 130 ? t.whyLdl(ldl) : total !== null ? t.whyTotal(total) : "";
-    const food = [];
+    // High potassium or reduced kidney function: potassium-rich foods need a clinician's OK first.
+    const kidney = (analysis.panelResults || []).some((item) => (item.key === "potassium" && (item.status === "above" || item.status === "critical")) || (item.key === "creatinine" && (item.status === "above" || item.status === "critical")) || (item.key === "egfr" && (item.status === "below" || item.status === "critical")));
+    const food = kidney ? [{ text: t.kidneyPotassium }] : [];
     if (heart) {
         food.push({ text: t.heartFat, why: heartWhy, source: SOURCES.aha });
         food.push({ text: t.heartFiber, why: heartWhy, source: SOURCES.aha });
@@ -997,7 +1030,8 @@ function buildPersonalPlan(analysis, language = "en", reactions = []) {
             food.push({ text: t.a1cWeight, why: t.whyA1c(a1c), source: SOURCES.cdcDpp });
     }
     if (highBp) {
-        food.push({ text: t.bpDash, why: t.whyBp(bpText), source: SOURCES.dash });
+        if (!kidney)
+            food.push({ text: t.bpDash, why: t.whyBp(bpText), source: SOURCES.dash });
         food.push({ text: t.bpSalt, why: t.whyBp(bpText), source: SOURCES.aha });
     }
     if (vitd !== null && vitd < 30)
@@ -5290,7 +5324,8 @@ function readReportNumber(text, patterns) {
 
 // Skips a lab footnote code like the "01" in "Cholesterol, Total 01  289 mg/dL".
 const LAB_FOOTNOTE = String.raw`(?:\b0\d\s+\D{0,12}?)?`;
-const LAB_UNIT = String.raw`\s*(mmol\s*\/\s*mol|mmol\s*\/\s*l|mg\s*\/\s*dl|%)?`;
+// A flag printed between the value and the unit ("18 L mmol/mol") is skipped so the unit is still found.
+const LAB_UNIT = String.raw`\s*(?:(?:h|l|hh|ll|hi|lo|high|low|\*)\s+(?=mmol|mg|%))?(mmol\s*\/\s*mol|mmol\s*\/\s*l|mg\s*\/\s*dl|%)?`;
 
 // The value must not start inside a word, so the "1" in "Hemoglobin A1c" is never read as a result.
 function readLabMeasure(text, namePattern, maxGap = 24) {
@@ -5416,7 +5451,8 @@ function buildRuleRows(lower, labValues, outside, vitaminDRange) {
     const spec = specs[item.label];
     const measure = spec.pattern ? readLabMeasure(lower, spec.pattern, spec.gap) : null;
     const rangeText = spec.pattern ? printedRangeFor(lower, spec.pattern, spec.gap) : vitaminDRange;
-    const printedUnit = measure?.unit ? PRINTED_UNIT_LABEL[measure.unit] || measure.unit : "";
+    // No unit printed next to the value but it was converted: say which SI unit it was in.
+    const printedUnit = measure?.unit ? PRINTED_UNIT_LABEL[measure.unit] || measure.unit : measure && Math.abs(measure.value - Number(item.value)) > 1e-9 ? (spec.key === "a1c" ? "mmol/mol" : "mmol/L") : "";
     const converted = measure && printedUnit && printedUnit.toLowerCase() !== String(item.unit).toLowerCase();
     const valueText = converted ? `${measure.value} ${printedUnit} (about ${item.value} ${item.unit})` : `${item.value} ${item.unit}`;
     const inRange = /in range discussion/i.test(item.flag);
@@ -5447,7 +5483,7 @@ function analyzeReportTextLocally(rawText) {
   const vitaminDMatch = lower.match(/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?\D{0,24}\d+(?:\.\d+)?([^\n]{0,60})/i);
   if (vitaminDMatch) vitaminDMatch[1] = cutAtNextTest(vitaminDMatch[1]);
   // European and UK labs report vitamin D in nmol/L; the common 30 ng/mL cut-off is about 75 nmol/L.
-  const vitaminDUnit = vitaminDMatch && /^\s*nmol\s*\/\s*l/i.test(vitaminDMatch[1]) ? "nmol/L" : "ng/mL";
+  const vitaminDUnit = vitaminDMatch && /^\s*(?:(?:h|l|hi|lo|high|low|\*)\s+)?nmol\s*\/\s*l/i.test(vitaminDMatch[1]) ? "nmol/L" : "ng/mL";
   const vitaminDNg = vitaminD === null ? null : vitaminDUnit === "nmol/L" ? Math.round((vitaminD / 2.496) * 10) / 10 : vitaminD;
   // Follow the range the lab printed; use the common 30 ng/mL target only when none is printed.
   const vitaminDHasRange = Boolean(vitaminDMatch && /\d\s*[-–]\s*\d|[<>≤≥]\s*=?\s*\d/.test(vitaminDMatch[1]));
