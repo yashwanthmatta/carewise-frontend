@@ -297,6 +297,16 @@
     { "id": "thyroid-twocol-quest", "format": "twocol", "title": "Thyroid and Vitamins", "tests": [
       { "key": "tsh", "name": "TSH", "value": "3.1", "unit": "mIU/L", "range": "0.40-4.50", "flag": "", "expect": "normal" },
       { "key": "b12", "name": "Vitamin B12", "value": "180", "unit": "pg/mL", "range": "200-1100", "flag": "L", "expect": "low" }
+    ]},
+    { "id": "lipid-left-twocol-uk", "format": "twocol", "title": "Annual Review Bloods", "tests": [
+      { "key": "ldl", "name": "LDL cholesterol", "value": "2.4", "unit": "mmol/L", "range": "<3.0", "flag": "", "expect": "normal", "shown": "93" },
+      { "key": "potassium", "name": "Potassium", "value": "5.8", "unit": "mmol/L", "range": "3.5-5.3", "flag": "H", "expect": "high" },
+      { "key": "totalchol", "name": "Total cholesterol", "value": "4.2", "unit": "mmol/L", "range": "<5.0", "flag": "", "expect": "normal", "shown": "162" },
+      { "key": "glucose", "name": "Glucose", "value": "7.9", "unit": "mmol/L", "range": "3.9-5.5", "flag": "H", "expect": "high" }
+    ]},
+    { "id": "vitd-left-twocol-eu", "format": "twocol", "title": "Bone Health", "tests": [
+      { "key": "vitd", "name": "Vitamin D", "value": "80,5", "unit": "nmol/L", "range": "50,0-125,0", "flag": "", "expect": "normal" },
+      { "key": "calcium", "name": "Calcium", "value": "2,68", "unit": "mmol/L", "range": "2,15-2,55", "flag": "H", "expect": "high" }
     ]}
   ]
 }
