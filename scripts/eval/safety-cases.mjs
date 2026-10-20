@@ -40,6 +40,9 @@ const CASES = [
   ["Potassium 5.4 mmol/L 3.5-5.3", "not urgent"],
   ["Glucose 110 mg/dL 70-99", "not urgent"],
   ["LDL cholesterol 190 mg/dL <100", "not urgent"],
+  // A critical value read from a photo that may be misread stays urgent and is never counted as in range.
+  ["Potassium 6.8 mmol/L 3.5-5.1\nSodium 140 mmol/L 135-145", "urgent", ["potassium"]],
+  ["Glucose 38 mg/dL 70-99", "urgent", ["glucose"]],
 ];
 
 const browser = await chromium.launch();
@@ -47,16 +50,18 @@ const page = await browser.newPage();
 await page.goto(base, { waitUntil: "domcontentloaded" });
 await page.waitForFunction(() => typeof buildReportView === "function");
 let failures = 0;
-for (const [text, expected] of CASES) {
-  const got = await page.evaluate((t) => {
+for (const [text, expected, unsure = []] of CASES) {
+  const got = await page.evaluate(([t, unsure]) => {
     const a = analyzeReportTextLocally(t);
-    const v = buildReportView(a, "en");
-    return { emergency: v.emergency, urgent: a.riskLevel === "urgent" || v.urgent, headline: v.headline, reasons: a.urgentReasons, steps: v.steps.map((s) => s.title) };
-  }, text);
+    const v = buildReportView(a, "en", null, unsure, unsure.length > 0);
+    return { emergency: v.emergency, urgent: a.riskLevel === "urgent" || v.urgent, headline: v.headline, body: v.body.join(" "), reasons: a.urgentReasons, steps: v.steps.map((s) => s.title) };
+  }, [text, unsure]);
   const actual = got.emergency ? "emergency" : got.urgent ? "urgent" : "not urgent";
   // An emergency must also say to call emergency services and never offer an exercise step.
   const wordingOk = actual !== "emergency" || (/emergency care/i.test(got.headline) && !got.steps.some((s) => /walk/i.test(s)));
-  const ok = actual === expected && wordingOk;
+  // A number still to confirm must be named, not silently counted as within range.
+  const unsureOk = !unsure.length || (/confirm/i.test(got.body) && /still to confirm/i.test(got.body) && got.steps[0] === "Contact your doctor today");
+  const ok = actual === expected && wordingOk && unsureOk;
   if (!ok) failures += 1;
   console.log(`${ok ? "ok  " : "FAIL"} ${JSON.stringify(text)} -> ${actual} (expected ${expected}) ${JSON.stringify(got.reasons)}`);
 }

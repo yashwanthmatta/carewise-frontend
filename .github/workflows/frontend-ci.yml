@@ -44,6 +44,9 @@ jobs:
       - name: Safety cases (emergency symptoms, critical values)
         run: node scripts/eval/safety-cases.mjs
 
+      - name: Correcting a misread photo number updates everything
+        run: node scripts/eval/ocr-resolution.mjs
+
       - name: Randomized report check (standard and hard reports)
         run: |
           node scripts/eval/stress.mjs --text 5000 --seed 101

@@ -1383,6 +1383,14 @@ reportResults?.addEventListener("change", (event) => {
 
 reportResults?.addEventListener("click", (event) => {
   const action = event.target.closest("[data-report-action]")?.dataset.reportAction;
+  // While a number read from a photo waits for confirmation, nothing built from it is copied,
+  // shared, printed or saved, so a misread value cannot reach trends or a doctor.
+  if (["copy-summary", "share-summary", "doctor-brief", "share-doctor", "save-detected-values"].includes(action) && unsureOcrKeys().length) {
+    reportStatus.textContent = reportLanguage === "es"
+      ? "Primero confirme los números marcados como \"Revise este número\"; luego podrá copiar, compartir o guardar."
+      : "Confirm the numbers marked \"Check this number\" first; then you can copy, share or save.";
+    return;
+  }
   if (action === "copy-summary") copyReportSummary();
   if (action === "share-summary") shareReportSummary();
   if (action === "copy-questions") copyReportQuestions();
@@ -4553,9 +4561,10 @@ function renderOcrChecks() {
   }
   box.innerHTML = `
     <strong>Please check these numbers against the report</strong>
-    <p>Photos can misread a decimal point or a colon. Tap the number that matches the report.</p>
+    <p>Photos can misread a decimal point, a unit or a colon. Compare the whole line with your report: the test, the number, the unit and the range.</p>
     <ul>${ocrChecks.map((check, index) => `
       <li>
+        <code class="ocr-check-line">${escapeHtml((document.querySelector("#report-text")?.value.split("\n")[check.line] || "").trim())}</code>
         <span>${escapeHtml(check.name)}: ${check.kind === "fixed"
           ? `read as ${escapeHtml(check.read)}, which is not possible, so FollowThrough Health used ${escapeHtml(check.value)}.`
           : `read as ${escapeHtml(check.read)}. Did the report say ${escapeHtml(check.other)}?`}</span>
@@ -4564,6 +4573,7 @@ function renderOcrChecks() {
             ? `<button class="secondary-button compact" type="button" data-ocr-check="${index}" data-ocr-choice="${escapeHtml(check.value)}">${escapeHtml(check.value)} is right</button>`
             : `<button class="secondary-button compact" type="button" data-ocr-check="${index}" data-ocr-choice="${escapeHtml(check.other)}" data-ocr-suggested>It says ${escapeHtml(check.other)}</button>
                <button class="secondary-button compact" type="button" data-ocr-check="${index}" data-ocr-choice="${escapeHtml(check.read)}">It says ${escapeHtml(check.read)}</button>`}
+          <button class="secondary-button compact" type="button" data-ocr-check="${index}" data-ocr-edit>Something else: fix this line</button>
         </span>
       </li>`).join("")}</ul>`;
 }
@@ -4577,10 +4587,25 @@ document.querySelector("#ocr-checks")?.addEventListener("click", (event) => {
   const textArea = document.querySelector("#report-text");
   const lines = textArea.value.split("\n");
   const current = check.kind === "fixed" ? check.value : check.read;
+  // Technical audit trail kept on this device: what the photo reader read and what the person
+  // chose. It is never treated as a lab result, and the usage count sent online has no values.
+  if (button.hasAttribute("data-ocr-edit")) {
+    addAuditEvent("ocr_line_edited", `${check.name}: photo read "${check.read}"; the person chose to fix the line by hand.`);
+    trackReportUsage("ocr_line_edited");
+    ocrChecks = ocrChecks.filter((item) => item !== check);
+    renderOcrChecks();
+    const start = lines.slice(0, check.line).reduce((total, line) => total + line.length + 1, 0);
+    textArea.focus();
+    textArea.setSelectionRange(start, start + (lines[check.line] || "").length);
+    reportStatus.textContent = "Fix the highlighted line so the test, number, unit and range match your report, then press Explain report.";
+    return;
+  }
   if (lines[check.line] !== undefined && choice !== current) {
     lines[check.line] = lines[check.line].replace(new RegExp(`(^|[^\\d.])${current.replace(".", "\\.")}(?![\\d.])`), `$1${choice}`);
     textArea.value = lines.join("\n");
   }
+  addAuditEvent(choice === current ? "ocr_number_confirmed" : "ocr_number_corrected", `${check.name}: photo read "${check.read}"; the person confirmed "${choice}".`);
+  trackReportUsage(choice === current ? "ocr_number_confirmed" : "ocr_number_corrected");
   ocrChecks = ocrChecks.filter((item) => item !== check);
   runLocalReportAnalysis();
   renderOcrChecks();
@@ -6114,6 +6139,9 @@ function computeReportChanges(analysis) {
   analysis._changes = null;
   const text = document.querySelector("#report-text")?.value || "";
   if (analysis.noData || analysis.scanOnly || document.body.classList.contains("tour-active") || /^\s*Sample lab text for FollowThrough Health demo/i.test(text)) return null;
+  // A report with numbers still to confirm is neither compared nor remembered, so a misread
+  // value never becomes someone's "previous result".
+  if (unsureOcrKeys().length) return null;
   const markers = reportMarkers(analysis);
   if (!markers.length) return null;
   const person = normalizeReportPerson(latestReportPerson);
@@ -6187,7 +6215,7 @@ function downloadLabReminder(dateText) {
 
 // Version of the interpretation rules and wording below. Change it whenever a rule, threshold or
 // explanation changes, so every output can be traced to the rules that produced it.
-const EXPLANATION_RULES_VERSION = "2026-10-20.1";
+const EXPLANATION_RULES_VERSION = "2026-10-20.2";
 
 // Plain-language guide per test: what it is, what a high or low result can mean, and a
 // question for the doctor. Educational wording only: no diagnosis, medicine names or doses.
@@ -6272,14 +6300,14 @@ const VIEW_TEXT = {
     allInLabs: "Your lab results are within the lab's ranges",
     dangerLabel: (label) => `${label} — a level labs often treat as urgent`,
     dangerMeaning: "Labs often treat a result at this level as urgent, even when it is not flagged. Contact your doctor today, or get emergency care if you feel very unwell.",
-    checkDanger: (name) => `If the ${name} number is right, it is at a level labs often treat as urgent: confirm it against your report now, and if it matches, contact your doctor today.`,
+    checkDanger: (name) => `If the ${name} number is right, it is at a level labs often treat as urgent: confirm it against your report now. If it matches, or you cannot check, contact your doctor today, and get emergency care if you feel very unwell.`,
     emergencyHeadline: "Your report mentions symptoms that may need emergency care",
     emergencyBody: (terms) => `If you have ${terms} now, call 911 or your local emergency number. Do not wait for a doctor's appointment.`,
     emergencyNext: "If these symptoms are happening now, call 911 or your local emergency number.",
     stepEmergency: "Get emergency help if this is happening now",
     guideMeaning: "Your report didn't print a range for this test, so it was compared with a common general guide. Your lab's own range may differ.",
     guideSentence: (names) => `${names} had no range on your report and ${names.includes(" and ") ? "are" : "is"} outside a common guide; ask your doctor what range applies to you.`,
-    count: (o, t) => `${o} of your ${t} lab results ${o === 1 ? "is" : "are"} outside the lab's ranges.`,
+    count: (o, t, c = 0) => `${o} of your ${t} lab results ${o === 1 ? "is" : "are"} outside the lab's ranges${c ? `, not counting ${c === 1 ? "1 number" : `${c} numbers`} still to confirm` : ""}.`,
     discussLabs: (groups) => `Your ${groups} results deserve a conversation with your doctor.`,
     othersLabs: "The other lab results are within the lab's ranges.",
     bpMention: (value, home) => `Your report also mentions ${home ? "home blood pressure readings" : "a blood pressure reading"} around ${value}, which ${home ? "are" : "is"} worth discussing.`,
@@ -6343,14 +6371,14 @@ const VIEW_TEXT = {
     allInLabs: "Sus resultados de laboratorio están dentro de los rangos del laboratorio",
     dangerLabel: (label) => `${label} — un nivel que los laboratorios suelen tratar como urgente`,
     dangerMeaning: "Los laboratorios suelen tratar un resultado a este nivel como urgente, aunque no esté marcado. Comuníquese hoy con su médico o busque atención de emergencia si se siente muy mal.",
-    checkDanger: (name) => `Si el número de ${name} es correcto, está a un nivel que los laboratorios suelen tratar como urgente: compárelo ahora con su informe y, si coincide, comuníquese hoy con su médico.`,
+    checkDanger: (name) => `Si el número de ${name} es correcto, está a un nivel que los laboratorios suelen tratar como urgente: compárelo ahora con su informe. Si coincide, o no puede comprobarlo, comuníquese hoy con su médico y busque atención de emergencia si se siente muy mal.`,
     emergencyHeadline: "Su informe menciona síntomas que podrían necesitar atención de emergencia",
     emergencyBody: (terms) => `Si tiene ${terms} ahora, llame al 911 o al número de emergencias local. No espere a una cita médica.`,
     emergencyNext: "Si estos síntomas están ocurriendo ahora, llame al 911 o al número de emergencias local.",
     stepEmergency: "Busque ayuda de emergencia si esto ocurre ahora",
     guideMeaning: "Su informe no trae un rango para esta prueba, así que se comparó con una guía general común. El rango de su laboratorio puede ser distinto.",
     guideSentence: (names) => `${names} no ${names.includes(" y ") ? "tienen" : "tiene"} rango en su informe y ${names.includes(" y ") ? "están" : "está"} fuera de una guía común; pregunte a su médico qué rango le corresponde.`,
-    count: (o, t) => `${o} de sus ${t} resultados de laboratorio ${o === 1 ? "está" : "están"} fuera de los rangos del laboratorio.`,
+    count: (o, t, c = 0) => `${o} de sus ${t} resultados de laboratorio ${o === 1 ? "está" : "están"} fuera de los rangos del laboratorio${c ? `, sin contar ${c === 1 ? "1 número" : `${c} números`} por confirmar` : ""}.`,
     discussLabs: (groups) => `Conviene hablar con su médico sobre sus resultados de ${groups}.`,
     othersLabs: "Los demás resultados de laboratorio están dentro de los rangos del laboratorio.",
     bpMention: (value, home) => `Su informe también menciona ${home ? "mediciones de presión arterial en casa" : "una presión arterial"} de alrededor de ${value}, que conviene comentar.`,
@@ -6528,6 +6556,8 @@ function buildReportView(analysis, language = "en", plan = null, unsure = [], fr
   const goalNames = listWords(goals.map((item) => item.plainName), lang);
   const bpSentence = bpKnown ? (bpHigh ? t.bpMention(String(bpValue?.value), home) : "") : "";
 
+  // Numbers waiting to be confirmed are never counted as in range or outside it.
+  const toCheck = tests.filter((item) => item.tone === "check").length;
   let headline = ""; const body = [];
   if (!tests.length) {
     headline = urgent ? t.prompt : bpHigh ? t.few : "";
@@ -6536,22 +6566,21 @@ function buildReportView(analysis, language = "en", plan = null, unsure = [], fr
     headline = urgent ? t.prompt : t.few;
     body.push(t.noneCompared(tests.length));
     if (bpSentence) body.push(bpSentence);
-  } else if (!urgent && !outside && !goals.length && !guided.length) {
+  } else if (!urgent && !outside && !goals.length && !guided.length && !toCheck) {
     headline = t.allInLabs;
     body.push(t.allInBody(tests.length - noRange));
     if (bpSentence) body.push(bpSentence);
   } else {
     headline = urgent ? t.prompt : outside > tests.length / 2 ? t.several : t.few;
     if (critical.length) body.push(t.promptBody(criticalNames));
-    body.push(t.count(outside, tests.length));
+    body.push(t.count(outside, tests.length, toCheck));
     if (groupNames.length) body.push(t.discussLabs(groupText));
     if (goals.length) body.push(t.goal(goalNames));
     if (guided.length) body.push(t.guideSentence(listWords(guided.map((item) => item.plainName), lang)));
     if (bpSentence) body.push(bpSentence);
-    if (outside + noRange + goals.length + guided.length < tests.length) body.push(t.othersLabs);
+    if (outside + noRange + goals.length + guided.length + toCheck < tests.length) body.push(t.othersLabs);
   }
   if (noRange && noRange < tests.length) body.push(t.noRange(noRange));
-  const toCheck = tests.filter((item) => item.tone === "check").length;
   if (toCheck) body.unshift(t.checkFirst(toCheck));
   rows.filter((row) => row.danger && unsure.includes(row.key)).forEach((row) => {
     const item = tests.find((test) => test.key === row.key);
@@ -7026,6 +7055,10 @@ function answerReportQuestion() {
 }
 
 async function uploadReport() {
+  if (unsureOcrKeys().length) {
+    reportStatus.textContent = "Confirm the numbers marked \"Check this number\" first; then you can save the report.";
+    return;
+  }
   try {
     if (!authToken) {
       reportStatus.textContent = "Sign in before uploading a report.";
