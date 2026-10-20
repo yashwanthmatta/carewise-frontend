@@ -1277,6 +1277,10 @@ body::before {
   line-height: 1.38;
 }
 
+.home-readiness[hidden] {
+  display: none;
+}
+
 .home-readiness {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
