@@ -1,5 +1,20 @@
 # FollowThrough Health: interpretation rules for clinical review
 
+**Frozen for review at rules version `2026-10-20.2`.** No interpretation rule or wording changes
+until the clinician's decisions are recorded in `clinical-validation/validation-report-template.md`.
+
+## First, urgent decisions for the reviewer
+
+1. **Critical value that may be misread (photo).** Today: the report stays urgent and says "If the
+   [test] number is right, it is at a level labs often treat as urgent: confirm it against your report
+   now. If it matches, or you cannot check, contact your doctor today, and get emergency care if you
+   feel very unwell." Nothing can be copied, shared or saved until the number is confirmed. **Decide**
+   what to say when the value is confirmed, cannot be confirmed, or appears with symptoms, and whether
+   any value (e.g. potassium 6.8 mmol/L) should direct to emergency care rather than a same-day call.
+2. **Confirmed critical values** (section 2c): is "contact your doctor today, or get emergency care if
+   you feel very unwell" strong enough for each threshold, or should some say "go to emergency care now"?
+3. **Emergency vs same-day symptom lists** (sections 2a and 2b).
+
 Every rule the report explainer uses to decide what to say, gathered in one place for a
 licensed clinician to review. Source: `script.js` (website) and `src/` in the mobile app,
 which produce identical output. Nothing here has been clinically validated yet.

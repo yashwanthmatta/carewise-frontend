@@ -6815,3 +6815,4 @@ a.secondary-button {
 .next-steps-more h5 { margin: 12px 0 4px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--lp-ink-soft); }
 .lab-reminder label { flex: 1 1 100%; font-weight: 600; }
 .lab-reminder input[type="date"] { min-height: 44px; padding: 6px 10px; border: 1px solid var(--lp-line); border-radius: 10px; font: inherit; }
+.ocr-check-line { display: block; margin: 4px 0; padding: 6px 8px; border-radius: 8px; background: #f4f1ea; font-size: 0.9rem; white-space: pre-wrap; word-break: break-word; }
