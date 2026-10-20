@@ -1,0 +1,87 @@
+# Creates an annotated release-candidate tag and a GitHub pre-release with the clinical
+# validation files, after checking the commit, rules version and file checksums against the
+# release record. Run by hand: Actions -> Create release candidate -> Run workflow.
+name: Create release candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag name, e.g. clinical-review-candidate-2026-10-20.2"
+        required: true
+      commit:
+        description: "Full commit SHA to tag (must contain the release record)"
+        required: true
+      rules_version:
+        description: "Explanation rules version, e.g. 2026-10-20.2"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag }}
+      COMMIT: ${{ inputs.commit }}
+      RULES: ${{ inputs.rules_version }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check commit, rules version and validation files
+        run: |
+          set -euo pipefail
+          git cat-file -e "${COMMIT}^{commit}"
+          git merge-base --is-ancestor "$COMMIT" origin/main
+          git checkout --quiet "$COMMIT"
+          grep -q "EXPLANATION_RULES_VERSION = \"${RULES}\"" script.js
+          RECORD="docs/releases/${TAG}.md"
+          test -f "$RECORD"
+          for f in blinded-cases.csv validation-cases.csv blind-key.csv; do
+            sum=$(sha256sum "docs/clinical-validation/$f" | cut -d' ' -f1)
+            echo "$sum  $f"
+            grep -q "${sum:0:16}" "$RECORD"
+          done
+          test "$(git tag -l "$TAG")" = ""
+
+      - name: Create annotated tag
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" "$COMMIT" -m "$TAG
+
+          Engineering validation completed. Clinical rules remain pending independent clinician
+          approval. This release is a candidate for clinical evaluation and does not establish
+          clinical safety or regulatory clearance.
+
+          Explanation rules version: ${RULES}
+          Release record: docs/releases/${TAG}.md"
+          git push origin "refs/tags/$TAG"
+
+      - name: Publish pre-release with the validation files
+        run: |
+          set -euo pipefail
+          {
+            echo "**Engineering validated — Clinical approval pending**"
+            echo
+            echo "Engineering validation completed. Clinical rules remain pending independent clinician approval."
+            echo "This release is a candidate for clinical evaluation and does not establish clinical safety or regulatory clearance."
+            echo
+            echo "- Rules version: \`${RULES}\`"
+            echo "- Release record: \`docs/releases/${TAG}.md\`"
+            echo "- Known limitations: \`docs/clinical-review-package.md\`"
+            echo
+            echo "SHA-256 of the attached validation files (160 synthetic cases):"
+            echo '```'
+            (cd docs/clinical-validation && sha256sum blinded-cases.csv validation-cases.csv blind-key.csv)
+            echo '```'
+          } > release-notes.md
+          gh release create "$TAG" docs/clinical-validation/blinded-cases.csv docs/clinical-validation/validation-cases.csv docs/clinical-validation/blind-key.csv \
+            --verify-tag --prerelease --title "Clinical review candidate ${RULES}: Engineering validated — Clinical approval pending" \
+            --notes-file release-notes.md
