@@ -3,6 +3,15 @@
 **Frozen for review at rules version `2026-10-20.2`.** No interpretation rule or wording changes
 until the clinician's decisions are recorded in `clinical-validation/validation-report-template.md`.
 
+**Rules version `2026-10-20.3` (defect fixes found in testing, after the `.2` candidate was tagged).**
+The tagged `.2` candidate is unchanged; review the `.3` changes below alongside it.
+1. Results far outside the printed range (section 3) now show "Far above / Far below the lab's
+   range" in the results list. Before, the rule was calculated but the list only said "High" or
+   "Low". It still does not claim urgency. Results at a possible danger level keep their danger
+   label instead, and A1C keeps its prediabetes/diabetes range label.
+2. The summary no longer names folate when only vitamin B12 was tested (and the reverse):
+   B12 and folate are now separate groups.
+
 ## First, urgent decisions for the reviewer
 
 1. **Critical value that may be misread (photo).** Today: the report stays urgent and says "If the
@@ -79,7 +88,7 @@ When urgent: no new exercise plan is suggested.
 
 | Rule | Current behaviour | Review |
 |---|---|---|
-| Far outside the printed range | Above 1.5× the upper limit or below 0.67× the lower limit, or more than half the range's width beyond it. **Pending clinician review, this no longer claims urgency:** the summary says "Some results are well outside the lab's range. Share this report with your doctor and ask how soon they want to talk about it." Should any test use its own threshold or wording instead? | |
+| Far outside the printed range | Above 1.5× the upper limit or below 0.67× the lower limit, or more than half the range's width beyond it. **Pending clinician review, this no longer claims urgency:** the summary says "Some results are well outside the lab's range. Share this report with your doctor and ask how soon they want to talk about it." The results list labels these "Far above the lab's range" / "Far below the lab's range" (rules `.3`). Should any test use its own threshold or wording instead? | |
 | Any result outside the range | "Bring these results up at your next visit." | |
 
 ## 4. Common guides used only when no range is printed
