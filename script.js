@@ -3280,8 +3280,8 @@ async function recordConsentToBackend(showStatus = true) {
   }
 }
 
-async function apiGet(path) {
-  return requestJson("GET", path);
+async function apiGet(path, options = {}) {
+  return requestJson("GET", path, undefined, options);
 }
 
 async function apiPost(path, payload, options = {}) {
@@ -3299,13 +3299,23 @@ async function requestJson(method, path, payload, options = {}) {
   const body = isFormData ? payload : (payload ? JSON.stringify(payload) : undefined);
 
   if (typeof fetch === "function") {
-    const response = await fetch(`${backendBaseUrl}${path}`, {
-      method,
-      headers,
-      body,
-    });
-    if (!response.ok) throw new Error(`Backend returned ${response.status}`);
-    return response.json();
+    // A sleeping server can leave a request hanging, which used to keep the
+    // status lights on "Checking" forever. Give up after timeoutMs so callers
+    // can show "Waking up" or "Offline" and retry.
+    const controller = options.timeoutMs && typeof AbortController === "function" ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), options.timeoutMs) : null;
+    try {
+      const response = await fetch(`${backendBaseUrl}${path}`, {
+        method,
+        headers,
+        body,
+        signal: controller ? controller.signal : undefined,
+      });
+      if (!response.ok) throw new Error(`Backend returned ${response.status}`);
+      return response.json();
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
   }
 
   return new Promise((resolve, reject) => {
@@ -3368,7 +3378,7 @@ async function postProductSignal(path, payload) {
 
 async function checkBackend(showSuccess) {
   try {
-    const health = await apiGet("/health");
+    const health = await apiGet("/health", { timeoutMs: 10000 });
     await loadBackendReadiness();
     const sessionOk = await verifyCurrentSession();
     await loadBackendFeatures();
@@ -3393,6 +3403,7 @@ async function checkBackend(showSuccess) {
 // The hosted API sleeps when idle and can take about a minute to wake,
 // so keep retrying on page load instead of reporting it offline at once.
 async function wakeBackendOnLoad(attempts = 12, delayMs = 8000) {
+  renderHomeReadiness(false, true);
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     if (await checkBackend(false)) return true;
     if (attempt === attempts) break;
@@ -3456,7 +3467,7 @@ async function loadBackendFeatures() {
 
 async function loadBackendReadiness() {
   try {
-    backendReadiness = await apiGet("/ready");
+    backendReadiness = await apiGet("/ready", { timeoutMs: 10000 });
     renderHomeReadiness(true);
   } catch {
     backendReadiness = {};
