@@ -729,6 +729,8 @@ const REPORT_TRANSLATIONS = {
       shareSummary: "Compartir resumen",
       doctorBrief: "Resumen para el médico",
       shareDoctor: "Compartir con mi médico",
+      listen: "Escuchar",
+      stopListening: "Detener",
       saveToTrends: "Guardar en tendencias",
       copyQuestions: "Copiar preguntas",
       copyPlan: "Copiar plan",
@@ -868,6 +870,8 @@ const REPORT_UI_EN = {
   shareSummary: "Share summary",
   doctorBrief: "Doctor brief",
   shareDoctor: "Share with my doctor",
+  listen: "Listen",
+  stopListening: "Stop",
   saveToTrends: "Save to trends",
   copyQuestions: "Copy questions",
   copyPlan: "Copy plan",
@@ -1347,6 +1351,36 @@ document.querySelector("#report-file")?.addEventListener("change", () => {
   handleReportFileSelection();
 });
 
+// The homepage drop box hands the file to the same reader as the Upload screen.
+function startFromHeroFile(file) {
+  const target = document.querySelector("#report-file");
+  if (!file || !target || typeof DataTransfer !== "function") {
+    location.hash = "#report-title";
+    return;
+  }
+  const transfer = new DataTransfer();
+  transfer.items.add(file);
+  target.files = transfer.files;
+  location.hash = "#report-title";
+  target.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+document.querySelector("#hero-report-file")?.addEventListener("change", (event) => {
+  startFromHeroFile(event.target.files?.[0]);
+});
+
+const heroDrop = document.querySelector("#hero-drop");
+heroDrop?.addEventListener("dragover", (event) => {
+  event.preventDefault();
+  heroDrop.classList.add("is-over");
+});
+heroDrop?.addEventListener("dragleave", () => heroDrop.classList.remove("is-over"));
+heroDrop?.addEventListener("drop", (event) => {
+  event.preventDefault();
+  heroDrop.classList.remove("is-over");
+  startFromHeroFile(event.dataTransfer?.files?.[0]);
+});
+
 document.querySelector("#analyze-report")?.addEventListener("click", () => {
   analyzeAndShowReport();
 });
@@ -1397,6 +1431,7 @@ reportResults?.addEventListener("click", (event) => {
   if (action === "copy-plan") copyPersonalPlan();
   if (action === "doctor-brief") openDoctorBrief();
   if (action === "share-doctor") window.openDoctorShare?.();
+  if (action === "listen") toggleListen(event.target.closest("[data-report-action]"));
   if (action === "lab-reminder") {
     // The date comes from the person's doctor; FollowThrough Health never picks one.
     const date = reportResults.querySelector("[data-lab-reminder]")?.value;
@@ -5120,7 +5155,7 @@ function getLatestReportEvaluation() {
 function renderReportEvaluation(results) {
   if (!reportEvalResults) return;
   if (!results.length) {
-    reportEvalResults.innerHTML = '<article class="pending"><strong>Evaluation</strong><span>Not run yet</span></article>';
+    reportEvalResults.innerHTML = "";
     return;
   }
   reportEvalResults.innerHTML = results.map((item) => `
@@ -5975,6 +6010,57 @@ function renderReportSummary(view, nextStep = "") {
       </section>`;
 }
 
+// Read the explanation aloud with the device's own voice. It reads exactly what is on screen
+// (the summary, then each result card), so the spoken words never differ from the written ones.
+function canListen() {
+  return typeof window !== "undefined" && "speechSynthesis" in window && typeof SpeechSynthesisUtterance === "function";
+}
+
+function stopListening() {
+  if (!canListen()) return;
+  window.speechSynthesis.cancel();
+  document.querySelectorAll('[data-report-action="listen"]').forEach((item) => {
+    item.textContent = item.dataset.listenLabel || "Listen";
+    item.setAttribute("aria-pressed", "false");
+  });
+}
+
+function listenParts() {
+  const parts = [];
+  const summary = reportResults?.querySelector(".report-summary");
+  if (summary) summary.querySelectorAll("h3, p").forEach((node) => parts.push(node.textContent));
+  reportResults?.querySelectorAll(".result-card-item").forEach((card) => {
+    const name = card.querySelector("header strong")?.textContent || "";
+    const label = card.querySelector("header em")?.textContent || "";
+    const value = card.querySelector(".result-card-value b")?.textContent || "";
+    parts.push(`${name}: ${value}. ${label}.`);
+    card.querySelectorAll("h5 + p").forEach((node) => parts.push(node.textContent));
+  });
+  return parts.map((part) => part.replace(/\s+/g, " ").trim()).filter(Boolean);
+}
+
+function toggleListen(button) {
+  if (!canListen() || !button) return;
+  if (window.speechSynthesis.speaking || button.getAttribute("aria-pressed") === "true") {
+    stopListening();
+    return;
+  }
+  const parts = listenParts();
+  if (!parts.length) return;
+  const lang = reportLanguage === "es" ? "es-US" : "en-US";
+  button.textContent = button.dataset.stopLabel || "Stop";
+  button.setAttribute("aria-pressed", "true");
+  parts.forEach((part, index) => {
+    const utterance = new SpeechSynthesisUtterance(part);
+    utterance.lang = lang;
+    utterance.rate = 0.9;
+    if (index === parts.length - 1) utterance.onend = stopListening;
+    utterance.onerror = stopListening;
+    window.speechSynthesis.speak(utterance);
+  });
+  trackReportUsage("listen_used");
+}
+
 // One card per result to talk about: what it is, the exact result, what it can mean, what to ask.
 function renderResultCard(card, text) {
   return `
@@ -6675,6 +6761,7 @@ function renderLocalReportAnalysis(analysis) {
   const reportView = buildReportView(analysis, reportLanguage, plan, unsureOcrKeys(), reportFromPhoto);
   const questions = reportQuestions(analysis, reportView);
   const showFindings = !reportView.tests.length && !reportView.cards.length && !analysis.scanOnly;
+  stopListening();
   reportResults.innerHTML = `
     <article class="saved-plan-row v1-result-card">
       <div class="result-hero">
@@ -6687,6 +6774,7 @@ function renderLocalReportAnalysis(analysis) {
               <button class="secondary-button compact" type="button" data-report-action="share-summary">${escapeHtml(ui.shareSummary)}</button>
               <button class="primary-button compact" type="button" data-report-action="doctor-brief">${escapeHtml(ui.doctorBrief)}</button>
               <button class="secondary-button compact" type="button" data-report-action="share-doctor">${escapeHtml(ui.shareDoctor)}</button>
+              ${canListen() ? `<button class="secondary-button compact" type="button" data-report-action="listen" data-listen-label="${escapeHtml(ui.listen)}" data-stop-label="${escapeHtml(ui.stopListening)}" aria-pressed="false">${escapeHtml(ui.listen)}</button>` : ""}
               <select data-report-language aria-label="Report language">${Object.entries(REPORT_LANGUAGES).map(([code, name]) => `<option value="${code}"${code === reportLanguage ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
             </div>
           </div>
