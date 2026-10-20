@@ -1,0 +1,2497 @@
+"blind_id","report_text","results you consider abnormal","urgency (emergency / same day / soon / next visit / routine)","reason for urgency","key message the patient must hear","anything a patient must NOT be told"
+"B-001","Sample Diagnostics, Hyderabad
+Patient: Arjun Smith  Age/Sex: 36 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+Ferritin  176  ng/mL  30-400
+Serum Creatinine  0.9  mg/dl  0.5-1.1
+Potassium  5.7  H  mmol/L  3.5-5.3
+C-Reactive Protein  2.3  mg/dL  0.0-0.9
+Gamma GT  22  U/L  0-55
+Hemoglobin A1c  3.5  %  <5.7
+INR  1.0  0.8-1.2
+Protein, Total  6.5  g/dL  6.0-8.5
+MCV  94  fL  79-97
+Haemoglobin  13.4  gm/dL  12.0-15.0
+Iron, Serum  211  H  ug/dL  38-169
+Cholesterol, Total  113  mg/dL  100-199
+
+Synthetic report for software testing.
+Note: Patient reports chest pain since this morning.","","","","",""
+"B-002","Sample Medical Labs, Toronto
+Patient: Leila Ivanova  Age/Sex: 74 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 102/63 mmHg
+
+Test  Result  Flag  Units  Reference Range
+PSA total  5,8  H  ng/mL  0,0-4,0
+Triglycerides  0.9  mmol/L  <1.7
+Urea  6.0  mmol/L  2.5-7.8
+HDL cholesterol  1,7  mmol/L  >1,0
+LDL cholesterol  1.8  mmol/L  <3.0
+MCV  104  fL
+eGFR  82  mL/min/1.73
+Serum Iron  17  umol/L  10-30
+Ferritin  213
+Prothrombin time  8,5  Low  s  9,5-13,5
+Creatinine  147  umol/L
+C-Reactive Protein  0.8  mg/L  0.0-4.9
+
+Synthetic report for software testing.","","","","",""
+"B-003","Sample Diagnostics, Hyderabad
+Patient: Fatima Adeyemi  Age/Sex: 97 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 169/89 mmHg
+
+C-Reactive Protein: 1.3 mg/dL (Ref: 0.0-0.9)
+Magnesium: 1.9 mg/dL (Ref: 1.6-2.3)
+BUN: 16 mg/dL (Ref: 7-25)
+Potassium: 3.1 mmol/L (Ref: 3.5-5.3) L
+Prothrombin Time: 11.2 sec (Ref: 9.4-12.5)
+LDL Chol Calc (NIH): 15 mg/dL (Ref: 0-99)
+Neutrophils: 83 % (Ref: 40-74) High
+Hematocrit: 61.6 % (Ref: 34.0-46.6) High
+HDL Cholesterol: 49 mg/dL (Ref: >39)
+Protein, Total: 6.3 g/dL (Ref: 6.0-8.5)
+Hemoglobin: 14.3 g/dL (Ref: 12.0-15.5)
+Vitamin D, 25-Hydroxy: 37.4 ng/mL (Ref: 30.0-100.0)
+
+Synthetic report for software testing.","","","","",""
+"B-004","Laboratorio de Ejemplo
+Patient: Chen Lopez  Age/Sex: 31 Y / F  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+MCV  84  fL  79-97
+Magnesium  0,92  mmol/L  0,70-1,00
+TSH  4,72 H  mU/L  0,27 - 4,20
+Potassium  2,9  mmol/L  3,5-5,3
+Neutrophils  9,6  x10^9/L  2,0-7,5
+Total protein  77  g/L  60-80
+Bilirubin total  1  umol/L  3-21
+Fasting Glucose  4,6  mmol/L  3,0-6,0
+C-Reactive Protein  3,1  mg/L  0,0-4,9
+ESR  9  mm/hr  1-20
+RBC  5,38  x10E6/uL  4,14-5,80
+Hematocrit  32,6  %  34,0-46,6
+
+Synthetic report for software testing.","","","","",""
+"B-005","Sample Diagnostics, Lagos
+Patient: Hiroshi Silva  Age/Sex: 60 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 134/99 mmHg
+
+Test  Result  Flag  Units  Reference Range
+Sodium  140  mmol/L  135-146
+Phosphate  1.23  mmol/L  0.81-1.45
+Glucose (fasting)  4.8  mmol/L  3.9-5.5
+MCV  112  High  fL  79-97
+Potassium  8.1  H  mmol/L  3.5-5.3
+Platelets  77  x10^9/L  150-400
+Total Cholesterol  5.6  mmol/L  <5.0
+Urate  389  umol/L  200-430
+Urea  4.2  mmol/L  2.5-7.8
+White Cell Count  14.0  H  x10^9/L  4.0-11.0
+Vitamin B12  750  pmol/L  145-569
+
+Synthetic report for software testing.","","","","",""
+"B-006","Laboratorio Clínico de Muestra
+Patient: Mei Reddy  Age/Sex: 76 Y / F  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Gamma GT  1 U/L  0-55  EN
+Sodium  141 mmol/L  135-146  EN
+C-Reactive Protein  0.2 mg/dL  0.0-0.9  EN
+Iron, Total  117 mcg/dL  45-160  EN
+
+Synthetic report for software testing.","","","","",""
+"B-007","NHS Pathology (sample)
+Patient: Mei Kim  Age/Sex: 26 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+eGFR  78 mL/min/1.73m2  >=60  Free T4  17.4 pmol/L  12.0 - 22.0
+C-Reactive Protein  4.1 mg/L  0.0-4.9  Glucose  4.1 mmol/L  3.9-5.5
+Vitamin D (25-OH)  20,0 nmol/L L  50,0-125,0  Neutrophils  2.8 x10^9/L  2.0-7.5
+Haemoglobin  123 g/L  115-155  Total Cholesterol  3.5 mmol/L  <5.0
+MCV  78 fL  79-97  Urea  5.7 mmol/L  2.5-7.8
+Potassium  3.2 mmol/L L  3.5-5.3  Adjusted Calcium  2.45 mmol/L  2.20-2.60
+Sodium  149 mmol/L H  135-146  Hematocrit  44.6 %  34.0-46.6
+Sed Rate by Modified Westergren  16 mm/h  0-20
+
+Synthetic report for software testing.","","","","",""
+"B-008","Sample Pathology, Sydney
+Patient: Carlos Wang  Age/Sex: 81 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 123/97 mmHg
+
+Test  Result  Flag  Units  Reference Range
+Glucose (fasting)  5.7  mmol/L  3.9-5.5
+AST (SGOT)  24  IU/L  0-40
+C-Reactive Protein  13.1  High  mg/L  0.0-4.9
+Hematocrit  56.9  High  %  37.5-51.0
+Vitamin B12  230  pmol/L  145-569
+Calcium  2.18  mmol/L  2.20-2.60
+ALT  12  IU/L  0-40
+Urea  1.6  L  mmol/L  2.5-7.8
+Sodium  166  High  mmol/L  135-146
+MCV  103  H  fL  79-97
+
+Synthetic report for software testing.","","","","",""
+"B-009","Sample Clinical Laboratory, Ohio
+Patient: Kwame Fernández  Age/Sex: 58 Y / F  Collected: 10/01/2026 08:12
+
+BUN: 30 mg/dL (Ref: 7-25) High
+HDL Cholesterol: 52 mg/dL (Ref: >39)
+Phosphate: 0.69 mmol/L (Ref: 0.81-1.45) L
+Bilirubin, Total: 0.1 mg/dL (Ref: 0.0-1.2)
+Cholesterol, Total: 83 mg/dL (Ref: 100-199) Low
+C-Reactive Protein: 1.2 mg/dL (Ref: 0.0-0.9) H
+INR: 0.7  (Ref: 0.8-1.2)
+Triglycerides: 122 mg/dL (Ref: <150)
+Vitamin B12: 1490 pg/mL (Ref: 232-1245)
+LDL Chol Calc (NIH): 138 mg/dL (Ref: 0-99)
+Ferritin: 79 ng/mL (Ref: 30-400)
+Potassium: 4.9 mmol/L (Ref: 3.5-5.3)
+Neutrophils: 62 % (Ref: 40-74)
+SGPT (ALT): 7 U/L (Ref: 0-40)
+Hematocrit: 32.5 % (Ref: 34.0-46.6)
+
+Synthetic report for software testing.","","","","",""
+"B-010","Sample Medical Labs, Toronto
+Patient: Ngozi Singh  Age/Sex: 85 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+Lymphocytes  2.9 x10^9/L  1.5-4.0  Adjusted Calcium  2.31 mmol/L  2.20-2.60
+Alkaline Phosphatase  30 IU/L  44-121  Creatinine  118 umol/L High  59-104
+Total Cholesterol  3.0 mmol/L  <5.0  SGOT (AST)  9 U/L  0-40
+
+Synthetic report for software testing.","","","","",""
+"B-011","Sample Clinical Laboratory, Ohio
+Patient: Arjun Nguyen  Age/Sex: 53 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 139/97 mmHg
+
+Gamma GT: 27 U/L (Ref: 0-55)
+Iron, Serum: 154 ug/dL (Ref: 38-169)
+ALT (SGPT): 7 IU/L (Ref: 0-44)
+Hematocrit: 46.0 % (Ref: 37.5-51.0)
+Triglycerides: 119 mg/dL (Ref: <150)
+Glucose: 132 mg/dL (Ref: 70-99) H
+Free T4: 1.0 ng/dL (Ref: 0.8-1.8)
+TSH: 5.49 mIU/L (Ref: 0.40-4.50)
+Uric Acid: 5.5 mg/dL (Ref: 2.5-7.0)
+PSA total: 1,7 ng/mL (Ref: 0,0-4,0)
+Sed Rate by Modified Westergren: 1 mm/h (Ref: 0-20)
+
+Synthetic report for software testing.
+Note: Denies chest pain. Shortness of breath when climbing stairs today.","","","","",""
+"B-012","Labor Beispiel GmbH
+Patient: Ana Silva  Age/Sex: 53 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 109/91 mmHg
+Seen by: Dr. R. 10/02
+
+Test  Result  Range  Test  Result  Range
+Chloride  103 mmol/L  98-110  MCV  83 fL  79-97
+CRP  1  0-5  Magnesium  0,66 mmol/L  0,70-1,00
+Total protein  54 g/L  60-80  Creatinine  91 umol/L  59-104
+TSH  4,44 mU/L H  0,27 - 4,20  Glucose  3,4 mmol/L  3,9-5,5
+SGPT (ALT)  11 U/L  Urea  2,0 mmol/L L  2,5-7,8
+INR  0,9  0,8-1,2
+
+Synthetic report for software testing.","","","","",""
+"B-013","NHS Pathology (sample)
+Patient: Priya Fernández  Age/Sex: 95 Y / F  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Alkaline Phosphatase  84 IU/L  44-121  EN
+Haemoglobin  143 g/L  115-155  EN
+TSH  1.15 mU/L  0.27 - 4.20  EN
+Albumin  22 L g/L  35-50  EN
+Fasting Glucose  4.4 mmol/L  3.0-6.0  EN
+Urea  1.0 L mmol/L  2.5-7.8  EN
+SGPT (ALT)  8 U/L  0-40  EN
+ESR  17 mm/hr  1-20  EN
+Phosphate  1.35 mmol/L  0.81-1.45  EN
+Creatinine  95 High umol/L  45-84  EN
+Prothrombin time  12,7 s  9,5-13,5  EN
+
+Synthetic report for software testing.","","","","",""
+"B-014","Labor Beispiel GmbH
+Patient: Ana Ivanova  Age/Sex: 63 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 140/81 mmHg
+
+Test  Result  Flag  Units  Reference Range
+Urate  388  umol/L  200-430
+Vitamin D  43,7  nmol/L  50,0-125,0
+Free T4  22,6  pmol/L  12,0 - 22,0
+Creatinine  79  umol/L  59-104
+Fasting Glucose  4,8  mmol/L  3,0-6,0
+LDL cholesterol  2,7  mmol/L  <3,0
+
+Synthetic report for software testing.
+Note: No chest pain, no shortness of breath.","","","","",""
+"B-015","Laboratorio de Ejemplo
+Patient: Hiroshi Mensah  Age/Sex: 25 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+Platelet count  340  x10^9/L  150-400
+AST  8  L  U/L  10-35
+Hematocrit  50,8  %  34,0-46,6
+Creatinine  32  umol/L
+Total protein  58  g/L  60-80
+Phosphate  1,60  H  mmol/L  0,81-1,45
+Fasting Glucose  8,5  H  3,0-6,0
+Alkaline Phosphatase  33  Low  IU/L  44-121
+Albumin  57  g/L  35-50
+Chloride  103  mmol/L  98-110
+Urate  468  H  200-430
+TSH  2,89  mU/L  0,27 - 4,20
+Potassium  4,4  mmol/L  3,5-5,3
+White Cell Count  3,1  Low  x10^9/L  4,0-11,0
+Free T4  24,8  H  pmol/L  12,0 - 22,0
+Sed Rate  22  mm/hr  0-30
+
+Synthetic report for software testing.","","","","",""
+"B-016","Sample Diagnostics, Lagos
+Patient: Carlos Silva  Age/Sex: 70 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+Gamma GT  71 U/L H  0-55  Total protein  89 g/L High  60-80
+ALT  5 IU/L  0-40  Total Cholesterol  2.9 mmol/L  <5.0
+Bilirubin  1 umol/L  0-21  Vitamin B12  105 pmol/L  145-569
+RBC  3.07 x10E6/uL  4.14-5.80  Creatinine  78 umol/L  59-104
+Alkaline phosphatase  54 IU/L  30-130  Triglycerides  1.2 mmol/L  <1.7
+Vitamin D  112,1 nmol/L  50,0-125,0  Glucose (fasting)  6.0 mmol/L H  3.9-5.5
+Platelets  249 10^9/L  150-400
+
+Synthetic report for software testing.","","","","",""
+"B-017","Sample Diagnostics, Lagos
+Patient: Aisha Hassan  Age/Sex: 26 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 123/94 mmHg
+
+Test  Result  Flag  Units  Reference Range
+eGFR  53  L  mL/min/1.73  >59
+White Cell Count  11.9  High  x10^9/L  4.0-11.0
+Alkaline phosphatase  59  IU/L  30-130
+Glucose (fasting)  2.6  Low  mmol/L  3.9-5.5
+Total protein  73  g/L  60-80
+Magnesium  1.09  H  mmol/L  0.70-1.00
+Adjusted Calcium  2.78  High  mmol/L  2.20-2.60
+Potassium  5.8  H  mmol/L  3.5-5.3
+Free T4  14.2  pmol/L  12.0 - 22.0
+Neutrophils  6.6  x10^9/L  2.0-7.5
+Albumin  37  g/L  35-50
+Vitamin D (25-OH)  57,7  nmol/L  50,0-125,0
+Sodium  138  mmol/L  135-146
+Platelets  60  L  x10^9/L  150-400
+
+Synthetic report for software testing.","","","","",""
+"B-018","Sample Clinical Laboratory, Ohio
+Patient: Dmitri Wang  Age/Sex: 26 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 161/84 mmHg
+
+Test  Result  Range  Test  Result  Range
+Neutrophils  44 %  40-74  ALT  1 IU/L  0-40
+INR  0.9  0.8-1.2
+
+Synthetic report for software testing.","","","","",""
+"B-019","Sample Pathology, Sydney
+Patient: Kwame Reddy  Age/Sex: 61 Y / M  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Total Cholesterol  3.2 mmol/L  <5.0  EN
+Sed Rate by Modified Westergren  1 mm/h  0-20  EN
+Ferritin  6 ug/L  15-300  EN
+TSH  0.11 L mU/L  0.27 - 4.20  EN
+eGFR  57 L mL/min/1.73m2  >=60  EN
+Urea  8.3 mmol/L  2.5-7.8  EN
+Lymphocytes  2.7 x10^9/L  1.5-4.0  EN
+Vitamin B12  252 pmol/L  145-569  EN
+Haemoglobin  176 g/L  130-170  EN
+MCV  84 fL  79-97  EN
+Gamma GT  32 U/L  0-55  EN
+ALT  28 U/L  9-46  EN
+Bilirubin  12 umol/L  0-21  EN
+CRP  1 mg/L  0-5  EN
+
+Synthetic report for software testing.","","","","",""
+"B-020","Laboratorio de Ejemplo
+Patient: Ana Hassan  Age/Sex: 23 Y / F  Collected: 10/01/2026 08:12
+
+Neutrophils: 5,0 x10^9/L (Ref: 2,0-7,5)
+HDL cholesterol: 1,4 mmol/L (Ref: >1,0)
+Triglycerides: 1,8 mmol/L (Ref: <1,7) H
+Alkaline phosphatase: 110 IU/L (Ref: 30-130)
+Free T4: 18,6 pmol/L (Ref: 12,0 - 22,0)
+Prothrombin time: 10,0 s (Ref: 9,5-13,5)
+Vitamin B12: 667 ng/L (Ref: 197-771)
+ALT: 1 IU/L (Ref: 0-40)
+WBC: 12,5 10^9/L (Ref: 4,0-10,0) High
+Haemoglobin: 85 g/L (Ref: 115-155) L
+Platelets: 190 10^9/L (Ref: 150-400)
+Calcium: 2,52 mmol/L (Ref: 2,20-2,60)
+SGOT (AST): 32 U/L (Ref: 0-40)
+Fasting Glucose: 2,0 mmol/L (Ref: 3,0-6,0) L
+Urate: 449 umol/L (Ref: 200-430) H
+Lymphocytes: 2,6 x10^9/L (Ref: 1,5-4,0)
+
+Synthetic report for software testing.","","","","",""
+"B-021","Sample Clinical Laboratory, Ohio
+Patient: Leila Nguyen  Age/Sex: 94 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 112/95 mmHg
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Chloride  101  mmol/L  98-110
+Gamma GT  30  U/L  0-55
+Hemoglobin  13.6  g/dL  12.0-15.5
+Lymphs  21  %  14-46
+Alkaline Phosphatase  87  IU/L  44-121
+ALT (SGPT)  1  IU/L  0-44
+RBC  5.55  x10E6/uL  4.14-5.80
+Total Bilirubin  1,0  mg/dL  0,2-1,2
+Prothrombin Time  11.5  sec  9.4-12.5
+Phosphate  1.16  mmol/L  0.81-1.45
+SGOT (AST)  21  U/L  0-40
+HbA1c  26  mmol/mol  20-41
+ESR  9  mm/hr  1-20
+
+Synthetic report for software testing.","","","","",""
+"B-022","Sample Diagnostics, Hyderabad
+Patient: Olu Singh  Age/Sex: 56 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 104/89 mmHg
+
+Test  Result  Range  Test  Result  Range
+RBC  3.71 x10E6/uL Low  4.14-5.80  HDL Cholesterol  55 mg/dL  >39
+AST  7 U/L Low  10-35  Protein, Total  7.0 g/dL  6.0-8.5
+Calcium  9.2 mg/dL  8.6-10.3  Platelet Count  3.2 lakhs/cumm  1.5-4.5
+
+Synthetic report for software testing.","","","","",""
+"B-023","Sample Pathology, Sydney
+Patient: Raj Fernández  Age/Sex: 59 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 172/93 mmHg
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+eGFR  77  mL/min/1.73m2  >=60
+Potassium  5.1  mmol/L  3.5-5.3
+Prothrombin time  8,3 L  s  9,5-13,5
+MCV  82  fL  79-97
+CRP  7 H  mg/L  0-5
+Magnesium  0.97  mmol/L  0.70-1.00
+Urate  126 L  umol/L  200-430
+PSA, Total  2.4  ng/mL  <4.0
+Lymphocytes  3.1  x10^9/L  1.5-4.0
+Urea  1.0 L  mmol/L  2.5-7.8
+Phosphate  1.21  mmol/L  0.81-1.45
+Platelets  270  10^9/L  150-400
+Serum iron  5,9  umol/L  10,0-30,0
+Glucose (fasting)  3.4 L  mmol/L  3.9-5.5
+Vitamin D  39,9 L  nmol/L  50,0-125,0
+White cell count  9.0  x10^9/L  4.0-11.0
+
+Synthetic report for software testing.
+Note: Family history of seizure.","","","","",""
+"B-024","Sample Diagnostics, Hyderabad
+Patient: Sofia Ivanova  Age/Sex: 48 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+RBC  6.54 x10E6/uL H  4.14-5.80  Neutrophils  66 %  40-74
+Lymphs  20 %  C-Reactive Protein  0.2 mg/dL  0.0-0.9
+Phosphate  2.06 mmol/L H  0.81-1.45  Gamma GT  1 U/L  0-55
+BUN  32 mg/dL High  7-25  Albumin  5.5 g/dL High  3.6-5.1
+Fasting Blood Sugar  45  70-110  Ferritin  133 ng/mL  30-400
+Serum Creatinine  0.4 mg/dl L  0.5-1.1  Alkaline Phosphatase  105 IU/L  44-121
+Calcium  12.4 mg/dL  8.6-10.3  Hematocrit  37.3 %  34.0-46.6
+
+Synthetic report for software testing.","","","","",""
+"B-025","Laboratorio Clínico de Muestra
+Patient: Emma Okafor  Age/Sex: 58 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 107/66 mmHg
+
+eGFR: 93 mL/min/1.73 (Ref: >59)
+Vitamin D, 25-Hydroxy: 110.5 ng/mL (Ref: 30.0-100.0)
+Glucose: 80 mg/dL (Ref: 70-99)
+HbA1c: 8 mmol/mol (Ref: 20-41) L
+Sodium: 142 mmol/L (Ref: 135-146)
+Creatinine: 1.56 mg/dL (Ref: 0.60-1.29)
+Chloride: 115 mmol/L (Ref: 98-110) H
+ALT: 54 U/L (Ref: 9-46)
+
+Synthetic report for software testing.","","","","",""
+"B-026","NHS Pathology (sample)
+Patient: Dmitri Adeyemi  Age/Sex: 92 Y / F  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Urate  499 H  umol/L  200-430
+eGFR  52 L  mL/min/1.73m2  >=60
+Triglycerides  1.3  mmol/L  <1.7
+Creatinine  50  umol/L  45-84
+Albumin  42  g/L  35-50
+Serum iron  6,6 L  umol/L  10,0-30,0
+HDL cholesterol  0,9 L  mmol/L  >1,0
+INR  0.7  0.8-1.2
+ALT  4  U/L  9-46
+Potassium  3.2  mmol/L  3.5-5.3
+
+Synthetic report for software testing.
+Note: History of stroke in 2015, fully recovered.","","","","",""
+"B-027","Sample Pathology, Sydney
+Patient: Kwame Kim  Age/Sex: 45 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 164/77 mmHg
+
+Test  Result  Range  Test  Result  Range
+Bilirubin  10 umol/L  0-21  AST  29 U/L  10-35
+Hematocrit  25.7 % L  37.5-51.0  Urate  319 umol/L  200-430
+Alkaline phosphatase  63  30-130  25-OH Vitamin D  70,4 nmol/L  50,0-125,0
+HDL Cholesterol  1.4 mmol/L  >1.0  TSH  8.90 mU/L
+Ferritin  317  H  15-300  Prothrombin time  11,9  9,5-13,5
+WBC  7,9 10^9/L  4,0-10,0  Phosphate  1.07 mmol/L  0.81-1.45
+Creatinine  69 umol/L  59-104  RBC  5.97 x10E6/uL H  4.14-5.80
+
+Synthetic report for software testing.","","","","",""
+"B-028","Sample Diagnostics, Lagos
+Patient: Olu Wang  Age/Sex: 20 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 150/88 mmHg
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Neutrophils  5.0  x10^9/L  2.0-7.5
+Bilirubin total  24 H  umol/L  3-21
+C reactive protein  1  mg/L  0-5
+Prothrombin time  15,1 H  s  9,5-13,5
+Glucose (fasting)  3.4  mmol/L  3.9-5.5
+Urate  238  umol/L  200-430
+Haemoglobin  111 L  g/L  115-155
+LDL cholesterol  2.6  mmol/L  <3.0
+Urea  1.6  mmol/L  2.5-7.8
+
+Synthetic report for software testing.","","","","",""
+"B-029","Laboratorio Clínico de Muestra
+Patient: Mei Ivanova  Age/Sex: 71 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 160/85 mmHg
+
+Test  Result  Flag  Units  Reference Range
+Glucose  88  mg/dL  70-99
+Potassium  2.1  L  mmol/L  3.5-5.3
+Albumin  3.3  L  g/dL  3.6-5.1
+RBC  4.73  x10E6/uL  4.14-5.80
+Prothrombin Time  8.7  Low  sec  9.4-12.5
+Magnesium  1.7  mg/dL  1.6-2.3
+Vitamin D, 25-Hydroxy  12.0  L  ng/mL  30.0-100.0
+Free T4  1.2  ng/dL  0.8-1.8
+
+Synthetic report for software testing.","","","","",""
+"B-030","Laboratorio de Ejemplo
+Patient: Sofia Cohen  Age/Sex: 91 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 139/93 mmHg
+
+Test  Result  Range  Test  Result  Range
+Albumin  44 g/L  35-50  Vitamin B12  256 pmol/L  145-569
+Urate  234 umol/L  200-430
+
+Synthetic report for software testing.","","","","",""
+"B-031","Sample Medical Center, Manila
+Patient: Raj Okafor  Age/Sex: 54 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 156/92 mmHg
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Vitamin B12  1446 pg/mL  232-1245  EN
+Cholesterol, Total  219 H mg/dL  100-199  EN
+Calcium  10.1 mg/dL  8.6-10.3  EN
+Sed Rate  26 mm/hr  0-30  EN
+C-Reactive Protein  0.8 mg/dL  0.0-0.9  EN
+Prothrombin Time  6.7 L sec  9.4-12.5  EN
+Total Bilirubin  2,5 mg/dL  0,2-1,2  EN
+Triglycerides  181 mg/dL  <150  EN
+Iron, Total  82 mcg/dL  45-160  EN
+Lymphs  38 %  14-46  EN
+Glucose  73 mg/dL  70-99  EN
+HDL Cholesterol  47 mg/dL  >39  EN
+White Blood Cell Count  6.3 Thousand/uL  3.8-10.8  EN
+Magnesium  1.9 mg/dL  1.6-2.3  EN
+Albumin  5.4 H g/dL  3.6-5.1  EN
+Uric Acid  6.4 mg/dL  2.5-7.0  EN
+
+Synthetic report for software testing.","","","","",""
+"B-032","Sample Diagnostics, Lagos
+Patient: Ngozi Wang  Age/Sex: 27 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 110/95 mmHg
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Lymphocytes  2.6 x10^9/L  1.5-4.0  EN
+eGFR  81 mL/min/1.73  >59  EN
+Serum Iron  24 umol/L  10-30  EN
+Sed Rate  25 mm/hr  0-30  EN
+Neutrophils  5.2 x10^9/L  2.0-7.5  EN
+Gamma GT  80 H U/L  0-55  EN
+Platelet count  254 x10^9/L  150-400  EN
+TSH  0.80 mU/L  0.27 - 4.20  EN
+ALT  1 IU/L  0-40  EN
+Total protein  73 g/L  60-80  EN
+PSA total  0,1 ng/mL  0,0-4,0  EN
+Potassium  6.9 H mmol/L  3.5-5.3  EN
+Free T4  8.9 Low pmol/L  12.0 - 22.0  EN
+Creatinine  67 umol/L  59-104  EN
+Ferritin  121 ug/L  15-300  EN
+MCV  86 fL  79-97  EN
+RBC  6.45 x10E6/uL  4.14-5.80  EN
+
+Synthetic report for software testing.","","","","",""
+"B-033","Sample Diagnostics, Lagos
+Patient: Grace Reddy  Age/Sex: 46 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 105/94 mmHg
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+HDL Cholesterol  1.4 mmol/L  >1.0  EN
+Creatinine  47 L umol/L  59-104  EN
+Vitamin D  101,3 nmol/L  50,0-125,0  EN
+CRP  7 H mg/L  0-5  EN
+Potassium  4.7 mmol/L  3.5-5.3  EN
+LDL Cholesterol  2.8 mmol/L  <3.0  EN
+MCV  82 fL  79-97  EN
+Bilirubin  10 umol/L  0-21  EN
+Vitamin B12  58 pmol/L  145-569  EN
+PSA, Total  3.7 ng/mL  <4.0  EN
+Adjusted Calcium  2.45 mmol/L  2.20-2.60  EN
+Sed Rate by Modified Westergren  12 mm/h  0-20  EN
+WBC  5,4 10^9/L  4,0-10,0  EN
+Gamma GT  1 U/L  0-55  EN
+Phosphate  0.73 Low mmol/L  0.81-1.45  EN
+
+Synthetic report for software testing.","","","","",""
+"B-034","NHS Pathology (sample)
+Patient: Dmitri Wang  Age/Sex: 69 Y / F  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+LDL cholesterol  3.6 High  mmol/L  <3.0
+CRP  1  mg/L  0-5
+INR  1.1  0.8-1.2
+Potassium  5.9 H  mmol/L  3.5-5.3
+Haemoglobin  122  g/L  115-155
+Sodium  141  mmol/L  135-146
+Triglycerides  1.2  mmol/L  <1.7
+Total protein  77  g/L  60-80
+Chloride  101  mmol/L  98-110
+Gamma GT  9  U/L  0-55
+Urate  367  umol/L  200-430
+
+Synthetic report for software testing.","","","","",""
+"B-035","Sample Clinical Laboratory, Ohio
+Patient: Hiroshi Singh  Age/Sex: 54 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 103/81 mmHg
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Glucose  142 H mg/dL  70-99  EN
+PSA, Total  4.8 High ng/mL  <4.0  EN
+RBC  8.71 H x10E6/uL  4.14-5.80  EN
+Cholesterol, Total  175 mg/dL  100-199  EN
+ALT  1 IU/L  0-40  EN
+Potassium  5.8 mmol/L  3.5-5.3  EN
+INR  1.6 H   0.8-1.2  EN
+White Blood Cell Count  9.2 Thousand/uL  3.8-10.8  EN
+Chloride  96 L mmol/L  98-110  EN
+
+Synthetic report for software testing.
+Note: Slurred speech noticed by family today.","","","","",""
+"B-036","Laboratorio de Ejemplo
+Patient: Dmitri Patel  Age/Sex: 83 Y / F  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+25-OH Vitamin D  104,9 nmol/L  50,0-125,0  EN
+Glucose (fasting)  8,3 mmol/L  3,9-5,5  EN
+Vitamin B12  760 H pmol/L  145-569  EN
+Urea  9,6   EN
+C-Reactive Protein  4,0 mg/L  0,0-4,9  EN
+Total cholesterol  3,0 mmol/L  <5,0  EN
+RBC  6,42 H x10E6/uL  4,14-5,80  EN
+Potassium  8,1 mmol/L  3,5-5,3  EN
+INR  1,3   EN
+White Cell Count  5,7 x10^9/L  4,0-11,0  EN
+TSH  4,56 mU/L  0,27 - 4,20  EN
+Chloride  105 mmol/L  98-110  EN
+Platelets  219 10^9/L  150-400  EN
+Haemoglobin  138 g/L  115-155  EN
+Hematocrit  36,7 %  34,0-46,6  EN
+
+Synthetic report for software testing.","","","","",""
+"B-037","NHS Pathology (sample)
+Patient: Tomás Kim  Age/Sex: 23 Y / M  Collected: 10/01/2026 08:12
+
+Urate: 298 umol/L (Ref: 200-430)
+Triglycerides: 1.5 mmol/L (Ref: <1.7)
+Lymphocytes: 0.6 x10^9/L (Ref: 1.5-4.0) L
+Potassium: 6.1 mmol/L (Ref: 3.5-5.3) H
+Free T4: 25.6 pmol/L (Ref: 12.0 - 22.0) H
+Ferritin: 64 ug/L (Ref: 15-300)
+Platelets: 90 10^9/L (Ref: 150-400) L
+Gamma GT: 31 U/L (Ref: 0-55)
+
+Synthetic report for software testing.","","","","",""
+"B-038","Sample Diagnostics, Lagos
+Patient: Yuki Ivanova  Age/Sex: 23 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 116/99 mmHg
+
+Test  Result  Range  Test  Result  Range
+Phosphate  1.35 mmol/L  0.81-1.45  Sodium  128 mmol/L L  135-146
+Chloride  96 mmol/L Low  98-110  ALT  32 IU/L  0-40
+Bilirubin total  7 umol/L  3-21
+
+Synthetic report for software testing.
+Note: Has had fainting episodes this week.","","","","",""
+"B-039","Sample Pathology, Sydney
+Patient: Kwame Nguyen  Age/Sex: 74 Y / M  Collected: 10/01/2026 08:12
+
+RBC: 6.28 x10E6/uL (Ref: 4.14-5.80) H
+Platelets: 769 10^9/L (Ref: )
+Haemoglobin: 136 g/L (Ref: 130-170)
+ALT (SGPT): 18 IU/L (Ref: 0-44)
+Triglycerides: 1.5 mmol/L (Ref: <1.7)
+Phosphate: 1.28 mmol/L (Ref: 0.81-1.45)
+Potassium: 8.0 mmol/L (Ref: 3.5-5.3) H
+eGFR: 112 mL/min/1.73m2 (Ref: >=60)
+Prothrombin time: 15,1 s (Ref: 9,5-13,5) H
+Total protein: 58 g/L (Ref: 60-80) L
+Creatinine: 73 umol/L (Ref: 59-104)
+Albumin: 41 g/L (Ref: 35-50)
+Magnesium: 0.43 mmol/L (Ref: 0.70-1.00)
+AST (SGOT): 84 IU/L (Ref: 0-40) High
+
+Synthetic report for software testing.","","","","",""
+"B-040","Sample Clinical Laboratory, Ohio
+Patient: Tomás Wang  Age/Sex: 28 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+Vitamin B12  93  Low  pg/mL  232-1245
+Neutrophils  64  %  40-74
+Chloride  105  mmol/L  98-110
+Gamma GT  21  U/L  0-55
+Triglycerides  156  H  mg/dL  <150
+Sed Rate by Modified Westergren  3  mm/h  0-20
+Calcium  9.8  mg/dL  8.6-10.3
+RBC  5.37  x10E6/uL  4.14-5.80
+Platelets  398  x10E3/uL  150-450
+Total Cholesterol  175  mg/dL  <200
+Iron, Total  143  mcg/dL  45-160
+Uric Acid  1.0  mg/dL  2.5-7.0
+Potassium  5.1  mmol/L  3.5-5.3
+
+Synthetic report for software testing.","","","","",""
+"B-041","Labor Beispiel GmbH
+Patient: Ngozi Silva  Age/Sex: 74 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 104/94 mmHg
+
+Platelets: 293 10^9/L (Ref: 150-400)
+HbA1c: 3,7 % (Ref: 4,0-5,6) Low
+Glucose (fasting): 2,5 mmol/L (Ref: 3,9-5,5) L
+Total protein: 56 g/L (Ref: 60-80) L
+Urea: 9,5 mmol/L (Ref: 2,5-7,8) H
+
+Synthetic report for software testing.","","","","",""
+"B-042","Sample Diagnostics, Lagos
+Patient: Tomás Fernández  Age/Sex: 74 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+eGFR  85  mL/min/1.73  >59
+Potassium  4.6  mmol/L  3.5-5.3
+Serum iron  15,4  umol/L  10,0-30,0
+Urate  246  umol/L  200-430
+Hemoglobin A1c  2.6  %  <5.7
+25-OH Vitamin D  107,1  nmol/L  50,0-125,0
+
+Synthetic report for software testing.","","","","",""
+"B-043","Sample Clinical Laboratory, Ohio
+Patient: Priya Nguyen  Age/Sex: 30 Y / M  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+LDL Chol Calc (NIH)  48 mg/dL  0-99  EN
+Free T4  0.5 L ng/dL  0.8-1.8  EN
+Phosphate  0.91 mmol/L  0.81-1.45  EN
+Glucose  111 H mg/dL  70-99  EN
+Gamma GT  1 U/L  0-55  EN
+Triglycerides  109 mg/dL  <150  EN
+Sed Rate  23 mm/hr  0-30  EN
+BUN  3 mg/dL  7-25  EN
+HDL Cholesterol  52 mg/dL  >39  EN
+Total Bilirubin  1,0 mg/dL  0,2-1,2  EN
+Creatinine  0.24 L mg/dL  0.60-1.29  EN
+Platelets  240 x10E3/uL  150-450  EN
+C-Reactive Protein  0.2 mg/dL  0.0-0.9  EN
+Potassium  3.3 L mmol/L  3.5-5.3  EN
+Neutrophils  69 %  40-74  EN
+
+Synthetic report for software testing.","","","","",""
+"B-044","Labor Beispiel GmbH
+Patient: Maria Fernández  Age/Sex: 81 Y / M  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Triglycerides  1,9 H  mmol/L  <1,7
+RBC  4,73  x10E6/uL  4,14-5,80
+HbA1c  18  mmol/mol  20-41
+Sed Rate by Modified Westergren  4  mm/h  0-20
+Vitamin B12  872 H  ng/L  197-771
+Glucose (fasting)  2,9 Low  mmol/L  3,9-5,5
+Hematocrit  41,3  %  37,5-51,0
+Alkaline Phosphatase  54  IU/L  44-121
+Urate  498 High  umol/L  200-430
+Urea  7,0  mmol/L  2,5-7,8
+Creatinine  79  umol/L  59-104
+eGFR  103  mL/min/1.73  >59
+White Cell Count  12,9 High  x10^9/L  4,0-11,0
+Platelet count  364  x10^9/L  150-400
+
+Synthetic report for software testing.","","","","",""
+"B-045","NHS Pathology (sample)
+Patient: Mei Cohen  Age/Sex: 42 Y / F  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Fasting Glucose  4.8 mmol/L  3.0-6.0  EN
+AST  4 U/L  10-35  EN
+Free T4  10.3 pmol/L  12.0 - 22.0  EN
+Total cholesterol  3,4 mmol/L  <5,0  EN
+Bilirubin  27 umol/L  0-21  EN
+Potassium  3.0 mmol/L  3.5-5.3  EN
+CRP  1 mg/L  0-5  EN
+Prothrombin time  17,8 s  9,5-13,5  EN
+Creatinine  72 umol/L  45-84  EN
+
+Synthetic report for software testing.","","","","",""
+"B-046","Sample Diagnostics, Lagos
+Patient: Tomás Wang  Age/Sex: 68 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+eGFR  55 mL/min/1.73m2 Low  >=60  Albumin  37 g/L  35-50
+Phosphate  1.15 mmol/L  0.81-1.45  Alkaline Phosphatase  61 IU/L  44-121
+Urea  1.7 mmol/L Low  2.5-7.8  Prothrombin time  12,8 s  9,5-13,5
+Hematocrit  55.1 % High  37.5-51.0  Adjusted Calcium  2.50 mmol/L  2.20-2.60
+Sed Rate by Modified Westergren  1 mm/h  0-20  Ferritin  233 ug/L  15-300
+ALT  33 IU/L  0-40  Free T4  10.5 pmol/L Low  12.0 - 22.0
+Chloride  103 mmol/L  98-110  LDL Cholesterol  1.5 mmol/L  <3.0
+Haemoglobin  175 g/L  130-170  INR  0.7  0.8-1.2
+SGOT (AST)  35 U/L  0-40
+
+Synthetic report for software testing.","","","","",""
+"B-047","Sample Diagnostics, Lagos
+Patient: Maria Okafor  Age/Sex: 30 Y / F  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+AST  21  U/L  10-35
+Alkaline Phosphatase  39  IU/L  44-121
+Potassium  8.0 H  mmol/L  3.5-5.3
+Urate  257  umol/L  200-430
+Glucose  4.2  mmol/L  3.9-5.5
+
+Synthetic report for software testing.
+Note: Chest pain 2 years ago, resolved.","","","","",""
+"B-048","NHS Pathology (sample)
+Patient: Emma Silva  Age/Sex: 39 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 125/67 mmHg
+
+Sodium: 137 mmol/L (Ref: 135-146)
+Glucose (fasting): 4.5 mmol/L (Ref: 3.9-5.5)
+Total Cholesterol: 3.6 mmol/L (Ref: <5.0)
+eGFR: 36 mL/min/1.73m2 (Ref: >=60) L
+Vitamin B12: 323 pmol/L (Ref: 145-569)
+Vitamin D (25-OH): 106,5 nmol/L (Ref: 50,0-125,0)
+Adjusted Calcium: 2.28 mmol/L (Ref: 2.20-2.60)
+Lymphocytes: 2.6 x10^9/L (Ref: 1.5-4.0)
+Urea: 1.9 mmol/L (Ref: 2.5-7.8) Low
+Gamma GT: 34 U/L (Ref: 0-55)
+Phosphate: 0.91 mmol/L (Ref: 0.81-1.45)
+HDL Cholesterol: 1.1 mmol/L (Ref: >1.0)
+Chloride: 103 mmol/L (Ref: 98-110)
+ALT: 4 U/L (Ref: 9-46)
+Hematocrit: 47.9 % (Ref: 37.5-51.0)
+Albumin: 43 g/L (Ref: 35-50)
+
+Synthetic report for software testing.","","","","",""
+"B-049","Sample Diagnostics, Hyderabad
+Patient: Ngozi Adeyemi  Age/Sex: 36 Y / F  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Calcium  8.2 L mg/dL  8.6-10.3  EN
+eGFR  90 mL/min/1.73  >59  EN
+LDL Chol Calc (NIH)  1 mg/dL  0-99  EN
+Triglycerides  96 mg/dL  <150  EN
+BUN  9 mg/dL  7-25  EN
+Total Cholesterol  155 mg/dL  <200  EN
+
+Synthetic report for software testing.","","","","",""
+"B-050","Sample Clinical Laboratory, Ohio
+Patient: James Hassan  Age/Sex: 74 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+Chloride  115 mmol/L H  98-110  Potassium  3.4 mmol/L Low  3.5-5.3
+HbA1c  13 mmol/mol  20-41  Alkaline Phosphatase  151 IU/L High  44-121
+Platelets  702 x10E3/uL  150-450  Albumin  4.7 g/dL  3.6-5.1
+Cholesterol, Total  90 mg/dL  100-199  Gamma GT  36 U/L  0-55
+Sodium  140 mmol/L  135-146  HDL Cholesterol  48 mg/dL  >39
+eGFR  51 mL/min/1.73m2 L  >=60  MCV  92 fL  79-97
+INR  1.6  H  0.8-1.2
+
+Synthetic report for software testing.
+Note: Denies chest pain. Shortness of breath when climbing stairs today.","","","","",""
+"B-051","Labor Beispiel GmbH
+Patient: Raj Nguyen  Age/Sex: 93 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 107/88 mmHg
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+White cell count  12,8 High  12.6 03/2026  x10^9/L  4,0-11,0
+Gamma GT  42  42 03/2026  U/L  0-55
+Urate  465  557 03/2026  umol/L  200-430
+Vitamin D (25-OH)  75,1  nmol/L  50,0-125,0
+Potassium  5,1  5.4 03/2026  mmol/L  3,5-5,3
+Alkaline phosphatase  47  52 03/2026  IU/L  30-130
+TSH  5,58  5.62 03/2026  mU/L  0,27 - 4,20
+Sodium  144  mmol/L  135-146
+AST  24  22 03/2026  U/L  10-35
+eGFR  39 L  mL/min/1.73  >59
+Serum Iron  38 High  umol/L  10-30
+Calcium  2,09  2.10 03/2026  mmol/L
+Haemoglobin  126  128 03/2026  130-170
+Total protein  83  89 03/2026  g/L  60-80
+
+Synthetic report for software testing.","","","","",""
+"B-052","Labor Beispiel GmbH
+Patient: Raj Adeyemi  Age/Sex: 55 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+MCV  82 fL  79-97  Chloride  102 mmol/L  98-110
+AST  46 U/L High  10-35  Free T4  10,0 pmol/L L  12,0 - 22,0
+Calcium  2,50 mmol/L  2,20-2,60  Haemoglobin  138 g/L  115-155
+Hemoglobin A1c  3,8 %  <5,7  Lymphocytes  2,2 x10^9/L  1,5-4,0
+Total Cholesterol  2,6 mmol/L  <5,0  White cell count  2,6 x10^9/L  4,0-11,0
+
+Synthetic report for software testing.","","","","",""
+"B-053","Laboratorio Clínico de Muestra
+Patient: Tomás Nguyen  Age/Sex: 19 Y / M  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Glucose  110 mg/dL  70-99  EN
+eGFR  54 L mL/min/1.73  >59  EN
+Cholesterol, Total  40 L mg/dL  100-199  EN
+Calcium  9.7 mg/dL  8.6-10.3  EN
+Protein, Total  8.7 g/dL  6.0-8.5  EN
+Platelets  88 Low x10^3/uL  150-400  EN
+Sed Rate by Modified Westergren  1 mm/h  0-20  EN
+INR  1.0   0.8-1.2  EN
+Vitamin D, 25-Hydroxy  78.2 ng/mL  30.0-100.0  EN
+Potassium  3.0 L mmol/L  3.5-5.3  EN
+Gamma GT  1 U/L  0-55  EN
+Albumin  3.9 g/dL  3.6-5.1  EN
+Ferritin  12 Low ng/mL  30-400  EN
+
+Synthetic report for software testing.
+Note: Patient reports chest pain since this morning.","","","","",""
+"B-054","Laboratorio de Ejemplo
+Patient: Tomás Nguyen  Age/Sex: 50 Y / F  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Calcium  2,49  mmol/L  2,20-2,60
+Urate  297  umol/L  200-430
+25-OH Vitamin D  82,6  nmol/L  50,0-125,0
+Triglycerides  1,0  mmol/L  <1,7
+Free T4  13,2  pmol/L  12,0 - 22,0
+
+Synthetic report for software testing.","","","","",""
+"B-055","NHS Pathology (sample)
+Patient: Lucia Garcia  Age/Sex: 50 Y / M  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Free T4  15.6 pmol/L  12.0 - 22.0  EN
+Phosphate  1.18 mmol/L  0.81-1.45  EN
+Total Cholesterol  5.7 mmol/L  <5.0  EN
+Glucose (fasting)  5.8 mmol/L  3.9-5.5  EN
+Haemoglobin  137 g/L  130-170  EN
+RBC  4.40 x10E6/uL  4.14-5.80  EN
+LDL Cholesterol  1.6 mmol/L  <3.0  EN
+Urea  4.4 mmol/L  2.5-7.8  EN
+Potassium  4.8 mmol/L  3.5-5.3  EN
+PSA total  1,0 ng/mL  0,0-4,0  EN
+Sodium  142 mmol/L  135-146  EN
+Platelet count  314 x10^9/L  150-400  EN
+Serum Iron  5 L umol/L  10-30  EN
+MCV  93 fL  79-97  EN
+Creatinine  43 umol/L  59-104  EN
+Gamma GT  37 U/L  0-55  EN
+HDL Cholesterol  1.1 mmol/L  >1.0  EN
+
+Synthetic report for software testing.","","","","",""
+"B-056","Sample Pathology, Sydney
+Patient: Olu Hassan  Age/Sex: 59 Y / M  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+HDL Cholesterol  1.5  mmol/L  >1.0
+Glucose  2.7 Low  mmol/L  3.9-5.5
+Total protein  73  g/L  60-80
+Platelets  112 L  10^9/L  150-400
+Free T4  8.9 Low  pmol/L  12.0 - 22.0
+Gamma GT  68  U/L  0-55
+Vitamin B12  497  ng/L  197-771
+Calcium  3.04  mmol/L  2.20-2.60
+Serum iron  13,8  umol/L  10,0-30,0
+RBC  3.85 Low  x10E6/uL  4.14-5.80
+PSA total  0,8  ng/mL  0,0-4,0
+ALT  16  U/L  9-46
+Albumin  53 H  g/L  35-50
+Hemoglobin A1c  3.3  %  <5.7
+White cell count  2.4 Low  x10^9/L  4.0-11.0
+C-Reactive Protein  3.0  mg/L  0.0-4.9
+
+Synthetic report for software testing.","","","","",""
+"B-057","Sample Medical Center, Manila
+Patient: Chen Brown  Age/Sex: 41 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 174/98 mmHg
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Vitamin D, 25-Hydroxy  63.1 ng/mL  30.0-100.0  EN
+C-Reactive Protein  0.1 mg/dL  0.0-0.9  EN
+Albumin  3.4 L g/dL  3.6-5.1  EN
+Chloride  107 mmol/L  98-110  EN
+Neutrophils  77 High %  40-74  EN
+Hematocrit  47.8 H %  34.0-46.6  EN
+HbA1c  5,2 %  4,0-5,6  EN
+Vitamin B12  447 pg/mL  232-1245  EN
+Alkaline Phosphatase  18 IU/L  44-121  EN
+
+Synthetic report for software testing.","","","","",""
+"B-058","Sample Clinical Laboratory, Ohio
+Patient: Sofia Patel  Age/Sex: 29 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 114/70 mmHg
+
+Test  Result  Range  Test  Result  Range
+Total Bilirubin  0,7 mg/dL  0,2-1,2  Triglycerides  125 mg/dL  <150
+Free T4 (Direct)  1.34 ng/dL  0.82-1.77  Calcium  8.4 mg/dL Low  8.6-10.3
+Hemoglobin A1c  3.4 %  <5.7  Lymphs  11 % Low  14-46
+
+Synthetic report for software testing.","","","","",""
+"B-059","Laboratorio de Ejemplo
+Patient: Sofia Singh  Age/Sex: 62 Y / F  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+eGFR  57 L mL/min/1.73  >59  EN
+Neutrophils  1,0 L x10^9/L  2,0-7,5  EN
+Total Cholesterol  2,4 mmol/L  <5,0  EN
+Vitamin B12  79 ng/L  197-771  EN
+Bilirubin  10 umol/L  0-21  EN
+Gamma GT  8 U/L  0-55  EN
+
+Synthetic report for software testing.
+Note: Black stool for two days.","","","","",""
+"B-060","Sample Medical Labs, Toronto
+Patient: Kwame Reddy  Age/Sex: 66 Y / M  Collected: 10/01/2026 08:12
+
+Vitamin D: 134,0 nmol/L (Ref: 50,0-125,0) H
+HDL cholesterol: 1,5 mmol/L (Ref: >1,0)
+Fasting Glucose: 5.6 mmol/L (Ref: 3.0-6.0)
+Urate: 239 umol/L (Ref: 200-430)
+TSH: 0.86 mU/L (Ref: 0.27 - 4.20)
+Magnesium: 0.82 mmol/L (Ref: 0.70-1.00)
+Urea: 1.0 mmol/L (Ref: 2.5-7.8) L
+Alkaline phosphatase: 64 IU/L (Ref: 30-130)
+Neutrophils: 5.7 x10^9/L (Ref: 2.0-7.5)
+
+Synthetic report for software testing.","","","","",""
+"B-061","Laboratorio de Ejemplo
+Patient: Leila Kim  Age/Sex: 33 Y / M  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Total cholesterol  5,5 High  4.4 03/2026  mmol/L  <5,0
+Serum Iron  25  28 03/2026  umol/L  10-30
+Gamma GT  1  U/L  0-55
+C-Reactive Protein  1,8  2.0 03/2026  mg/L  0,0-4,9
+Prothrombin time  11,1  10.3 03/2026  s  9,5-13,5
+White Cell Count  1,8 L  1.6 03/2026  x10^9/L  4,0-11,0
+HbA1c  30  35 03/2026  mmol/mol  20-41
+Urate  488 High  umol/L  200-430
+
+Synthetic report for software testing.","","","","",""
+"B-062","Laboratorio Clínico de Muestra
+Patient: Mohammed Smith  Age/Sex: 64 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+Chloride  101 mmol/L  98-110  Potassium  5.4 mmol/L H  3.5-5.3
+Bilirubin, Total  1.4 mg/dL H  0.0-1.2  Sodium  137 mmol/L  135-146
+Alkaline phosphatase  12 IU/L Low  30-130  MCV  75 fL  79-97
+eGFR  84 mL/min/1.73  >59  Neutrophils  38 % L  40-74
+Free T4  1.4 ng/dL  0.8-1.8  Sed Rate  10 mm/hr  0-30
+Protein, Total  8.0 g/dL  6.0-8.5  Magnesium  2.4 mg/dL  1.6-2.3
+Platelets  77 x10E3/uL L  150-450
+
+Synthetic report for software testing.
+Note: Family history of seizure.","","","","",""
+"B-063","Labor Beispiel GmbH
+Patient: Sofia Cohen  Age/Sex: 81 Y / F  Collected: 10/01/2026 08:12
+Dr note: pt c/o fatigue, recheck 3 mo
+
+Test  Result  Range  Test  Result  Range
+MCV  93 fL  79-97  HDL cholesterol  0,9 mmol/L Low  >1,0
+Glucose (fasting)  5,8 mmol/L  Triglycerides  1,5 mmol/L  <1,7
+Total cholesterol  3,7 mmol/L  <5,0  Vitamin B12  552 ng/L  197-771
+Lymphocytes  5,1 x10^9/L  1,5-4,0  Prothrombin time  10,4 s  9,5-13,5
+Urea  7,0 mmol/L  2,5-7,8  Potassium  5,1 mmol/L  3,5-5,3
+HbA1c  4,8 %  4,0-5,6  C-Reactive Protein  2,4 mg/L  0,0-4,9
+Total protein  64 g/L  60-80
+
+Synthetic report for software testing.","","","","",""
+"B-064","Sample Medical Labs, Toronto
+Patient: Yuki Garcia  Age/Sex: 63 Y / M  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+ALT (SGPT)  1  IU/L  0-44
+Total protein  77  g/L  60-80
+LDL cholesterol  1.9  mmol/L  <3.0
+Triglycerides  1.5  mmol/L  <1.7
+eGFR  58 Low  mL/min/1.73m2  >=60
+PSA total  2,1  ng/mL  0,0-4,0
+Creatinine  124  umol/L  59-104
+SGOT (AST)  18  U/L  0-40
+Urate  307  umol/L  200-430
+Urea  1.6 L  mmol/L  2.5-7.8
+Platelet count  104 L  x10^9/L  150-400
+HbA1c  38  mmol/mol  20-41
+Magnesium  0.96  mmol/L  0.70-1.00
+
+Synthetic report for software testing.","","","","",""
+"B-065","Sample Medical Labs, Toronto
+Patient: Grace Brown  Age/Sex: 42 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 148/64 mmHg
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+HDL Cholesterol  0.9  mmol/L
+Serum iron  17,9  umol/L  10,0-30,0
+Chloride  101  98 03/2026  mmol/L  98-110
+Phosphate  1.21  mmol/L
+Haemoglobin  130  g/L  115-155
+INR  1.0  1.0 03/2026  0.8-1.2
+Creatinine  74  umol/L  45-84
+Potassium  4.9  5.4 03/2026  mmol/L  3.5-5.3
+
+Synthetic report for software testing.","","","","",""
+"B-066","Sample Pathology, Sydney
+Patient: Emma Patel  Age/Sex: 61 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 169/77 mmHg
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Bilirubin  1  umol/L  0-21
+Albumin  48  g/L  35-50
+Glucose  4.3  mmol/L  3.9-5.5
+Total Cholesterol  4.3  mmol/L  <5.0
+C reactive protein  4  mg/L  0-5
+MCV  81  fL  79-97
+
+Synthetic report for software testing.","","","","",""
+"B-067","Sample Medical Center, Manila
+Patient: Emma Singh  Age/Sex: 84 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 113/88 mmHg
+
+Glucose: 89 mg/dL (Ref: 70-99)
+BUN: 16 mg/dL (Ref: 7-25)
+Creatinine: 0.52 mg/dL (Ref: 0.60-1.29)
+Triglycerides: 93 mg/dL (Ref: <150)
+Albumin: 7.4 g/dL (Ref: 3.6-5.1) High
+
+Synthetic report for software testing.","","","","",""
+"B-068","Sample Medical Center, Manila
+Patient: Carlos Kim  Age/Sex: 83 Y / F  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Alkaline phosphatase  15 L IU/L  30-130  EN
+Absolute Neutrophils  4816 cells/uL  1500-7800  EN
+Triglycerides  103 mg/dL  <150  EN
+Sodium  162 mmol/L  135-146  EN
+Free T4 (Direct)  1.04 ng/dL  0.82-1.77  EN
+Hematocrit  35.7 %  34.0-46.6  EN
+Calcium  9.7 mg/dL  8.6-10.3  EN
+Glucose  90 mg/dL  70-99  EN
+SGOT (AST)  27 U/L  0-40  EN
+MCV  90 fL  79-97  EN
+
+Synthetic report for software testing.","","","","",""
+"B-069","Sample Medical Center, Manila
+Patient: Lucia Silva  Age/Sex: 79 Y / F  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Glucose  78  mg/dL  70-99
+eGFR  79  mL/min/1.73  >59
+Protein, Total  8.8  g/dL  6.0-8.5
+Gamma GT  74 H  U/L  0-55
+Vitamin B12  441  pg/mL  232-1245
+Potassium  3.8  mmol/L  3.5-5.3
+BUN  13  mg/dL  7-25
+HDL Cholesterol  69  mg/dL  >39
+Prothrombin Time  13.2 High  sec  9.4-12.5
+
+Synthetic report for software testing.","","","","",""
+"B-070","Laboratorio Clínico de Muestra
+Patient: Chen Kim  Age/Sex: 19 Y / F  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Phosphate  1.12 mmol/L  0.81-1.45  EN
+HDL Cholesterol  44 mg/dL  >39  EN
+Vitamin D, 25-Hydroxy  108.2 H ng/mL  30.0-100.0  EN
+Sed Rate  7 mm/hr  0-30  EN
+Albumin  5.3 g/dL  3.6-5.1  EN
+Uric Acid  5.8 mg/dL  2.5-7.0  EN
+
+Synthetic report for software testing.","","","","",""
+"B-071","Sample Medical Center, Manila
+Patient: Olu Nguyen  Age/Sex: 63 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+Creatinine  0.79  mg/dL  0.50-1.00
+Chloride  108  mmol/L  98-110
+ALT  19  IU/L  0-40
+Alkaline Phosphatase  63  IU/L  44-121
+BUN  3  L  mg/dL  7-25
+
+Synthetic report for software testing.
+Note: Negative for fever and confusion.","","","","",""
+"B-072","Sample Pathology, Sydney
+Patient: Grace Silva  Age/Sex: 93 Y / F  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+SGPT (ALT)  15  U/L  0-40
+MCV  94  fL  79-97
+eGFR  56 L  mL/min/1.73m2  >=60
+Total cholesterol  3,1  mmol/L  <5,0
+INR  0.9  0.8-1.2
+Chloride  100  mmol/L  98-110
+
+Synthetic report for software testing.","","","","",""
+"B-073","Sample Diagnostics, Hyderabad
+Patient: Fatima Silva  Age/Sex: 32 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+Hemoglobin  15.9  g/dL  12.0-15.5
+S. Uric Acid  8.4  mg/dl  3.5-7.2
+Free T4 (Direct)  2.18  ng/dL  0.82-1.77
+HbA1c  4,4  %  4,0-5,6
+Calcium  10.9  H  mg/dL  8.6-10.3
+Lymphs  55  High  %  14-46
+Potassium  4.2  mmol/L  3.5-5.3
+Hematocrit  36.2  %  34.0-46.6
+Sodium  141  mmol/L
+Sed Rate by Modified Westergren  24  H  mm/h  0-20
+eGFR  91  mL/min/1.73  >59
+
+Synthetic report for software testing.","","","","",""
+"B-074","Sample Pathology, Sydney
+Patient: Mohammed Fernández  Age/Sex: 31 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+Magnesium  0.86  mmol/L  0.70-1.00
+Platelets  207  x10^9/L  150-400
+Chloride  114  H  mmol/L  98-110
+Serum iron  26,5  umol/L  10,0-30,0
+Haemoglobin  149  g/L  130-170
+HDL cholesterol  1,3  mmol/L  >1,0
+INR  0.9  0.8-1.2
+MCV  88  fL  79-97
+
+Synthetic report for software testing.
+Note: Slurred speech noticed by family today.","","","","",""
+"B-075","Sample Diagnostics, Hyderabad
+Patient: Grace Müller  Age/Sex: 57 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 121/85 mmHg
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+HDL Cholesterol  45 mg/dL  >39  EN
+Serum Creatinine  1.5   EN
+Calcium  8.5 mg/dL  8.6-10.3  EN
+eGFR  53 L mL/min/1.73m2  >=60  EN
+Albumin  3.9 g/dL  3.6-5.1  EN
+Lymphs  49 %  14-46  EN
+Platelet Count  3.5 lakhs/cumm  1.5-4.5  EN
+Triglycerides  71   <150  EN
+Prothrombin Time  11.8 sec  9.4-12.5  EN
+
+Synthetic report for software testing.","","","","",""
+"B-076","Sample Diagnostics, Hyderabad
+Patient: Emma Patel  Age/Sex: 25 Y / F  Collected: 10/01/2026 08:12
+
+Iron, Serum: 106 ug/dL (Ref: 38-169)
+AST (SGOT): 10 IU/L (Ref: 0-40)
+S. Uric Acid: 2.6 mg/dl (Ref: 3.5-7.2) L
+Cholesterol, Total: 127 mg/dL (Ref: 100-199)
+Vitamin D, 25-Hydroxy: 86.5 ng/mL (Ref: 30.0-100.0)
+Hematocrit: 64.1 % (Ref: 34.0-46.6)
+Total Leucocyte Count: 2591 /cumm (Ref: 4000-11000) Low
+eGFR: 70 mL/min/1.73 (Ref: >59)
+Platelet Count: 5.7 lakhs/cumm (Ref: 1.5-4.5)
+Protein, Total: 5.4 g/dL (Ref: 6.0-8.5) L
+RBC: 3.84 x10E6/uL (Ref: 4.14-5.80) L
+Phosphate: 1.09 mmol/L (Ref: 0.81-1.45)
+BUN: 20 mg/dL (Ref: 7-25)
+Potassium: 4.9 mmol/L (Ref: 3.5-5.3)
+Neutrophils: 63 % (Ref: 40-74)
+Prothrombin Time: 9.8 sec (Ref: 9.4-12.5)
+
+Synthetic report for software testing.","","","","",""
+"B-077","NHS Pathology (sample)
+Patient: James Patel  Age/Sex: 66 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+Adjusted Calcium  2.64  mmol/L
+Ferritin  88  ug/L  15-300
+Total protein  57  L  g/L  60-80
+LDL cholesterol  1.9  mmol/L
+CRP  1  mg/L  0-5
+ALT  4  L  U/L  9-46
+Chloride  126  mmol/L  98-110
+Alkaline Phosphatase  155  H  IU/L  44-121
+Glucose (fasting)  4.5  mmol/L  3.9-5.5
+Triglycerides  1.3  mmol/L  <1.7
+Albumin  48  g/L  35-50
+Haemoglobin  122  g/L  115-155
+Vitamin D (25-OH)  94,9  nmol/L
+INR  1.1  0.8-1.2
+Gamma GT  37  U/L  0-55
+Urate  318  umol/L  200-430
+
+Synthetic report for software testing.","","","","",""
+"B-078","Sample Clinical Laboratory, Ohio
+Patient: Hiroshi Singh  Age/Sex: 96 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+Prothrombin Time  10.3 sec  9.4-12.5  Sodium  138 mmol/L  135-146
+Hemoglobin  17.1 g/dL  13.0-17.7  Free T4 (Direct)  1.34 ng/dL  0.82-1.77
+Protein, Total  7.1 g/dL  6.0-8.5  Neutrophils  49 %  40-74
+
+Synthetic report for software testing.","","","","",""
+"B-079","Laboratorio de Ejemplo
+Patient: Maria Cohen  Age/Sex: 92 Y / M  Collected: 10/01/2026 08:12
+
+Phosphate: 0,98 mmol/L (Ref: 0,81-1,45)
+Vitamin D (25-OH): 71,4 nmol/L (Ref: 50,0-125,0)
+Creatinine: 117 umol/L (Ref: 59-104) High
+Chloride: 105 mmol/L (Ref: 98-110)
+SGPT (ALT): 31 U/L (Ref: 0-40)
+
+Synthetic report for software testing.","","","","",""
+"B-080","Laboratorio de Ejemplo
+Patient: James Silva  Age/Sex: 84 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 136/95 mmHg
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Vitamin B12  673  ng/L  197-771
+Sed Rate  7  mm/hr  0-30
+Total cholesterol  3,0  mmol/L  <5,0
+Urea  7,0  mmol/L  2,5-7,8
+Potassium  4,8  mmol/L  3,5-5,3
+Fasting Glucose  2,3  mmol/L  3,0-6,0
+Vitamin D (25-OH)  26,7  nmol/L  50,0-125,0
+INR  0,9  0,8-1,2
+Albumin  31 L  g/L  35-50
+
+Synthetic report for software testing.","","","","",""
+"B-081","Laboratorio de Ejemplo
+Patient: Carlos Okafor  Age/Sex: 84 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 152/84 mmHg
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Fasting Glucose  5,7 mmol/L  3,0-6,0  EN
+MCV  85 fL  79-97  EN
+Total cholesterol  4,3 mmol/L  <5,0  EN
+eGFR  112 mL/min/1.73m2  >=60  EN
+LDL cholesterol  2,2 mmol/L  <3,0  EN
+CRP  3 mg/L  0-5  EN
+
+Synthetic report for software testing.","","","","",""
+"B-082","Sample Pathology, Sydney
+Patient: Raj Smith  Age/Sex: 81 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+Free T4  5.6 pmol/L L  12.0 - 22.0  Vitamin B12  394 pmol/L  145-569
+eGFR  106 mL/min/1.73  >59  25-OH Vitamin D  28,5 nmol/L L  50,0-125,0
+Bilirubin  1 umol/L  0-21
+
+Synthetic report for software testing.","","","","",""
+"B-083","Laboratorio de Ejemplo
+Patient: Ngozi Patel  Age/Sex: 18 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 109/65 mmHg
+
+Test  Result  Flag  Units  Reference Range
+White cell count  3,6  Low  x10^9/L  4,0-11,0
+Fasting Glucose  2,4  L  mmol/L  3,0-6,0
+ESR  4  mm/hr  1-20
+Sodium  137  mmol/L  135-146
+
+Synthetic report for software testing.","","","","",""
+"B-084","Sample Medical Labs, Toronto
+Patient: Aisha Garcia  Age/Sex: 57 Y / F  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Urate  251 umol/L  200-430  EN
+Ferritin  210 ug/L  15-300  EN
+Sed Rate  8 mm/hr  0-30  EN
+Alkaline phosphatase  76 IU/L  30-130  EN
+Vitamin B12  384 ng/L  197-771  EN
+Phosphate  0.93 mmol/L  0.81-1.45  EN
+eGFR  98 mL/min/1.73  >59  EN
+Calcium  3.08 mmol/L  2.20-2.60  EN
+
+Synthetic report for software testing.","","","","",""
+"B-085","Sample Pathology, Sydney
+Patient: Maria Okafor  Age/Sex: 63 Y / F  Collected: 10/01/2026 08:12
+Dr note: pt c/o fatigue, recheck 3 mo
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Urea  7.0  mmol/L  2.5-7.8
+Gamma GT  1  0-55
+Vitamin B12  79  80 03/2026  ng/L  197-771
+Total cholesterol  3,1  3.1 03/2026  mmol/L  <5,0
+Hematocrit  31.2  %  34.0-46.6
+Chloride  115 H  mmol/L  98-110
+Creatinine  58  56 03/2026  umol/L  45-84
+Potassium  5.8 High  4.9 03/2026  mmol/L  3.5-5.3
+Free T4  20.2  pmol/L  12.0 - 22.0
+Bilirubin total  22 High  20 03/2026  umol/L  3-21
+eGFR  109  mL/min/1.73m2  >=60
+Lymphocytes  5.1 H  1.5-4.0
+
+Synthetic report for software testing.","","","","",""
+"B-086","Sample Diagnostics, Lagos
+Patient: Lucia Mensah  Age/Sex: 67 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+Prothrombin time  16,8 s H  9,5-13,5  Serum Iron  23 umol/L  10-30
+Chloride  106 mmol/L  98-110  LDL cholesterol  1.6 mmol/L  <3.0
+Alkaline phosphatase  12 IU/L L  30-130
+
+Synthetic report for software testing.
+Note: Chest pain 2 years ago, resolved.","","","","",""
+"B-087","Sample Medical Center, Manila
+Patient: Yuki Patel  Age/Sex: 90 Y / M  Collected: 10/01/2026 08:12
+Dr note: pt c/o fatigue, recheck 3 mo
+
+Test  Result  Flag  Units  Reference Range
+Vitamin B12  99  pg/mL
+RBC  4.65  x10E6/uL  4.14-5.80
+Alkaline Phosphatase  29  IU/L  44-121
+Magnesium  2.1  mg/dL  1.6-2.3
+
+Synthetic report for software testing.","","","","",""
+"B-088","Laboratorio de Ejemplo
+Patient: Mei Kim  Age/Sex: 58 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+Alkaline phosphatase  93 IU/L  30-130  Bilirubin  19 umol/L  0-21
+Free T4  10,9 pmol/L  12,0 - 22,0  Creatinine  78 umol/L  59-104
+Lymphocytes  3,7 x10^9/L  1,5-4,0  Total protein  73 g/L  60-80
+Urate  305 umol/L  200-430  Calcium  2,36 mmol/L  2,20-2,60
+Neutrophils  0,8 x10^9/L  2,0-7,5  Urea  8,9 mmol/L H  2,5-7,8
+Potassium  4,3 mmol/L  3,5-5,3  HDL cholesterol  1,4 mmol/L  >1,0
+White Cell Count  7,2 x10^9/L  4,0-11,0
+
+Synthetic report for software testing.","","","","",""
+"B-089","Laboratorio de Ejemplo
+Patient: Emma Silva  Age/Sex: 32 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 124/95 mmHg
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Total protein  87 g/L  EN
+ALT  4 L U/L  9-46  EN
+Triglycerides  1,5 mmol/L  <1,7  EN
+INR  1,0   0,8-1,2  EN
+Potassium  2,9 Low mmol/L  3,5-5,3  EN
+Alkaline phosphatase  108 IU/L  30-130  EN
+Vitamin D  81,2 nmol/L  50,0-125,0  EN
+Urea  4,2 mmol/L  2,5-7,8  EN
+LDL Cholesterol  1,5 mmol/L  <3,0  EN
+Platelets  372 x10^9/L  150-400  EN
+Creatinine  120 umol/L  EN
+Sodium  141 mmol/L  135-146  EN
+Lymphocytes  4,5 H x10^9/L  1,5-4,0  EN
+TSH  5,31 H mU/L  0,27 - 4,20  EN
+
+Synthetic report for software testing.","","","","",""
+"B-090","Sample Medical Center, Manila
+Patient: Ngozi Garcia  Age/Sex: 85 Y / F  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Neutrophils  66  %  40-74
+HDL Cholesterol  60  mg/dL  >39
+Platelet Count  466  Thousand/uL  140-400
+BUN  14  mg/dL  7-25
+Alkaline Phosphatase  73  IU/L  44-121
+Vitamin B12  763  pg/mL  232-1245
+Triglycerides  110  mg/dL  <150
+Lymphs  10  %  14-46
+Hematocrit  31.7 Low  %  34.0-46.6
+Vitamin D, 25-Hydroxy  72.0  ng/mL  30.0-100.0
+AST  13  U/L  10-35
+Hemoglobin  19.1  g/dL  12.0-15.5
+Sed Rate  38  mm/hr  0-30
+
+Synthetic report for software testing.","","","","",""
+"B-091","Sample Clinical Laboratory, Ohio
+Patient: Mohammed Ivanova  Age/Sex: 55 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 122/97 mmHg
+
+Test  Result  Flag  Units  Reference Range
+Calcium  10.7  H  mg/dL  8.6-10.3
+Albumin  5.4  g/dL  3.6-5.1
+Free T4 (Direct)  2.12  ng/dL  0.82-1.77
+Triglycerides  257  H  mg/dL  <150
+
+Synthetic report for software testing.","","","","",""
+"B-092","NHS Pathology (sample)
+Patient: Ngozi Müller  Age/Sex: 44 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 112/89 mmHg
+
+Test  Result  Flag  Units  Reference Range
+Urate  244  umol/L  200-430
+HbA1c  38  mmol/mol  20-41
+Serum Iron  24  umol/L  10-30
+Haemoglobin  102  L  g/L  115-155
+Fasting Glucose  2.4  L  mmol/L  3.0-6.0
+Hematocrit  49.8  H  %  34.0-46.6
+Prothrombin time  12,1  s  9,5-13,5
+Adjusted Calcium  2.55  mmol/L  2.20-2.60
+Total protein  57  Low  g/L  60-80
+Ferritin  405  H  ug/L  15-300
+C reactive protein  2  mg/L  0-5
+
+Synthetic report for software testing.","","","","",""
+"B-093","Sample Pathology, Sydney
+Patient: Sofia Ivanova  Age/Sex: 95 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 101/68 mmHg
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+HbA1c  3,7 L %  4,0-5,6  EN
+Albumin  72 g/L  35-50  EN
+Urea  3.2 mmol/L  2.5-7.8  EN
+INR  0.9   0.8-1.2  EN
+Bilirubin  3 umol/L  0-21  EN
+Urate  235 umol/L  200-430  EN
+Neutrophils  4.5 x10^9/L  2.0-7.5  EN
+Total cholesterol  3,5 mmol/L  <5,0  EN
+Magnesium  0.89 mmol/L  0.70-1.00  EN
+MCV  81 fL  79-97  EN
+Ferritin  114 ug/L  15-300  EN
+Free T4  20.4 pmol/L  12.0 - 22.0  EN
+RBC  4.57 x10E6/uL  4.14-5.80  EN
+Lymphocytes  4.6 H x10^9/L  1.5-4.0  EN
+Platelet count  117 L x10^9/L  150-400  EN
+TSH  5.05 H mU/L  0.27 - 4.20  EN
+
+Synthetic report for software testing.","","","","",""
+"B-094","NHS Pathology (sample)
+Patient: Chen Okafor  Age/Sex: 90 Y / F  Collected: 10/01/2026 08:12
+
+ESR: 4 mm/hr (Ref: 1-20)
+Gamma GT: 1 U/L (Ref: 0-55)
+RBC: 5.42 x10E6/uL (Ref: 4.14-5.80)
+Sodium: 139 mmol/L (Ref: 135-146)
+Urate: 308 umol/L (Ref: 200-430)
+Urea: 9.5 mmol/L (Ref: 2.5-7.8)
+AST (SGOT): 26 IU/L (Ref: 0-40)
+LDL cholesterol: 2.7 mmol/L (Ref: <3.0)
+Hematocrit: 31.9 % (Ref: 34.0-46.6)
+HDL Cholesterol: 1.9 mmol/L (Ref: >1.0)
+Glucose: 4.2 mmol/L (Ref: 3.9-5.5)
+Vitamin B12: 713 pmol/L (Ref: 145-569) H
+
+Synthetic report for software testing.","","","","",""
+"B-095","Laboratorio de Ejemplo
+Patient: Mei Kim  Age/Sex: 32 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 156/70 mmHg
+
+Test  Result  Flag  Units  Reference Range
+Adjusted Calcium  2,77  H  mmol/L  2,20-2,60
+eGFR  54  L  mL/min/1.73  >59
+Urea  7,0  mmol/L  2,5-7,8
+Prothrombin time  9,1  s  9,5-13,5
+Phosphate  1,07  mmol/L  0,81-1,45
+Creatinine  56  umol/L  59-104
+LDL Cholesterol  2,6  mmol/L  <3,0
+Urate  339  umol/L  200-430
+Fasting Glucose  2,5  L  mmol/L  3,0-6,0
+
+Synthetic report for software testing.","","","","",""
+"B-096","Sample Medical Center, Manila
+Patient: James Patel  Age/Sex: 87 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 148/65 mmHg
+
+Test  Result  Flag  Units  Reference Range
+Magnesium  2.4  H  mg/dL  1.6-2.3
+Calcium  9.6  mg/dL  8.6-10.3
+Triglycerides  85  mg/dL  <150
+Platelet Count  359  Thousand/uL  140-400
+Uric Acid  4.1  mg/dL  2.5-7.0
+Glucose  81  mg/dL  70-99
+Vitamin B12  662  pg/mL  232-1245
+Prothrombin Time  13.6  H  sec  9.4-12.5
+Hematocrit  51.5  High  %  34.0-46.6
+INR  1.3  H  0.8-1.2
+Phosphate  1.29  mmol/L  0.81-1.45
+RBC  5.16  x10E6/uL  4.14-5.80
+WBC  8.9  x10^3/uL  4.0-11.0
+
+Synthetic report for software testing.","","","","",""
+"B-097","Sample Diagnostics, Hyderabad
+Patient: Olu Cohen  Age/Sex: 93 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+Sodium  141  mmol/L  135-146
+Albumin  5.5  g/dL  3.6-5.1
+Vitamin B12  168  pg/mL  232-1245
+PSA total  1,1  ng/mL  0,0-4,0
+Cholesterol, Total  74  L  mg/dL  100-199
+Fasting Blood Sugar  65  mg/dl  70-110
+Hematocrit  40.8  %  37.5-51.0
+Potassium  4.0  mmol/L  3.5-5.3
+Hemoglobin A1c  4.6  %  <5.7
+Lymphs  22  %  14-46
+BUN  43  H  mg/dL  7-25
+
+Synthetic report for software testing.","","","","",""
+"B-098","Sample Medical Center, Manila
+Patient: Hiroshi Müller  Age/Sex: 87 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 141/92 mmHg
+
+Test  Result  Range  Test  Result  Range
+Glucose  81 mg/dL  70-99  Neutrophils  68 %  40-74
+White Blood Cell Count  12.7 Thousand/uL High  3.8-10.8  Potassium  5.1 mmol/L  3.5-5.3
+Gamma GT  1 U/L  0-55  HbA1c  37 mmol/mol  20-41
+BUN  32 mg/dL H  7-25  Cholesterol, Total  189 mg/dL  100-199
+
+Synthetic report for software testing.
+Note: Black stool for two days.","","","","",""
+"B-099","Sample Clinical Laboratory, Ohio
+Patient: Fatima Singh  Age/Sex: 51 Y / F  Collected: 10/01/2026 08:12
+
+Creatinine: 1.14 mg/dL (Ref: 0.50-1.00) H
+MCV: 103 fL (Ref: 79-97) H
+Magnesium: 2.1 mg/dL (Ref: )
+TSH (Ultrasensitive): 4.81 uIU/ml (Ref: 0.35-5.5)
+Hemoglobin A1c: 4.7 % (Ref: <5.7)
+BUN: 43 mg/dL (Ref: 7-25)
+Prothrombin Time: 9.0 sec (Ref: 9.4-12.5) L
+Triglycerides: 139 mg/dL (Ref: <150)
+Phosphate: 1.28 mmol/L (Ref: 0.81-1.45)
+Potassium: 3.9 mmol/L (Ref: 3.5-5.3)
+Uric Acid: 3.2 mg/dL (Ref: 2.5-7.0)
+Hematocrit: 62.4 % (Ref: 34.0-46.6)
+Iron, Total: 104 mcg/dL (Ref: 45-160)
+SGOT (AST): 1 U/L (Ref: 0-40)
+Protein, Total: 7.4 g/dL (Ref: 6.0-8.5)
+RBC: 6.12 x10E6/uL (Ref: 4.14-5.80)
+Calcium: 9.0 mg/dL (Ref: )
+
+Synthetic report for software testing.","","","","",""
+"B-100","Laboratorio Clínico de Muestra
+Patient: Mei Brown  Age/Sex: 79 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 149/95 mmHg
+
+Test  Result  Range  Test  Result  Range
+WBC  21.0 x10^3/uL High  4.0-11.0  Uric Acid  2.0 mg/dL Low  2.5-7.0
+Platelet Count  467 Thousand/uL High  140-400  eGFR  87 mL/min/1.73m2  >=60
+ALT (SGPT)  48 IU/L H  0-44  Free T4  2.2 ng/dL  0.8-1.8
+Creatinine  1.52 mg/dL  0.60-1.29  Calcium  9.7 mg/dL  8.6-10.3
+INR  1.1  0.8-1.2  Protein, Total  7.7 g/dL  6.0-8.5
+PSA total  4,6 ng/mL  0,0-4,0
+
+Synthetic report for software testing.","","","","",""
+"B-101","Laboratorio Clínico de Muestra
+Patient: Arjun Hassan  Age/Sex: 84 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 133/66 mmHg
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Glucose  90 mg/dL  70-99  EN
+ALT  28 IU/L  0-40  EN
+BUN  17 mg/dL  7-25  EN
+Calcium  9.0 mg/dL  8.6-10.3  EN
+Phosphate  1.15 mmol/L  0.81-1.45  EN
+Absolute Neutrophils  9940 cells/uL  1500-7800  EN
+Bilirubin, Total  0.7 mg/dL  0.0-1.2  EN
+eGFR  57 mL/min/1.73  EN
+Free T4  1.0 ng/dL  0.8-1.8  EN
+TSH  0.180 uIU/mL  EN
+Platelet Count  265 Thousand/uL  140-400  EN
+
+Synthetic report for software testing.","","","","",""
+"B-102","Sample Diagnostics, Hyderabad
+Patient: Mei Mensah  Age/Sex: 82 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+Lymphs  22 %  14-46  Free T4  1.0 ng/dL  0.8-1.8
+Absolute Neutrophils  5074 cells/uL  1500-7800  Total Leucocyte Count  1774 /cumm L  4000-11000
+LDL Chol Calc (NIH)  1 mg/dL  0-99  Ferritin  12 ng/mL L  30-400
+Triglycerides  130 mg/dL  <150  Sed Rate  17 mm/hr  0-30
+Serum Bilirubin (Total)  0.5 mg/dl  0.2-1.2  HbA1c  5,0 %  4,0-5,6
+
+Synthetic report for software testing.","","","","",""
+"B-103","Sample Medical Labs, Toronto
+Patient: Mohammed Mensah  Age/Sex: 49 Y / M  Collected: 10/01/2026 08:12
+
+Calcium: 2.16 mmol/L (Ref: 2.20-2.60) L
+Urea: 5.7 mmol/L (Ref: 2.5-7.8)
+Platelets: 340 x10^9/L (Ref: 150-400)
+Sodium: 131 mmol/L (Ref: 135-146)
+
+Synthetic report for software testing.","","","","",""
+"B-104","Sample Medical Labs, Toronto
+Patient: Aisha Patel  Age/Sex: 80 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 126/66 mmHg
+
+Test  Result  Range  Test  Result  Range
+Platelets  365 10^9/L  150-400  Albumin  46 g/L  35-50
+Phosphate  1.49 mmol/L High  0.81-1.45  Fasting Glucose  2.5 mmol/L Low  3.0-6.0
+Ferritin  199 ug/L  15-300  Serum iron  31,1 umol/L H  10,0-30,0
+Triglycerides  1.6 mmol/L  <1.7  Haemoglobin  188 g/L H  115-155
+Alkaline phosphatase  83 IU/L  30-130  Prothrombin time  12,8 s  9,5-13,5
+Neutrophils  5.3 x10^9/L  2.0-7.5
+
+Synthetic report for software testing.","","","","",""
+"B-105","Laboratorio Clínico de Muestra
+Patient: Olu Mensah  Age/Sex: 38 Y / F  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Potassium  4.9  mmol/L  3.5-5.3
+Sodium  139  mmol/L  135-146
+Lymphs  26  %  14-46
+Uric Acid  8.9  mg/dL  2.5-7.0
+
+Synthetic report for software testing.","","","","",""
+"B-106","Sample Diagnostics, Hyderabad
+Patient: Ana Silva  Age/Sex: 69 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+Calcium  12.5 mg/dL H  8.6-10.3  Magnesium  1.5 mg/dL  1.6-2.3
+Chloride  95 mmol/L L  98-110  eGFR  110 mL/min/1.73  >59
+Lymphs  20 %  14-46  Ferritin  477 ng/mL H  30-400
+Serum Bilirubin (Total)  1.6 mg/dl  0.2-1.2  PSA total  4,4 ng/mL H  0,0-4,0
+AST  26 U/L  10-35  Platelet Count  2.8 lakhs/cumm  1.5-4.5
+Iron, Serum  136 ug/dL  38-169  RBC  6.13 x10E6/uL  4.14-5.80
+INR  1.3  H  0.8-1.2  Potassium  5.0 mmol/L  3.5-5.3
+Hemoglobin A1c  6.6 % H  <5.7  Albumin  4.2 g/dL  3.6-5.1
+
+Synthetic report for software testing.","","","","",""
+"B-107","Sample Diagnostics, Hyderabad
+Patient: Emma Silva  Age/Sex: 59 Y / M  Collected: 10/01/2026 08:12
+
+MCV: 74 fL (Ref: 79-97) L
+LDL Cholesterol: 75 mg/dL (Ref: <100)
+Chloride: 123 mmol/L (Ref: 98-110) H
+Potassium: 2.3 mmol/L (Ref: 3.5-5.3)
+Absolute Neutrophils: 9459 cells/uL (Ref: 1500-7800) H
+Free T4 (Direct): 0.70 ng/dL (Ref: 0.82-1.77) L
+
+Synthetic report for software testing.","","","","",""
+"B-108","NHS Pathology (sample)
+Patient: Ngozi Adeyemi  Age/Sex: 54 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+RBC  4.58 x10E6/uL  4.14-5.80  Total cholesterol  3,7 mmol/L  <5,0
+Lymphocytes  0.7 x10^9/L L  1.5-4.0  Bilirubin total  28 umol/L High  3-21
+Chloride  107 mmol/L  98-110  Ferritin  142 ug/L  15-300
+MCV  77 fL L  79-97
+
+Synthetic report for software testing.","","","","",""
+"B-109","Sample Medical Center, Manila
+Patient: Tomás Reddy  Age/Sex: 94 Y / M  Collected: 10/01/2026 08:12
+Seen by: Dr. R. 10/02
+
+Phosphate: 0.77 mmol/L (Ref: 0.81-1.45)
+Triglycerides: 123 mg/dL (Ref: <150)
+TSH: 6.05 mIU/L (Ref: 0.40-4.50)
+eGFR: 98 mL/min/1.73m2 (Ref: >=60)
+Vitamin B12: 351  (Ref: 232-1245)
+Hematocrit: 42.6  (Ref: 37.5-51.0)
+HDL Cholesterol: 68 mg/dL (Ref: >39)
+Prothrombin Time: 13.3 sec (Ref: 9.4-12.5) H
+
+Synthetic report for software testing.","","","","",""
+"B-110","Sample Medical Labs, Toronto
+Patient: Ngozi Okafor  Age/Sex: 89 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 169/62 mmHg
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+25-OH Vitamin D  71,5  nmol/L  50,0-125,0
+HbA1c  5,7 H  %  4,0-5,6
+Total protein  73  g/L  60-80
+Magnesium  0.77  mmol/L  0.70-1.00
+SGPT (ALT)  19  U/L  0-40
+Total Cholesterol  4.4  mmol/L  <5.0
+Alkaline phosphatase  46  IU/L  30-130
+Gamma GT  1  U/L  0-55
+Lymphocytes  1.2 Low  x10^9/L  1.5-4.0
+
+Synthetic report for software testing.
+Note: Negative for fever and confusion.","","","","",""
+"B-111","Sample Pathology, Sydney
+Patient: Emma Wang  Age/Sex: 97 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 140/62 mmHg
+
+Bilirubin: 57 umol/L (Ref: 0-21) High
+Creatinine: 68  (Ref: 59-104)
+Magnesium: 1.03 mmol/L (Ref: 0.70-1.00)
+HDL cholesterol: 1,2 mmol/L (Ref: >1,0)
+Neutrophils: 6.5 x10^9/L (Ref: 2.0-7.5)
+eGFR: 101 mL/min/1.73m2 (Ref: >=60)
+ALT: 4 U/L (Ref: 9-46) Low
+PSA, Total: 2.1 ng/mL (Ref: <4.0)
+Prothrombin time: 10,2 s (Ref: 9,5-13,5)
+INR: 1.0  (Ref: 0.8-1.2)
+Sodium: 136 mmol/L (Ref: 135-146)
+CRP: 2 mg/L (Ref: 0-5)
+MCV: 76 fL (Ref: )
+Adjusted Calcium: 2.65 mmol/L (Ref: 2.20-2.60)
+Phosphate: 1.70 mmol/L (Ref: 0.81-1.45) High
+TSH: 5.30 mU/L (Ref: 0.27 - 4.20) High
+
+Synthetic report for software testing.","","","","",""
+"B-112","Sample Medical Labs, Toronto
+Patient: Mei Patel  Age/Sex: 44 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+Serum Iron  26  umol/L  10-30
+Gamma GT  15  U/L  0-55
+eGFR  83  mL/min/1.73m2  >=60
+Prothrombin time  12,6  s  9,5-13,5
+Total Cholesterol  5.2  H  mmol/L  <5.0
+Ferritin  6  ug/L  15-300
+SGOT (AST)  50  H  U/L  0-40
+HDL Cholesterol  1.6  mmol/L  >1.0
+ALT  1  IU/L  0-40
+Albumin  46  g/L  35-50
+Triglycerides  1.6  mmol/L  <1.7
+Creatinine  77  umol/L  45-84
+MCV  92  fL  79-97
+Potassium  4.0  mmol/L  3.5-5.3
+
+Synthetic report for software testing.","","","","",""
+"B-113","Labor Beispiel GmbH
+Patient: Mei Müller  Age/Sex: 52 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+TSH  0,11  mU/L
+Urea  9,2  High  mmol/L  2,5-7,8
+Sodium  150  High  mmol/L  135-146
+Vitamin B12  79  ng/L
+AST (SGOT)  25  IU/L  0-40
+MCV  88  fL  79-97
+Urate  478  H  umol/L  200-430
+Neutrophils  5,8  x10^9/L  2,0-7,5
+ALT  41  U/L  9-46
+Gamma GT  18  U/L  0-55
+Lymphocytes  3,4  x10^9/L  1,5-4,0
+PSA total  8,1  High  ng/mL  0,0-4,0
+Total Cholesterol  4,4  mmol/L  <5,0
+Haemoglobin  163  g/L  130-170
+Prothrombin time  12,0  s  9,5-13,5
+
+Synthetic report for software testing.","","","","",""
+"B-114","Sample Pathology, Sydney
+Patient: Sofia Patel  Age/Sex: 29 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+eGFR  96  mL/min/1.73m2  >=60
+Calcium  2.51  mmol/L  2.20-2.60
+Sodium  141  mmol/L  135-146
+Creatinine  40  umol/L  45-84
+Total Cholesterol  4.3  mmol/L  <5.0
+Ferritin  152  ug/L  15-300
+Triglycerides  1.5  mmol/L  <1.7
+Potassium  5.1  mmol/L  3.5-5.3
+Urate  342  umol/L  200-430
+Urea  15.8  H  mmol/L  2.5-7.8
+Magnesium  0.66  L  mmol/L  0.70-1.00
+Bilirubin total  27  H  umol/L  3-21
+Sed Rate by Modified Westergren  1  mm/h  0-20
+Hematocrit  42.1  %  34.0-46.6
+RBC  6.00  High  x10E6/uL  4.14-5.80
+
+Synthetic report for software testing.","","","","",""
+"B-115","Laboratorio de Ejemplo
+Patient: Arjun Müller  Age/Sex: 43 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+LDL Cholesterol  3,1 mmol/L  <3,0  eGFR  94 mL/min/1.73m2  >=60
+Bilirubin  5 umol/L  0-21  Creatinine  53 umol/L  45-84
+WBC  5,7 10^9/L  4,0-10,0
+
+Synthetic report for software testing.","","","","",""
+"B-116","Sample Clinical Laboratory, Ohio
+Patient: Hiroshi Lopez  Age/Sex: 81 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 123/69 mmHg
+
+Test  Result  Range  Test  Result  Range
+Glucose  75 mg/dL  70-99  Ferritin  221 ng/mL  30-400
+AST  4 U/L Low  10-35  Platelets  60 x10E3/uL  150-450
+MCV  105 fL H  79-97  Calcium  8.9 mg/dL  8.6-10.3
+BUN  4 mg/dL Low  7-25  Potassium  8.1 mmol/L High  3.5-5.3
+Uric Acid  6.3 mg/dL  2.5-7.0  Vitamin B12  746 pg/mL  232-1245
+Haemoglobin  20.4 gm/dL H  12.0-15.0  C-Reactive Protein  0.4 mg/dL  0.0-0.9
+
+Synthetic report for software testing.","","","","",""
+"B-117","Sample Clinical Laboratory, Ohio
+Patient: Aisha Brown  Age/Sex: 49 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+SGOT (AST)  29 U/L  0-40  Phosphate  1.18 mmol/L  0.81-1.45
+ALT (SGPT)  25 IU/L  0-44  Triglycerides  95 mg/dL  <150
+HDL Cholesterol  48 mg/dL  >39  eGFR  108 mL/min/1.73  >59
+Platelets  434 x10^3/uL H  150-400  Albumin  2.7 g/dL Low  3.6-5.1
+
+Synthetic report for software testing.","","","","",""
+"B-118","Laboratorio Clínico de Muestra
+Patient: Priya Adeyemi  Age/Sex: 69 Y / M  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Total Bilirubin  0,6 mg/dL  0,2-1,2  EN
+Sodium  142 mmol/L  135-146  EN
+Alkaline phosphatase  156 High IU/L  30-130  EN
+Magnesium  1.9 mg/dL  1.6-2.3  EN
+Hemoglobin  16.0 g/dL  13.0-17.7  EN
+Triglycerides  106 mg/dL  <150  EN
+Calcium  9.9 mg/dL  8.6-10.3  EN
+Chloride  99 mmol/L  98-110  EN
+HDL Cholesterol  58 mg/dL  >39  EN
+Vitamin B12  449 pg/mL  232-1245  EN
+Platelets  325 x10^3/uL  150-400  EN
+C-Reactive Protein  1.0 H mg/dL  0.0-0.9  EN
+
+Synthetic report for software testing.","","","","",""
+"B-119","Sample Clinical Laboratory, Ohio
+Patient: Chen Hassan  Age/Sex: 31 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+Total Cholesterol  166  mg/dL  <200
+Gamma GT  44  U/L  0-55
+Calcium  7.4  mg/dL  8.6-10.3
+Phosphate  1.24  mmol/L  0.81-1.45
+Lymphs  29  %  14-46
+eGFR  105  mL/min/1.73m2  >=60
+Magnesium  2.1  mg/dL  1.6-2.3
+ALT (SGPT)  35  IU/L  0-44
+Iron, Total  76  mcg/dL  45-160
+Platelet Count  506  High  Thousand/uL  140-400
+Albumin  4.6  g/dL  3.6-5.1
+C-Reactive Protein  0.4  mg/dL  0.0-0.9
+Potassium  7.7  High  mmol/L  3.5-5.3
+
+Synthetic report for software testing.","","","","",""
+"B-120","Laboratorio Clínico de Muestra
+Patient: Yuki Brown  Age/Sex: 19 Y / F  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Triglycerides  121  mg/dL  <150
+Sodium  139  mmol/L  135-146
+HDL Cholesterol  56  mg/dL  >39
+Calcium  9.7  mg/dL  8.6-10.3
+Creatinine  0.43 L  mg/dL  0.50-1.00
+HbA1c  3,6  %  4,0-5,6
+Platelets  83 Low  x10E3/uL  150-450
+Total Bilirubin  0,5  mg/dL  0,2-1,2
+WBC  11.4 H  x10E3/uL  3.4-10.8
+MCV  89  fL  79-97
+TSH (Ultrasensitive)  3.97  uIU/ml  0.35-5.5
+Potassium  3.8  mmol/L  3.5-5.3
+Alkaline Phosphatase  144 H  IU/L  44-121
+eGFR  54 L  mL/min/1.73m2  >=60
+
+Synthetic report for software testing.","","","","",""
+"B-121","Labor Beispiel GmbH
+Patient: Priya Cohen  Age/Sex: 73 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 128/85 mmHg
+Dr note: pt c/o fatigue, recheck 3 mo
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Adjusted Calcium  2,31  2.77 03/2026  mmol/L  2,20-2,60
+Glucose (fasting)  4,1  4.5 03/2026  mmol/L  3,9-5,5
+White Cell Count  2,0 L  x10^9/L  4,0-11,0
+Haemoglobin  144  160 03/2026  115-155
+
+Synthetic report for software testing.","","","","",""
+"B-122","Sample Diagnostics, Hyderabad
+Patient: Kwame Lopez  Age/Sex: 27 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+Magnesium  1.8 mg/dL  1.6-2.3  Total Cholesterol  142 mg/dL  <200
+INR  1.0  0.8-1.2  Calcium  9.9 mg/dL  8.6-10.3
+AST (SGOT)  45 IU/L  0-40  Chloride  90 mmol/L  98-110
+MCV  92 fL  79-97  Albumin  3.4 g/dL Low  3.6-5.1
+eGFR  34 mL/min/1.73m2 L  >=60
+
+Synthetic report for software testing.
+Note: Patient reports chest pain since this morning.","","","","",""
+"B-123","Sample Diagnostics, Lagos
+Patient: Aisha Reddy  Age/Sex: 77 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 119/72 mmHg
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+TSH  1.91 mU/L  0.27 - 4.20  EN
+CRP  1 mg/L  0-5  EN
+Sed Rate  36 mm/hr  EN
+Serum iron  14,1 umol/L  10,0-30,0  EN
+LDL cholesterol  3.7 H mmol/L  <3.0  EN
+White Cell Count  3.4 x10^9/L  4.0-11.0  EN
+Triglycerides  0.8   <1.7  EN
+Total protein  72 g/L  60-80  EN
+Phosphate  1.37 mmol/L  0.81-1.45  EN
+Sodium  142 mmol/L  135-146  EN
+Fasting Glucose  4.8 mmol/L  3.0-6.0  EN
+Neutrophils  4.9 x10^9/L  2.0-7.5  EN
+Hematocrit  47.3 %  37.5-51.0  EN
+SGOT (AST)  1 U/L  0-40  EN
+Vitamin B12  212 pmol/L  145-569  EN
+Free T4  14.8 pmol/L  12.0 - 22.0  EN
+
+Synthetic report for software testing.","","","","",""
+"B-124","Sample Pathology, Sydney
+Patient: Olu Yamamoto  Age/Sex: 76 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+Sodium  139 mmol/L  135-146  Vitamin B12  1254 pmol/L H  145-569
+Sed Rate by Modified Westergren  9 mm/h  0-20  Potassium  3.4 mmol/L L  3.5-5.3
+LDL Cholesterol  2.2 mmol/L  TSH  4.71 mU/L  0.27 - 4.20
+C-Reactive Protein  9.3 mg/L H  0.0-4.9  SGOT (AST)  58 U/L H  0-40
+Ferritin  87 ug/L  15-300
+
+Synthetic report for software testing.","","","","",""
+"B-125","Sample Medical Center, Manila
+Patient: Priya Patel  Age/Sex: 41 Y / F  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Calcium  11.0 High  10.0 03/2026  mg/dL  8.6-10.3
+Iron, Total  187 High  194 03/2026  mcg/dL  45-160
+Free T4  1.3  1.5 03/2026  ng/dL  0.8-1.8
+Sed Rate  1  1 03/2026  mm/hr  0-30
+Glucose  78  mg/dL  70-99
+Alkaline Phosphatase  189 High  222 03/2026  IU/L  44-121
+Gamma GT  31  U/L  0-55
+Hemoglobin  15.7  12.8 03/2026  g/dL
+Lymphs  8  8 03/2026  %  14-46
+eGFR  54  mL/min/1.73m2
+RBC  5.04
+Vitamin B12  93 L  94 03/2026  pg/mL  232-1245
+Platelets  814 High  x10^3/uL  150-400
+Bilirubin, Total  1.0  mg/dL  0.0-1.2
+
+Synthetic report for software testing.","","","","",""
+"B-126","Sample Pathology, Sydney
+Patient: James Adeyemi  Age/Sex: 23 Y / M  Collected: 10/01/2026 08:12
+
+Total cholesterol: 4,6 mmol/L (Ref: <5,0)
+AST: 6 U/L (Ref: 10-35)
+SGPT (ALT): 30 U/L (Ref: 0-40)
+PSA, Total: 2.0 ng/mL (Ref: <4.0)
+Haemoglobin: 136 g/L (Ref: 130-170)
+Albumin: 55 g/L (Ref: 35-50) H
+Bilirubin total: 1 umol/L (Ref: 3-21)
+Adjusted Calcium: 2.29 mmol/L (Ref: 2.20-2.60)
+Magnesium: 0.90 mmol/L (Ref: 0.70-1.00)
+INR: 1.3  (Ref: 0.8-1.2)
+Serum iron: 59,7 umol/L (Ref: 10,0-30,0) H
+Chloride: 114 mmol/L (Ref: 98-110)
+LDL cholesterol: 1.7 mmol/L (Ref: <3.0)
+Vitamin B12: 231 pmol/L (Ref: 145-569)
+Alkaline phosphatase: 91 IU/L (Ref: 30-130)
+
+Synthetic report for software testing.","","","","",""
+"B-127","NHS Pathology (sample)
+Patient: Mei Smith  Age/Sex: 56 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 129/89 mmHg
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Ferritin  383 H ug/L  15-300  EN
+Lymphocytes  2.9 x10^9/L  1.5-4.0  EN
+TSH  0.11 L mU/L  0.27 - 4.20  EN
+RBC  4.69 x10E6/uL  4.14-5.80  EN
+
+Synthetic report for software testing.","","","","",""
+"B-128","Labor Beispiel GmbH
+Patient: Aisha Nguyen  Age/Sex: 59 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+LDL cholesterol  2,3 mmol/L  <3,0  TSH  2,37 mU/L  0,27 - 4,20
+Potassium  8,4 mmol/L High  3,5-5,3  Creatinine  123 umol/L H  59-104
+Phosphate  0,69 mmol/L Low  0,81-1,45  SGOT (AST)  27 U/L  0-40
+HDL cholesterol  0,9 mmol/L  >1,0  HbA1c  4,6 %  4,0-5,6
+Gamma GT  41 U/L  0-55  Prothrombin time  14,0 s H  9,5-13,5
+eGFR  72 mL/min/1.73  >59
+
+Synthetic report for software testing.","","","","",""
+"B-129","Laboratorio de Ejemplo
+Patient: Leila Brown  Age/Sex: 62 Y / M  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Vitamin B12  269  pmol/L  145-569
+Total Cholesterol  4,5  mmol/L  <5,0
+Hematocrit  45,5  %  37,5-51,0
+INR  1,0  0,8-1,2
+Triglycerides  1,0  mmol/L  <1,7
+TSH  3,26  mU/L  0,27 - 4,20
+Prothrombin time  12,2  s  9,5-13,5
+Lymphocytes  3,2  x10^9/L  1,5-4,0
+SGOT (AST)  31  U/L  0-40
+Platelet count  225  x10^9/L  150-400
+Glucose  4,3  mmol/L  3,9-5,5
+
+Synthetic report for software testing.","","","","",""
+"B-130","Sample Medical Center, Manila
+Patient: Hiroshi Yamamoto  Age/Sex: 20 Y / M  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Glucose  67 L  mg/dL  70-99
+BUN  22  mg/dL  7-25
+Gamma GT  1  U/L  0-55
+Calcium  7.1 L  mg/dL  8.6-10.3
+Bilirubin, Total  1.0  mg/dL  0.0-1.2
+LDL Cholesterol  114 H  mg/dL  <100
+AST  5 L  U/L  10-35
+Creatinine  0.82  mg/dL  0.60-1.29
+INR  1.5  0.8-1.2
+Triglycerides  109  mg/dL  <150
+MCV  75  fL  79-97
+ALT (SGPT)  1  IU/L  0-44
+Phosphate  0.65 L  mmol/L  0.81-1.45
+eGFR  73  mL/min/1.73  >59
+Sodium  143  mmol/L  135-146
+Platelets  235  x10^3/uL  150-400
+
+Synthetic report for software testing.","","","","",""
+"B-131","NHS Pathology (sample)
+Patient: Tomás Brown  Age/Sex: 63 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 172/80 mmHg
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+eGFR  54 L  mL/min/1.73m2  >=60
+Total protein  68  g/L  60-80
+Potassium  8.5 H  mmol/L  3.5-5.3
+Hematocrit  35.3  %  34.0-46.6
+Ferritin  6  ug/L  15-300
+ALT  32  U/L  9-46
+White Cell Count  8.3  x10^9/L  4.0-11.0
+Alkaline phosphatase  12 Low  IU/L  30-130
+
+Synthetic report for software testing.","","","","",""
+"B-132","NHS Pathology (sample)
+Patient: Priya Hassan  Age/Sex: 63 Y / F  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+C reactive protein  1 mg/L  0-5  EN
+Total cholesterol  4,1 mmol/L  <5,0  EN
+Fasting Glucose  5.5 mmol/L  3.0-6.0  EN
+Alkaline Phosphatase  145 IU/L  44-121  EN
+Free T4  16.7 pmol/L  12.0 - 22.0  EN
+Urate  512 H umol/L  200-430  EN
+Magnesium  0.78 mmol/L  0.70-1.00  EN
+Hematocrit  51.4 High %  34.0-46.6  EN
+
+Synthetic report for software testing.","","","","",""
+"B-133","Sample Diagnostics, Hyderabad
+Patient: Priya Lopez  Age/Sex: 58 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 137/65 mmHg
+
+Magnesium: 1.9 mg/dL (Ref: 1.6-2.3)
+RBC: 4.45 x10E6/uL (Ref: 4.14-5.80)
+BUN: 17 mg/dL (Ref: 7-25)
+Protein, Total: 5.7 g/dL (Ref: 6.0-8.5) L
+
+Synthetic report for software testing.","","","","",""
+"B-134","NHS Pathology (sample)
+Patient: Yuki Brown  Age/Sex: 93 Y / M  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+MCV  77 Low  fL  79-97
+HbA1c  5,1  %  4,0-5,6
+LDL Cholesterol  2.0  mmol/L  <3.0
+Glucose  3.8  mmol/L  3.9-5.5
+Prothrombin time  10,9  s  9,5-13,5
+Sodium  137  mmol/L  135-146
+Platelet count  211  x10^9/L  150-400
+TSH  0.11  mU/L  0.27 - 4.20
+Chloride  100  mmol/L  98-110
+ALT  30  IU/L  0-40
+
+Synthetic report for software testing.
+Note: No chest pain, no shortness of breath.","","","","",""
+"B-135","Laboratorio de Ejemplo
+Patient: Fatima Müller  Age/Sex: 46 Y / F  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+HbA1c  4,5   4,0-5,6  EN
+LDL cholesterol  2,7 mmol/L  <3,0  EN
+Prothrombin time  14,5 H s  9,5-13,5  EN
+eGFR  74 mL/min/1.73  >59  EN
+Alkaline Phosphatase  113 IU/L  44-121  EN
+Phosphate  1,34   0,81-1,45  EN
+MCV  68 L fL  79-97  EN
+Hematocrit  38,6 %  EN
+Vitamin D (25-OH)  102,4 nmol/L  50,0-125,0  EN
+
+Synthetic report for software testing.","","","","",""
+"B-136","Laboratorio de Ejemplo
+Patient: Yuki Silva  Age/Sex: 89 Y / M  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Adjusted Calcium  2,33  2.32 03/2026  mmol/L
+Fasting Glucose  5,7  mmol/L  3,0-6,0
+Urea  1,8  1.9 03/2026  mmol/L  2,5-7,8
+Creatinine  84  85 03/2026  umol/L  59-104
+
+Synthetic report for software testing.","","","","",""
+"B-137","Sample Clinical Laboratory, Ohio
+Patient: Mohammed Brown  Age/Sex: 25 Y / F  Collected: 10/01/2026 08:12
+
+Haemoglobin: 18.7 gm/dL (Ref: 12.0-15.0)
+Platelets: 505 x10^3/uL (Ref: 150-400) H
+Chloride: 112 mmol/L (Ref: 98-110)
+Hematocrit: 38.8 % (Ref: 34.0-46.6)
+Iron, Serum: 115 ug/dL (Ref: 38-169)
+Total Cholesterol: 105 mg/dL (Ref: <200)
+Calcium: 10.8 mg/dL (Ref: )
+
+Synthetic report for software testing.","","","","",""
+"B-138","Sample Clinical Laboratory, Ohio
+Patient: Grace Brown  Age/Sex: 69 Y / M  Collected: 10/01/2026 08:12
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Calcium  9.4  mg/dL  8.6-10.3
+TSH  5.204 High  uIU/mL  0.450-4.500
+Sed Rate  32 H  mm/hr  0-30
+Phosphate  2.39 High  mmol/L  0.81-1.45
+Albumin  5.7 High  g/dL  3.6-5.1
+ALT (SGPT)  30  IU/L  0-44
+Creatinine  1.05  mg/dL  0.60-1.29
+Iron, Total  146  mcg/dL  45-160
+RBC  6.34 High  x10E6/uL  4.14-5.80
+HbA1c  48 High  mmol/mol  20-41
+
+Synthetic report for software testing.","","","","",""
+"B-139","Sample Medical Center, Manila
+Patient: Kwame Garcia  Age/Sex: 74 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 155/67 mmHg
+
+Test  Result  Range  Test  Result  Range
+Gamma GT  48 U/L  0-55  Magnesium  2.4 mg/dL H  1.6-2.3
+Cholesterol, Total  141 mg/dL  100-199  Sodium  145 mmol/L  135-146
+Bilirubin, Total  0.1 mg/dL  0.0-1.2  HbA1c  5,2 %  4,0-5,6
+
+Synthetic report for software testing.","","","","",""
+"B-140","Labor Beispiel GmbH
+Patient: Sofia Hassan  Age/Sex: 34 Y / F  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+eGFR  72 mL/min/1.73m2  >=60  EN
+LDL Cholesterol  3,3 H mmol/L  <3,0  EN
+White Cell Count  2,2 x10^9/L  4,0-11,0  EN
+Bilirubin  9 umol/L  0-21  EN
+AST  46 U/L  10-35  EN
+Phosphate  0,99 mmol/L  0,81-1,45  EN
+Potassium  2,3 L mmol/L  3,5-5,3  EN
+Haemoglobin  106 L g/L  115-155  EN
+SGPT (ALT)  6 U/L  0-40  EN
+Platelet count  738 H x10^9/L  150-400  EN
+Serum Iron  17 umol/L  10-30  EN
+Glucose (fasting)  6,2 H mmol/L  3,9-5,5  EN
+CRP  7 High mg/L  0-5  EN
+
+Synthetic report for software testing.","","","","",""
+"B-141","Sample Medical Center, Manila
+Patient: Kwame Mensah  Age/Sex: 58 Y / M  Collected: 10/01/2026 08:12
+
+C-Reactive Protein: 0.1 mg/dL (Ref: 0.0-0.9)
+Iron, Total: 145 mcg/dL (Ref: 45-160)
+Haemoglobin: 14.0 gm/dL (Ref: 12.0-15.0)
+Sed Rate: 16 mm/hr (Ref: 0-30)
+PSA, Total: 3.5 ng/mL (Ref: <4.0)
+Calcium: 10.0 mg/dL (Ref: 8.6-10.3)
+Creatinine: 0.81 mg/dL (Ref: 0.60-1.29)
+
+Synthetic report for software testing.","","","","",""
+"B-142","Laboratorio Clínico de Muestra
+Patient: James Ivanova  Age/Sex: 92 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 141/63 mmHg
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Lymphs  9 L %  14-46  EN
+Creatinine  0.58 mg/dL  0.50-1.00  EN
+Sed Rate  35 mm/hr  0-30  EN
+Ferritin  137 ng/mL  30-400  EN
+Triglycerides  178 High mg/dL  <150  EN
+BUN  45 H mg/dL  7-25  EN
+C-Reactive Protein  0.4 mg/dL  0.0-0.9  EN
+Glucose  108 H mg/dL  70-99  EN
+ALT  1 IU/L  0-40  EN
+Sodium  142 mmol/L  135-146  EN
+Phosphate  1.24 mmol/L  0.81-1.45  EN
+RBC  4.34 x10E6/uL  4.14-5.80  EN
+AST  29 U/L  10-35  EN
+Chloride  105 mmol/L  98-110  EN
+
+Synthetic report for software testing.","","","","",""
+"B-143","Sample Medical Center, Manila
+Patient: Raj Patel  Age/Sex: 37 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 100/97 mmHg
+
+MCV: 74 fL (Ref: 79-97)
+Vitamin D, 25-Hydroxy: 127.5 ng/mL (Ref: 30.0-100.0) High
+Magnesium: 1.9 mg/dL (Ref: 1.6-2.3)
+Chloride: 102 mmol/L (Ref: 98-110)
+INR: 1.0  (Ref: 0.8-1.2)
+Ferritin: 77 ng/mL (Ref: 30-400)
+Platelets: 313 x10E3/uL (Ref: 150-450)
+C-Reactive Protein: 0.8 mg/dL (Ref: 0.0-0.9)
+Potassium: 8.2 mmol/L (Ref: 3.5-5.3) High
+Gamma GT: 1 U/L (Ref: 0-55)
+Glucose: 83 mg/dL (Ref: 70-99)
+Albumin: 5.4 g/dL (Ref: 3.6-5.1)
+WBC: 7.7 x10^3/uL (Ref: 4.0-11.0)
+Hemoglobin A1c: 3.2 % (Ref: <5.7)
+Absolute Neutrophils: 600 cells/uL (Ref: 1500-7800)
+TSH: 2.421 uIU/mL (Ref: 0.450-4.500)
+Protein, Total: 5.5 g/dL (Ref: 6.0-8.5)
+
+Synthetic report for software testing.","","","","",""
+"B-144","Sample Pathology, Sydney
+Patient: Fatima Cohen  Age/Sex: 40 Y / M  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+RBC  7.93  High  x10E6/uL  4.14-5.80
+Vitamin D (25-OH)  131,7  High  nmol/L  50,0-125,0
+Albumin  54  g/L  35-50
+Lymphocytes  2.1  x10^9/L  1.5-4.0
+C-Reactive Protein  0.1  mg/L  0.0-4.9
+Prothrombin time  6,6  L  s  9,5-13,5
+Triglycerides  2.0  High  mmol/L  <1.7
+HbA1c  48  H  mmol/mol  20-41
+eGFR  73  mL/min/1.73m2  >=60
+Chloride  96  Low  mmol/L  98-110
+Calcium  2.10  Low  mmol/L  2.20-2.60
+Magnesium  0.82  mmol/L  0.70-1.00
+Urate  139  L  umol/L  200-430
+Fasting Glucose  5.2  mmol/L  3.0-6.0
+
+Synthetic report for software testing.","","","","",""
+"B-145","Laboratorio Clínico de Muestra
+Patient: Priya Garcia  Age/Sex: 71 Y / F  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+INR  1.0   0.8-1.2  EN
+Alkaline Phosphatase  130 H IU/L  44-121  EN
+HbA1c  4,4 %  4,0-5,6  EN
+Glucose  77 mg/dL  70-99  EN
+
+Synthetic report for software testing.","","","","",""
+"B-146","Laboratorio de Ejemplo
+Patient: Dmitri Silva  Age/Sex: 78 Y / F  Collected: 10/01/2026 08:12
+
+AST (SGOT): 1 IU/L (Ref: 0-40)
+RBC: 5,36 x10E6/uL (Ref: 4,14-5,80)
+Adjusted Calcium: 2,08 mmol/L (Ref: 2,20-2,60)
+Haemoglobin: 149 g/L (Ref: 115-155)
+Serum iron: 4,9 umol/L (Ref: 10,0-30,0)
+Sodium: 133 mmol/L (Ref: 135-146) Low
+
+Synthetic report for software testing.
+Note: History of stroke in 2015, fully recovered.","","","","",""
+"B-147","Laboratorio de Ejemplo
+Patient: Maria Müller  Age/Sex: 20 Y / M  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Vitamin B12  693 ng/L  197-771  EN
+Alkaline phosphatase  78 IU/L  30-130  EN
+RBC  6,21 High x10E6/uL  4,14-5,80  EN
+Hematocrit  46,6 %  EN
+eGFR  58 Low mL/min/1.73m2  >=60  EN
+
+Synthetic report for software testing.","","","","",""
+"B-148","Labor Beispiel GmbH
+Patient: Arjun Silva  Age/Sex: 40 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 154/66 mmHg
+
+Test  Result  Flag  Units  Reference Range
+TSH  0,86  mU/L
+Potassium  6,1  High  mmol/L  3,5-5,3
+Total protein  65  g/L  60-80
+Vitamin B12  544  197-771
+Glucose  4,3  mmol/L  3,9-5,5
+Urea  1,0  Low  mmol/L  2,5-7,8
+ALT  12  IU/L  0-40
+Neutrophils  9,7  H  2,0-7,5
+
+Synthetic report for software testing.","","","","",""
+"B-149","Sample Diagnostics, Hyderabad
+Patient: Dmitri Adeyemi  Age/Sex: 41 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 158/64 mmHg
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+Fasting Blood Sugar  88  mg/dl  70-110
+RBC  5.46  5.96 03/2026  4.14-5.80
+Calcium  10.6  mg/dL
+C-Reactive Protein  0.7  mg/dL  0.0-0.9
+Cholesterol, Total  88  mg/dL
+
+Synthetic report for software testing.","","","","",""
+"B-150","Sample Diagnostics, Hyderabad
+Patient: Priya Singh  Age/Sex: 97 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+Calcium  9.7 mg/dL  8.6-10.3  BUN  17 mg/dL  7-25
+Albumin  2.3 g/dL L  3.6-5.1  Fasting Blood Sugar  80 mg/dl  70-110
+LDL Chol Calc (NIH)  124 mg/dL H  0-99  Neutrophils  55 %  40-74
+Phosphate  0.63 mmol/L L  0.81-1.45  Lymphs  59 %  14-46
+eGFR  111 mL/min/1.73m2  >=60  RBC  3.74 x10E6/uL Low  4.14-5.80
+TSH (Ultrasensitive)  0.14 uIU/ml L  0.35-5.5  Total Cholesterol  143 mg/dL  <200
+Serum Bilirubin (Total)  0.5 mg/dl  0.2-1.2  MCV  81 fL  79-97
+Platelet Count  1.8 lakhs/cumm  1.5-4.5
+
+Synthetic report for software testing.","","","","",""
+"B-151","Laboratorio Clínico de Muestra
+Patient: Grace Yamamoto  Age/Sex: 51 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+Vitamin D, 25-Hydroxy  199.3  ng/mL  30.0-100.0
+Total Bilirubin  0,8  mg/dL  0,2-1,2
+Iron, Serum  141  ug/dL  38-169
+INR  0.9  0.8-1.2
+Magnesium  1.7  mg/dL  1.6-2.3
+ALT  23  IU/L  0-40
+Triglycerides  119  mg/dL  <150
+MCV  91  fL  79-97
+RBC  4.46  x10E6/uL  4.14-5.80
+Calcium  7.2  mg/dL  8.6-10.3
+Creatinine  1.18  H  mg/dL  0.50-1.00
+White Blood Cell Count  20.4  High  Thousand/uL  3.8-10.8
+Ferritin  459  H  ng/mL  30-400
+Albumin  5.5  H  g/dL  3.6-5.1
+C-Reactive Protein  0.3  mg/dL  0.0-0.9
+Hematocrit  38.3  %  34.0-46.6
+
+Synthetic report for software testing.","","","","",""
+"B-152","Sample Pathology, Sydney
+Patient: Priya Hassan  Age/Sex: 51 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 106/79 mmHg
+
+Chloride: 114 mmol/L (Ref: 98-110) High
+Hematocrit: 34.8 % (Ref: 37.5-51.0)
+AST (SGOT): 5 IU/L (Ref: 0-40)
+Fasting Glucose: 2.7 mmol/L (Ref: 3.0-6.0) L
+Free T4: 25.1 pmol/L (Ref: 12.0 - 22.0) High
+Phosphate: 1.10 mmol/L (Ref: 0.81-1.45)
+ESR: 15 mm/hr (Ref: 1-20)
+Urea: 1.9 mmol/L (Ref: 2.5-7.8) Low
+Urate: 226 umol/L (Ref: 200-430)
+Adjusted Calcium: 2.34 mmol/L (Ref: 2.20-2.60)
+Prothrombin time: 10,6 s (Ref: 9,5-13,5)
+INR: 0.9  (Ref: 0.8-1.2)
+Hemoglobin A1c: 4.5 % (Ref: <5.7)
+Lymphocytes: 1.9 x10^9/L (Ref: 1.5-4.0)
+Creatinine: 44 umol/L (Ref: 59-104) L
+Sodium: 147 mmol/L (Ref: 135-146)
+
+Synthetic report for software testing.","","","","",""
+"B-153","Laboratorio de Ejemplo
+Patient: Raj Hassan  Age/Sex: 56 Y / F  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Hematocrit  43,4 %  34,0-46,6  EN
+eGFR  82 mL/min/1.73  >59  EN
+RBC  5,04 x10E6/uL  4,14-5,80  EN
+Phosphate  1,06 mmol/L  0,81-1,45  EN
+Calcium  2,52 mmol/L  2,20-2,60  EN
+
+Synthetic report for software testing.","","","","",""
+"B-154","NHS Pathology (sample)
+Patient: Aisha Fernández  Age/Sex: 19 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Flag  Units  Reference Range
+Adjusted Calcium  2.32  mmol/L  2.20-2.60
+Neutrophils  3.8  x10^9/L  2.0-7.5
+Free T4  24.7  High  pmol/L  12.0 - 22.0
+SGPT (ALT)  21  U/L  0-40
+SGOT (AST)  50  H  U/L  0-40
+Platelets  118  10^9/L  150-400
+eGFR  73  mL/min/1.73  >59
+C reactive protein  1  mg/L  0-5
+Vitamin B12  502  ng/L  197-771
+Haemoglobin  105  L  g/L  115-155
+
+Synthetic report for software testing.","","","","",""
+"B-155","Laboratorio Clínico de Muestra
+Patient: Raj Fernández  Age/Sex: 34 Y / F  Collected: 10/01/2026 08:12
+Blood Pressure: 166/96 mmHg
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+Glucose  50 L mg/dL  70-99  EN
+AST (SGOT)  84 IU/L  0-40  EN
+BUN  21 mg/dL  7-25  EN
+Sodium  143 mmol/L  135-146  EN
+MCV  103 H fL  79-97  EN
+Hematocrit  48.3 High %  34.0-46.6  EN
+Magnesium  1.4 Low mg/dL  1.6-2.3  EN
+Prothrombin Time  11.4 sec  9.4-12.5  EN
+Cholesterol, Total  236 mg/dL  100-199  EN
+Calcium  8.8 mg/dL  8.6-10.3  EN
+HDL Cholesterol  51 mg/dL  >39  EN
+Creatinine  0.85 mg/dL  0.50-1.00  EN
+RBC  4.92 x10E6/uL  4.14-5.80  EN
+Gamma GT  38 U/L  0-55  EN
+Albumin  4.0 g/dL  3.6-5.1  EN
+
+Synthetic report for software testing.","","","","",""
+"B-156","Laboratorio de Ejemplo
+Patient: Carlos Brown  Age/Sex: 64 Y / F  Collected: 10/01/2026 08:12
+
+Test Name  In Range  Out Of Range  Reference Range  Lab
+LDL Cholesterol  2,3 mmol/L  <3,0  EN
+White Cell Count  6,3 x10^9/L  4,0-11,0  EN
+Bilirubin  1 umol/L  0-21  EN
+RBC  4,90 x10E6/uL  4,14-5,80  EN
+Hematocrit  44,4 %  34,0-46,6  EN
+Gamma GT  16 U/L  0-55  EN
+
+Synthetic report for software testing.","","","","",""
+"B-157","Sample Clinical Laboratory, Ohio
+Patient: Olu Hassan  Age/Sex: 44 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+MCV  73 fL L  79-97  Potassium  4.3 mmol/L  3.5-5.3
+Albumin  3.8 g/dL  3.6-5.1  Calcium  9.6 mg/dL  8.6-10.3
+Hematocrit  42.7 %  34.0-46.6  Protein, Total  5.7 g/dL  6.0-8.5
+Uric Acid  4.5 mg/dL  2.5-7.0
+
+Synthetic report for software testing.","","","","",""
+"B-158","Sample Medical Center, Manila
+Patient: Olu Fernández  Age/Sex: 69 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 160/78 mmHg
+
+Test  Current Result and Flag  Previous Result and Date  Units  Reference Interval
+LDL Chol Calc (NIH)  52  mg/dL  0-99
+Gamma GT  1  U/L  0-55
+Iron, Total  119  mcg/dL  45-160
+Protein, Total  7.8  g/dL  6.0-8.5
+eGFR  89  mL/min/1.73  >59
+Chloride  103  mmol/L  98-110
+ALT  29  IU/L  0-40
+Cholesterol, Total  189  mg/dL  100-199
+Glucose  79  mg/dL  70-99
+Haemoglobin  12.3  gm/dL  12.0-15.0
+Ferritin  354  ng/mL  30-400
+BUN  5 L  mg/dL  7-25
+Uric Acid  8.7 H  mg/dL  2.5-7.0
+Vitamin B12  177 L  pg/mL  232-1245
+Calcium  8.4 L  mg/dL  8.6-10.3
+TSH  2.93  mIU/L  0.40-4.50
+Albumin  4.5  g/dL  3.6-5.1
+
+Synthetic report for software testing.
+Note: Has had fainting episodes this week.","","","","",""
+"B-159","Laboratorio Clínico de Muestra
+Patient: Kwame Müller  Age/Sex: 90 Y / F  Collected: 10/01/2026 08:12
+
+Test  Result  Range  Test  Result  Range
+HDL Cholesterol  46  >39  Iron, Total  130 mcg/dL  45-160
+Protein, Total  11.7 g/dL  6.0-8.5  Bilirubin, Total  0.1 mg/dL
+eGFR  99 mL/min/1.73m2  >=60  Vitamin D, 25-Hydroxy  42.6  30.0-100.0
+Creatinine  0.78 mg/dL  0.50-1.00
+
+Synthetic report for software testing.","","","","",""
+"B-160","Sample Pathology, Sydney
+Patient: Dmitri Singh  Age/Sex: 91 Y / M  Collected: 10/01/2026 08:12
+Blood Pressure: 154/84 mmHg
+
+Test  Result  Flag  Units  Reference Range
+Calcium  2.74  High  mmol/L  2.20-2.60
+Gamma GT  19  U/L  0-55
+WBC  20,5  10^9/L  4,0-10,0
+Magnesium  0.64  mmol/L  0.70-1.00
+Urate  379  umol/L  200-430
+
+Synthetic report for software testing.","","","","",""
