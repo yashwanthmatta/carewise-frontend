@@ -17,7 +17,7 @@
 
   const NEXT_STEP = {
     urgent: "Contact the doctor today. If very unwell, seek emergency care.",
-    needs_review: "Asked to discuss these results soon.",
+    needs_review: "Some results are well outside the lab's range; the patient will ask how soon you want to discuss them.",
     attention: "To bring up at the next visit.",
     routine: "Nothing urgent stands out. For the next checkup.",
   };

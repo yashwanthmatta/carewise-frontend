@@ -18,7 +18,28 @@ For each row: **Agree / Change / Remove**, with a note. Reviewer name, credentia
 | A1C | 5.7–6.4%: "High — prediabetes range". 6.5% or higher: "High — diabetes range", with "a doctor confirms with repeat testing". | |
 | Glucose | Fasting status read from the report ("fasting", FBS, FPG; "random", RBS, post-prandial). If unknown, the card says the result alone does not show prediabetes. | |
 
-## 2. What makes a report "urgent" (contact the doctor today)
+## 2. Urgency rules: ALL PENDING CLINICIAN APPROVAL
+
+None of these rules is clinically approved yet. They decide the strongest messages the app shows.
+
+### 2a. Emergency symptoms in the report text → "call 911 or your local emergency number"
+
+Each mention is judged within its own sentence:
+- **Denied** (ignored): "no", "not", "without", "denies", "negative for", "none of", "free of", "absence of", "ruled out", "never had" before the term ("No fever, but chest pain…" — only words after "but" count).
+- **Past or family history** (ignored): "history of", "h/o", "hx of", "PMH", "previous", "prior", "remote", "family history", "mother/father had", "status post", "s/p", "in 2015" before; "in 2015", "3 years ago", "resolved", "in the past", "recovered" after.
+- **Current** (counts): anything else.
+
+Current mentions of these terms show "Your report mentions symptoms that may need emergency care. If you have … now, call 911 or your local emergency number": chest pain, trouble/difficulty breathing, shortness of breath, stroke, face droop, slurred speech, arm weakness, weakness on one side, sudden numbness, paralysis, suicide, overdose, poison, severe bleeding, loss of consciousness, unconscious, cannot wake, seizure, anaphylaxis, severe allergic reaction, swelling of the face or tongue, blue lips, coughing (up) blood, blood in vomit, sudden severe headache, carbon monoxide, severe burn, electric shock, near drowning, head/neck/spinal injury, heat stroke, fever and confusion, rash that does not fade, confusion, severe testicular pain, snake bite.
+
+**Review:** Is each term right for "call 911"? Which should be same-day instead? Are the denial and history patterns enough?
+
+### 2b. Same-day symptoms → "Contact your doctor today. If you feel very unwell, seek emergency care."
+
+Current mentions of: fainting, severe abdominal pain, right lower abdomen (pain), severe dehydration, black stool, bloody diarrhea, vaginal bleeding, shoulder pain, high fever, hypothermia, hives, wheezing, difficulty swallowing, severe headache, eye injury, chemical exposure, animal bite, no urine, severe weakness, stiff neck. **Review each.**
+
+### 2c. Lab values → "Contact your doctor today"
+
+Applied **whether or not the lab flagged the result, with or without a printed range, and with the unit read or inferred** (mg/dL vs mmol/L from the unit, or from the size of the number when the unit is missing). The card says "High/Low — a level labs often treat as urgent".
 
 | Trigger | Threshold | Review |
 |---|---|---|
@@ -31,16 +52,19 @@ For each row: **Agree / Change / Remove**, with a note. Reviewer name, credentia
 | Platelets | < 20 ×10³/µL | |
 | INR | ≥ 5 | |
 | Troponin | any value above the lab's range | |
-| Blood pressure | ≥ 180 systolic (> 180/120 shown as "Very high — get medical care now") | |
-| Symptoms in the report text | Not negated mentions of: chest pain, trouble/shortness of breath, stroke signs, suicide, severe bleeding, fainting, confusion, anaphylaxis signs, coughing blood, severe abdominal pain, stiff neck, non-fading rash, blue lips, seizure (full list in `emergencyTerms`). | |
+| Blood pressure | ≥ 180 systolic or ≥ 120 diastolic | |
 
-When urgent: the summary says "Contact your doctor today. If you feel very unwell, seek emergency care", and no new exercise plan is given.
+A dangerous value read from a photo that may be misread keeps the report urgent and says: "If the number is right, it is at a level labs often treat as urgent: confirm it now, and if it matches, contact your doctor today."
 
-## 3. "Ask your doctor soon" (not urgent)
+**Known limits for the reviewer:** thresholds are adult values, not age-, pregnancy- or condition-specific; a missing or wrongly read flag cannot be detected unless the value itself crosses a threshold; patient context (e.g. dialysis, anticoagulation targets) is unknown.
+
+When urgent: no new exercise plan is suggested.
+
+## 3. Results far outside the printed range (not urgent)
 
 | Rule | Current behaviour | Review |
 |---|---|---|
-| Far outside the printed range | Above 1.5× the upper limit or below 0.67× the lower limit, or more than half the range's width beyond it, sets "Ask your doctor about these results soon". Distance from the range is used as a rough signal only. **Needs clinician review: should any test use its own rule instead?** | |
+| Far outside the printed range | Above 1.5× the upper limit or below 0.67× the lower limit, or more than half the range's width beyond it. **Pending clinician review, this no longer claims urgency:** the summary says "Some results are well outside the lab's range. Share this report with your doctor and ask how soon they want to talk about it." Should any test use its own threshold or wording instead? | |
 | Any result outside the range | "Bring these results up at your next visit." | |
 
 ## 4. Common guides used only when no range is printed

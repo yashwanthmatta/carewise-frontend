@@ -270,7 +270,7 @@ function analyzeInPage(text, unsure = []) {
     food: section("food"),
     safety: section("safety"),
     urgentMove: plan.urgent,
-    view: (() => { const v = buildReportView(a, "en", plan, unsure); const es = buildReportView(a, "es", plan, unsure); return { asked: unsure, outside: v.outside, total: v.total, cardsOut: v.cards.filter((c) => c.key !== "bp" && (c.tone === "out" || c.tone === "critical")).length, noWhat: v.tests.filter((x) => !x.what).map((x) => x.key), noAsk: v.cards.filter((c) => c.tone !== "check" && (!c.ask || !c.meaning)).map((c) => c.key), headline: v.headline, steps: v.steps.length, esEnglish: [...es.cards.map((c) => `${c.label} ${c.meaning} ${c.ask}`), es.headline, ...es.body].join(" ").match(/\b(the|your|about|results|High|Low)\b/g) || [] }; })(),
+    view: (() => { const v = buildReportView(a, "en", plan, unsure); const es = buildReportView(a, "es", plan, unsure); return { asked: unsure, outside: v.outside, total: v.total, cardsOut: v.cards.filter((c) => c.key !== "bp" && !c.guide && (c.tone === "out" || c.tone === "critical")).length, noWhat: v.tests.filter((x) => !x.what).map((x) => x.key), noAsk: v.cards.filter((c) => c.tone !== "check" && (!c.ask || !c.meaning)).map((c) => c.key), headline: v.headline, steps: v.steps.length, esEnglish: [...es.cards.map((c) => `${c.label} ${c.meaning} ${c.ask}`), es.headline, ...es.body].join(" ").match(/\b(the|your|about|results|High|Low)\b/g) || [] }; })(),
     allText: [...(a.findings || []).map((f) => `${f.label} ${f.level} ${f.detail}`), ...(a.suggestions || []), ...(a.questions || []), ...plan.sections.flatMap((s) => s.items.map((i) => i.text))].join(" "),
   };
 }
@@ -388,3 +388,5 @@ summary.seconds = Math.round((Date.now() - started) / 1000);
 console.log(JSON.stringify(summary, null, 2));
 const jsonAt = process.argv.indexOf("--json");
 if (jsonAt > -1) fs.writeFileSync(process.argv[jsonAt + 1], JSON.stringify(summary, null, 2));
+// Any failure fails the run, so CI catches a regression.
+process.exitCode = Object.values(tallies).some((tally) => Object.keys(tally.failures).length) ? 1 : 0;

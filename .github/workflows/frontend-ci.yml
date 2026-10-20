@@ -40,3 +40,11 @@ jobs:
           python3 -m http.server 4173 >/dev/null 2>&1 &
           sleep 2
           node scripts/eval/run-eval.mjs
+
+      - name: Safety cases (emergency symptoms, critical values)
+        run: node scripts/eval/safety-cases.mjs
+
+      - name: Randomized report check (standard and hard reports)
+        run: |
+          node scripts/eval/stress.mjs --text 5000 --seed 101
+          node scripts/eval/stress.mjs --text 5000 --seed 202 --hard
