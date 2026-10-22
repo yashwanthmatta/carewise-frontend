@@ -6832,3 +6832,10 @@ a.secondary-button {
 .lp-actions-quiet { margin-top: 14px; gap: 20px; }
 .lp-link { background: none; border: 0; padding: 4px; color: #1d6b5a; font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
 @media (max-width: 640px) { .lp-actions-quiet { flex-direction: row; justify-content: center; } }
+
+/* Doctor demo */
+.db-demo-offer { margin-bottom: 18px; padding: 16px; border: 2px solid #2f8f7a; border-radius: 14px; background: #f3faf8; }
+.db-demo-offer p { margin: 0 0 10px; }
+.db-demo-banner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; padding: 10px 14px; border-radius: 12px; background: #fff6dc; border: 1px solid #e6c766; }
+.db-demo-banner[hidden] { display: none; }
+.db-demo-banner p { margin: 0; }

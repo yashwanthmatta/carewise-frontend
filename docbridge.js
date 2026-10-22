@@ -11,6 +11,122 @@
   let clinic = null;
   let current = null; // { packetId, markers, patientRef, startedAt }
 
+  // ----- Demo: the same screens with a made-up clinic kept only in this browser tab -----
+  // Nothing is sent to the server. The patient link carries the sample packet in its #hash.
+  let demo = false;
+  let demoState = null;
+  const DEMO_CLINIC = { id: "demo", name: "Sample Family Practice", clinician_name: "Dr. Sample", member_role: "owner", tone: "friendly", retention_days: 90, patient_qa_enabled: false, intake_address: "" };
+
+  function demoReset() {
+    demoState = { packets: [], audit: {}, seq: 1000 };
+  }
+
+  function demoLog(id, action) {
+    (demoState.audit[id] = demoState.audit[id] || []).push({ action, who: DEMO_CLINIC.clinician_name, at: new Date().toISOString() });
+  }
+
+  function demoToken(p) {
+    const data = { clinic_name: DEMO_CLINIC.name, approved_by_name: p.approved_by_name, approved_at: p.approved_at, lab_date: p.lab_date, summary: p.summary, questions: p.questions, markers: p.markers };
+    return `demo-${btoa(unescape(encodeURIComponent(JSON.stringify(data))))}`;
+  }
+
+  function demoMetrics() {
+    const list = demoState.packets;
+    const approved = list.filter((p) => p.status === "approved");
+    const times = approved.map((p) => p.review_seconds).sort((a, b) => a - b);
+    return {
+      drafts: list.filter((p) => p.status === "draft").length,
+      manual_review: 0,
+      needs_call: list.filter((p) => p.status === "needs_call").length,
+      approved_this_week: approved.length,
+      median_review_seconds: times.length ? times[Math.floor(times.length / 2)] : null,
+      patients_opened: 0,
+      approved_without_edits: approved.filter((p) => !p.edited).length,
+    };
+  }
+
+  function demoApi(method, path, body = {}) {
+    const parts = path.split("/").filter(Boolean); // clinics, demo, packets, id, action
+    const find = () => {
+      const p = demoState.packets.find((item) => item.id === parts[3]);
+      if (!p) throw new Error("Backend returned 404");
+      return p;
+    };
+    if (path === "/clinics/me") return { ...DEMO_CLINIC };
+    if (parts[2] === "metrics") return demoMetrics();
+    if (parts[2] === "members") return [{ id: "demo", name: DEMO_CLINIC.clinician_name, role: "owner", you: true }];
+    if (parts[2] === "settings") return { ...DEMO_CLINIC, ...body };
+    if (parts[2] === "patients") {
+      const ref = decodeURIComponent(parts[3]);
+      return { packets: demoState.packets.filter((p) => p.patient_ref === ref).reverse(), changes: [] };
+    }
+    if (parts[2] !== "packets") throw new Error("Not available in the demo");
+    if (parts.length === 3 && method === "GET") return demoState.packets.map((p) => ({ ...p }));
+    if (parts.length === 3 && method === "POST") {
+      demoState.seq += 1;
+      const p = { id: `demo-${demoState.seq}`, status: "draft", patient_ref: body.patient_ref, lab_date: body.lab_date, markers: body.markers, summary: body.summary, questions: body.questions, draft: body.summary, draft_questions: body.questions, created_at: Date.now(), link_active: false, patient_viewed: false };
+      demoState.packets.unshift(p);
+      demoLog(p.id, "Draft created");
+      return { ...p };
+    }
+    const p = find();
+    const action = parts[4] || "";
+    if (action === "audit") return demoState.audit[p.id] || [];
+    if (method === "PUT") {
+      Object.assign(p, { summary: body.summary ?? p.summary, questions: body.questions ?? p.questions });
+      demoLog(p.id, "Draft edited");
+      return { ...p };
+    }
+    if (action === "approve") {
+      if (p.status === "approved") throw new Error("Backend returned 409");
+      Object.assign(p, body, { status: "approved", approved_by_name: DEMO_CLINIC.clinician_name, approved_at: new Date().toISOString(), link_active: true,
+        edited: body.summary !== p.draft || JSON.stringify(body.questions) !== JSON.stringify(p.draft_questions),
+        review_seconds: Math.max(1, Math.round((Date.now() - p.created_at) / 1000)) });
+      demoLog(p.id, p.edited ? "Approved with edits (AI draft and edited version both kept)" : "Approved as drafted");
+      return { ...p, patient_token: demoToken(p) };
+    }
+    if (action === "new-link") {
+      p.link_active = true;
+      demoLog(p.id, "New patient link");
+      return { ...p, patient_token: demoToken(p) };
+    }
+    if (action === "revoke-link") {
+      p.link_active = false;
+      demoLog(p.id, "Patient link turned off");
+      return { ...p };
+    }
+    if (action === "follow-up") { p.status = "needs_call"; demoLog(p.id, "Marked needs a call"); return { ...p }; }
+    if (action === "reject") { p.status = "rejected"; demoLog(p.id, "Rejected, not sent"); return { ...p }; }
+    throw new Error("Not available in the demo");
+  }
+
+  // Inside this panel, every server call goes to the demo store while the demo is on.
+  const apiGet = (path, options) => (demo ? Promise.resolve().then(() => demoApi("GET", path)) : window.apiGet(path, options));
+  const apiPost = (path, payload, options) => (demo ? Promise.resolve().then(() => demoApi("POST", path, payload)) : window.apiPost(path, payload, options));
+  const apiPut = (path, payload) => (demo ? Promise.resolve().then(() => demoApi("PUT", path, payload)) : window.apiPut(path, payload));
+
+  function startDemo() {
+    demo = true;
+    demoReset();
+    $("db-demo-banner").hidden = false;
+    load().then(() => {
+      $("db-patient-ref").value = "REF-1042";
+      $("db-text").value = SAMPLE_LAB;
+      $("db-deid").checked = true;
+      say("Demo ready: a sample lab is filled in. Tap \"Draft explanation\" to start.");
+    });
+  }
+
+  function leaveDemo() {
+    demo = false;
+    demoState = null;
+    current = null;
+    $("db-demo-banner").hidden = true;
+    $("db-review").hidden = true;
+    $("db-visit").hidden = true;
+    load();
+  }
+
   const SAMPLE_LAB = [
     "Comprehensive panel, collected 2026-10-01",
     "LDL cholesterol 148 mg/dL (ref <100) H",
@@ -56,6 +172,17 @@
   }
 
   async function load() {
+    if (demo) {
+      clinic = { ...DEMO_CLINIC };
+      $("db-badge").textContent = `${clinic.name} · Demo`;
+      show("workspace");
+      if (!$("db-lab-date").value) $("db-lab-date").value = today();
+      $("db-intake").hidden = true;
+      await refresh();
+      loadTeam();
+      fillSettings();
+      return;
+    }
     if (!authToken) {
       clinic = null;
       show("signin");
@@ -267,6 +394,7 @@
   }
 
   function patientUrl(token) {
+    if (String(token).startsWith("demo-")) return `${window.location.origin}/packet.html#demo=${encodeURIComponent(String(token).slice(5))}`;
     return `${window.location.origin}/packet.html#t=${encodeURIComponent(token)}`;
   }
 
@@ -616,6 +744,7 @@
     }
   });
   $("db-audit-download").addEventListener("click", async () => {
+    if (demo) return say("The activity log download works in a real clinic account, not in the demo.");
     try {
       const response = await fetch(`${backendBaseUrl}/clinics/${clinic.id}/audit.csv`, { headers: { Authorization: `Bearer ${authToken}` } });
       if (!response.ok) throw new Error(String(response.status));
@@ -683,7 +812,7 @@
     clearTimeout(idleTimer);
     if (!clinic || !authToken) return;
     idleTimer = setTimeout(() => {
-      if (!clinic || panel.hidden) return;
+      if (!clinic || panel.hidden || demo) return;
       if (typeof logout === "function") logout();
       clinic = null;
       show("signin");
@@ -742,6 +871,12 @@
     }
   });
   $("db-save").addEventListener("click", saveDraft);
+  $("db-demo-start")?.addEventListener("click", startDemo);
+  $("db-demo-leave")?.addEventListener("click", leaveDemo);
+  // Links elsewhere on the page (the homepage "For doctors" section) can open the demo.
+  document.addEventListener("click", (event) => {
+    if (event.target.closest("[data-db-demo]")) setTimeout(startDemo, 50);
+  });
   $("db-followup").addEventListener("click", followUp);
   $("db-refresh").addEventListener("click", refresh);
   $("db-brief-print").addEventListener("click", printBrief);

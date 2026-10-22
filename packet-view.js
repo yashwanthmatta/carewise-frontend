@@ -101,7 +101,20 @@
     $("pv-qa-form").addEventListener("submit", (event) => { event.preventDefault(); askQuestion($("pv-qa-input").value); });
   }
 
+  // Doctor demo: the sample packet travels in the #hash, so nothing is fetched or stored.
+  function loadDemo(encoded) {
+    try {
+      const packet = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+      render({ ...packet, questions_enabled: false });
+      $("sv-summary").insertAdjacentHTML("afterbegin", '<p class="sv-card sv-muted" role="note"><b>Demo page.</b> Made-up sample results from the FollowThrough Health doctor demo. Not a real patient.</p>');
+    } catch {
+      fail("This demo link is incomplete. Open the doctor demo again to make a new one.");
+    }
+  }
+
   async function load() {
+    const demoPacket = new URLSearchParams(window.location.hash.slice(1)).get("demo");
+    if (demoPacket) return loadDemo(demoPacket);
     token = new URLSearchParams(window.location.hash.slice(1)).get("t") || "";
     if (token.length < 20) return fail("This link is incomplete. Please ask your clinic to send it again.");
     try {

@@ -15,13 +15,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-185" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-186" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-185" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-186" />
   </head>
   <body>
     <main class="app-shell">
@@ -214,7 +214,8 @@
                 <li><b>Send in one tap.</b> Email, WhatsApp or text the private link from your own phone or inbox; turn it off any time.</li>
               </ul>
               <div class="lp-actions lp-actions-left">
-                <a class="lp-btn lp-btn-dark" href="#docbridge-title">Join the doctor pilot</a>
+                <a class="lp-btn lp-btn-dark" href="#docbridge-title" data-db-demo>Try the 60-second demo</a>
+                <a class="lp-btn lp-btn-light" href="#docbridge-title">Join the doctor pilot</a>
               </div>
               <p class="lp-fine">Pilot: de-identified or sample labs only.</p>
             </div>
@@ -470,8 +471,12 @@
           </div>
 
           <div id="db-signin" class="db-block" hidden>
-            <p>Sign in or create a free account under Profile, then come back here to set up your clinic.</p>
-            <a class="primary-button" href="#account-title">Go to sign in</a>
+            <div class="db-demo-offer">
+              <p><strong>Try it in 60 seconds, no sign-in.</strong> Draft, edit, approve and open the patient's page with a made-up clinic and a sample lab. Nothing is saved or sent.</p>
+              <button class="primary-button" type="button" id="db-demo-start">Try the doctor demo</button>
+            </div>
+            <p>Ready to use it with your clinic? Sign in or create a free account under Profile, then come back here to set up your clinic.</p>
+            <a class="secondary-button" href="#account-title">Go to sign in</a>
             <form id="db-waitlist" class="db-waitlist">
               <p><strong>Not ready to try it yet?</strong> Join the doctor waitlist and we'll reach out about a free pilot.</p>
               <div class="db-grid">
@@ -505,6 +510,10 @@
           </form>
 
           <div id="db-workspace" hidden>
+            <div class="db-demo-banner" id="db-demo-banner" role="note" hidden>
+              <p><strong>Demo.</strong> A made-up clinic in this browser tab only. Nothing is saved, sent or stored.</p>
+              <button class="secondary-button compact" type="button" id="db-demo-leave">Leave demo</button>
+            </div>
             <div class="db-intake" id="db-intake" hidden>
               <strong>Email labs to your inbox</strong>
               <p>Forward a lab PDF from your work email to <code id="db-intake-address"></code>. Put <b>DEID</b> and the patient reference in the subject, for example <i>DEID REF-1042</i>: right after DEID, the letters REF, a dash and 3 to 10 digits you make up (never initials). Any other code is ignored and the lab gets its own code. During the pilot, only de-identified or sample labs; emails without DEID, or from addresses not on your team, are ignored and not stored.</p>
@@ -2016,12 +2025,12 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-185"></script>
-    <script src="help.js?v=carewise-product-185"></script>
-    <script src="doctor-share.js?v=carewise-product-185"></script>
-    <script src="docbridge.js?v=carewise-product-185"></script>
-    <script src="reminders.js?v=carewise-product-185"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-185"></script>
-    <script src="twofactor.js?v=carewise-product-185"></script>
+    <script src="script.js?v=carewise-product-186"></script>
+    <script src="help.js?v=carewise-product-186"></script>
+    <script src="doctor-share.js?v=carewise-product-186"></script>
+    <script src="docbridge.js?v=carewise-product-186"></script>
+    <script src="reminders.js?v=carewise-product-186"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-186"></script>
+    <script src="twofactor.js?v=carewise-product-186"></script>
   </body>
 </html>
