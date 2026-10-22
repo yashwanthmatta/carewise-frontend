@@ -47,6 +47,9 @@ jobs:
       - name: Correcting a misread photo number updates everything
         run: node scripts/eval/ocr-resolution.mjs
 
+      - name: Test names in headings never take another test's value
+        run: node scripts/eval/heading-values.mjs
+
       - name: Randomized report check (standard and hard reports)
         run: |
           node scripts/eval/stress.mjs --text 5000 --seed 101

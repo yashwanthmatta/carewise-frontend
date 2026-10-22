@@ -1,0 +1,12 @@
+SAMPLE LAB REPORT - SYNTHETIC DATA FOR DEMONSTRATION. NOT A REAL PATIENT.
+Sample Diagnostics Laboratory
+Patient reference: REF-2002        Collected: 2026-10-03
+Thyroid, kidney and vitamin panel
+
+TSH 9.8 mIU/L 0.4-4.5 H
+Free T4 0.7 ng/dL 0.8-1.8 L
+Creatinine 2.3 mg/dL 0.6-1.3 H
+eGFR 29 mL/min/1.73m2 >59 L
+Vitamin B12 160 pg/mL 200-900 L
+Sodium 140 mmol/L 135-145
+Hemoglobin 12.9 g/dL 13.5-17.5 L

@@ -5491,7 +5491,11 @@ const LAB_UNIT = String.raw`\s*(?:(?:h|l|hh|ll|hi|lo|high|low|\*)\s+(?=mmol|mg|%
 
 // The value must not start inside a word, so the "1" in "Hemoglobin A1c" is never read as a result.
 function readLabMeasure(text, namePattern, maxGap = 24) {
-  const match = text.match(new RegExp(`${namePattern}\\D{0,${maxGap}}?${LAB_FOOTNOTE}(?<![a-z])(\\d+(?:\\.\\d+)?)${LAB_UNIT}`, "i"));
+  // The value is on the same line as the test name, or starts the next line ("A1C:" then
+  // "7.2 %"). It is never taken from another test further down: in "Lipid panel and A1C" then
+  // "Total cholesterol 228", 228 is not an A1C.
+  const gap = `(?:[^\\d\\n]{0,${maxGap}}?|[^\\d\\n]{0,${maxGap}}?(?:\\n[ \\t:]*){1,2})`;
+  const match = text.match(new RegExp(`${namePattern}${gap}${LAB_FOOTNOTE}(?<![a-z])(\\d+(?:\\.\\d+)?)${LAB_UNIT}`, "i"));
   if (!match) return null;
   const value = Number(match[1]);
   const rest = cutAtNextTest(text.slice(match.index + match[0].length).split("\n")[0].slice(0, 60));
@@ -5654,10 +5658,10 @@ function analyzeReportTextLocally(rawText) {
   const triglycerides = readTriglyceridesMgDl(lower);
   const a1c = readA1cPercent(lower);
   // Skip the "25-hydroxy" / "25-OH" in the test name so it is not read as the value.
-  const vitaminD = readReportNumber(lower, [/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?\D{0,24}(\d+(?:\.\d+)?)/i]);
+  const vitaminD = readReportNumber(lower, [/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?(?:[^\d\n]{0,24}?|[^\d\n]{0,24}?(?:\n[ \t:]*){1,2})(\d+(?:\.\d+)?)/i]);
   const systolic = readReportNumber(lower, [/(?:blood pressure|\bbp\b)\D{0,60}(\d{2,3})\s*\/\s*\d{2,3}/i]);
   const diastolic = readReportNumber(lower, [/(?:blood pressure|\bbp\b)\D{0,60}\d{2,3}\s*\/\s*(\d{2,3})/i]);
-  const vitaminDMatch = lower.match(/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?\D{0,24}\d+(?:\.\d+)?([^\n]{0,60})/i);
+  const vitaminDMatch = lower.match(/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?(?:[^\d\n]{0,24}?|[^\d\n]{0,24}?(?:\n[ \t:]*){1,2})\d+(?:\.\d+)?([^\n]{0,60})/i);
   if (vitaminDMatch) vitaminDMatch[1] = cutAtNextTest(vitaminDMatch[1]);
   // European and UK labs report vitamin D in nmol/L; the common 30 ng/mL cut-off is about 75 nmol/L.
   const vitaminDUnit = vitaminDMatch && /^[^a-z]*(?:(?:h|l|hi|lo|high|low|\*)\s+)?(?:[\d.,/\s]*)nmol\s*\/\s*l/i.test(vitaminDMatch[1]) ? "nmol/L" : "ng/mL";
@@ -6337,7 +6341,7 @@ function downloadLabReminder(dateText) {
 
 // Version of the interpretation rules and wording below. Change it whenever a rule, threshold or
 // explanation changes, so every output can be traced to the rules that produced it.
-const EXPLANATION_RULES_VERSION = "2026-10-20.3";
+const EXPLANATION_RULES_VERSION = "2026-10-20.4";
 
 // Plain-language guide per test: what it is, what a high or low result can mean, and a
 // question for the doctor. Educational wording only: no diagnosis, medicine names or doses.

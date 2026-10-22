@@ -1,0 +1,12 @@
+SAMPLE LAB REPORT - SYNTHETIC DATA FOR DEMONSTRATION. NOT A REAL PATIENT.
+Sample Diagnostics Laboratory
+Patient reference: REF-2001        Collected: 2026-10-01
+Lipid panel and A1C
+
+Total cholesterol 228 mg/dL <200 H
+LDL cholesterol 151 mg/dL <100 H
+HDL cholesterol 46 mg/dL >40
+Triglycerides 162 mg/dL <150 H
+Hemoglobin A1c 5.9 % 4.0-5.6 H
+Glucose, fasting 104 mg/dL 70-99 H
+Creatinine 0.9 mg/dL 0.6-1.2
