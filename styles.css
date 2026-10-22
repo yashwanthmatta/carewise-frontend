@@ -6847,3 +6847,8 @@ a.secondary-button {
 .data-use ul { margin: 10px 0 6px; padding-left: 20px; }
 .data-use li { margin: 6px 0; line-height: 1.45; }
 .data-use p { margin: 6px 0 0; }
+
+/* Card: the line of the report this result came from */
+.result-card-source { margin-top: 10px; font-size: .9rem; }
+.result-card-source summary { cursor: pointer; color: #1d6b5a; font-weight: 600; }
+.result-card-source code { display: block; margin-top: 6px; padding: 8px 10px; border-radius: 8px; background: #f1f5f4; white-space: pre-wrap; word-break: break-word; font-size: .9rem; }
