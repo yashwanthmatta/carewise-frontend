@@ -877,6 +877,11 @@
   document.addEventListener("click", (event) => {
     if (event.target.closest("[data-db-demo]")) setTimeout(startDemo, 50);
   });
+  // A shareable link straight into the demo: followthroughhealth.com/#doctor-demo
+  if (window.location.hash === "#doctor-demo") {
+    window.location.hash = "#docbridge-title";
+    setTimeout(startDemo, 300);
+  }
   $("db-followup").addEventListener("click", followUp);
   $("db-refresh").addEventListener("click", refresh);
   $("db-brief-print").addEventListener("click", printBrief);
