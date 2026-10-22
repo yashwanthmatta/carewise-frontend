@@ -1713,6 +1713,7 @@ document.querySelector("#run-demo-flow")?.addEventListener("click", () => {
 
 document.querySelector("#sample-report-text")?.addEventListener("click", () => {
   reportFromPhoto = false;
+  ocrReviewed = [];
   trackReportUsage("sample_opened");
   fillSampleReportText();
   latestReportId = "";
@@ -4215,6 +4216,7 @@ function handleReportFileSelection() {
   if (!file) return;
   latestReportId = "";
   ocrChecks = [];
+  ocrReviewed = [];
   reportFromPhoto = false;
   renderOcrChecks();
   document.querySelector("#report-name").value = file.name;
@@ -4594,6 +4596,8 @@ function ruleLineRow(line) {
 let ocrChecks = [];
 // True while the report text came from a photo or scanned page read on the device.
 let reportFromPhoto = false;
+// Photo-read numbers the person checked against their report, listed on the doctor brief.
+let ocrReviewed = [];
 // Tests whose number is waiting for the person to confirm it against the report.
 const unsureOcrKeys = () => ocrChecks.filter((check) => check.kind === "ask" && check.key).map((check) => check.key);
 
@@ -4651,6 +4655,8 @@ document.querySelector("#ocr-checks")?.addEventListener("click", (event) => {
     textArea.value = lines.join("\n");
   }
   addAuditEvent(choice === current ? "ocr_number_confirmed" : "ocr_number_corrected", `${check.name}: photo read "${check.read}"; the person confirmed "${choice}".`);
+  // Only the number the person confirmed is shown; a misread value never reaches the brief.
+  ocrReviewed.push(`${check.name}: ${choice} (${choice === check.read ? "confirmed" : "corrected"} by the patient against the report)`);
   trackReportUsage(choice === current ? "ocr_number_confirmed" : "ocr_number_corrected");
   ocrChecks = ocrChecks.filter((item) => item !== check);
   runLocalReportAnalysis();
@@ -4664,6 +4670,7 @@ async function showOcrResult(rawText, sourceLabel) {
   }
   const { text, checks } = checkOcrNumbers(rawText);
   ocrChecks = checks;
+  ocrReviewed = [];
   reportFromPhoto = true;
   document.querySelector("#report-text").value = text.slice(0, 12000);
   updateProgressRail();
@@ -6886,6 +6893,13 @@ function buildBackendReportDisplayAnalysis(response, reportText) {
 }
 
 // A one-page, printable summary a patient can hand to their clinician.
+// Where the report text came from, for the brief's source line. Never guesses a lab name.
+function briefSourceText() {
+  const name = (document.querySelector("#report-name")?.value || "").trim();
+  const how = reportFromPhoto ? "read from a photo on the patient's device" : /\.pdf$/i.test(name) ? "read from a PDF on the patient's device" : "report text entered by the patient";
+  return name && !/^sample|^maria-/i.test(name) ? `${how} (file: ${name})` : how;
+}
+
 function buildDoctorBriefHtml(analysis, person = "Me") {
   const today = new Date().toLocaleDateString();
   const rows = (analysis.labValues || []).map((item) => `
@@ -6904,20 +6918,25 @@ function buildDoctorBriefHtml(analysis, person = "Me") {
   th { background: #e6f1ee; } ul, ol { margin: 0; padding-left: 20px; font-size: 14px; }
   .note { margin-top: 24px; font-size: 12px; color: #3e5450; border-top: 1px solid #d5e5e1; padding-top: 8px; }
   .notes-box { border: 1px solid #d5e5e1; min-height: 70px; margin-top: 6px; }
+  .verify { margin: 0 0 12px; padding: 8px 10px; border: 2px solid #b45309; border-radius: 6px; background: #fff7ed; font-weight: bold; font-size: 14px; }
+  .source { font-size: 13px; color: #3e5450; margin: 8px 0 0; }
   button { margin-top: 16px; padding: 8px 16px; background: #0f766e; color: #fff; border: 0; border-radius: 6px; font-size: 14px; cursor: pointer; }
   @media print { button { display: none; } body { margin: 0 auto; } }
 </style></head><body>
-<header><h1>${person === "Me" ? "Patient lab summary for clinician review" : `Lab summary for clinician review: ${escapeHtml(person)}`}</h1><span>${escapeHtml(today)}</span></header>
+<p class="verify">Patient-generated educational summary. Verify against the original laboratory report.</p>
+<header><h1>${person === "Me" ? "Patient lab summary for clinician review" : `Lab summary for clinician review: ${escapeHtml(person)}`}</h1><span>Prepared ${escapeHtml(today)}</span></header>
+<p class="source">Source: ${escapeHtml(briefSourceText())}. Bring or attach the original report; this summary does not replace it.</p>
 <p>${person === "Me" ? "Prepared by the patient with FollowThrough Health from their own report text." : `Prepared by a family caregiver for ${escapeHtml(person)} with FollowThrough Health from the report text.`}${analysis.scanOnly || analysis.noData || !outsideRangeCount(analysis).total ? "" : ` ${escapeHtml(outsideRangeText(analysis))}.`}</p>
 ${view.headline ? `<h2>Summary</h2><p><b>${escapeHtml(view.headline)}.</b> ${escapeHtml(view.body.join(" "))}</p>` : ""}
 ${view.tests.length ? `<h2>Tests on the report (compared with the lab's printed range)</h2><table><tr><th>Test</th><th>Result</th><th>Lab range</th><th>Status</th></tr>${view.tests.map((item) => `<tr><td>${escapeHtml(item.name)}</td><td>${escapeHtml(item.value)}</td><td>${escapeHtml(item.range || "not printed")}</td><td>${escapeHtml(item.label)}</td></tr>`).join("")}</table>` : rows ? `<h2>Values detected in the report</h2><table><tr><th>Test</th><th>Value</th><th>FollowThrough Health note</th></tr>${rows}</table>` : ""}
 ${analysis.scan ? `<h2>Imaging report (${escapeHtml(analysis.scan.en.modality || "imaging")}), explained from the radiologist's text only</h2>${analysis.scan.en.followUps.length ? `<p>Lines the patient would like to discuss:</p><ul>${analysis.scan.en.followUps.map((item) => `<li>“${escapeHtml(item.sentence)}”</li>`).join("")}</ul>` : "<p>No follow-up lines were flagged in the report text.</p>"}` : ""}
 ${view.tests.length ? "" : `<h2>Discussion points</h2><ul>${findings}</ul>`}
 ${analysis._changes?.rows?.length ? `<h2>Changes since the previous report (${escapeHtml(analysis._changes.since)})</h2><ul>${analysis._changes.rows.map((r) => `<li>${escapeHtml(r.name)}: ${escapeHtml(String(r.before))} → ${escapeHtml(String(r.now))} ${escapeHtml(r.unit)} (${escapeHtml(changeLabel(r, CHANGE_TEXT.en))})</li>`).join("")}</ul>` : ""}
+${ocrReviewed.length ? `<h2>Numbers read from a photo and checked by the patient</h2><ul>${ocrReviewed.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
 ${buildHealthHistoryBriefSection(person)}
 <h2>Patient questions</h2><ol>${questions}</ol>
 <h2>Clinician notes</h2><div class="notes-box"></div>
-<p class="note">Educational summary only, not a diagnosis. Values were read automatically from pasted report text; please confirm them against the original report. Explanation rules version ${escapeHtml(view.rulesVersion)}.</p>
+<p class="note">Educational summary only, not a diagnosis. Values were read automatically from the report; please confirm them against the original report. Explanation rules version ${escapeHtml(view.rulesVersion)}.</p>
 <button type="button" onclick="window.print()">Print or save as PDF</button>
 </body></html>`;
 }
