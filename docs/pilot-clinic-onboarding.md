@@ -1,18 +1,26 @@
 # DocBridge pilot: onboarding the first clinic
 
 A 30–45 minute session with the clinic's lead clinician and, if they have one, a front-desk
-person. Run it on a video call with screen sharing, or in person. Use only the sample lab or
-de-identified labs.
+person. Run it on a video call with screen sharing, or in person.
+
+**This is an evaluation with synthetic data, not a live patient service.** Until the legal,
+security, vendor and clinical reviews are complete, use only the synthetic sample labs in
+`docs/pilot-sample-labs/` (or the built-in sample). The evaluation informs product decisions; it
+is not clinical approval.
 
 ## Pilot rules (say these at the start)
 
-- **Pilot only:** de-identified or sample labs. No names, birth dates, record numbers,
+- **Synthetic labs only.** No real patient's labs, names, birth dates, record numbers,
   addresses or phone numbers anywhere: not in the lab text, the patient reference, the file
   name or the explanation. There is no Business Associate Agreement yet, so real patient
   data must not be entered.
-- **The clinician decides.** The draft is a starting point. Nothing reaches a patient until a
-  clinician approves it, and the clinic sends the link through its own email, WhatsApp or
-  text. FollowThrough Health never sees the patient's address or number.
+- **Patient links go to clinic staff only.** During the evaluation, send approved links only to
+  the clinician's own or a colleague's inbox or phone, to see what a patient would receive.
+  Never send one to a real patient: a link with health information carries privacy risk even
+  when the clinic picks the recipient.
+- **The clinician decides.** The draft is a starting point. Nothing is sent until a clinician
+  approves it, and links go out through the clinic's own email, WhatsApp or text.
+  FollowThrough Health never sees the recipient's address or number.
 - **Not a diagnosis, and not urgent care.** The draft explains results against the lab's
   printed range. Urgent results still go through the clinic's normal process (phone call).
 - The explanation rules are under independent clinical review and may change.
@@ -20,7 +28,7 @@ de-identified labs.
 ## Before the session (you)
 
 - [ ] Send the clinician the demo link to try first: **followthroughhealth.com/#doctor-demo**
-- [ ] Have 2–3 de-identified sample labs ready, or use the built-in sample.
+- [ ] Have the 2–3 synthetic sample labs from `docs/pilot-sample-labs/` ready (PDF and text).
 - [ ] Agree who is the **owner** (manages the team and settings) and who approves (**clinician**).
 
 ## Step 1: Create the account (5 min)
@@ -59,7 +67,8 @@ de-identified labs.
    - **Needs follow-up call:** marks it for a phone call; nothing is sent.
    - **Reject:** nothing is sent.
 8. After approval, tap **Email to patient**, **WhatsApp** or **Text message**. Each opens the clinic's own
-   app with the message written; pick the patient there. Or copy the link.
+   app with the message written. **During the evaluation, send it only to yourself or a
+   colleague**, never to a patient. Or copy the link.
 9. Open the link yourself to see exactly what the patient sees.
 
 The patient link works for **30 days**. **Send a new link** replaces it (the old one stops working
@@ -96,7 +105,7 @@ AI draft, so we can see what doctors change.
 
 | Problem | What to do |
 |---|---|
-| A link went to the wrong person | Turn off the patient link right away, then send a new one to the right person. |
+| A link went to the wrong person | Turn off the patient link right away, and tell us the same day. |
 | A value was read wrong | Don't approve. Fix the explanation, or reject and add the lab again with the corrected text. Tell us which lab layout it was. |
 | Real patient details were entered by mistake | Reject the lab and tell us the same day, so we can delete it. |
 | The page signs out | DocBridge signs out after 15 minutes without activity, for security. Sign in again. |
@@ -106,5 +115,23 @@ AI draft, so we can see what doctors change.
 
 - [ ] Clinician has approved at least one sample lab and opened the patient page.
 - [ ] Team members (if any) joined with the right roles.
-- [ ] Clinic agrees to the pilot rules: de-identified or sample labs only.
-- [ ] Follow-up check-in booked for one week later.
+- [ ] Clinic agrees to the evaluation rules: synthetic labs only, links to clinic staff only.
+- [ ] One-week follow-up meeting booked (30 minutes).
+
+## One-week follow-up meeting (30 minutes)
+
+Ask, and write down the answers in the clinician's own words:
+
+1. **Accuracy:** Were any values read wrongly, or any explanations wrong or misleading? Which lab,
+   which line?
+2. **Edits:** What did you change most often, and why? (We also look at the saved draft/edit pairs.)
+3. **Usability:** Where did you hesitate or get stuck? How long did a review take compared with
+   writing it yourself?
+4. **Workflow:** Where would this fit in your day? What would stop you using it with real
+   patients once the reviews are done?
+5. **Patient view:** Looking at the page a patient would see, is anything unclear, worrying or missing?
+6. **Safety:** Was there any result where the draft should have pushed for faster action, or
+   pushed too hard?
+
+Afterwards: send safety findings to the clinical reviewer (don't change the frozen explanation
+rules directly), log product issues, and share a short summary with the clinic.

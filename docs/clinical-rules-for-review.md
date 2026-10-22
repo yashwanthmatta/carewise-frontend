@@ -12,6 +12,14 @@ The tagged `.2` candidate is unchanged; review the `.3` changes below alongside 
 2. The summary no longer names folate when only vitamin B12 was tested (and the reverse):
    B12 and folate are now separate groups.
 
+**Rules version `2026-10-20.4` (safety defect fix, found while making pilot sample labs).**
+A test name in a heading or a list ("Lipid panel and A1C", "Tests ordered: LDL, vitamin D")
+could take its value from a different test on a later line. Example: "Lipid panel and A1C"
+followed by "Total cholesterol 228" was read as an A1C of 228% and labelled "diabetes range".
+The A1C, LDL, total cholesterol, triglyceride and vitamin D readers now take a value only from
+the same line as the test name, or from the start of the next line ("A1C:" then "7.2 %").
+No threshold or wording changed. Pinned by `scripts/eval/heading-values.mjs`.
+
 ## First, urgent decisions for the reviewer
 
 1. **Critical value that may be misread (photo).** Today: the report stays urgent and says "If the
