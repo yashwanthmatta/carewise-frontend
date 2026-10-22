@@ -6852,3 +6852,21 @@ a.secondary-button {
 .result-card-source { margin-top: 10px; font-size: .9rem; }
 .result-card-source summary { cursor: pointer; color: #1d6b5a; font-weight: 600; }
 .result-card-source code { display: block; margin-top: 6px; padding: 8px 10px; border-radius: 8px; background: #f1f5f4; white-space: pre-wrap; word-break: break-word; font-size: .9rem; }
+
+/* Phones: every stand-alone link and toggle is at least 44px tall to tap */
+@media (max-width: 640px) {
+  .data-use summary,
+  .result-card-source summary,
+  .lp-acc button,
+  .lp-flow > a,
+  .lp-cards article > a,
+  .lp-card-accent > a,
+  .lp-footer nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .data-use summary { justify-content: center; width: 100%; }
+  .data-use p a { display: inline-block; padding: 10px 4px; }
+  .lp-footer nav a { padding: 0 6px; }
+}
