@@ -6069,7 +6069,24 @@ function toggleListen(button) {
 }
 
 // One card per result to talk about: what it is, the exact result, what it can mean, what to ask.
+// The line of the report a card came from, found by the same test name and the exact number,
+// so people can check the reading against their report. Shows nothing rather than guess.
+function sourceLineFor(card) {
+  const reportText = document.querySelector("#report-text")?.value || "";
+  const number = String(card.value || "").match(/\d+(?:[.,]\d+)?/)?.[0];
+  if (!reportText || !number) return "";
+  const test = labTestInfo(card.key);
+  const words = test ? test.aliases : [String(card.plainName || card.name || "").replace(/\s*\(.*\)$/, "").toLowerCase()].filter(Boolean);
+  const numberRe = new RegExp(`(^|[^\\d.,])${number.replace(/[.,]/, "[.,]")}(?![\\d])`);
+  const matches = reportText.split(/\r?\n/).filter((line) => numberRe.test(line) && words.some((word) => {
+    try { return new RegExp(`(^|[^a-z])${word}`, "i").test(line); } catch { return line.toLowerCase().includes(word); }
+  }));
+  return matches.length === 1 ? matches[0].trim().slice(0, 200) : "";
+}
+
 function renderResultCard(card, text) {
+  const line = sourceLineFor(card);
+  const showLine = reportLanguage === "es" ? "Ver la línea de su informe" : "Show the line from your report";
   return `
           <article class="result-card-item result-card-${escapeHtml(card.tone)}">
             <header><strong>${escapeHtml(card.name)}</strong><em>${escapeHtml(card.label)}</em></header>
@@ -6079,6 +6096,7 @@ function renderResultCard(card, text) {
             ${card.what ? `<h5>${escapeHtml(text.whatIs)}</h5><p>${escapeHtml(card.what)}</p>` : ""}
             ${card.meaning ? `<h5>${escapeHtml(text.whatMeans)}</h5><p>${escapeHtml(card.meaning)}</p>` : ""}
             ${card.ask ? `<h5>${escapeHtml(text.askDoctor)}</h5><p class="result-card-ask">“${escapeHtml(card.ask)}”</p>` : ""}
+            ${line ? `<details class="result-card-source"><summary>${escapeHtml(showLine)}</summary><code>${escapeHtml(line)}</code></details>` : ""}
           </article>`;
 }
 
