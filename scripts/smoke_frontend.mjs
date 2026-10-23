@@ -87,7 +87,7 @@ async function main() {
   assertIncludes("script.js", script, "loadLabTrendsFromBackend");
   assertIncludes("script.js", script, "backendLabTrendToLocal");
   assertIncludes("index.html", html, "load-lab-trends");
-  assertIncludes("index.html", html, "Load cloud labs");
+  assertIncludes("index.html", html, "Load my saved labs");
   assertIncludes("script.js", script, "/lab-trends");
   assertIncludes("script.js", script, "detected_report_value");
   assertIncludes("script.js", script, "labValues: analysis.labValues");

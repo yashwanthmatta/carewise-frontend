@@ -15,13 +15,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-193" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-194" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-193" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-194" />
   </head>
   <body>
     <main class="app-shell">
@@ -171,7 +171,7 @@
                 <p class="lp-step">Step 02</p>
                 <h3>Every result, against your lab's range</h3>
                 <p>Kidney, liver, thyroid, blood count, sugar and more: each compared with the range printed on your report.</p>
-                <a href="#tour" data-start-tour>See it in the demo <span aria-hidden="true">→</span></a>
+                <a href="#how-it-works" data-start-tour>See it in the demo <span aria-hidden="true">→</span></a>
                 <div class="lp-window"><header><span></span><span></span><span></span><b>FollowThrough Health</b><em>/ All tests on your report</em></header>
                   <div class="lp-window-body"><div class="lp-pills"><span class="lp-dot-ok">9 within</span><span class="lp-dot-out">2 outside</span><span class="lp-dot-far">1 far outside</span></div>
                   <table class="lp-table"><tr><th>Test</th><th>Result</th><th>Status</th></tr><tr><td>TSH (thyroid)</td><td>9.8</td><td><i class="lp-tag lp-tag-far">Far above</i></td></tr><tr><td>Vitamin B12</td><td>150</td><td><i class="lp-tag lp-tag-out">Below</i></td></tr><tr><td>Sodium</td><td>139</td><td><i class="lp-tag lp-tag-ok">Within</i></td></tr></table></div></div>
@@ -196,10 +196,10 @@
 
             <div class="lp-cards">
               <article><h3>A health record for the whole family</h3><p>Conditions, medicines and what didn't suit each person, kept in one timeline on your device.</p><a href="#record-title">Open the record <span aria-hidden="true">→</span></a></article>
-              <article><h3>Your next 3 steps</h3><p>Three practical steps from your own results, with more ideas one tap away. Each says why ("your LDL is 148") and where the advice comes from.</p><a href="#tour" data-start-tour>See a plan <span aria-hidden="true">→</span></a></article>
+              <article><h3>Your next 3 steps</h3><p>Three practical steps from your own results, with more ideas one tap away. Each says why ("your LDL is 148") and where the advice comes from.</p><a href="#how-it-works" data-start-tour>See a plan <span aria-hidden="true">→</span></a></article>
               <article><h3>CT, MRI and X-ray reports</h3><p>The radiologist's words in plain language. FollowThrough Health never reads the images and never judges findings.</p><a href="#report-title">Explain a scan report <span aria-hidden="true">→</span></a></article>
               <article><h3>Caregiver mode</h3><p>Keep Mum's, Dad's and your own reports apart, and filter history by person.</p><a href="#saved-title">See report history <span aria-hidden="true">→</span></a></article>
-              <article><h3>Private by design</h3><p>Reports are read in your browser. An account is optional and only needed to sync between devices.</p><a href="legal/privacy.html">Read the privacy policy <span aria-hidden="true">→</span></a></article>
+              <article><h3>Private by design</h3><p>Reports are read in your browser. An account is optional; you only need one to see your reports on more than one device.</p><a href="legal/privacy.html">Read the privacy policy <span aria-hidden="true">→</span></a></article>
               <article class="lp-card-accent"><h3>Works on your phone</h3><p>Add FollowThrough Health to your home screen, or use the FollowThrough Health app. Same explanations, same safety rules.</p><a href="#report-title">Start on this phone <span aria-hidden="true">→</span></a></article>
             </div>
           </section>
@@ -307,7 +307,7 @@
             <div>
               <p class="eyebrow">Profile</p>
               <h3 id="account-title">Save reports to your account</h3>
-              <p class="panel-intro">Create an account when you are ready to keep report history synced across devices.</p>
+              <p class="panel-intro">Create a free account when you want your reports on all your devices.</p>
             </div>
             <span id="auth-badge" class="sync-badge offline">Not signed in</span>
           </div>
@@ -334,7 +334,7 @@
           </div>
           <div class="session-card">
             <strong id="signed-in-label">Signed out</strong>
-            <span id="signed-in-detail">You can test report analysis without an account. Sign in when you want cloud sync.</span>
+            <span id="signed-in-detail">Your reports stay on this device. Sign in to keep them on all your devices.</span>
           </div>
           <input type="hidden" id="auth-role" value="patient" />
           <details class="advanced-actions">
@@ -344,20 +344,20 @@
               <button id="delete-account" class="secondary-button" type="button">Delete my account</button>
               <button id="record-consent" class="secondary-button" type="button">Record consent</button>
               <button id="request-email-verification" class="secondary-button" type="button">Verify email</button>
-              <button id="password-reset" class="secondary-button" type="button">Request reset</button>
+              <button id="password-reset" class="secondary-button" type="button">Reset my password</button>
             </div>
             <div class="account-grid">
               <label>
-                Verification token
-                <input id="verify-token" type="text" placeholder="Paste verification token from email" autocomplete="one-time-code" />
+                Email confirmation code
+                <input id="verify-token" type="text" placeholder="Paste the code from the email" autocomplete="one-time-code" />
               </label>
               <label>
-                Verify action
+                Then
                 <button id="confirm-email-verification" class="secondary-button field-button" type="button">Confirm email</button>
               </label>
               <label>
-                Reset token
-                <input id="reset-token" type="text" placeholder="Paste reset token from email" autocomplete="one-time-code" />
+                Password reset code
+                <input id="reset-token" type="text" placeholder="Paste the code from the email" autocomplete="one-time-code" />
               </label>
               <label>
                 New password
@@ -1090,9 +1090,7 @@
             <select id="history-person-filter"><option value="">Everyone</option></select>
           </label>
           <div class="v1-history-list" aria-label="Report history"></div>
-          <div id="saved-plans" class="saved-plans-list">
-            <p>No saved plans yet.</p>
-          </div>
+          <div id="saved-plans" class="saved-plans-list"></div>
         </section>
 
         <section class="panel lab-trend-panel" aria-labelledby="lab-trend-title">
@@ -1103,7 +1101,7 @@
               <p class="panel-intro">Save key lab values from reports so trends are easier to discuss. Ranges vary by lab, age, pregnancy, medicines, and medical history, so a licensed clinician should interpret results.</p>
             </div>
             <div class="inline-action-group">
-              <button id="load-lab-trends" class="secondary-button compact" type="button">Load cloud labs</button>
+              <button id="load-lab-trends" class="secondary-button compact" type="button">Load my saved labs</button>
               <button id="clear-lab-trends" class="secondary-button compact" type="button">Clear labs</button>
             </div>
           </div>
@@ -1158,7 +1156,7 @@
             <button id="copy-lab-trends" class="secondary-button" type="button">Copy lab summary</button>
           </div>
           </details>
-          <p id="lab-trend-status" class="status-line" role="status">Save values from reports before building a visit brief.</p>
+          <p id="lab-trend-status" class="status-line" role="status">Add values from your reports to see how they change over time.</p>
           <div id="lab-trend-list" class="lab-trend-list">
             <p>No lab values saved yet.</p>
           </div>
@@ -2047,12 +2045,12 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-193"></script>
-    <script src="help.js?v=carewise-product-193"></script>
-    <script src="doctor-share.js?v=carewise-product-193"></script>
-    <script src="docbridge.js?v=carewise-product-193"></script>
-    <script src="reminders.js?v=carewise-product-193"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-193"></script>
-    <script src="twofactor.js?v=carewise-product-193"></script>
+    <script src="script.js?v=carewise-product-194"></script>
+    <script src="help.js?v=carewise-product-194"></script>
+    <script src="doctor-share.js?v=carewise-product-194"></script>
+    <script src="docbridge.js?v=carewise-product-194"></script>
+    <script src="reminders.js?v=carewise-product-194"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-194"></script>
+    <script src="twofactor.js?v=carewise-product-194"></script>
   </body>
 </html>
