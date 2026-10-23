@@ -1,0 +1,51 @@
+name: Weekly Readiness Report
+
+# Every Monday: a short report of the last 7 days across the three repositories (CI on main,
+# failed runs, open PRs, open alerts), posted as an issue. Reads public data only.
+on:
+  schedule:
+    - cron: "41 13 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Build the report
+        run: |
+          since=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          {
+            echo "## Week ending $(date -u +%Y-%m-%d)"
+            echo
+            for repo in carewise-frontend carewise-mobile-app carewise-production-backend; do
+              full="yashwanthmatta/$repo"
+              echo "### $repo"
+              echo "- Main: $(gh api "repos/$full/commits?per_page=1" --jq '.[0] | (.sha[0:7] + " " + (.commit.message | split("\n")[0]))')"
+              runs=$(gh api "repos/$full/actions/runs?created=>=$since&per_page=100" --jq '.workflow_runs')
+              echo "- Workflow runs: $(echo "$runs" | jq length), failed: $(echo "$runs" | jq '[.[] | select(.conclusion=="failure")] | length')"
+              echo "$runs" | jq -r '[.[] | select(.conclusion=="failure")] | unique_by(.name) | .[] | "  - Failed: \(.name) (\(.head_branch)) \(.html_url)"'
+              echo "- Open PRs: $(gh api "repos/$full/pulls?state=open" --jq 'length')"
+              gh api "repos/$full/pulls?state=open" --jq '.[] | "  - #\(.number) \(.title)"'
+              echo
+            done
+            echo "### Open production alerts"
+            gh issue list --repo yashwanthmatta/carewise-frontend --label production-alert --state open --json number,title --jq '.[] | "- #\(.number) \(.title)"' || true
+            echo
+            echo "### Release gates (update by hand in the docs)"
+            echo "- Status: docs/PROJECT-STATUS.md"
+            echo "- Security: docs/SECURITY-REVIEW.md"
+            echo "- App Store / Google Play: carewise-mobile-app docs/APP-STORE-READINESS.md, docs/GOOGLE-PLAY-READINESS.md"
+          } > report.md
+          cat report.md
+
+      - name: Post the report
+        run: |
+          gh label create weekly-report --repo "$GITHUB_REPOSITORY" --color 0E8A16 --description "Weekly readiness report" 2>/dev/null || true
+          gh issue create --repo "$GITHUB_REPOSITORY" --label weekly-report --title "Weekly readiness report $(date -u +%Y-%m-%d)" --body-file report.md
