@@ -32,6 +32,9 @@
       <section class="sv-card"><div class="pv-letter">${esc(p.summary).replace(/\n/g, "<br>")}</div></section>
       ${(p.markers || []).length ? `<section class="sv-card"><h2>Your numbers</h2><div class="sv-table"><table><tr><th>Test</th><th>Result</th><th>Usual range</th></tr>${p.markers.map((m) => `<tr${flagged.includes(m) ? ' class="pv-out"' : ""}><td>${esc(m.name)}</td><td>${esc(`${m.value} ${m.unit || ""}`.trim())}${flagged.includes(m) ? '<br><b class="pv-flag">Outside range</b>' : ""}</td><td>${esc(m.range || "—")}</td></tr>`).join("")}</table></div></section>` : ""}
       ${(p.questions || []).length ? `<section class="sv-card"><h2>Good questions for your visit</h2><ol>${p.questions.map((q) => `<li>${esc(q)}</li>`).join("")}</ol></section>` : ""}`;
+    if (p.pilot_demo) {
+      $("sv-summary").insertAdjacentHTML("afterbegin", '<p class="sv-card sv-muted" role="note"><b>Pilot demonstration.</b> This page is part of an evaluation with made-up lab results. It is not for real patient care.</p>');
+    }
     $("sv-loading").hidden = true;
     $("sv-summary").hidden = false;
     $("sv-print").hidden = false;

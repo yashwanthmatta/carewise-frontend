@@ -88,9 +88,9 @@ at once); **Turn off patient link** stops it immediately, for example if it was 
 
 - **Keep labs for:** 30, 60, 90 (default), 180 or 365 days. Older labs are deleted automatically
   each night; the activity log is kept.
-- **Patient follow-up questions:** off by default. If turned on, patients can ask questions answered
-  by AI only from the approved summary and their own values, without a clinician reading each
-  answer. Leave it off for the first weeks.
+- **Patient follow-up questions:** locked off for the whole evaluation. The server refuses to turn
+  them on until their separate safety check is signed off, and the setting isn't shown until then.
+- Every patient page is labelled **"Pilot demonstration"** while DocBridge is pilot-only.
 - **Download activity log (CSV):** a record of actions, with no lab values.
 - Email intake (forwarding lab PDFs to a clinic address) appears only when it has been set up for
   the clinic. Ask before relying on it.

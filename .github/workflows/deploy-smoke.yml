@@ -23,3 +23,15 @@ jobs:
 
       - name: Run live frontend smoke test
         run: node scripts/smoke_frontend.mjs --base-url "${{ inputs.base_url }}"
+
+      - name: Live rules version and HTTPS redirect
+        env:
+          BASE_URL: ${{ inputs.base_url }}
+        run: |
+          version=$(curl -fsS "$BASE_URL/script.js" | grep -o 'EXPLANATION_RULES_VERSION = "[^"]*"' | head -1)
+          test -n "$version" || { echo "No rules version found in the live script"; exit 1; }
+          echo "Live $version"
+          host=${BASE_URL#https://}; host=${host%%/*}
+          code=$(curl -s -o /dev/null -w '%{http_code}' "http://$host/")
+          echo "http://$host/ answered $code"
+          case "$code" in 301|302|307|308) ;; *) echo "Plain http does not redirect to https"; exit 1;; esac
