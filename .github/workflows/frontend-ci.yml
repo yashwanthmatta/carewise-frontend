@@ -54,3 +54,6 @@ jobs:
         run: |
           node scripts/eval/stress.mjs --text 5000 --seed 101
           node scripts/eval/stress.mjs --text 5000 --seed 202 --hard
+
+      - name: Read-aloud says lab values with the same meaning (decimals, units, ranges)
+        run: node scripts/eval/speech-cases.mjs
