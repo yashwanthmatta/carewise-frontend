@@ -493,9 +493,35 @@
         return;
       }
       billingStatus.textContent = "Checkout is not ready yet. Please try again later.";
-    } catch {
+    } catch (error) {
+      if (/\b409\b/.test(String(error && error.message))) {
+        // The account already has a paid plan (from any store); don't send them to pay twice.
+        billingStatus.textContent = await alreadySubscribedMessage();
+        refreshPlan();
+        return;
+      }
       billingStatus.textContent = "Checkout could not open. Check your connection and try again.";
     }
+  }
+
+  // Where the current plan was bought decides where it can be changed.
+  async function alreadySubscribedMessage() {
+    let source = "stripe";
+    let planName = PLAN_NAMES[currentPlan.plan_code] || "a paid plan";
+    try {
+      const entitlement = await apiGet("/subscriptions/entitlements");
+      source = entitlement.source || source;
+      planName = PLAN_NAMES[entitlement.plan_code] || planName;
+    } catch {
+      // Fall back to the website wording.
+    }
+    if (source === "apple") {
+      return `You already have ${planName} through the App Store. To change or cancel it, open Settings on your iPhone, tap your name, then Subscriptions.`;
+    }
+    if (source === "google") {
+      return `You already have ${planName} through Google Play. To change or cancel it, open the Play Store app, tap your profile, then Payments & subscriptions.`;
+    }
+    return `You already have ${planName}, so nothing was charged. To switch or cancel, use "Manage plan" below.`;
   }
 
   async function manageBilling() {
