@@ -3,9 +3,21 @@
 Hand this folder to the reviewing clinician. Engineering is frozen for review: interpretation rules
 and wording change only to fix defects found in this review.
 
+> **Two versions: read this first.** The protected candidate `clinical-review-candidate-2026-10-20.2`
+> is the frozen review version, and its pack below is unchanged. The live website and phone app now
+> run **`2026-10-20.5`**, which adds four changes found after the freeze (a new "Far above / Far
+> below" label, a folate wording fix, and two extraction safety fixes). **None of the .3–.5 changes
+> are clinically validated.** Review the .2 pack as planned, then the .5 changes:
+> - what changed and which of the 160 cases it affects: `releases/rules-2026-10-20.5.md`
+>   (0 urgency changes; 97 wording or label changes)
+> - the same 160 cases with .5 outputs: `clinical-validation-2026-10-20.5/validation-cases.csv`
+> - the extraction regression cases: `../scripts/eval/heading-values.mjs`
+>
+> Record which version each verdict applies to.
+
 | Item | Where |
 |---|---|
-| Frozen rules version | `2026-10-20.2` (`EXPLANATION_RULES_VERSION` in `script.js`; the app's `src/reportView.ts` is generated from it) |
+| Frozen rules version | `2026-10-20.2` (`EXPLANATION_RULES_VERSION` in `script.js`; the app's `src/reportView.ts` is generated from it). Live version: `2026-10-20.5` (see the note above) |
 | Software builds reviewed | Website: commit recorded on the signed report (live at followthroughhealth.com). Phone app: build number from TestFlight / Play internal testing |
 | Rules to approve, with urgent decisions first | `clinical-rules-for-review.md` |
 | Blinded cases (give first, on their own) | `clinical-validation/blinded-cases.csv` (160 synthetic reports, report text only) |
