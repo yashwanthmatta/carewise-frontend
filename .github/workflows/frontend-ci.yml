@@ -23,6 +23,10 @@ jobs:
         run: |
           node --check script.js
           node --check sw.js
+          node --check reminders.js
+
+      - name: Reminder calendar test
+        run: node scripts/reminder_calendar_test.mjs
 
       - name: Check app shell cache version
         run: |
