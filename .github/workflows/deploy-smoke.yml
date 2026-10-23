@@ -28,10 +28,15 @@ jobs:
         env:
           BASE_URL: ${{ inputs.base_url }}
         run: |
-          version=$(curl -fsS "$BASE_URL/script.js" | grep -o 'EXPLANATION_RULES_VERSION = "[^"]*"' | head -1)
-          test -n "$version" || { echo "No rules version found in the live script"; exit 1; }
-          echo "Live $version"
+          # Follow redirects (www may forward to the main domain) and report what was found.
+          final=$(curl -sSL -o /dev/null -w '%{url_effective}' "$BASE_URL/")
+          echo "::notice::$BASE_URL/ ends at $final"
+          version=$(curl -fsSL "$BASE_URL/script.js" | grep -o 'EXPLANATION_RULES_VERSION = "[^"]*"' | head -1)
+          if [ -z "$version" ]; then echo "::error::No rules version found in the live script"; exit 1; fi
+          echo "::notice::Live $version"
           host=${BASE_URL#https://}; host=${host%%/*}
           code=$(curl -s -o /dev/null -w '%{http_code}' "http://$host/")
-          echo "http://$host/ answered $code"
-          case "$code" in 301|302|307|308) ;; *) echo "Plain http does not redirect to https"; exit 1;; esac
+          target=$(curl -s -o /dev/null -w '%{redirect_url}' "http://$host/")
+          echo "::notice::http://$host/ answered $code -> $target"
+          case "$code" in 301|302|307|308) ;; *) echo "::error::Plain http does not redirect"; exit 1;; esac
+          case "$target" in https://*) ;; *) echo "::error::Plain http redirects to $target, not https"; exit 1;; esac
