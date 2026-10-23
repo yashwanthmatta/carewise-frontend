@@ -2997,7 +2997,7 @@ function handleEmailVerificationToken() {
   const verifyToken = new URLSearchParams(window.location.search).get("verify_token");
   if (!verifyToken) return;
   document.querySelector("#verify-token").value = verifyToken;
-  authStatus.textContent = "Verification token loaded. Confirm your email.";
+  authStatus.textContent = "Email link opened. Tap Confirm email to finish.";
 }
 
 function updateAuthStatus(message) {
@@ -3006,11 +3006,11 @@ function updateAuthStatus(message) {
   authBadge.className = `sync-badge ${signedIn && emailVerified ? "online" : "offline"}`;
   signedInLabel.textContent = signedIn ? `Signed in${authEmail ? ` as ${authEmail}` : ""}` : "Signed out";
   signedInDetail.textContent = signedIn
-    ? `Role: ${authRole || document.querySelector("#auth-role").value}. Email: ${emailVerified ? "verified" : "not verified"}. Patient link: ${backendPatientId || "not synced yet"}.`
-    : "Protected sync is available after signup or login.";
+    ? (emailVerified ? "Email verified. Reports you save to your account appear on all your devices." : "Please verify your email: open the link we sent you.")
+    : "Your reports stay on this device. Sign in to keep them on all your devices.";
   authStatus.textContent = message || (signedIn
-    ? "Account is ready. You can sync profile, consent, medications, and care plans."
-    : "Create an account or log in to use the production backend.");
+    ? "You're signed in."
+    : "You can explain reports without an account. Create one to save them.");
   refreshReviewDemoProof();
 }
 
@@ -3076,7 +3076,7 @@ async function ensureTeamReviewSession() {
       reviewDemoStatus.textContent = "Team account created and signed in. Next, generate or sync the review plan.";
     } catch {
       reviewDemoStatus.textContent = "Team account login/signup failed. Check backend status or use Account screen manually.";
-      updateAuthStatus("Team account login/signup failed. Check backend status or credentials.");
+      updateAuthStatus("Sign-in failed. Check your email and password, and your connection.");
     }
   }
 }
@@ -3172,7 +3172,7 @@ async function requestPasswordReset() {
       ? "Reset email queued. Check your inbox for the reset link."
       : "FollowThrough Health could not email a reset link right now. Please try again later. Reports explained on this device are still here.");
   } catch {
-    updateAuthStatus("Password reset request failed. Check backend status and try again.");
+    updateAuthStatus("We couldn't send the reset email. Check your connection and try again.");
   }
 }
 
@@ -3192,14 +3192,14 @@ async function requestEmailVerification() {
       ? "Email is already verified."
       : "Verification email queued. Check your inbox for the link.");
   } catch {
-    updateAuthStatus("Email verification request failed. Check backend status.");
+    updateAuthStatus("We couldn't send the confirmation email. Check your connection and try again.");
   }
 }
 
 async function confirmEmailVerification() {
   const token = document.querySelector("#verify-token").value.trim();
   if (!token) {
-    updateAuthStatus("Paste the email verification token first.");
+    updateAuthStatus("Paste the code from your confirmation email first.");
     return;
   }
   try {
@@ -3221,7 +3221,7 @@ async function confirmPasswordReset() {
   const token = document.querySelector("#reset-token").value.trim();
   const newPassword = document.querySelector("#reset-password").value;
   if (!token) {
-    updateAuthStatus("Paste the reset token first.");
+    updateAuthStatus("Paste the code from your password reset email first.");
     return;
   }
   if (newPassword.length < 12) {
@@ -3255,7 +3255,7 @@ function logout() {
   addAuditEvent("account_logout", "Signed out locally and cleared backend patient link.");
   renderAuditTrail();
   updateAuthStatus("Signed out. Local prototype data is still on this device.");
-  setBackendStatus(backendAvailable, backendAvailable ? "Backend is available. Sign in again to sync." : "Signed out. Backend is offline.");
+  setBackendStatus(backendAvailable, backendAvailable ? "Signed out." : "Signed out.");
 }
 
 // Deletes the account and everything saved with it on the server, straight away
@@ -3297,7 +3297,7 @@ function clearAuthSession() {
 async function recordConsentToBackend(showStatus = true) {
   const accepted = document.querySelector("#privacy-consent").checked;
   if (!authToken) {
-    if (showStatus) updateAuthStatus("Sign in before recording consent to the backend.");
+    if (showStatus) updateAuthStatus("Sign in first to record your consent.");
     return;
   }
   try {
@@ -3421,13 +3421,13 @@ async function checkBackend(showSuccess) {
     await loadSubscriptionPlans();
     const authHint = authToken && sessionOk ? "Signed in and verified." : "Sign in to enable protected sync.";
     setBackendStatus(true, `${health.service} is connected. ${authHint} ${backendPatientId ? "Patient link is ready." : "Sync profile to create a patient record."}`);
-    if (showSuccess) updateAuthStatus(authToken ? "Backend verified your session." : "Backend is online. Sign up or log in next.");
+    if (showSuccess) updateAuthStatus(authToken ? "You're signed in." : "Ready. Create an account or log in.");
     renderReportHistory();
     renderHomeReadiness(true);
     renderLaunchProof();
     return true;
   } catch {
-    setBackendStatus(false, "Backend is offline. Local browser storage is still active.");
+    setBackendStatus(false, "The FollowThrough Health server isn't reachable right now. Reports are still explained on this device.");
     backendReadiness = {};
     renderHomeReadiness(false);
     renderSecurityReadiness();
@@ -3462,7 +3462,7 @@ async function verifyCurrentSession() {
     localStorage.setItem("carewiseEmailVerified", String(emailVerified));
     document.querySelector("#auth-email").value = authEmail;
     document.querySelector("#auth-role").value = authRole;
-    updateAuthStatus("Session verified with backend.");
+    updateAuthStatus("You're signed in.");
     return true;
   } catch {
     const refreshed = await refreshAuthSession();
@@ -4083,7 +4083,7 @@ function profileToBackendPayload(profile) {
 
 async function ensureBackendPatient(showStatus = true) {
   if (!authToken) {
-    if (showStatus) updateAuthStatus("Sign in before creating a backend patient profile.");
+    if (showStatus) updateAuthStatus("Sign in first to save your profile.");
     return "";
   }
   const online = backendAvailable || await checkBackend(false);
@@ -4101,7 +4101,7 @@ async function syncProfileToBackend(showStatus = true) {
   try {
     const patientId = await ensureBackendPatient(showStatus);
     if (!patientId) {
-      if (showStatus) setBackendStatus(false, "Start the backend before syncing profile data.");
+      if (showStatus) setBackendStatus(false, "The server isn't reachable right now. Try again in a minute.");
       renderReviewDemoChecklist();
       renderReviewDemoGuidance();
       return;
@@ -4193,7 +4193,7 @@ async function loadBackendAuditEvents() {
     }
     const online = backendAvailable || await checkBackend(false);
     if (!online) {
-      setBackendStatus(false, "Start the backend before loading consent history.");
+      setBackendStatus(false, "The server isn't reachable right now. Try again in a minute.");
       return;
     }
     const response = await apiGet("/consent/history");
@@ -4207,7 +4207,7 @@ async function loadBackendAuditEvents() {
     renderAuditTrail();
     setBackendStatus(true, `Loaded ${events.length} backend consent record${events.length === 1 ? "" : "s"}.`);
   } catch {
-    setBackendStatus(false, "Could not load backend consent history.");
+    setBackendStatus(false, "Could not load your consent history.");
   }
 }
 
@@ -4982,7 +4982,7 @@ function renderReportHistory() {
     if (reportHistoryList) {
       reportHistoryList.innerHTML = `
         <article>
-          <div><strong>No reports saved yet</strong><span>Upload first</span></div>
+          <div><strong>No reports saved yet</strong><span>Add a report first</span></div>
           <p>Add a lab PDF or type your results to see plain-English explanations here.</p>
         </article>
       `;
@@ -7049,7 +7049,7 @@ async function saveDetectedValuesToTrends() {
   renderVisitBriefs();
   addAuditEvent("detected_report_values_saved", `${labValues.length} detected report value${labValues.length === 1 ? "" : "s"} saved to lab trends${syncedCount ? `; ${syncedCount} synced to backend` : ""}.`);
   renderAuditTrail();
-  reportStatus.textContent = `${labValues.length} detected value${labValues.length === 1 ? "" : "s"} saved to lab trends${syncedCount ? ` and ${syncedCount} synced to backend` : ""}. Verify with the original report.`;
+  reportStatus.textContent = `${labValues.length} detected value${labValues.length === 1 ? "" : "s"} saved to lab trends${syncedCount ? ` and ${syncedCount} saved to your account` : ""}. Verify with the original report.`;
 }
 
 function buildReportQuestionPack(analysis) {
@@ -7220,7 +7220,7 @@ async function uploadReport() {
       reportStatus.textContent = "Choose a report file or paste report text before uploading.";
       return;
     }
-    reportStatus.textContent = file ? "Uploading report file to private cloud storage." : "Saving report text to backend.";
+    reportStatus.textContent = file ? "Saving the report file to your account." : "Saving the report to your account.";
     const response = file
       ? await uploadReportFile(patientId, file, reportText)
       : await apiPost("/reports/upload", {
@@ -7245,7 +7245,7 @@ async function uploadReport() {
     renderAuditTrail();
     reportStatus.textContent = `Report uploaded securely: ${response.id}. Run analysis next.`;
   } catch (error) {
-    reportStatus.textContent = error.message.includes("401") ? "Report upload needs login again." : `Report upload failed. ${error.message || "Check backend status."}`;
+    reportStatus.textContent = error.message.includes("401") ? "Report upload needs login again." : "Saving the report failed. Check your connection and try again.";
   }
 }
 
@@ -7274,7 +7274,7 @@ async function analyzeLatestReport() {
       reportStatus.textContent = "Saving readable report text before analysis.";
       await apiPut(`/reports/${latestReportId}/text`, { report_text: reportText });
     }
-    reportStatus.textContent = "Analyzing report through FollowThrough Health backend.";
+    reportStatus.textContent = "Explaining your report.";
     const response = await apiPost(`/reports/${latestReportId}/analyze`, {});
     const displayAnalysis = buildBackendReportDisplayAnalysis(response, reportText);
     const message = response.summary?.message || "Report education summary generated.";
@@ -7316,7 +7316,7 @@ async function analyzeLatestReport() {
   } catch (error) {
     if (getLocalReportText()) {
       runLocalReportAnalysis();
-      reportStatus.textContent = "Backend analysis was unavailable, so FollowThrough Health generated a local educational summary.";
+      reportStatus.textContent = "Explained on this device.";
       return;
     }
     reportStatus.textContent = error.message.includes("404") ? "Report not found. Upload again." : "Report analysis failed. Check backend status.";
@@ -7710,7 +7710,7 @@ function getSavedPlans() {
 function renderSavedPlans() {
   const plans = getSavedPlans();
   if (!plans.length) {
-    savedPlans.innerHTML = "<p>No saved plans yet.</p>";
+    savedPlans.innerHTML = "";
     return;
   }
   savedPlans.innerHTML = plans.map((plan) => {
