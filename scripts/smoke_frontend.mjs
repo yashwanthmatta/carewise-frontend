@@ -59,7 +59,7 @@ async function main() {
     throw new Error(`Cache version mismatch: index has ${htmlVersion}, service worker has ${swVersion}`);
   }
 
-  assertIncludes("index.html", html, "Understand your health reports in simple English.");
+  assertIncludes("index.html", html, "Understand Mom's or Dad's lab report in plain English.");
   assertIncludes("index.html", html, "diagnosis, prescription, emergency service");
   assertIncludes("index.html", html, "licensed professional");
   assertIncludes("index.html", html, "legal/privacy.html");
