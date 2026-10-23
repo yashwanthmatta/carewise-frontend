@@ -42,7 +42,7 @@ Note: GitHub turns off scheduled workflows in a repository with no activity for 
 
 1. ⛔ **Clinical review not done** (.2 pack plus the .3–.5 changes). Owner and clinician.
 2. ⛔ **Production database accepts connections from any address** (`0.0.0.0/0`). Owner, after confirming the private connection.
-3. ⛔ **Paid plans in the phone app use Stripe web checkout.** Likely rejected by Apple (3.1.1) and Google Play Billing rules. Owner billing decision.
+3. ✅ ~~Paid plans in the phone app use Stripe web checkout.~~ Resolved 2026-10-23 (owner approved): the app sells nothing; plans are sold on the website only (carewise-mobile-app PR #44). **Note:** no feature is locked behind a paid plan yet, so paid plans currently earn nothing. The owner needs to decide what Plus includes.
 4. ⛔ **Apple Developer and Play Console accounts, and signing.** Owner.
 5. ⛔ **No written AI-provider retention terms** (Anthropic). Owner.
 6. 🟡 Saved results and lab values aren't app-encrypted (design ready, needs security review).

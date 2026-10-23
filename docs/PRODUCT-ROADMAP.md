@@ -10,7 +10,7 @@ without clinician review and a new rules version.
 |---|---|---|---|---|---|
 | 1 | Clinical review of .2 plus the .3–.5 changes | Required before any clinical claim or real patients | — | Clinician time | Owner arranges |
 | 2 | Restrict database network access | Highest open security risk | Low if the private URL is confirmed first | 10 min | Owner action |
-| 3 | Billing in the mobile app: remove in-app purchase for v1, or add store billing | Store rules (Apple 3.1.1, Play Billing) | Low (remove) or medium (store billing) | Small (remove) or large (store billing) | **Needs approval** |
+| 3 | ✅ Done: app sells nothing in v1; plans on the website. **Next:** decide which features Plus and Family unlock (none are locked today) | Revenue | Low | Medium | **Needs approval** (pricing) |
 | 4 | Apple and Google accounts, EAS signing, TestFlight and closed testing builds | Needed to test real builds | Low | 1–2 days of owner setup | Owner |
 | 5 | Real-device, VoiceOver and TalkBack session | Accessibility and crash risk on real phones | — | 1 hour | Owner arranges testers |
 | 6 | External 5-minute uptime monitor with email alerts | GitHub schedules are best-effort | None | 15 min | Owner account |
