@@ -26,6 +26,26 @@ result) taken from the test's own name. A number directly followed by "hydroxy" 
 now never read as the vitamin D value. No threshold or wording changed. Pinned by
 `scripts/eval/heading-values.mjs`.
 
+**Rules version `2026-10-20.6` (three safety defect fixes, found in the 2026-10-23 code re-check).**
+0. *The digit in "Vitamin D3" / "D2+D3" was read as the result* ("Vitamin D3 25 ng/mL" gave 3). The
+   vitamin D reader now skips the D2/D3 suffix. Pinned by `scripts/eval/heading-values.mjs`.
+1. *A repeated test lost its second value.* "Potassium 4.1 mmol/L" then "Potassium 6.9 mmol/L"
+   was explained as "All 1 tests read from your report are within the lab's ranges" (routine);
+   the 6.9 was dropped. "Previous result: LDL 98" then "Current result: LDL 151" was explained as
+   LDL 98, "In a better range". Now, when a test is printed again with a different value, the
+   more concerning reading is used (higher for LDL, total cholesterol, triglycerides and A1C; a
+   danger-level, critical or far-out-of-range reading for other tests), and a new finding
+   "More than one result" names the other value and tells the person to ask which is current.
+   Goals ("LDL goal <100"), ratios and repeats of the same value do not count.
+2. *A number glued to letters was read as a result.* An OCR misread "A1c S.9 %" was read as an
+   A1C of 9 % ("Clinician review important"); "Glucose 1O8" as a glucose of 1 mg/dL ("possible
+   danger level"). Such numbers are now not read at all.
+
+No threshold changed. New wording: the "More than one result" finding and one doctor question
+(English and Spanish). Effect on the 160 review cases and the 68 accuracy reports: **0 changed**.
+Pinned by `scripts/eval/repeat-and-misread-values.mjs` and the app's `report_cases_check.js`.
+Record: `releases/rules-2026-10-20.6.md`.
+
 ## First, urgent decisions for the reviewer
 
 1. **Critical value that may be misread (photo).** Today: the report stays urgent and says "If the
