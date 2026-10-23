@@ -252,6 +252,9 @@ const LAB_TESTS = [
 ];
 const UNIT_PATTERN = /(?:x\s?10\^?E?\d+\s?\/\s?[uµμ]?l|10\^?\d+\s?\/\s?[uµμ]?l|[km]\/[uµμ]l|thousand\/[uµμ]l|million\/[uµμ]l|cells\/[uµμ]l|ml\/min(?:\/1\.73\s?m2)?|mg\/dl|(?:[uµμ]|mc)g\/dl|(?:[uµμ]|mc)g\/l|(?:[uµμ]|mc)g\/ml|gm\/dl|g\/dl|g\/l|mg\/l|lakhs?\s?\/\s?(?:cu\.?\s?mm|[uµμ]l)|lakhs?|mmol\/l|[uµμ]mol\/l|nmol\/l|pmol\/l|meq\/l|miu\/l|[uµμ]iu\/ml|iu\/l|u\/l|ng\/ml|ng\/dl|ng\/l|pg\/ml|mm\/hr?|seconds|sec|fl|pg|%)/i;
 const RANGE_PATTERN = /(\d+(?:\.\d+)?)\s*(?:-|–|to)\s*(\d+(?:\.\d+)?)|(<=?|>=?|≤|≥)\s*(\d+(?:\.\d+)?)/;
+// Dates ("2025-03-01", "03/01/2025", "01.03.2025", never a range like "8.6-10.3") are blanked out before a range is looked for, so a date is
+// never read as the lab's range.
+const DATE_PATTERN = /\b\d{4}-\d{1,2}-\d{1,2}\b|\b\d{1,2}\/\d{1,2}\/\d{2,4}\b|\b\d{1,2}\.\d{1,2}\.\d{4}\b/g;
 const FLAG_PATTERN = /(?:^|[\s(])(HH|LL|H|L|High|Low|HIGH|LOW|Critical|CRITICAL|CRIT|Panic|PANIC|Abnormal|ABNORMAL)(?=[\s*)]|$)/;
 const COMPILED = LAB_TESTS.map((test) => ({ test, patterns: test.aliases.map((alias) => new RegExp(`\\b${alias}\\b`, "i")) }));
 function statusFrom(value, flag, low, high, bound) {
@@ -496,6 +499,10 @@ function readLabPanel(text) {
         // A repeat counts only when it is a plain result with a unit or range, not a goal like "<100".
         if (repeat && valueMatch[1])
             return;
+        // A blank result: the only number is the start of the range ("Potassium  mmol/L  3.5-5.1").
+        // Read nothing rather than calling the range's low end the result.
+        if (!valueMatch[1] && /^\s*(?:-|–|to)\s*\d/.test(rest.slice(numberAt + valueMatch[2].length)))
+            return;
         const value = Number(valueMatch[2]);
         let after = rest.slice(valueMatch.index + valueMatch[0].length);
         const unitMatch = after.match(UNIT_PATTERN);
@@ -503,6 +510,7 @@ function readLabPanel(text) {
         if (unitMatch && unitMatch.index !== undefined)
             after = after.slice(0, unitMatch.index) + " " + after.slice(unitMatch.index + unitMatch[0].length);
         const flag = after.match(FLAG_PATTERN)?.[1] ?? "";
+        after = after.replace(DATE_PATTERN, " ");
         const range = after.match(RANGE_PATTERN);
         if (repeat && !unit && !range)
             return;
@@ -5534,7 +5542,8 @@ const LAB_FOOTNOTE = String.raw`(?:\b0\d\s+\D{0,12}?)?`;
 const LAB_UNIT = String.raw`\s*(?:(?:h|l|hh|ll|hi|lo|high|low|\*)\s+(?=mmol|mg|%))?(mmol\s*\/\s*mol|mmol\s*\/\s*l|mg\s*\/\s*dl|%)?`;
 
 // The value must not start inside a word, so the "1" in "Hemoglobin A1c" is never read as a result.
-// A number glued to letters is a misread ("s.9" for 5.9, "1o8" for 108), so it is not read at all.
+// A number glued to letters is a misread ("s.9" for 5.9, "1o8" for 108), and a number that starts a
+// range ("a1c % 4.0-5.6" with the result left blank) is the range, not a result: neither is read.
 // When the same test is printed again with a different value ("Previous result: LDL 98" then
 // "LDL 151"), the higher reading is used (every caller is a test where higher is worse) and the
 // other value is reported through onRepeat, so an older or lower value never reassures on its own.
@@ -5543,7 +5552,7 @@ function readLabMeasure(text, namePattern, maxGap = 24, onRepeat) {
   // "7.2 %"). It is never taken from another test further down: in "Lipid panel and A1C" then
   // "Total cholesterol 228", 228 is not an A1C.
   const gap = `([^\\d\\n]{0,${maxGap}}?|[^\\d\\n]{0,${maxGap}}?(?:\\n[ \\t:]*){1,2})`;
-  const pattern = new RegExp(`${namePattern}${gap}${LAB_FOOTNOTE}(?<![a-z])(?<![a-z][.,])(\\d+(?:\\.\\d+)?)(?![oil|]\\d)${LAB_UNIT}`, "gi");
+  const pattern = new RegExp(`${namePattern}${gap}${LAB_FOOTNOTE}(?<![a-z])(?<![a-z][.,])(\\d+(?:\\.\\d+)?)(?![\\d.]\\d|[oil|]\\d)(?!\\s*(?:-|–|to)\\s*\\d)${LAB_UNIT}`, "gi");
   const matches = [...text.matchAll(pattern)];
   if (!matches.length || matches[0].index === undefined) return null;
   const measure = (match) => {

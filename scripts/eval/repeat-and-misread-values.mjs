@@ -1,7 +1,8 @@
 // Rules 2026-10-20.6. A test printed twice with different values must never lose the second,
 // more concerning value ("Potassium 4.1" then "Potassium 6.9" was explained as "all within the
 // lab's ranges"), and a number glued to letters ("S.9", "1O8") must never be read as a result
-// (it was read as an A1C of 9 % and a glucose of 1 mg/dL). Found in the 2026-10-23 re-check.
+// (it was read as an A1C of 9 % and a glucose of 1 mg/dL). A blank result must not take the low end of
+// its range, and a date must not be read as a range (round 3, R3-01 and R3-03). Found 2026-10-23.
 // Usage: serve the site on :4173, then node scripts/eval/repeat-and-misread-values.mjs
 const { chromium } = await import("playwright").catch(() => import("/opt/node22/lib/node_modules/playwright/index.mjs"));
 const base = process.env.CAREWISE_EVAL_URL || "http://localhost:4173/";
@@ -28,6 +29,17 @@ const CASES = [
     (r) => r.panel.glucose === undefined && r.risk !== "urgent"],
   ["dot leaders still read", "HbA1c.......5.9 % 4.0-5.6",
     (r) => r.labs.A1C === 5.9],
+  // Round 3 (R3-01, R3-03): a blank result never takes the range's low end; a date is never the range.
+  ["blank potassium does not take the range's 3.5", "Test  Result  Units  Range\nPotassium        mmol/L  3.5-5.1\nSodium  140  mmol/L  135-145",
+    (r) => r.panel.potassium === undefined && r.panel.sodium === "140"],
+  ["blank A1C does not take the range's 4.0", "Hemoglobin A1c  %  4.0-5.6\nGlucose 95 mg/dL 70-99",
+    (r) => r.labs.A1C === undefined],
+  ["blank LDL does not take the range's 0", "LDL cholesterol  mg/dL  0-99\nHDL cholesterol 52 mg/dL >40",
+    (r) => r.labs["LDL cholesterol"] === undefined],
+  ["a date is never the range", "Previous result: Potassium 6.9 mmol/L (2025-03-01)\nPotassium 4.2 mmol/L 3.5-5.1",
+    (r) => r.risk === "urgent" && r.panelRange.potassium !== "2025-03" && r.panelStatus.potassium !== "below"],
+  ["a value and its range still read", "Potassium 4.1 mmol/L 3.5-5.1",
+    (r) => r.panel.potassium === "4.1" && r.panelStatus.potassium === "within"],
   ["Spanish wording for a repeat", "Potassium 4.1 mmol/L 3.5-5.1\nPotassium 6.9 mmol/L 3.5-5.1",
     (r) => r.es.some((d) => d.startsWith("Su informe muestra otro resultado de"))],
 ];
@@ -46,6 +58,8 @@ for (const [name, text, check] of CASES) {
       risk: a.riskLevel,
       labs: Object.fromEntries((a.labValues || []).map((v) => [v.label, v.value])),
       panel: Object.fromEntries((a.panelResults || []).map((p) => [p.key, p.valueText])),
+      panelRange: Object.fromEntries((a.panelResults || []).map((p) => [p.key, p.rangeText])),
+      panelStatus: Object.fromEntries((a.panelResults || []).map((p) => [p.key, p.status])),
       repeats: a.findings.filter((f) => f.level === "More than one result").map((f) => f.label),
       es,
     };
