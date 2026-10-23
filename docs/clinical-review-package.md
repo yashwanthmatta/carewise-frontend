@@ -19,6 +19,7 @@ and wording change only to fix defects found in this review.
 |---|---|
 | Frozen rules version | `2026-10-20.2` (`EXPLANATION_RULES_VERSION` in `script.js`; the app's `src/reportView.ts` is generated from it). Live version: `2026-10-20.5` (see the note above) |
 | Software builds reviewed | Website: commit recorded on the signed report (live at followthroughhealth.com). Phone app: build number from TestFlight / Play internal testing |
+| Cover note to send with this folder | `clinical-review-cover-note.md` |
 | Rules to approve, with urgent decisions first | `clinical-rules-for-review.md` |
 | Blinded cases (give first, on their own) | `clinical-validation/blinded-cases.csv` (160 synthetic reports, report text only) |
 | App outputs for the same cases (give after the blinded answers) | `clinical-validation/validation-cases.csv` (urgency level, rule that fired, summary, cards, steps, all tests) |

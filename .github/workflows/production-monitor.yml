@@ -1,0 +1,82 @@
+name: Production Monitor
+
+# Checks the live website and API with read-only requests (no sign-ups, no real data).
+# GitHub runs scheduled jobs on a best-effort basis (often hours apart), so this is a
+# backstop: minute-level uptime alerts need an external monitor (docs/PROJECT-STATUS.md).
+# A failure opens a "production-alert" issue; the next passing run closes it.
+on:
+  schedule:
+    - cron: "11 * * * *"     # hourly (best effort)
+    - cron: "37 6 * * *"     # nightly full check
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SITE: https://followthroughhealth.com
+      WWW: https://www.followthroughhealth.com
+      API: https://carewise-api.onrender.com
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Website, redirects, certificate and rules version
+        id: site
+        run: |
+          set -u
+          fail=0
+          note() { echo "$1"; echo "- $1" >> report.md; }
+          for url in "$SITE/" "$WWW/"; do
+            code=$(curl -sL -o /dev/null -w '%{http_code}' --max-time 30 "$url"); note "$url -> $code"; [ "$code" = 200 ] || fail=1
+          done
+          for host in followthroughhealth.com www.followthroughhealth.com; do
+            r=$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' --max-time 30 "http://$host/"); note "http://$host/ -> $r"
+            case "$r" in 30[1278]\ https://*) ;; *) fail=1;; esac
+          done
+          end=$(echo | openssl s_client -servername followthroughhealth.com -connect followthroughhealth.com:443 2>/dev/null | openssl x509 -noout -enddate | cut -d= -f2)
+          days=$(( ( $(date -d "$end" +%s) - $(date +%s) ) / 86400 ))
+          note "TLS certificate expires in $days days ($end)"; [ "$days" -ge 14 ] || fail=1
+          version=$(curl -fsSL --max-time 30 "$SITE/script.js" | grep -o 'EXPLANATION_RULES_VERSION = "[^"]*"' | head -1)
+          note "Live ${version:-NO RULES VERSION FOUND}"; [ -n "$version" ] || fail=1
+          exit $fail
+
+      - name: API health and readiness (read-only)
+        if: always()
+        run: |
+          fail=0
+          note() { echo "$1"; echo "- $1" >> report.md; }
+          # The free API plan sleeps; allow time to wake.
+          h=$(curl -s -o /dev/null -w '%{http_code}' --max-time 90 --retry 2 --retry-delay 10 "$API/health"); note "$API/health -> $h"; [ "$h" = 200 ] || fail=1
+          ready=$(curl -s --max-time 60 "$API/ready"); note "$API/ready -> $(echo "$ready" | head -c 300)"
+          echo "$ready" | grep -q '"database"[^,}]*true' || fail=1
+          exit $fail
+
+      - name: Live page smoke test
+        if: always()
+        run: |
+          node scripts/smoke_frontend.mjs --base-url "$SITE" && echo "- Live page smoke test passed" >> report.md || { echo "- Live page smoke test FAILED" >> report.md; exit 1; }
+
+      - name: Open or close the alert issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OUTCOME: ${{ job.status }}
+        run: |
+          open=$(gh issue list --repo "$GITHUB_REPOSITORY" --label production-alert --state open --json number --jq '.[0].number')
+          run="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          if [ "$OUTCOME" = "success" ]; then
+            [ -n "$open" ] && gh issue close "$open" --repo "$GITHUB_REPOSITORY" --comment "Recovered: all production checks passed ($run)." || true
+          else
+            gh label create production-alert --repo "$GITHUB_REPOSITORY" --color B60205 --description "Live site or API check failed" 2>/dev/null || true
+            body=$(printf 'A production check failed.\n\n%s\n\nRun: %s' "$(cat report.md 2>/dev/null)" "$run")
+            if [ -n "$open" ]; then gh issue comment "$open" --repo "$GITHUB_REPOSITORY" --body "$body"
+            else gh issue create --repo "$GITHUB_REPOSITORY" --label production-alert --title "Production check failed" --body "$body"; fi
+          fi
