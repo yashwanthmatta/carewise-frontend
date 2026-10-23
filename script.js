@@ -5658,10 +5658,10 @@ function analyzeReportTextLocally(rawText) {
   const triglycerides = readTriglyceridesMgDl(lower);
   const a1c = readA1cPercent(lower);
   // Skip the "25-hydroxy" / "25-OH" in the test name so it is not read as the value.
-  const vitaminD = readReportNumber(lower, [/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?(?:[^\d\n]{0,24}?|[^\d\n]{0,24}?(?:\n[ \t:]*){1,2})(\d+(?:\.\d+)?)(?![\d.]|[\s-]*(?:hydroxy|oh)\b)/i]);
+  const vitaminD = readReportNumber(lower, [/vitamin d(?:[23](?:\s*[+/&]\s*d?[23])?(?![\d.]))?(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?(?:[^\d\n]{0,24}?|[^\d\n]{0,24}?(?:\n[ \t:]*){1,2})(?<![a-z])(\d+(?:\.\d+)?)(?![\d.]|[\s-]*(?:hydroxy|oh)\b)/i]);
   const systolic = readReportNumber(lower, [/(?:blood pressure|\bbp\b)\D{0,60}(\d{2,3})\s*\/\s*\d{2,3}/i]);
   const diastolic = readReportNumber(lower, [/(?:blood pressure|\bbp\b)\D{0,60}\d{2,3}\s*\/\s*(\d{2,3})/i]);
-  const vitaminDMatch = lower.match(/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?(?:[^\d\n]{0,24}?|[^\d\n]{0,24}?(?:\n[ \t:]*){1,2})\d+(?:\.\d+)?(?![\d.]|[\s-]*(?:hydroxy|oh)\b)([^\n]{0,60})/i);
+  const vitaminDMatch = lower.match(/vitamin d(?:[23](?:\s*[+/&]\s*d?[23])?(?![\d.]))?(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?(?:[^\d\n]{0,24}?|[^\d\n]{0,24}?(?:\n[ \t:]*){1,2})(?<![a-z])\d+(?:\.\d+)?(?![\d.]|[\s-]*(?:hydroxy|oh)\b)([^\n]{0,60})/i);
   if (vitaminDMatch) vitaminDMatch[1] = cutAtNextTest(vitaminDMatch[1]);
   // European and UK labs report vitamin D in nmol/L; the common 30 ng/mL cut-off is about 75 nmol/L.
   const vitaminDUnit = vitaminDMatch && /^[^a-z]*(?:(?:h|l|hi|lo|high|low|\*)\s+)?(?:[\d.,/\s]*)nmol\s*\/\s*l/i.test(vitaminDMatch[1]) ? "nmol/L" : "ng/mL";
@@ -6341,7 +6341,7 @@ function downloadLabReminder(dateText) {
 
 // Version of the interpretation rules and wording below. Change it whenever a rule, threshold or
 // explanation changes, so every output can be traced to the rules that produced it.
-const EXPLANATION_RULES_VERSION = "2026-10-20.5";
+const EXPLANATION_RULES_VERSION = "2026-10-20.6";
 
 // Plain-language guide per test: what it is, what a high or low result can mean, and a
 // question for the doctor. Educational wording only: no diagnosis, medicine names or doses.
