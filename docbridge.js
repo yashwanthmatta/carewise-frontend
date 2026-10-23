@@ -15,7 +15,7 @@
   // Nothing is sent to the server. The patient link carries the sample packet in its #hash.
   let demo = false;
   let demoState = null;
-  const DEMO_CLINIC = { id: "demo", name: "Sample Family Practice", clinician_name: "Dr. Sample", member_role: "owner", tone: "friendly", retention_days: 90, patient_qa_enabled: false, intake_address: "" };
+  const DEMO_CLINIC = { id: "demo", name: "Sample Family Practice", clinician_name: "Dr. Sample", member_role: "owner", tone: "friendly", retention_days: 90, patient_qa_enabled: false, patient_qa_available: false, intake_address: "" };
 
   function demoReset() {
     demoState = { packets: [], audit: {}, seq: 1000 };
@@ -726,6 +726,8 @@
     $("db-set-tone").value = clinic.tone || "friendly";
     $("db-set-retention").value = String(clinic.retention_days || 90);
     $("db-set-qa").checked = Boolean(clinic.patient_qa_enabled);
+    // Locked on the server until the safety check is signed off; don't offer it until then.
+    $("db-set-qa").closest("label").hidden = !clinic.patient_qa_available;
   }
   $("db-settings-form").addEventListener("submit", async (event) => {
     event.preventDefault();

@@ -20,6 +20,12 @@ The A1C, LDL, total cholesterol, triglyceride and vitamin D readers now take a v
 the same line as the test name, or from the start of the next line ("A1C:" then "7.2 %").
 No threshold or wording changed. Pinned by `scripts/eval/heading-values.mjs`.
 
+**Rules version `2026-10-20.5` (safety defect fix, found while extending the `.4` tests).**
+A line reading "Vitamin D, 25-hydroxy" with no result was read as a vitamin D of 25 (a low
+result) taken from the test's own name. A number directly followed by "hydroxy" or "OH" is
+now never read as the vitamin D value. No threshold or wording changed. Pinned by
+`scripts/eval/heading-values.mjs`.
+
 ## First, urgent decisions for the reviewer
 
 1. **Critical value that may be misread (photo).** Today: the report stays urgent and says "If the
