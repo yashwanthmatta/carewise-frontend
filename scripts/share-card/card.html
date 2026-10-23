@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  @font-face { font-family: "Inter Tight"; font-weight: 500; src: url("../../assets/fonts/inter-tight-latin-500-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Inter Tight"; font-weight: 600; src: url("../../assets/fonts/inter-tight-latin-600-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Inter Tight"; font-weight: 700; src: url("../../assets/fonts/inter-tight-latin-700-normal.woff2") format("woff2"); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body { font-family: "Inter Tight", sans-serif; background: linear-gradient(135deg, #f5fbf8 0%, #def7ec 100%); color: #17211f; display: grid; grid-template-columns: 1fr 470px; gap: 48px; padding: 64px 72px; align-items: center; }
+  .brand { font-weight: 700; font-size: 26px; color: #08766e; letter-spacing: -0.01em; }
+  .brand span { color: #17b8ae; }
+  h1 { font-weight: 700; font-size: 58px; line-height: 1.06; letter-spacing: -0.02em; margin: 26px 0 22px; }
+  p { font-weight: 500; font-size: 24px; line-height: 1.35; color: #3d4f4b; margin: 0; }
+  .url { margin-top: 30px; display: inline-block; font-weight: 600; font-size: 22px; color: #fff; background: #08766e; padding: 12px 18px; border-radius: 12px; }
+  .card { border-radius: 22px; overflow: hidden; box-shadow: 0 24px 60px rgba(20, 37, 33, 0.16); background: #fff; }
+  .lab, .plain { padding: 26px 28px; }
+  .cap { font-weight: 600; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7; margin-bottom: 10px; display: flex; justify-content: space-between; }
+  .stamp { border: 2px solid #c88a16; color: #a86f0c; border-radius: 6px; padding: 2px 8px; letter-spacing: 0.1em; opacity: 1; }
+  .lab { background: #fbfaf6; font-family: ui-monospace, "DejaVu Sans Mono", monospace; font-size: 26px; color: #2c2c26; }
+  .lab b { color: #b23a2b; }
+  .plain { background: #08766e; color: #fff; font-weight: 600; font-size: 27px; line-height: 1.32; }
+  .foot { margin-top: 14px; font-size: 16px; color: #5b6d69; font-weight: 500; text-align: right; }
+</style>
+</head>
+<body>
+  <div>
+    <div class="brand">FollowThrough <span>Health</span></div>
+    <h1>Mom's lab report, in plain English.</h1>
+    <p>Every result next to the lab's own range, with questions for the doctor. English and Español.</p>
+    <div class="url">Try it with a made-up report</div>
+  </div>
+  <div>
+    <div class="card">
+      <div class="lab"><div class="cap"><span>What the lab printed</span><span class="stamp">Sample</span></div>TSH&nbsp;&nbsp;9.8&nbsp;<b>H</b><br />(0.4–4.0 mIU/L)</div>
+      <div class="plain"><div class="cap">What you read</div>Far above the lab's range. One to talk to the doctor about.</div>
+    </div>
+    <div class="foot">Education, not a diagnosis.</div>
+  </div>
+</body>
+</html>

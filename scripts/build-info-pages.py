@@ -16,6 +16,7 @@ CSS='''.pg-nav { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.95r
       details.pg-q:first-of-type { border-top: 0; }
       details.pg-q summary { cursor: pointer; font-weight: 600; min-height: 28px; }
       details.pg-q p, details.pg-q ul { margin: 8px 0 0; }'''
+SHARE_ALT="A sample lab line, TSH 9.8 H, next to its plain-English meaning: far above the lab's range, one to talk to the doctor about."
 def page(fname, title, desc, eyebrow, h1, lede, body):
     doc=f'''<!doctype html>
 <html lang="en">
@@ -25,6 +26,17 @@ def page(fname, title, desc, eyebrow, h1, lede, body):
     <title>{html.escape(title)} | FollowThrough Health</title>
     <meta name="description" content="{html.escape(desc)}" />
     <link rel="canonical" href="https://followthroughhealth.com/{fname}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="FollowThrough Health" />
+    <meta property="og:title" content="{html.escape(title)} | FollowThrough Health" />
+    <meta property="og:description" content="{html.escape(desc)}" />
+    <meta property="og:url" content="https://followthroughhealth.com/{fname}" />
+    <meta property="og:image" content="https://followthroughhealth.com/assets/og/share-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="{html.escape(SHARE_ALT)}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://followthroughhealth.com/assets/og/share-card.png" />
     <link rel="icon" href="assets/carewise-app-icon.svg" />
     <link rel="stylesheet" href="share.css?v=carewise-product-195" />
     <style>
