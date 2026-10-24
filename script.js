@@ -7039,7 +7039,7 @@ ${buildHealthHistoryBriefSection(person)}
 <h2>Patient questions</h2><ol>${questions}</ol>
 <h2>Clinician notes</h2><div class="notes-box"></div>
 <p class="note">Educational summary only, not a diagnosis. Values were read automatically from the report; please confirm them against the original report. Explanation rules version ${escapeHtml(view.rulesVersion)}.</p>
-<button type="button" onclick="window.print()">Print or save as PDF</button>
+<button type="button" data-brief-print>Print or save as PDF</button>
 </body></html>`;
 }
 
@@ -7056,6 +7056,8 @@ function openDoctorBrief() {
   }
   briefWindow.document.write(buildDoctorBriefHtml(latestReportAnalysis, latestReportPerson));
   briefWindow.document.close();
+  // Attached here rather than inline: the site's Content-Security-Policy blocks inline handlers.
+  briefWindow.document.querySelector("[data-brief-print]")?.addEventListener("click", () => briefWindow.print());
   reportStatus.textContent = "Doctor brief opened in a new tab. Print it or save it as a PDF for your visit.";
 }
 
