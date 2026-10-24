@@ -21,3 +21,11 @@ services:
       - path: /*
         name: Permissions-Policy
         value: camera=(self), microphone=(), geolocation=(), payment=(), usb=()
+      # Only this site, its API, Google Fonts and jsdelivr (PDF reader fallback) may supply code
+      # or data. Tested by scripts/eval/csp-check.mjs; change both places together.
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self'; connect-src 'self' https://carewise-api.onrender.com https://cdn.jsdelivr.net; worker-src 'self' blob:; frame-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+      - path: /*
+        name: Cross-Origin-Opener-Policy
+        value: same-origin

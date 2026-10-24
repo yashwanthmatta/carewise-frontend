@@ -46,6 +46,17 @@ jobs:
           note "TLS certificate expires in $days days ($end)"; [ "$days" -ge 14 ] || fail=1
           version=$(curl -fsSL --max-time 30 "$SITE/script.js" | grep -o 'EXPLANATION_RULES_VERSION = "[^"]*"' | head -1)
           note "Live ${version:-NO RULES VERSION FOUND}"; [ -n "$version" ] || fail=1
+          # Content-Security-Policy is required: as a header, or the <meta> tag every page carries.
+          headers=$(curl -sI --max-time 30 "$SITE/" | tr -d '\r')
+          page=$(curl -fsSL --max-time 30 "$SITE/")
+          if echo "$headers" | grep -qi "^content-security-policy:" || echo "$page" | grep -q 'http-equiv="Content-Security-Policy"'; then note "Content-Security-Policy present"; else note "Content-Security-Policy MISSING"; fail=1; fi
+          # These can only be set in the Render dashboard (the host ignores render.yaml headers):
+          # warn until they are, without opening an alert every hour.
+          missing=""
+          for h in strict-transport-security x-frame-options x-content-type-options; do
+            echo "$headers" | grep -qi "^$h:" || missing="$missing $h"
+          done
+          if [ -n "$missing" ]; then note "Headers not served:$missing"; echo "::warning::Set these response headers in Render (carewise-frontend > Settings > Headers):$missing"; else note "HSTS, X-Frame-Options and nosniff served"; fi
           exit $fail
 
       - name: API health and readiness (read-only)
@@ -57,6 +68,9 @@ jobs:
           h=$(curl -s -o /dev/null -w '%{http_code}' --max-time 90 --retry 2 --retry-delay 10 "$API/health"); note "$API/health -> $h"; [ "$h" = 200 ] || fail=1
           ready=$(curl -s --max-time 60 "$API/ready"); note "$API/ready -> $(echo "$ready" | head -c 300)"
           echo "$ready" | grep -q '"database"[^,}]*true' || fail=1
+          echo "$ready" | grep -q 'CAREWISE_JWT_SECRET' && echo "::warning::API readiness advisory: the token signing secret is shorter than 32 characters"
+          api_headers=$(curl -sI --max-time 60 "$API/health" | tr -d '\r')
+          echo "::notice::API security headers: HSTS $(echo "$api_headers" | grep -qi '^strict-transport-security:' && echo yes || echo no), no-store $(echo "$api_headers" | grep -qi '^cache-control: no-store' && echo yes || echo no)"
           exit $fail
 
       - name: Live page smoke test
