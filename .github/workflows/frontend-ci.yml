@@ -49,6 +49,15 @@ jobs:
           sleep 2
           node scripts/eval/run-eval.mjs
 
+      - name: Content-Security-Policy does not break the site
+        run: |
+          python3 scripts/serve_with_headers.py 4174 &
+          sleep 2
+          node scripts/eval/csp-check.mjs
+          # Same checks with no response headers, as the live host serves it (policy from <meta>).
+          CAREWISE_CSP_URL=http://localhost:4173/ node scripts/eval/csp-check.mjs
+          python3 scripts/csp_meta.py --check
+
       - name: Safety cases (emergency symptoms, critical values)
         run: node scripts/eval/safety-cases.mjs
 
@@ -60,6 +69,9 @@ jobs:
 
       - name: Test names in headings never take another test's value
         run: node scripts/eval/heading-values.mjs
+
+      - name: Share-packet PDF (labs, summary, top 3 questions)
+        run: node scripts/eval/share-packet-pdf.mjs
 
       - name: Randomized report check (standard and hard reports)
         run: |

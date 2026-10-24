@@ -728,6 +728,7 @@ const REPORT_TRANSLATIONS = {
       copySummary: "Copiar resumen",
       shareSummary: "Compartir resumen",
       doctorBrief: "Resumen para el médico",
+      packetPdf: "PDF para el médico",
       shareDoctor: "Compartir con mi médico",
       listen: "Escuchar",
       stopListening: "Detener",
@@ -869,6 +870,7 @@ const REPORT_UI_EN = {
   copySummary: "Copy summary",
   shareSummary: "Share summary",
   doctorBrief: "Doctor brief",
+  packetPdf: "PDF for the doctor",
   shareDoctor: "Share with my doctor",
   listen: "Listen",
   stopListening: "Stop",
@@ -1419,7 +1421,7 @@ reportResults?.addEventListener("click", (event) => {
   const action = event.target.closest("[data-report-action]")?.dataset.reportAction;
   // While a number read from a photo waits for confirmation, nothing built from it is copied,
   // shared, printed or saved, so a misread value cannot reach trends or a doctor.
-  if (["copy-summary", "share-summary", "doctor-brief", "share-doctor", "save-detected-values"].includes(action) && unsureOcrKeys().length) {
+  if (["copy-summary", "share-summary", "doctor-brief", "packet-pdf", "share-doctor", "save-detected-values"].includes(action) && unsureOcrKeys().length) {
     reportStatus.textContent = reportLanguage === "es"
       ? "Primero confirme los números marcados como \"Revise este número\"; luego podrá copiar, compartir o guardar."
       : "Confirm the numbers marked \"Check this number\" first; then you can copy, share or save.";
@@ -1430,6 +1432,7 @@ reportResults?.addEventListener("click", (event) => {
   if (action === "copy-questions") copyReportQuestions();
   if (action === "copy-plan") copyPersonalPlan();
   if (action === "doctor-brief") openDoctorBrief();
+  if (action === "packet-pdf") downloadSharePacketPdf();
   if (action === "share-doctor") window.openDoctorShare?.();
   if (action === "listen") toggleListen(event.target.closest("[data-report-action]"));
   if (action === "lab-reminder") {
@@ -6882,6 +6885,7 @@ function renderLocalReportAnalysis(analysis) {
               <button class="secondary-button compact" type="button" data-report-action="copy-summary">${escapeHtml(ui.copySummary)}</button>
               <button class="secondary-button compact" type="button" data-report-action="share-summary">${escapeHtml(ui.shareSummary)}</button>
               <button class="primary-button compact" type="button" data-report-action="doctor-brief">${escapeHtml(ui.doctorBrief)}</button>
+              <button class="secondary-button compact" type="button" data-report-action="packet-pdf">${escapeHtml(ui.packetPdf)}</button>
               <button class="secondary-button compact" type="button" data-report-action="share-doctor">${escapeHtml(ui.shareDoctor)}</button>
               ${canListen() ? `<button class="secondary-button compact" type="button" data-report-action="listen" data-listen-label="${escapeHtml(ui.listen)}" data-stop-label="${escapeHtml(ui.stopListening)}" aria-pressed="false">${escapeHtml(ui.listen)}</button>` : ""}
               <select data-report-language aria-label="Report language">${Object.entries(REPORT_LANGUAGES).map(([code, name]) => `<option value="${code}"${code === reportLanguage ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
@@ -7039,8 +7043,217 @@ ${buildHealthHistoryBriefSection(person)}
 <h2>Patient questions</h2><ol>${questions}</ol>
 <h2>Clinician notes</h2><div class="notes-box"></div>
 <p class="note">Educational summary only, not a diagnosis. Values were read automatically from the report; please confirm them against the original report. Explanation rules version ${escapeHtml(view.rulesVersion)}.</p>
-<button type="button" onclick="window.print()">Print or save as PDF</button>
+<button type="button" data-brief-print>Print or save as PDF</button>
 </body></html>`;
+}
+
+// A real PDF of the share packet (labs, summary, top 3 questions), built on the device: no
+// library, no upload, nothing extra loaded. Text-only PDF with the standard Helvetica fonts.
+const PDF_HELVETICA_WIDTHS = [278, 278, 355, 556, 556, 889, 667, 191, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 278, 278, 584, 584, 584, 556, 1015, 667, 667, 722, 722, 667, 611, 778, 722, 278, 500, 667, 556, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611, 278, 278, 278, 469, 556, 333, 556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556, 556, 556, 556, 333, 500, 278, 556, 500, 722, 500, 500, 500, 334, 260, 334, 584];
+const PDF_WINANSI_EXTRA = { "€": 0x80, "…": 0x85, "‘": 0x91, "’": 0x92, "“": 0x93, "”": 0x94, "•": 0x95, "–": 0x96, "—": 0x97 };
+const PDF_ASCII_FALLBACK = { "→": "->", "←": "<-", "≥": ">=", "≤": "<=", "×": "x", "·": "-", "−": "-", " ": " " };
+
+function pdfTextWidth(text, size, bold) {
+  let units = 0;
+  for (const ch of text) {
+    const code = ch.charCodeAt(0);
+    units += code >= 32 && code <= 126 ? PDF_HELVETICA_WIDTHS[code - 32] : 556;
+  }
+  return (units * size * (bold ? 1.07 : 1)) / 1000;
+}
+
+function pdfSafeText(text) {
+  let out = "";
+  for (const ch of String(text ?? "").normalize("NFC")) {
+    if (PDF_ASCII_FALLBACK[ch]) out += PDF_ASCII_FALLBACK[ch];
+    else if (PDF_WINANSI_EXTRA[ch] || (ch.charCodeAt(0) >= 32 && ch.charCodeAt(0) <= 255)) out += ch;
+    else if (ch === "\n" || ch === "\t") out += " ";
+    else out += "?";
+  }
+  return out;
+}
+
+function pdfString(text) {
+  let out = "(";
+  for (const ch of text) {
+    const code = PDF_WINANSI_EXTRA[ch] || ch.charCodeAt(0);
+    if (ch === "(" || ch === ")" || ch === "\\") out += `\\${ch}`;
+    else if (code > 126 || code < 32) out += `\\${code.toString(8).padStart(3, "0")}`;
+    else out += ch;
+  }
+  return `${out})`;
+}
+
+function pdfWrap(text, size, width, bold) {
+  const lines = [];
+  let line = "";
+  for (const word of pdfSafeText(text).split(/\s+/).filter(Boolean)) {
+    const next = line ? `${line} ${word}` : word;
+    if (line && pdfTextWidth(next, size, bold) > width) {
+      lines.push(line);
+      line = word;
+    } else line = next;
+  }
+  if (line) lines.push(line);
+  return lines.length ? lines : [""];
+}
+
+function buildPdfDocument(blocks) {
+  const pageW = 612;
+  const pageH = 792;
+  const margin = 54;
+  const width = pageW - margin * 2;
+  const pages = [];
+  let ops = [];
+  let y = pageH - margin;
+  const newPage = () => { if (ops.length) pages.push(ops.join("\n")); ops = []; y = pageH - margin; };
+  const ensure = (h) => { if (y - h < margin + 24) newPage(); };
+  const text = (x, str, size, bold, gray = false) => {
+    ops.push(`BT /${bold ? "F2" : "F1"} ${size} Tf ${gray ? "0.25 0.33 0.31" : "0.08 0.19 0.17"} rg ${x.toFixed(1)} ${y.toFixed(1)} Td ${pdfString(str)} Tj ET`);
+  };
+  const rule = (thick = 0.6) => { ops.push(`${thick} w 0.06 0.46 0.43 RG ${margin} ${y.toFixed(1)} m ${pageW - margin} ${y.toFixed(1)} l S`); };
+  for (const block of blocks) {
+    if (block.type === "title") {
+      const lines = pdfWrap(block.text, 18, width, true);
+      ensure(lines.length * 22 + 18);
+      lines.forEach((line, i) => { if (i) y -= 22; text(margin, line, 18, true); });
+      y -= 10; rule(2); y -= 16;
+    } else if (block.type === "heading") {
+      ensure(36);
+      y -= 6; text(margin, pdfSafeText(block.text), 12.5, true); y -= 16;
+    } else if (block.type === "para" || block.type === "note") {
+      const size = block.type === "note" ? 9 : 10.5;
+      for (const line of pdfWrap(block.text, size, width - (block.indent || 0), block.bold)) {
+        ensure(size + 4);
+        text(margin + (block.indent || 0), line, size, block.bold, block.type === "note");
+        y -= size + 4;
+      }
+      y -= 4;
+    } else if (block.type === "table") {
+      const cols = block.columns;
+      const sizes = 9.5;
+      const drawRow = (cells, bold) => {
+        const wrapped = cells.map((cell, i) => pdfWrap(cell, sizes, cols[i] - 6, bold));
+        const h = Math.max(...wrapped.map((w) => w.length)) * (sizes + 3) + 4;
+        ensure(h);
+        wrapped.forEach((lines, i) => {
+          const x = margin + cols.slice(0, i).reduce((a, b) => a + b, 0);
+          const top = y;
+          lines.forEach((line, j) => { y = top - j * (sizes + 3); text(x, line, sizes, bold); });
+          y = top;
+        });
+        y -= h;
+        ops.push(`0.4 w 0.84 0.9 0.88 RG ${margin} ${(y + sizes - 1).toFixed(1)} m ${pageW - margin} ${(y + sizes - 1).toFixed(1)} l S`);
+      };
+      drawRow(block.header, true);
+      block.rows.forEach((row) => drawRow(row, false));
+      y -= 6;
+    } else if (block.type === "list") {
+      block.items.forEach((item, index) => {
+        const lines = pdfWrap(item, 10.5, width - 18, false);
+        lines.forEach((line, j) => {
+          ensure(15);
+          if (j === 0) text(margin, `${block.ordered ? `${index + 1}.` : "-"}`, 10.5, false);
+          text(margin + 18, line, 10.5, false);
+          y -= 14.5;
+        });
+      });
+      y -= 4;
+    }
+  }
+  newPage();
+  // Footer with page numbers on every page.
+  const total = pages.length;
+  const pageStreams = pages.map((content, i) => `${content}\nBT /F1 8 Tf 0.25 0.33 0.31 rg ${margin} 30 Td ${pdfString(`FollowThrough Health share packet - page ${i + 1} of ${total} - educational summary, not a diagnosis`)} Tj ET`);
+  const objects = [];
+  const add = (body) => { objects.push(body); return objects.length; };
+  const catalog = add(null);
+  const pagesObj = add(null);
+  const f1 = add("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>");
+  const f2 = add("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>");
+  const kids = [];
+  for (const stream of pageStreams) {
+    const bytes = new TextEncoder().encode(stream).length;
+    const content = add(`<< /Length ${bytes} >>\nstream\n${stream}\nendstream`);
+    kids.push(add(`<< /Type /Page /Parent ${pagesObj} 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /Font << /F1 ${f1} 0 R /F2 ${f2} 0 R >> >> /Contents ${content} 0 R >>`));
+  }
+  objects[catalog - 1] = `<< /Type /Catalog /Pages ${pagesObj} 0 R >>`;
+  objects[pagesObj - 1] = `<< /Type /Pages /Kids [${kids.map((k) => `${k} 0 R`).join(" ")}] /Count ${kids.length} >>`;
+  const info = add(`<< /Title ${pdfString("FollowThrough Health share packet")} /Producer ${pdfString("FollowThrough Health")} >>`);
+  // Content streams are ASCII only (non-ASCII is octal-escaped), so string length equals byte length.
+  let pdf = "%PDF-1.4\n";
+  const offsets = [];
+  objects.forEach((body, i) => { offsets.push(pdf.length); pdf += `${i + 1} 0 obj\n${body}\nendobj\n`; });
+  const xref = pdf.length;
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n${offsets.map((o) => `${String(o).padStart(10, "0")} 00000 n \n`).join("")}`;
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root ${catalog} 0 R /Info ${info} 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  return new TextEncoder().encode(pdf);
+}
+
+function buildSharePacketPdf(analysis, person = "Me") {
+  const view = buildReportView(analysis, "en");
+  const questions = reportQuestions(analysis, view, "en").slice(0, 3);
+  const blocks = [
+    { type: "title", text: person === "Me" ? "Lab summary for clinician review" : `Lab summary for clinician review: ${person}` },
+    { type: "para", bold: true, text: "Patient-generated educational summary. Verify every value against the original laboratory report." },
+    { type: "note", text: `Prepared ${new Date().toLocaleDateString()}. Source: ${briefSourceText()}. Explanation rules version ${view.rulesVersion}.` },
+  ];
+  if (view.headline) {
+    blocks.push({ type: "heading", text: "Summary" }, { type: "para", text: `${view.headline}. ${view.body.join(" ")}` });
+  }
+  if (view.tests.length) {
+    blocks.push({ type: "heading", text: "Tests on the report (compared with the lab's printed range)" });
+    blocks.push({ type: "table", columns: [170, 110, 110, 114], header: ["Test", "Result", "Lab range", "Status"], rows: view.tests.map((t) => [t.name, t.value, t.range || "not printed", t.label]) });
+  } else if ((analysis.labValues || []).length) {
+    blocks.push({ type: "heading", text: "Values found in the report" });
+    blocks.push({ type: "table", columns: [200, 150, 154], header: ["Test", "Value", "Note"], rows: analysis.labValues.map((v) => [v.label, `${v.value} ${v.unit}`.trim(), v.flag]) });
+  }
+  if (analysis.scan) {
+    blocks.push({ type: "heading", text: `Imaging report (${analysis.scan.en.modality || "imaging"}), from the radiologist's text only` });
+    blocks.push(analysis.scan.en.followUps.length
+      ? { type: "list", items: analysis.scan.en.followUps.map((f) => `"${f.sentence}"`) }
+      : { type: "para", text: "No follow-up lines were flagged in the report text." });
+  }
+  if (analysis._changes?.rows?.length) {
+    blocks.push({ type: "heading", text: `Changes since the previous report (${analysis._changes.since})` });
+    blocks.push({ type: "list", items: analysis._changes.rows.map((r) => `${r.name}: ${r.before} -> ${r.now} ${r.unit} (${changeLabel(r, CHANGE_TEXT.en)})`) });
+  }
+  if (ocrReviewed.length) {
+    blocks.push({ type: "heading", text: "Numbers read from a photo and checked by the patient" }, { type: "list", items: ocrReviewed });
+  }
+  blocks.push({ type: "heading", text: "Top questions for the visit" });
+  blocks.push(questions.length ? { type: "list", ordered: true, items: questions } : { type: "para", text: "None prepared." });
+  blocks.push({ type: "note", text: "Educational summary only, not a diagnosis or treatment advice. Values were read automatically from the report; please confirm them against the original report." });
+  return buildPdfDocument(blocks);
+}
+
+async function downloadSharePacketPdf() {
+  trackReportUsage("share_packet_pdf");
+  if (!latestReportAnalysis) {
+    reportStatus.textContent = "Analyze a report first, then save the PDF.";
+    return;
+  }
+  const bytes = buildSharePacketPdf(latestReportAnalysis, latestReportPerson);
+  const stamp = new Date().toISOString().slice(0, 10);
+  const name = `followthrough-lab-summary-${stamp}.pdf`;
+  const file = typeof File === "function" ? new File([bytes], name, { type: "application/pdf" }) : null;
+  // On phones, the share sheet lets the person email it to their doctor in one tap.
+  if (file && navigator.canShare?.({ files: [file] }) && matchMedia("(pointer: coarse)").matches) {
+    try {
+      await navigator.share({ files: [file], title: "Lab summary for my doctor" });
+      reportStatus.textContent = "PDF ready. Choose Mail or another app to send it to your doctor.";
+      return;
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+    }
+  }
+  const url = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
+  const link = Object.assign(document.createElement("a"), { href: url, download: name });
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+  reportStatus.textContent = `Saved ${name}. Attach it to an email or bring it to the visit, with the original report.`;
 }
 
 function openDoctorBrief() {
@@ -7056,6 +7269,8 @@ function openDoctorBrief() {
   }
   briefWindow.document.write(buildDoctorBriefHtml(latestReportAnalysis, latestReportPerson));
   briefWindow.document.close();
+  // Attached here rather than inline: the site's Content-Security-Policy blocks inline handlers.
+  briefWindow.document.querySelector("[data-brief-print]")?.addEventListener("click", () => briefWindow.print());
   reportStatus.textContent = "Doctor brief opened in a new tab. Print it or save it as a PDF for your visit.";
 }
 
