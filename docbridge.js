@@ -82,7 +82,7 @@
       Object.assign(p, body, { status: "approved", approved_by_name: DEMO_CLINIC.clinician_name, approved_at: new Date().toISOString(), link_active: true,
         edited: body.summary !== p.draft || JSON.stringify(body.questions) !== JSON.stringify(p.draft_questions),
         review_seconds: Math.max(1, Math.round((Date.now() - p.created_at) / 1000)) });
-      demoLog(p.id, p.edited ? "Approved with edits (AI draft and edited version both kept)" : "Approved as drafted");
+      demoLog(p.id, p.edited ? "Approved with edits (automatic draft and edited version both kept)" : "Approved as drafted");
       return { ...p, patient_token: demoToken(p) };
     }
     if (action === "new-link") {
@@ -381,8 +381,8 @@
     const { summary, questions } = editPayload();
     const changed = summary.trim() !== original.summary.trim() || questions.join("\n") !== original.questions.join("\n");
     $("db-edit-note").textContent = changed
-      ? "You changed the draft. Approving sends your version; the AI draft and your edits are both kept."
-      : "No changes yet. Approving now sends the AI draft as it is.";
+      ? "You changed the draft. Approving sends your version; the automatic draft and your edits are both kept."
+      : "No changes yet. Approving now sends the automatic draft as it is.";
   }
 
   function resetToOriginal() {
@@ -390,7 +390,7 @@
     $("db-summary").value = current.original.summary;
     $("db-questions").value = current.original.questions.join("\n");
     updateEditNote();
-    say("Your version is back to the AI draft. Nothing is saved until you save or approve.");
+    say("Your version is back to the automatic draft. Nothing is saved until you save or approve.");
   }
 
   function patientUrl(token) {
@@ -485,7 +485,7 @@
   // Many PDFs at once: each is read on this device and saved as its own draft with a
   // fresh reference code. File names stay on this device (they may hold patient names).
   async function createBatchDrafts(files) {
-    if (!$("db-deid").checked) return say("Please confirm the labs are de-identified or samples. That's required during the pilot.");
+    if (!$("db-deid").checked) return say("Please confirm these are synthetic sample labs. That's required during the evaluation.");
     const rows = [];
     let made = 0;
     for (const [index, file] of files.entries()) {
@@ -520,7 +520,7 @@
     if (files.length > 1) return createBatchDrafts(files);
     const patientRef = $("db-patient-ref").value.trim();
     if (!patientRef) return say("Add a patient reference (an ID or initials, never a full name).");
-    if (!$("db-deid").checked) return say("Please confirm the lab is de-identified or a sample. That's required during the pilot.");
+    if (!$("db-deid").checked) return say("Please confirm this is a synthetic sample lab. That's required during the evaluation.");
     say("Reading the lab on this device…");
     let text = "";
     try {

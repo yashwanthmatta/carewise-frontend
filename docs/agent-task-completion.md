@@ -88,7 +88,43 @@ tools can read it but not change it.
 ready (`docs/clinical-review-package.md`). DocBridge stays synthetic-only, and patient questions stay
 locked on the server.
 
-## T7. Doctor outreach: DocBridge pilot recruitment kit
+## T7. Legal, compliance and advertising review (legal agent)
+
+**Status: PARTIALLY COMPLETE.** Every part that can be done without counsel, a clinician or
+account owners is done and tested. Legal-page wording changes, clinical items and account settings
+are **BLOCKED** on human approval (not legal advice; no approval is claimed).
+
+| Requirement | Done | Evidence |
+|---|---|---|
+| Audit website, app, backend, legal pages and data flows | ✅ (source) | `docs/legal-advertising-review.md`. The live site could not be fetched from the agent environment; the repo's production monitor says live matches main |
+| FDA, HIPAA, FTC, HBNR, TCPA, state law, ARL assessment with sources and dates | ✅ | Register §2, §5, §8 (checked 2026-10-23; only Apple's page could be opened directly) |
+| Claim review: BLOCK / REVIEW / ACCEPTABLE WITH EVIDENCE, with wording, location, fix, proof, approvals | ✅ | Register §2 (LA-01 to LA-23) |
+| Social and paid ad policy review; concept evaluations | ✅ | `docs/advertising-library.md` §3, §4 |
+| Ad library: 10 IG, 10 FB, 5 TikTok, 5 Google Search, 5 YouTube Shorts, 5 LinkedIn | ✅ drafts | `docs/advertising-library.md` §5–§10 (all DRAFT, pending counsel) |
+| Marketing privacy rules; analytics inspected for leakage | ✅ | Library §2; register LA-14 (no trackers), LA-15 (OTEL) |
+| App Store / Play metadata consistency | ✅ drafts fixed | Mobile PR #45 |
+| Safe copy fixes (no rules or legal pages changed) | ✅ | This PR: "AI draft" → "automatic draft"; synthetic-only DocBridge copy; "any"/"every"/"lifetime" claims |
+| Tests that detect prohibited claims | ✅ | `scripts/claims_audit.mjs` (13 rules) + CI step; fails on the pre-fix copy (24 hits), passes now |
+| Reminder call callback number (TCPA) | ✅ code | Backend PR #47 (said when `CAREWISE_REMINDER_CALLBACK_NUMBER` is set) |
+| Checkout auto-renewal notice | ✅ code | Backend PR #47 (`custom_text`) |
+| Legal-page corrections (encryption overclaim LA-02, vendor table, synthetic-only, disclaimer) | ⛔ BLOCKED | Exact text in register §6; needs counsel approval |
+| Paid plans unlock nothing (LA-01) | ⛔ BLOCKED | Owner decision on plan contents or relabelling |
+| Stripe ToS consent box, refund policy, cancel billing on account deletion | ⛔ BLOCKED | Counsel (Terms, refund) and owner (Stripe dashboard terms URL) |
+| Urgency wording / FDA question (LA-04), Spanish wording | ⛔ BLOCKED | Clinician and regulatory counsel |
+| Re-record DocBridge demo video without the "AI draft" label | Open | Owner or engineering |
+| Continuous review | ✅ CI only | Claims check runs on every push and PR. No other scheduled legal monitoring exists |
+
+Tests run 2026-10-23:
+- Frontend: syntax, smoke, reference audit, claims check, cache version, 34 safety cases, OCR resolution, heading values, accuracy eval (68 reports, 100% value and flag accuracy), stress (2,000 reports).
+- Backend: 130 pytest passed, ruff clean.
+- Mobile: `release:check`, `store:check`, `review:check`, `ci:check` (typecheck).
+
+PRs:
+- Frontend: legal review PR on `claude/agent-legal` (this branch)
+- Backend: https://github.com/yashwanthmatta/carewise-production-backend/pull/47
+- Mobile: https://github.com/yashwanthmatta/carewise-mobile-app/pull/45
+
+## T8. Doctor outreach: DocBridge pilot recruitment kit
 
 **Status: COMPLETE.** The kit is built and checked. Sending anything is the founder's job.
 
@@ -123,6 +159,8 @@ pilot, patient follow-up questions are off. The kit points doctors to the no-sig
 - Copy buttons copy, or select the text when the clipboard is blocked: pass.
 - Reply emails under 130 words (70 to 106), LinkedIn note under 300 characters (223), answers to
   common questions make no compliance or validation claims: pass.
+- Everything you would send or say (emails, scripts, answers) passes the same claim rules as
+  `scripts/claims_audit.mjs`, including "drafts are rule-based, not AI": pass (36 checks in all).
 - Scripts say "made-up sample labs only", make no "HIPAA compliant", "clinically validated" or
   "proven" claims, and link to the demo: pass.
 
@@ -138,9 +176,10 @@ built; no personal emails looked up.
   30-day pilot. The shorter ask fits inside it. Change it if you want them to match.
 - Add your business postal address to the email signature before sending cold emails (US
   CAN-SPAM rule).
-- Website wording: the DocBridge section still says "de-identified or sample labs", while the
-  onboarding guide says synthetic sample labs only. A product or website owner should decide
-  whether to tighten the site copy. The outreach kit already uses the stricter wording.
+- Website wording: resolved. The DocBridge section now says synthetic sample labs only (legal
+  review, T7), which matches the kit.
+- The DocBridge demo video still shows the old "AI draft" label (see T7). The kit tells you to
+  mention this if you share the video.
 
 This file is served publicly with the website, so this section holds status only. The drafts
 themselves (emails, phone script, interview guide) stay in the private artifact.
@@ -160,3 +199,4 @@ themselves (emails, phone script, interview guide) stay in the private artifact.
 3. Enabling live billing or entitlement locks.
 4. App Store and Google Play submission.
 5. Real-patient clinic operation (after the clinical review, BAAs and legal review).
+6. Legal-page corrections in `docs/legal-advertising-review.md` §6 (counsel), and setting `CAREWISE_REMINDER_CALLBACK_NUMBER` to an answered number.

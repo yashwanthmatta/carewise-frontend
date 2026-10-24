@@ -26,7 +26,7 @@ def page(fname, title, desc, eyebrow, h1, lede, body):
     <meta name="description" content="{html.escape(desc)}" />
     <link rel="canonical" href="https://followthroughhealth.com/{fname}" />
     <link rel="icon" href="assets/carewise-app-icon.svg" />
-    <link rel="stylesheet" href="share.css?v=carewise-product-195" />
+    <link rel="stylesheet" href="share.css?v=carewise-product-196" />
     <style>
       {CSS}
     </style>
@@ -68,7 +68,7 @@ page('faq.html','Questions and answers','Answers about FollowThrough Health: whi
  qa('Can I use it for my mom or dad?','<p>Yes. That is who it is built for. Choose whose report it is, keep a record for each family member, and bring the doctor brief to their visit.</p>'),
  qa('Which languages?','<p>English and Spanish. The Spanish wording is a draft still being reviewed.</p>'),
  qa('How do I delete my data?','<p>Profile, then "Delete my account". It deletes everything saved to your account straight away. <a href="/legal/data-deletion.html">Full steps</a>.</p>'),
- qa('I am a doctor. Can my clinic use it?','<p>DocBridge lets a clinician approve a plain-English explanation for each patient. It is in a pilot with sample or de-identified labs. <a href="/#for-doctors">Learn more</a>.</p>'),
+ qa('I am a doctor. Can my clinic use it?','<p>DocBridge lets a clinician approve a plain-English explanation for each patient. It is in an evaluation with synthetic sample labs only, not real patient data. <a href="/#for-doctors">Learn more</a>.</p>'),
  ])+'\n      </section>\n')
 
 page('about.html','About','FollowThrough Health helps families understand a parent\'s lab report and follow through with their doctor.','About','Helping families follow through','Most people get lab results as a page of numbers, alone, days before they can ask anyone. FollowThrough Health turns that page into plain words, the right questions, and a reminder of what comes next.',
