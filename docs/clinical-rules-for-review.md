@@ -26,7 +26,7 @@ result) taken from the test's own name. A number directly followed by "hydroxy" 
 now never read as the vitamin D value. No threshold or wording changed. Pinned by
 `scripts/eval/heading-values.mjs`.
 
-**Rules version `2026-10-20.6` (five safety defect fixes, found in the 2026-10-23 code reviews).**
+**Rules version `2026-10-20.6` (six safety defect fixes, found in the 2026-10-23 code reviews).**
 0. *The digit in "Vitamin D3" / "D2+D3" was read as the result* ("Vitamin D3 25 ng/mL" gave 3). The
    vitamin D reader now skips the D2/D3 suffix. Pinned by `scripts/eval/heading-values.mjs`.
 1. *A repeated test lost its second value.* "Potassium 4.1 mmol/L" then "Potassium 6.9 mmol/L"
@@ -43,6 +43,9 @@ now never read as the vitamin D value. No threshold or wording changed. Pinned b
 3. *A blank result took the low end of its range* ("Potassium  mmol/L  3.5-5.1" read as 3.5,
    "within"; "LDL cholesterol  mg/dL  0-99" read as LDL 0). Now no value is read.
 4. *A date was read as the range* ("(2025-03-01)" became the range "2025-03"). Dates are skipped.
+5. *A bare limit was read as the result* ("LDL cholesterol <100 mg/dL" with no result became LDL 100,
+   "In a better range"). The LDL, total cholesterol, triglyceride and A1C reader skips it; "Glucose <40"
+   is still read and urgent.
 
 No threshold changed. New wording: the "More than one result" finding and one doctor question
 (English and Spanish). Effect on the 160 review cases and the 68 accuracy reports: **0 changed**.

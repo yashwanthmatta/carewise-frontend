@@ -38,6 +38,13 @@ const CASES = [
     (r) => r.labs["LDL cholesterol"] === undefined],
   ["a date is never the range", "Previous result: Potassium 6.9 mmol/L (2025-03-01)\nPotassium 4.2 mmol/L 3.5-5.1",
     (r) => r.risk === "urgent" && r.panelRange.potassium !== "2025-03" && r.panelStatus.potassium !== "below"],
+  // N-04: a bare limit ("LDL cholesterol <100 mg/dL", usually a target) is not read as the result.
+  ["LDL target with no result is not LDL 100", "LDL cholesterol <100 mg/dL\nHDL cholesterol 52 mg/dL >40",
+    (r) => r.labs["LDL cholesterol"] === undefined],
+  ["LDL result followed by its target still reads", "LDL cholesterol 151 mg/dL <100 H",
+    (r) => r.labs["LDL cholesterol"] === 151],
+  ["critical glucose written as <40 is still read", "Glucose <40 mg/dL 70-99 LL",
+    (r) => r.risk === "urgent" && r.panel.glucose === "<40"],
   ["a value and its range still read", "Potassium 4.1 mmol/L 3.5-5.1",
     (r) => r.panel.potassium === "4.1" && r.panelStatus.potassium === "within"],
   ["Spanish wording for a repeat", "Potassium 4.1 mmol/L 3.5-5.1\nPotassium 6.9 mmol/L 3.5-5.1",
