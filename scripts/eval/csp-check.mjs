@@ -2,6 +2,7 @@
 // that load code or data in unusual ways (PDF reader, photo reader, doctor brief window, guided
 // tour, doctor demo, glossary search, demo checklist) and fails on any CSP violation.
 // Usage: python3 scripts/serve_with_headers.py 4174 & node scripts/eval/csp-check.mjs
+//        CAREWISE_CSP_URL=http://localhost:4173/ node scripts/eval/csp-check.mjs   (plain server, meta only)
 const { chromium } = await import("playwright").catch(() => import("/opt/node22/lib/node_modules/playwright/index.mjs"));
 const base = process.env.CAREWISE_CSP_URL || "http://127.0.0.1:4174/";
 const violations = [];
@@ -30,8 +31,24 @@ const pages = ["", "demo.html", "faq.html", "safety.html", "about.html", "suppor
 const page = await context.newPage();
 for (const path of pages) {
   const response = await page.goto(base + path, { waitUntil: "load" });
-  ok(/default-src 'self'/.test(response.headers()["content-security-policy"] || ""), `${path || "/"} is served with the policy`);
+  // Production serves the policy in a <meta> tag (the host doesn't apply render.yaml headers);
+  // either way, the page must carry it.
+  const viaHeader = /default-src 'self'/.test(response.headers()["content-security-policy"] || "");
+  const viaMeta = await page.evaluate(() => /default-src 'self'/.test(document.querySelector('meta[http-equiv="Content-Security-Policy"]')?.content || ""));
+  ok(viaHeader || viaMeta, `${path || "/"} carries the policy (${[viaHeader && "header", viaMeta && "meta"].filter(Boolean).join(" + ")})`);
 }
+
+// 1b. The policy is enforced, not just present: an injected inline script must not run.
+await page.goto(base, { waitUntil: "load" });
+const injected = await page.evaluate(() => {
+  const el = document.createElement("script");
+  el.textContent = "window.__cspInjected = true";
+  document.body.appendChild(el);
+  return window.__cspInjected === true;
+});
+ok(!injected, "an injected inline script is blocked");
+await page.waitForTimeout(500); // the violation report arrives asynchronously
+violations.splice(0); // that block is the expected violation
 
 // 2. Explain a pasted report, then open the doctor brief window (written into a new tab).
 await page.goto(base, { waitUntil: "load" });

@@ -46,12 +46,17 @@ jobs:
           note "TLS certificate expires in $days days ($end)"; [ "$days" -ge 14 ] || fail=1
           version=$(curl -fsSL --max-time 30 "$SITE/script.js" | grep -o 'EXPLANATION_RULES_VERSION = "[^"]*"' | head -1)
           note "Live ${version:-NO RULES VERSION FOUND}"; [ -n "$version" ] || fail=1
-          # Security headers from render.yaml must actually be served.
+          # Content-Security-Policy is required: as a header, or the <meta> tag every page carries.
           headers=$(curl -sI --max-time 30 "$SITE/" | tr -d '\r')
-          for h in content-security-policy strict-transport-security x-frame-options x-content-type-options; do
-            if echo "$headers" | grep -qi "^$h:"; then note "Header $h present"; else note "Header $h MISSING"; echo "::warning::$SITE/ is missing $h"; fail=1; fi
+          page=$(curl -fsSL --max-time 30 "$SITE/")
+          if echo "$headers" | grep -qi "^content-security-policy:" || echo "$page" | grep -q 'http-equiv="Content-Security-Policy"'; then note "Content-Security-Policy present"; else note "Content-Security-Policy MISSING"; fail=1; fi
+          # These can only be set in the Render dashboard (the host ignores render.yaml headers):
+          # warn until they are, without opening an alert every hour.
+          missing=""
+          for h in strict-transport-security x-frame-options x-content-type-options; do
+            echo "$headers" | grep -qi "^$h:" || missing="$missing $h"
           done
-          echo "::notice::Website security headers: $(echo "$headers" | grep -ciE '^(content-security-policy|strict-transport-security|x-frame-options|x-content-type-options):') of 4 present"
+          if [ -n "$missing" ]; then note "Headers not served:$missing"; echo "::warning::Set these response headers in Render (carewise-frontend > Settings > Headers):$missing"; else note "HSTS, X-Frame-Options and nosniff served"; fi
           exit $fail
 
       - name: API health and readiness (read-only)

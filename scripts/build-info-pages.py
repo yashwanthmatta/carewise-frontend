@@ -2,7 +2,9 @@
 # Edit the text here, run: python3 scripts/build-info-pages.py, and commit the pages.
 import html, os
 import pathlib
-import re
+import re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import csp_meta  # every page carries the site's Content-Security-Policy
 OUT=str(pathlib.Path(__file__).resolve().parent.parent)
 # The cache version always comes from sw.js, so rebuilding never undoes a bump.
 VERSION=re.search(r'carewise-product-\d+', open(os.path.join(OUT,'sw.js')).read()).group(0)
@@ -48,7 +50,7 @@ def page(fname, title, desc, eyebrow, h1, lede, body):
   </body>
 </html>
 '''
-    open(os.path.join(OUT,fname),'w').write(doc)
+    open(os.path.join(OUT,fname),'w').write(csp_meta.apply(doc))
 
 def card(h2, inner): return f'      <section class="sv-card">\n        <h2>{h2}</h2>\n        {inner}\n      </section>\n'
 def qa(q, a): return f'<details class="pg-q"><summary>{q}</summary>{a}</details>'
