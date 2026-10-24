@@ -126,9 +126,34 @@ PRs:
 
 ---
 
+## T8. Stale scripts for returning visitors (cache version)
+
+**Status: COMPLETE.**
+
+| Requirement | Done | Evidence |
+|---|---|---|
+| Find the defect | ✅ | Since version 196 went live, three merges changed `script.js` and `docbridge.js` without a new version; the service worker serves them cache-first |
+| Reproduce | ✅ | Browser test with a persistent profile: the old `docbridge.js` was still served after the server was updated |
+| Fix | ✅ | Cache version 197 (PR #115). The same test then serves the new file. Live on Render on 2026-10-24 at 20:11 UTC |
+| Prevent a repeat | ✅ | `scripts/check_cache_version.mjs` in CI; it ran green on the PR and on both pushes to main. `build-info-pages.py` reads the version from `sw.js` |
+| Verify production | ✅ | Production monitor passed on 5217307 (2026-10-24 20:14 UTC) |
+
+## T9. Clinic outreach kit (first three paying practices)
+
+**Status: PARTIALLY COMPLETE.** The kit is done. Sending the messages and holding the calls are the
+founder's to do; no outreach is sent automatically.
+
+| Requirement | Done | Evidence |
+|---|---|---|
+| Targeting, call script, $199/month pricing questions (a price to test), honest answers, tracking | ✅ | `docs/clinic-outreach-kit.md` (PR #117) |
+| Ready-to-send messages | ✅ | `docs/outreach/clinic-messages.md`. CI checks the wording: an injected banned phrase failed the audit |
+| Tracker | ✅ | `docs/outreach/clinic-pipeline.csv` (business contacts only) |
+| Demo used in calls works | ✅ | Doctor demo browser test: all checks pass, zero server calls |
+| Contact practices and hold calls | ⛔ owner | Founder sends the messages personally |
+
 ## Pull requests this session (all merged after green CI)
 
-- Frontend: #100, #101, #102, #105, #106, #108
+- Frontend: #100, #101, #102, #105, #106, #108, #110, #115, #117
 - Mobile: #38, #39, #40, #43, #44
 - Backend: #39, #42, #43, #45
 
