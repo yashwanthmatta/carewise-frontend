@@ -106,6 +106,7 @@ Claude artifact, with wording that matches what DocBridge really does.
 | 5 | Five-question interview guide for a 15-minute call, not a sales pitch | Done |
 | 6 | Tracking sheet layout for logging contacts by hand | Done (21 columns, status list, copyable header row) |
 | 7 | Publish as one private artifact | Done: https://claude.ai/artifact/Y1vRjDbsvM8iGxtEBuJpkq (private, owner only) |
+| 8 | Follow-on (2026-10-24): replies for the next step: book the call, thank-you with pilot offer, pilot setup confirmation, "not now", waitlist welcome, LinkedIn note, honest answers to common questions | Done (Part 7 of the same artifact) |
 
 **Source of truth checked:** the DocBridge section of `index.html` and
 `docs/pilot-clinic-onboarding.md` on `main`. Where they differ, the kit follows the stricter
@@ -120,6 +121,8 @@ pilot, patient follow-up questions are off. The kit points doctors to the no-sig
 - Email word counts under 120 (first emails) and under 80 (follow-ups): pass.
 - Tracking sheet: 21 columns in the table and in the copyable header row: pass.
 - Copy buttons copy, or select the text when the clipboard is blocked: pass.
+- Reply emails under 130 words (70 to 106), LinkedIn note under 300 characters (223), answers to
+  common questions make no compliance or validation claims: pass.
 - Scripts say "made-up sample labs only", make no "HIPAA compliant", "clinically validated" or
   "proven" claims, and link to the demo: pass.
 
