@@ -46,6 +46,12 @@ jobs:
           note "TLS certificate expires in $days days ($end)"; [ "$days" -ge 14 ] || fail=1
           version=$(curl -fsSL --max-time 30 "$SITE/script.js" | grep -o 'EXPLANATION_RULES_VERSION = "[^"]*"' | head -1)
           note "Live ${version:-NO RULES VERSION FOUND}"; [ -n "$version" ] || fail=1
+          # Security headers from render.yaml must actually be served.
+          headers=$(curl -sI --max-time 30 "$SITE/" | tr -d '\r')
+          for h in content-security-policy strict-transport-security x-frame-options x-content-type-options; do
+            if echo "$headers" | grep -qi "^$h:"; then note "Header $h present"; else note "Header $h MISSING"; echo "::warning::$SITE/ is missing $h"; fail=1; fi
+          done
+          echo "::notice::Website security headers: $(echo "$headers" | grep -ciE '^(content-security-policy|strict-transport-security|x-frame-options|x-content-type-options):') of 4 present"
           exit $fail
 
       - name: API health and readiness (read-only)
@@ -57,6 +63,9 @@ jobs:
           h=$(curl -s -o /dev/null -w '%{http_code}' --max-time 90 --retry 2 --retry-delay 10 "$API/health"); note "$API/health -> $h"; [ "$h" = 200 ] || fail=1
           ready=$(curl -s --max-time 60 "$API/ready"); note "$API/ready -> $(echo "$ready" | head -c 300)"
           echo "$ready" | grep -q '"database"[^,}]*true' || fail=1
+          echo "$ready" | grep -q 'CAREWISE_JWT_SECRET' && echo "::warning::API readiness advisory: the token signing secret is shorter than 32 characters"
+          api_headers=$(curl -sI --max-time 60 "$API/health" | tr -d '\r')
+          echo "::notice::API security headers: HSTS $(echo "$api_headers" | grep -qi '^strict-transport-security:' && echo yes || echo no), no-store $(echo "$api_headers" | grep -qi '^cache-control: no-store' && echo yes || echo no)"
           exit $fail
 
       - name: Live page smoke test

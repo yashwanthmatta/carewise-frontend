@@ -49,6 +49,12 @@ jobs:
           sleep 2
           node scripts/eval/run-eval.mjs
 
+      - name: Content-Security-Policy does not break the site
+        run: |
+          python3 scripts/serve_with_headers.py 4174 &
+          sleep 2
+          node scripts/eval/csp-check.mjs
+
       - name: Safety cases (emergency symptoms, critical values)
         run: node scripts/eval/safety-cases.mjs
 

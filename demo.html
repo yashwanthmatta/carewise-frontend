@@ -7,7 +7,7 @@
     <meta name="description" content="Try FollowThrough Health in 3 minutes with a made-up lab or scan report. No sign-up. See the plain-English explanation, the doctor brief, questions to ask and a reminder for the next test." />
     <link rel="canonical" href="https://followthroughhealth.com/demo.html" />
     <link rel="icon" href="assets/carewise-app-icon.svg" />
-    <link rel="stylesheet" href="share.css?v=carewise-product-197" />
+    <link rel="stylesheet" href="share.css?v=carewise-product-198" />
     <style>
       .dm-samples { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
       .dm-sample { border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
@@ -97,24 +97,6 @@
 
       <p class="sv-foot">FollowThrough Health explains reports for education. It does not diagnose and does not replace your doctor. In an emergency, call 911 or your local emergency number. <a href="legal/privacy.html">Privacy</a> · <a href="legal/terms.html">Terms</a> · <a href="legal/disclaimer.html">Disclaimer</a></p>
     </main>
-    <script>
-      // Checklist progress is a per-browser convenience only; the page works without storage.
-      (function () {
-        const boxes = Array.from(document.querySelectorAll(".dm-steps input"));
-        const progress = document.getElementById("dm-progress");
-        const done = document.getElementById("dm-done");
-        let saved = [];
-        try { saved = JSON.parse(localStorage.getItem("ftDemoSteps") || "[]"); } catch (e) { saved = []; }
-        boxes.forEach(function (box) { box.checked = saved.indexOf(box.id) !== -1; });
-        function update() {
-          const checked = boxes.filter(function (box) { return box.checked; });
-          progress.textContent = checked.length + " of " + boxes.length + " done";
-          done.hidden = checked.length !== boxes.length;
-          try { localStorage.setItem("ftDemoSteps", JSON.stringify(checked.map(function (box) { return box.id; }))); } catch (e) {}
-        }
-        boxes.forEach(function (box) { box.addEventListener("change", update); });
-        update();
-      })();
-    </script>
+    <script src="demo-page.js"></script>
   </body>
 </html>
