@@ -2,7 +2,10 @@
 # Edit the text here, run: python3 scripts/build-info-pages.py, and commit the pages.
 import html, os
 import pathlib
+import re
 OUT=str(pathlib.Path(__file__).resolve().parent.parent)
+# The cache version always comes from sw.js, so rebuilding never undoes a bump.
+VERSION=re.search(r'carewise-product-\d+', open(os.path.join(OUT,'sw.js')).read()).group(0)
 NAV='<nav class="pg-nav" aria-label="Site"><a href="/demo.html">Try the demo</a><a href="/safety.html">Safety</a><a href="/faq.html">FAQ</a><a href="/about.html">About</a><a href="/support.html">Support</a></nav>'
 FOOT='<p class="sv-foot">FollowThrough Health explains reports for education. It does not diagnose and does not replace your doctor. In an emergency, call 911 or your local emergency number.<br /><a href="/legal/privacy.html">Privacy</a> · <a href="/legal/terms.html">Terms</a> · <a href="/legal/disclaimer.html">Disclaimer</a> · <a href="/legal/data-deletion.html">Delete my data</a> · <a href="/accessibility.html">Accessibility</a></p>'
 CSS='''.pg-nav { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.95rem; }
@@ -26,7 +29,7 @@ def page(fname, title, desc, eyebrow, h1, lede, body):
     <meta name="description" content="{html.escape(desc)}" />
     <link rel="canonical" href="https://followthroughhealth.com/{fname}" />
     <link rel="icon" href="assets/carewise-app-icon.svg" />
-    <link rel="stylesheet" href="share.css?v=carewise-product-197" />
+    <link rel="stylesheet" href="share.css?v={VERSION}" />
     <style>
       {CSS}
     </style>
