@@ -1,0 +1,2 @@
+practice,city_state,practice_type,clinicians,contact_name,contact_role,business_email,source,stage,first_contact_date,follow_up_date,call_date,current_result_workflow,minutes_per_result_their_estimate,too_cheap_usd,getting_expensive_usd,too_expensive_usd,paid_pilot_at_199,needs_before_pilot,next_step,next_step_date,notes
+Example Family Practice (sample row - delete),Springfield ST,family medicine,3,Dr. Sample,owner,doctor@example.com,LinkedIn,to-contact,,,,,,,,,,,,,"Business contacts only; never patient information"
