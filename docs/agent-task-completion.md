@@ -111,6 +111,7 @@ are **BLOCKED** on human approval (not legal advice; no approval is claimed).
 | Paid plans unlock nothing (LA-01) | ⛔ BLOCKED | Owner decision on plan contents or relabelling |
 | Stripe ToS consent box, refund policy, cancel billing on account deletion | ⛔ BLOCKED | Counsel (Terms, refund) and owner (Stripe dashboard terms URL) |
 | Urgency wording / FDA question (LA-04), Spanish wording | ⛔ BLOCKED | Clinician and regulatory counsel |
+| Reminder calls follow the reminded person's time zone (not the caregiver's device); editing keeps the saved zone | ✅ | Website: `reminders.js` picker + `scripts/eval/reminder-timezone.mjs` (9 checks, in CI). Mobile: `src/reminderZones.ts` + `reminders:check` (8 checks, in `ci:check`). Backend already validated and stored the zone |
 | Re-record DocBridge demo video without the "AI draft" label | Open | Owner or engineering |
 | Continuous review | ✅ CI only | Claims check runs on every push and PR. No other scheduled legal monitoring exists |
 

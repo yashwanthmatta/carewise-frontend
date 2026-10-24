@@ -13,8 +13,40 @@
   const timeList = byId("rm-time-list");
   const DAYS = [["mon", "Mon"], ["tue", "Tue"], ["wed", "Wed"], ["thu", "Thu"], ["fri", "Fri"], ["sat", "Sat"], ["sun", "Sun"]];
   const DOSE_TEXT = { upcoming: "Upcoming", due: "Due now", calling: "Calling", taken: "Taken", missed: "Not confirmed", past: "Earlier", stopped: "Calls stopped" };
+  // Calls follow the clock of the person being reminded, not of whoever sets it up
+  // (a parent in another state must not be called at night).
+  const TIME_ZONES = [
+    ["America/New_York", "Eastern (New York)"],
+    ["America/Chicago", "Central (Chicago)"],
+    ["America/Denver", "Mountain (Denver)"],
+    ["America/Phoenix", "Arizona (Phoenix)"],
+    ["America/Los_Angeles", "Pacific (Los Angeles)"],
+    ["America/Anchorage", "Alaska (Anchorage)"],
+    ["Pacific/Honolulu", "Hawaii (Honolulu)"],
+    ["America/Puerto_Rico", "Atlantic (Puerto Rico)"],
+  ];
   let reminders = [];
   let editingId = "";
+
+  function browserZone() {
+    try { return Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York"; } catch { return "America/New_York"; }
+  }
+
+  // Choices for the time zone list: the US zones, plus this device's zone and the saved zone if
+  // they are not already listed, so editing a reminder never silently changes its zone.
+  function zoneChoices(selected) {
+    const choices = TIME_ZONES.map(([value, label]) => ({ value, label }));
+    for (const extra of [browserZone(), selected]) {
+      if (extra && !choices.some((choice) => choice.value === extra)) choices.push({ value: extra, label: extra.replace(/_/g, " ") });
+    }
+    return choices;
+  }
+
+  function fillZones(selected) {
+    const value = selected || browserZone();
+    byId("rm-timezone").innerHTML = zoneChoices(value)
+      .map((choice) => `<option value="${escapeHtml(choice.value)}"${choice.value === value ? " selected" : ""}>${escapeHtml(choice.label)}</option>`).join("");
+  }
 
   byId("rm-day-list").innerHTML = DAYS.map(([value, label]) =>
     `<label class="rm-day"><input type="checkbox" value="${value}" checked /> ${label}</label>`).join("");
@@ -107,6 +139,7 @@
     timeList.innerHTML = "";
     (item?.times?.length ? item.times : ["08:00"]).forEach(addTimeInput);
     byId("rm-day-list").querySelectorAll("input").forEach((box) => { box.checked = !item?.days?.length || item.days.includes(box.value); });
+    fillZones(item?.timezone);
     byId("rm-call").checked = Boolean(item?.call);
     byId("rm-phone").value = "";
     byId("rm-phone").placeholder = item?.phone_last4 ? `Leave blank to keep the number ending ${item.phone_last4}` : "+1 555 123 4567";
@@ -133,7 +166,7 @@
       label: byId("rm-label").value.trim(),
       times: [...timeList.querySelectorAll("input")].map((input) => input.value).filter(Boolean),
       days: [...byId("rm-day-list").querySelectorAll("input:checked")].map((box) => box.value),
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York",
+      timezone: byId("rm-timezone").value || browserZone(),
       language: byId("rm-language").value,
       call,
       phone: byId("rm-phone").value.trim(),
@@ -237,4 +270,6 @@
   const badge = byId("auth-badge");
   if (badge) new MutationObserver(() => { if (!panel.hidden) load(); }).observe(badge, { childList: true, characterData: true, subtree: true });
   load();
+  // For scripts/eval/reminder-timezone.mjs.
+  window.carewiseReminderForm = { zoneChoices, openForm };
 })();
