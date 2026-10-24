@@ -3,6 +3,46 @@
 // Loaded after script.js and uses its helpers (apiGet, apiPost, apiPut, requestJson,
 // authToken, backendFeatures, escapeHtml).
 
+// Calendar file for a reminder. Kept outside the panel code so it can be tested on its own.
+// The calendar shows only generic words: it can pop up on a locked phone, and the reminder
+// label may hold a medicine name, so neither the label nor the person's name goes in.
+globalThis.ftReminderCalendar = (() => {
+  const JS_DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+  const pad = (value) => String(value).padStart(2, "0");
+
+  // First date from today that is one of the chosen weekdays, so the calendar
+  // does not add an extra reminder today when today is not one of them.
+  function firstDay(days, now) {
+    for (let offset = 0; offset < 7; offset += 1) {
+      const day = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset);
+      if (!days.length || days.includes(JS_DAYS[day.getDay()])) return day;
+    }
+    return now;
+  }
+
+  function build(item, now) {
+    const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
+    const days = item.days || [];
+    const rule = days.length ? `RRULE:FREQ=WEEKLY;BYDAY=${days.map((day) => day.slice(0, 2).toUpperCase()).join(",")}` : "RRULE:FREQ=DAILY";
+    const first = firstDay(days, now);
+    const date = `${first.getFullYear()}${pad(first.getMonth() + 1)}${pad(first.getDate())}`;
+    // Pin the times to the reminder's own time zone, so a caregiver in another
+    // time zone still gets them at the person's local time, through daylight saving.
+    const zone = /^[A-Za-z0-9_+\-]+(\/[A-Za-z0-9_+\-]+)*$/.test(item.timezone || "") ? item.timezone : "";
+    const events = item.times.map((clock, index) => {
+      const [hour, minute] = clock.split(":");
+      const start = zone ? `DTSTART;TZID=${zone}:${date}T${hour}${minute}00` : `DTSTART:${date}T${hour}${minute}00`;
+      return ["BEGIN:VEVENT", `UID:followthrough-${item.id}-${index}@followthroughhealth.com`, `DTSTAMP:${stamp}`, start,
+        "DURATION:PT10M", rule, "SUMMARY:FollowThrough Health reminder",
+        "BEGIN:VALARM", "TRIGGER:PT0M", "ACTION:DISPLAY", "DESCRIPTION:FollowThrough Health: You have a reminder.",
+        "END:VALARM", "END:VEVENT"].join("\r\n");
+    });
+    return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//FollowThrough Health//Reminder//EN", ...events, "END:VCALENDAR"].join("\r\n");
+  }
+
+  return { build, firstDay };
+})();
+
 (() => {
   const panel = document.querySelector(".reminders-panel");
   if (!panel) return;
@@ -169,21 +209,10 @@
   }
 
   function downloadCalendar(item) {
-    const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
-    const today = new Date();
-    const rule = item.days.length ? `RRULE:FREQ=WEEKLY;BYDAY=${item.days.map((day) => day.slice(0, 2).toUpperCase()).join(",")}` : "RRULE:FREQ=DAILY";
-    const title = item.person === "Me" ? "Time for your medicine" : `Medicine time for ${item.person}`;
-    const events = item.times.map((clock, index) => {
-      const [hour, minute] = clock.split(":");
-      const start = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, "0")}${String(today.getDate()).padStart(2, "0")}T${hour}${minute}00`;
-      return ["BEGIN:VEVENT", `UID:carewise-${item.id}-${index}@carewise`, `DTSTAMP:${stamp}`, `DTSTART:${start}`, "DURATION:PT10M", rule,
-        `SUMMARY:${title}${item.label ? ` (${item.label.replace(/[,;\\]/g, " ")})` : ""}`,
-        "BEGIN:VALARM", "TRIGGER:PT0M", "ACTION:DISPLAY", "DESCRIPTION:Medicine reminder", "END:VALARM", "END:VEVENT"].join("\r\n");
-    });
-    const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//FollowThrough Health//Medicine reminder//EN", ...events, "END:VCALENDAR"].join("\r\n");
+    const ics = globalThis.ftReminderCalendar.build(item, new Date());
     const link = document.createElement("a");
     link.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
-    link.download = "carewise-medicine-reminder.ics";
+    link.download = "followthrough-reminder.ics";
     document.body.appendChild(link);
     link.click();
     link.remove();
