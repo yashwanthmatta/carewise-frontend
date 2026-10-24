@@ -15,6 +15,8 @@ const PUBLIC_PAGES = [
   "accessibility.html", "glossary.html", "packet.html", "share.html",
 ];
 const SCRIPTS = ["docbridge.js", "help.js", "reminders.js", "packet-view.js", "share-view.js", "doctor-share.js"];
+// Outreach text the founder sends to clinicians is marketing too.
+const OUTREACH = ["docs/outreach/clinic-messages.md"];
 
 // [id, pattern, why, scope] — scope "all" also covers legal pages; "marketing" skips them
 // (legal-page wording changes wait for counsel).
@@ -48,7 +50,7 @@ function visibleText(source, isHtml) {
 
 async function files() {
   const legal = (await readdir(path.join(ROOT, "legal"))).filter((f) => f.endsWith(".html")).map((f) => `legal/${f}`);
-  return [...PUBLIC_PAGES, ...SCRIPTS, ...legal];
+  return [...PUBLIC_PAGES, ...SCRIPTS, ...OUTREACH, ...legal];
 }
 
 const failures = [];
