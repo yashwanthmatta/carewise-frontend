@@ -61,6 +61,9 @@ jobs:
       - name: Safety cases (emergency symptoms, critical values)
         run: node scripts/eval/safety-cases.mjs
 
+      - name: Reminder calls follow the reminded person's time zone
+        run: node scripts/eval/reminder-timezone.mjs
+
       - name: Correcting a misread photo number updates everything
         run: node scripts/eval/ocr-resolution.mjs
 
