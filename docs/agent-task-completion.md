@@ -164,6 +164,7 @@ sends personally.
 | Stop it happening again | ✅ | `scripts/eval/help-answers.mjs` in CI: every button name quoted in a help answer must exist on the site, and no help answer may promise caregiver sharing while the site says "coming later". It fails on the old `help.js` and passes on the new one |
 | Verified in a browser | ✅ | Asked the help chat "Can my brother see Dad's reports too?" and "How do I delete my data?" with the online helper unreachable. Both gave the corrected answers |
 | Full CI suite locally | ✅ | Syntax, cache version (201), reference audit, smoke, claims audit, reading accuracy (200 tests, 100%), CSP (both modes), 34 safety cases, OCR correction, headings, help answers, share-packet PDF, visit settings, stress (5,000 + 5,000 hard), 36 read-aloud cases: all passed |
+| Pull request | ✅ opened | https://github.com/yashwanthmatta/carewise-frontend/pull/124 (not merged; waits on review) |
 | Review real inbound messages and draft replies | ⛔ BLOCKED | The connected Gmail is the founder's personal account and had no FollowThrough Health inquiries. The work inbox, social accounts and the in-app "Was this helpful?" messages are not connected to this agent |
 
 Open points for the owner (also listed in the playbook):
