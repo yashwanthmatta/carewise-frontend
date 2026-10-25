@@ -92,5 +92,5 @@ jobs:
             gh label create production-alert --repo "$GITHUB_REPOSITORY" --color B60205 --description "Live site or API check failed" 2>/dev/null || true
             body=$(printf 'A production check failed.\n\n%s\n\nRun: %s' "$(cat report.md 2>/dev/null)" "$run")
             if [ -n "$open" ]; then gh issue comment "$open" --repo "$GITHUB_REPOSITORY" --body "$body"
-            else gh issue create --repo "$GITHUB_REPOSITORY" --label production-alert --title "Production check failed" --body "$body"; fi
+            else gh issue create --repo "$GITHUB_REPOSITORY" --label production-alert --assignee "$GITHUB_REPOSITORY_OWNER" --title "Production check failed" --body "$body"; fi
           fi
