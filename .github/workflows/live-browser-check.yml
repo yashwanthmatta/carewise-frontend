@@ -1,0 +1,52 @@
+name: Live Browser Check
+
+# A real browser against the deployed site (desktop and phone): latest code live, pages load and
+# fit, sample-report flow, doctor demo, demo video, PDF, CSP and clinic prices.
+# Read-only: no sign-in, nothing saved; the doctor demo runs in the browser.
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 7 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: live-browser-check
+  cancel-in-progress: true
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      SITE: https://followthroughhealth.com/
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Install a browser
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Wait for this commit to be deployed (up to 10 minutes)
+        run: |
+          want=$(grep -o 'carewise-product-[0-9]*' sw.js | head -1)
+          for i in $(seq 1 40); do
+            got=$(curl -fsSL "${SITE}sw.js?nocache=$(date +%s)" | grep -o 'carewise-product-[0-9]*' | head -1 || true)
+            echo "attempt $i: live=${got:-none} want=$want"
+            [ "$got" = "$want" ] && exit 0
+            sleep 15
+          done
+          echo "::warning::The live site is still on ${got:-unknown}, not $want; checking it anyway"
+      - name: Live site in a real browser
+        run: CAREWISE_LIVE_URL="$SITE" node scripts/eval/live-site.mjs
+      - name: Content-Security-Policy on the live site
+        if: always()
+        run: CAREWISE_CSP_URL="$SITE" node scripts/eval/csp-check.mjs
+      - name: Share-packet PDF on the live site
+        if: always()
+        run: CAREWISE_EVAL_URL="$SITE" node scripts/eval/share-packet-pdf.mjs
+      - name: Clinic prices in the live doctor demo
+        if: always()
+        run: CAREWISE_EVAL_URL="$SITE" node scripts/eval/visit-settings-demo.mjs
