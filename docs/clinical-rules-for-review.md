@@ -26,6 +26,32 @@ result) taken from the test's own name. A number directly followed by "hydroxy" 
 now never read as the vitamin D value. No threshold or wording changed. Pinned by
 `scripts/eval/heading-values.mjs`.
 
+**Rules version `2026-10-20.6` (six safety defect fixes, found in the 2026-10-23 code reviews).**
+0. *The digit in "Vitamin D3" / "D2+D3" was read as the result* ("Vitamin D3 25 ng/mL" gave 3). The
+   vitamin D reader now skips the D2/D3 suffix. Pinned by `scripts/eval/heading-values.mjs`.
+1. *A repeated test lost its second value.* "Potassium 4.1 mmol/L" then "Potassium 6.9 mmol/L"
+   was explained as "All 1 tests read from your report are within the lab's ranges" (routine);
+   the 6.9 was dropped. "Previous result: LDL 98" then "Current result: LDL 151" was explained as
+   LDL 98, "In a better range". Now, when a test is printed again with a different value, the
+   more concerning reading is used (higher for LDL, total cholesterol, triglycerides and A1C; a
+   danger-level, critical or far-out-of-range reading for other tests), and a new finding
+   "More than one result" names the other value and tells the person to ask which is current.
+   Goals ("LDL goal <100"), ratios and repeats of the same value do not count.
+2. *A number glued to letters was read as a result.* An OCR misread "A1c S.9 %" was read as an
+   A1C of 9 % ("Clinician review important"); "Glucose 1O8" as a glucose of 1 mg/dL ("possible
+   danger level"). Such numbers are now not read at all.
+3. *A blank result took the low end of its range* ("Potassium  mmol/L  3.5-5.1" read as 3.5,
+   "within"; "LDL cholesterol  mg/dL  0-99" read as LDL 0). Now no value is read.
+4. *A date was read as the range* ("(2025-03-01)" became the range "2025-03"). Dates are skipped.
+5. *A bare limit was read as the result* ("LDL cholesterol <100 mg/dL" with no result became LDL 100,
+   "In a better range"). The LDL, total cholesterol, triglyceride and A1C reader skips it; "Glucose <40"
+   is still read and urgent.
+
+No threshold changed. New wording: the "More than one result" finding and one doctor question
+(English and Spanish). Effect on the 160 review cases and the 68 accuracy reports: **0 changed**.
+Pinned by `scripts/eval/repeat-and-misread-values.mjs` and the app's `report_cases_check.js`.
+Record: `releases/rules-2026-10-20.6.md`.
+
 ## First, urgent decisions for the reviewer
 
 1. **Critical value that may be misread (photo).** Today: the report stays urgent and says "If the
