@@ -67,6 +67,9 @@ jobs:
       - name: Test names in headings never take another test's value
         run: node scripts/eval/heading-values.mjs
 
+      - name: Help chat answers match the website
+        run: node scripts/eval/help-answers.mjs
+
       - name: Share-packet PDF (labs, summary, top 3 questions)
         run: node scripts/eval/share-packet-pdf.mjs
 
