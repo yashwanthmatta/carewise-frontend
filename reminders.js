@@ -10,25 +10,42 @@ globalThis.ftReminderCalendar = (() => {
   const JS_DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
   const pad = (value) => String(value).padStart(2, "0");
 
+  // Today's date where the reminded person lives. The calendar times are pinned to
+  // their time zone, so the first date must be theirs too, not the caregiver's.
+  function todayIn(zone, now) {
+    if (zone) {
+      try {
+        const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: zone, year: "numeric", month: "numeric", day: "numeric" })
+          .formatToParts(now).map((part) => [part.type, part.value]));
+        return { year: Number(parts.year), month: Number(parts.month), day: Number(parts.day) };
+      } catch {
+        // Unknown time zone: fall back to this device's date.
+      }
+    }
+    return { year: now.getFullYear(), month: now.getMonth() + 1, day: now.getDate() };
+  }
+
   // First date from today that is one of the chosen weekdays, so the calendar
   // does not add an extra reminder today when today is not one of them.
-  function firstDay(days, now) {
+  function firstDay(days, now, zone = "") {
+    const today = todayIn(zone, now);
     for (let offset = 0; offset < 7; offset += 1) {
-      const day = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset);
-      if (!days.length || days.includes(JS_DAYS[day.getDay()])) return day;
+      const day = new Date(Date.UTC(today.year, today.month - 1, today.day + offset));
+      if (!days.length || days.includes(JS_DAYS[day.getUTCDay()])) {
+        return `${day.getUTCFullYear()}${pad(day.getUTCMonth() + 1)}${pad(day.getUTCDate())}`;
+      }
     }
-    return now;
+    return `${today.year}${pad(today.month)}${pad(today.day)}`;
   }
 
   function build(item, now) {
     const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
     const days = item.days || [];
     const rule = days.length ? `RRULE:FREQ=WEEKLY;BYDAY=${days.map((day) => day.slice(0, 2).toUpperCase()).join(",")}` : "RRULE:FREQ=DAILY";
-    const first = firstDay(days, now);
-    const date = `${first.getFullYear()}${pad(first.getMonth() + 1)}${pad(first.getDate())}`;
     // Pin the times to the reminder's own time zone, so a caregiver in another
     // time zone still gets them at the person's local time, through daylight saving.
     const zone = /^[A-Za-z0-9_+\-]+(\/[A-Za-z0-9_+\-]+)*$/.test(item.timezone || "") ? item.timezone : "";
+    const date = firstDay(days, now, zone);
     const events = item.times.map((clock, index) => {
       const [hour, minute] = clock.split(":");
       const start = zone ? `DTSTART;TZID=${zone}:${date}T${hour}${minute}00` : `DTSTART:${date}T${hour}${minute}00`;
