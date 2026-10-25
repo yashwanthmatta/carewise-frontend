@@ -5,7 +5,7 @@ Update this at the end of every working session. Status categories, used exactly
 requirements remain) · **BLOCKED** (needs unavailable access, an external action or an approval) ·
 **NOT STARTED** (no meaningful execution).
 
-Last updated: 2026-10-23.
+Last updated: 2026-10-25.
 
 ---
 
@@ -150,6 +150,29 @@ founder's to do; no outreach is sent automatically.
 | Tracker | ✅ | `docs/outreach/clinic-pipeline.csv` (business contacts only) |
 | Demo used in calls works | ✅ | Doctor demo browser test: all checks pass, zero server calls |
 | Contact practices and hold calls | ⛔ owner | Founder sends the messages personally |
+
+## T10. Replies to families, doctors and partners (replies agent)
+
+**Status: PARTIALLY COMPLETE.** The reply playbook and the help chat fixes are done and verified. No
+real inquiries were answered, because none reached a connected inbox. Every reply is a draft the founder
+sends personally.
+
+| Requirement | Done | Evidence |
+|---|---|---|
+| Reply playbook: families (14), doctors and clinic staff (11), social media (8), partners (6), rules for messages that must not get a template | ✅ | Private Claude artifact shared with the owner. Kept out of this repo on purpose, because everything here is public. Every reply is under 120 words and checked against the site on 2026-10-25 |
+| Help chat answers match the site | ✅ | `help.js`: the Family plan answer no longer says it shares with siblings (the site says "coming later"); the delete answer names the real "Delete my account" button (EN and ES) |
+| Stop it happening again | ✅ | `scripts/eval/help-answers.mjs` in CI: every button name quoted in a help answer must exist on the site, and no help answer may promise caregiver sharing while the site says "coming later". It fails on the old `help.js` and passes on the new one |
+| Verified in a browser | ✅ | Asked the help chat "Can my brother see Dad's reports too?" and "How do I delete my data?" with the online helper unreachable. Both gave the corrected answers |
+| Full CI suite locally | ✅ | Syntax, cache version (201), reference audit, smoke, claims audit, reading accuracy (200 tests, 100%), CSP (both modes), 34 safety cases, OCR correction, headings, help answers, share-packet PDF, visit settings, stress (5,000 + 5,000 hard), 36 read-aloud cases: all passed |
+| Review real inbound messages and draft replies | ⛔ BLOCKED | The connected Gmail is the founder's personal account and had no FollowThrough Health inquiries. The work inbox, social accounts and the in-app "Was this helpful?" messages are not connected to this agent |
+
+Open points for the owner (also listed in the playbook):
+- Clinic price: the site says $79 per clinician per month after the pilot, while the outreach kit tests
+  $199 per month. Replies use the site's $79 until you decide.
+- The privacy policy still says pilot clinics may add "de-identified or sample labs"; the DocBridge
+  screens now say synthetic sample labs only. Legal page, so counsel or the legal agent should align it.
+- There is no support email for doctors and partners, and no refund policy. The refund reply promises
+  nothing until a refund is decided and processed.
 
 ## Pull requests this session (all merged after green CI)
 
