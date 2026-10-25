@@ -70,8 +70,14 @@ jobs:
       - name: Repeated results keep the concerning value; misread numbers are not read
         run: node scripts/eval/repeat-and-misread-values.mjs
 
+      - name: Help chat answers match the website
+        run: node scripts/eval/help-answers.mjs
+
       - name: Share-packet PDF (labs, summary, top 3 questions)
         run: node scripts/eval/share-packet-pdf.mjs
+
+      - name: Clinic self-pay prices and visit summary sections (doctor demo)
+        run: node scripts/eval/visit-settings-demo.mjs
 
       - name: Randomized report check (standard and hard reports)
         run: |
