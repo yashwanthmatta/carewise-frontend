@@ -1,0 +1,87 @@
+name: Live Browser Check
+
+# A real browser against the deployed site (desktop and phone): latest code live, pages load and
+# fit, sample-report flow, doctor demo, demo video, PDF, CSP and clinic prices.
+# Read-only: no sign-in, nothing saved; the doctor demo runs in the browser.
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 7 * * *"
+  workflow_dispatch:
+    inputs:
+      site:
+        description: "Address to check (leave empty for the live site; used to test the alert)"
+        required: false
+        default: ""
+
+concurrency:
+  group: live-browser-check
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      SITE: ${{ inputs.site || 'https://followthroughhealth.com/' }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Install a browser
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Wait for this commit to be deployed (up to 10 minutes)
+        if: ${{ !inputs.site }}
+        run: |
+          want=$(grep -o 'carewise-product-[0-9]*' sw.js | head -1)
+          for i in $(seq 1 40); do
+            got=$(curl -fsSL "${SITE}sw.js?nocache=$(date +%s)" | grep -o 'carewise-product-[0-9]*' | head -1 || true)
+            echo "attempt $i: live=${got:-none} want=$want"
+            [ "$got" = "$want" ] && exit 0
+            sleep 15
+          done
+          echo "::warning::The live site is still on ${got:-unknown}, not $want; checking it anyway"
+      - name: Live site in a real browser
+        run: CAREWISE_LIVE_URL="$SITE" node scripts/eval/live-site.mjs
+      - name: Content-Security-Policy on the live site
+        if: always()
+        run: CAREWISE_CSP_URL="$SITE" node scripts/eval/csp-check.mjs
+      - name: Share-packet PDF on the live site
+        if: always()
+        run: CAREWISE_EVAL_URL="$SITE" node scripts/eval/share-packet-pdf.mjs
+      - name: Clinic prices in the live doctor demo
+        if: always()
+        run: CAREWISE_EVAL_URL="$SITE" node scripts/eval/visit-settings-demo.mjs
+
+      # A failed run alone may not notify anyone; an issue notifies the repository's watchers
+      # (the owner by default). It is closed automatically when the checks pass again.
+      - name: Open or update the alert issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create live-check-alert --color B60205 --description "Live browser check failing" 2>/dev/null || true
+          run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          body="The live browser check failed for $SITE at $(date -u '+%Y-%m-%d %H:%M UTC').
+
+          Run: $run_url
+
+          It checks: latest version deployed, pages load and fit on desktop and phone, sample-report flow, doctor demo, demo video, PDF, CSP and clinic prices. This issue closes itself when the checks pass again."
+          number=$(gh issue list --label live-check-alert --state open --json number --jq '.[0].number')
+          if [ -n "$number" ]; then gh issue comment "$number" --body "$body"; else gh issue create --title "Live website check failed" --label live-check-alert --body "$body"; fi
+      - name: Close the alert issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for number in $(gh issue list --label live-check-alert --state open --json number --jq '.[].number'); do
+            gh issue close "$number" --comment "The live browser check passed again for $SITE: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          done

@@ -1,0 +1,167 @@
+# Agent task completion tracker
+
+Update this at the end of every working session. Status categories, used exactly:
+**COMPLETE** (all requirements implemented and verified) · **PARTIALLY COMPLETE** (some work finished,
+requirements remain) · **BLOCKED** (needs unavailable access, an external action or an approval) ·
+**NOT STARTED** (no meaningful execution).
+
+Last updated: 2026-10-23.
+
+---
+
+## T1. Monitoring and automated checks
+
+**Status: PARTIALLY COMPLETE.** The minute-level uptime requirement is BLOCKED on the owner's
+external monitor account.
+
+| Requirement | Done | Evidence |
+|---|---|---|
+| CI on every push and PR (website, backend, mobile) | ✅ | `frontend-ci.yml`, `backend-ci.yml`, `mobile-ci.yml`; green on every PR listed below |
+| Production monitor: domains, redirects, TLS, rules version, API and database, live page smoke; opens or closes a `production-alert` issue | ✅ | `production-monitor.yml` (PR #102). Three dispatched runs passed on 2026-10-23, the latest at 02:19 UTC |
+| Nightly synthetic API end-to-end | ✅ | backend `deploy-smoke.yml` (backend PR #39); dispatched runs passed |
+| Weekly report issue | ✅ configured | `weekly-report.yml`; first scheduled run is Monday (not yet observed) |
+| Dependency updates | ✅ | `dependabot.yml` in all three repos. Dependabot opened PRs on 2026-10-23, which shows it is working |
+| Actions on supported Node 24 | ✅ | Frontend #105, mobile #43, backend #42. The Node 20 warning is gone from runs |
+| 6-hourly agent check limited to read-only | ✅ | Scheduled task "FollowThrough Health checks (read-only)" updated 2026-10-23 |
+| 5-minute uptime alerts | ⛔ BLOCKED | GitHub schedules are best-effort. Needs an external monitor (UptimeRobot or Better Stack) on the 3 URLs in `PROJECT-STATUS.md` |
+
+## T2. Store readiness (iOS and Android)
+
+**Status: BLOCKED** on owner accounts, signing, clinical and legal review, and device testing. All
+code-side items are done.
+
+| Requirement | Done | Evidence |
+|---|---|---|
+| Unused Android permissions removed | ✅ | mobile PR #40; `expo prebuild` shows only INTERNET |
+| App Store icon without alpha | ✅ | mobile PR #40 |
+| In-app purchase removed (Apple 3.1.1 / Play Billing), owner-approved | ✅ | mobile PR #44; `release:check` fails if checkout returns |
+| Readiness checklists | ✅ | `carewise-mobile-app/docs/APP-STORE-READINESS.md`, `GOOGLE-PLAY-READINESS.md` |
+| Apple Developer and Play Console accounts, EAS signing, TestFlight and closed test | ⛔ BLOCKED | Owner accounts |
+| Real-device, VoiceOver and TalkBack test | ⛔ BLOCKED | Needs testers (`docs/device-test-session.md`) |
+
+## T3. Website completeness walkthrough
+
+**Status: COMPLETE.**
+
+| Requirement | Done | Evidence |
+|---|---|---|
+| Crawl every page at desktop and phone widths | ✅ | 18 pages: no broken links, JS errors, overflow or placeholders. The one "Todo" hit is Spanish text |
+| End-to-end flows | ✅ | 30 browser flow scripts (reports, PDF and scan, brief, Spanish, caregiver, auth, two-step sign-in, reminders, doctor links, DocBridge). All pass except two scripts that are themselves outdated (they test a now-locked setting and a blank-page artifact), not site defects |
+| Unconfigured payments degrade gracefully | ✅ | "Payments open soon" instead of an error |
+
+## T4. Billing foundation (no live charges)
+
+**Status: PARTIALLY COMPLETE.** The server and website foundation is done and verified. Stripe
+sandbox testing and the store integrations are BLOCKED on owner accounts. The prices and paid features
+need owner approval.
+
+| Requirement | Done | Evidence |
+|---|---|---|
+| Audit of existing billing | ✅ | `carewise-production-backend/docs/billing-architecture.md` §1 |
+| Shared entitlement service across Stripe, Apple, Google and clinics | ✅ | `app/services/entitlements.py`, `GET /subscriptions/entitlements` (backend PR #43) |
+| Essential features always free | ✅ | `ALWAYS_FREE`; test fails if a paid plan lists one |
+| Locks off until the owner decides | ✅ | `CAREWISE_ENTITLEMENT_ENFORCEMENT` defaults to false |
+| Idempotent Stripe events | ✅ | `billing_events` table; `test_a_retried_stripe_event_is_applied_once` |
+| Renewal, failed payment, cancellation | ✅ | `test_renewal_and_cancellation_follow_stripe_subscription_status` |
+| No duplicate paid plans | ✅ | 409 on the server (PR #43); the website explains where to manage the existing plan for Stripe, App Store and Google Play (frontend PR #108, browser test 6/6) |
+| Store plan expiry | ✅ | `expires_at`; `test_store_subscriptions_end_on_their_expiry_date` |
+| Production migration | ✅ | Render logs on 2026-10-23 at 02:17:54 show `0020 -> 0021`; live API smoke and production monitor passed afterwards |
+| Lifecycle test plan | ✅ | `billing-architecture.md` §3a (12 scenarios, coverage marked) (backend PR #45) |
+| Stripe test-mode end to end | ⛔ BLOCKED | Owner creates the Stripe account and sets keys in Render |
+| Apple StoreKit 2 and Google Play Billing (or RevenueCat) | ⛔ BLOCKED | Owner developer accounts; build after the paid features are decided |
+| Final prices and what Plus and Family unlock | ⛔ needs approval | Proposed $6.99 / $11.99; live code is still $7 / $12 |
+
+## T5. Database network restriction (H2)
+
+**Status: BLOCKED.** The setting can only be changed in the owner's Render dashboard; the available
+tools can read it but not change it.
+
+| Requirement | Done | Evidence |
+|---|---|---|
+| Evidence of private connectivity | ✅ (partial proof) | `render.yaml` uses the internal `connectionString`; database logs from 2026-10-21 to 23 show only `10.x` clients |
+| Runbook with checks, a no-traffic rehearsal of the undo step, verification and rollback | ✅ | `carewise-production-backend/docs/runbooks/database-network-restriction.md` (backend PR #45) |
+| Confirm the live connection string, rehearse, remove `0.0.0.0/0`, verify | ⛔ BLOCKED | Owner, following the runbook |
+
+## T6. Clinical review and real-patient use
+
+**Status: BLOCKED** on the clinician. The review pack, change record (.2→.5) and cover note are
+ready (`docs/clinical-review-package.md`). DocBridge stays synthetic-only, and patient questions stay
+locked on the server.
+
+## T7. Legal, compliance and advertising review (legal agent)
+
+**Status: PARTIALLY COMPLETE.** Every part that can be done without counsel, a clinician or
+account owners is done and tested. Legal-page wording changes, clinical items and account settings
+are **BLOCKED** on human approval (not legal advice; no approval is claimed).
+
+| Requirement | Done | Evidence |
+|---|---|---|
+| Audit website, app, backend, legal pages and data flows | ✅ (source) | `docs/legal-advertising-review.md`. The live site could not be fetched from the agent environment; the repo's production monitor says live matches main |
+| FDA, HIPAA, FTC, HBNR, TCPA, state law, ARL assessment with sources and dates | ✅ | Register §2, §5, §8 (checked 2026-10-23; only Apple's page could be opened directly) |
+| Claim review: BLOCK / REVIEW / ACCEPTABLE WITH EVIDENCE, with wording, location, fix, proof, approvals | ✅ | Register §2 (LA-01 to LA-23) |
+| Social and paid ad policy review; concept evaluations | ✅ | `docs/advertising-library.md` §3, §4 |
+| Ad library: 10 IG, 10 FB, 5 TikTok, 5 Google Search, 5 YouTube Shorts, 5 LinkedIn | ✅ drafts | `docs/advertising-library.md` §5–§10 (all DRAFT, pending counsel) |
+| Marketing privacy rules; analytics inspected for leakage | ✅ | Library §2; register LA-14 (no trackers), LA-15 (OTEL) |
+| App Store / Play metadata consistency | ✅ drafts fixed | Mobile PR #45 |
+| Safe copy fixes (no rules or legal pages changed) | ✅ | This PR: "AI draft" → "automatic draft"; synthetic-only DocBridge copy; "any"/"every"/"lifetime" claims |
+| Tests that detect prohibited claims | ✅ | `scripts/claims_audit.mjs` (13 rules) + CI step; fails on the pre-fix copy (24 hits), passes now |
+| Reminder call callback number (TCPA) | ✅ code | Backend PR #47 (said when `CAREWISE_REMINDER_CALLBACK_NUMBER` is set) |
+| Checkout auto-renewal notice | ✅ code | Backend PR #47 (`custom_text`) |
+| Legal-page corrections (encryption overclaim LA-02, vendor table, synthetic-only, disclaimer) | ⛔ BLOCKED | Exact text in register §6; needs counsel approval |
+| Paid plans unlock nothing (LA-01) | ⛔ BLOCKED | Owner decision on plan contents or relabelling |
+| Stripe ToS consent box, refund policy, cancel billing on account deletion | ⛔ BLOCKED | Counsel (Terms, refund) and owner (Stripe dashboard terms URL) |
+| Urgency wording / FDA question (LA-04), Spanish wording | ⛔ BLOCKED | Clinician and regulatory counsel |
+| Re-record DocBridge demo video without the "AI draft" label | Open | Owner or engineering |
+| Continuous review | ✅ CI only | Claims check runs on every push and PR. No other scheduled legal monitoring exists |
+
+Tests run 2026-10-23:
+- Frontend: syntax, smoke, reference audit, claims check, cache version, 34 safety cases, OCR resolution, heading values, accuracy eval (68 reports, 100% value and flag accuracy), stress (2,000 reports).
+- Backend: 130 pytest passed, ruff clean.
+- Mobile: `release:check`, `store:check`, `review:check`, `ci:check` (typecheck).
+
+PRs:
+- Frontend: legal review PR on `claude/agent-legal` (this branch)
+- Backend: https://github.com/yashwanthmatta/carewise-production-backend/pull/47
+- Mobile: https://github.com/yashwanthmatta/carewise-mobile-app/pull/45
+
+---
+
+## T8. Stale scripts for returning visitors (cache version)
+
+**Status: COMPLETE.**
+
+| Requirement | Done | Evidence |
+|---|---|---|
+| Find the defect | ✅ | Since version 196 went live, three merges changed `script.js` and `docbridge.js` without a new version; the service worker serves them cache-first |
+| Reproduce | ✅ | Browser test with a persistent profile: the old `docbridge.js` was still served after the server was updated |
+| Fix | ✅ | Cache version 197 (PR #115). The same test then serves the new file. Live on Render on 2026-10-24 at 20:11 UTC |
+| Prevent a repeat | ✅ | `scripts/check_cache_version.mjs` in CI; it ran green on the PR and on both pushes to main. `build-info-pages.py` reads the version from `sw.js` |
+| Verify production | ✅ | Production monitor passed on 5217307 (2026-10-24 20:14 UTC) |
+
+## T9. Clinic outreach kit (first three paying practices)
+
+**Status: PARTIALLY COMPLETE.** The kit is done. Sending the messages and holding the calls are the
+founder's to do; no outreach is sent automatically.
+
+| Requirement | Done | Evidence |
+|---|---|---|
+| Targeting, call script, $199/month pricing questions (a price to test), honest answers, tracking | ✅ | `docs/clinic-outreach-kit.md` (PR #117) |
+| Ready-to-send messages | ✅ | `docs/outreach/clinic-messages.md`. CI checks the wording: an injected banned phrase failed the audit |
+| Tracker | ✅ | `docs/outreach/clinic-pipeline.csv` (business contacts only) |
+| Demo used in calls works | ✅ | Doctor demo browser test: all checks pass, zero server calls |
+| Contact practices and hold calls | ⛔ owner | Founder sends the messages personally |
+
+## Pull requests this session (all merged after green CI)
+
+- Frontend: #100, #101, #102, #105, #106, #108, #110, #115, #117
+- Mobile: #38, #39, #40, #43, #44
+- Backend: #39, #42, #43, #45
+
+## Approvals needed from the owner
+
+1. What Plus and Family unlock, and final prices.
+2. Any new data processor (crash reporting, RevenueCat).
+3. Enabling live billing or entitlement locks.
+4. App Store and Google Play submission.
+5. Real-patient clinic operation (after the clinical review, BAAs and legal review).
+6. Legal-page corrections in `docs/legal-advertising-review.md` §6 (counsel), and setting `CAREWISE_REMINDER_CALLBACK_NUMBER` to an answered number.

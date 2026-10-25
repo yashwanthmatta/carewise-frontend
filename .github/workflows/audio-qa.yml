@@ -1,0 +1,42 @@
+name: Audio QA
+
+# Nightly read-aloud check: the words the "Listen" button says for lab values (decimals, units,
+# ranges, comparisons, negations) must keep the written meaning. Runs on the main branch and,
+# read-only, against the live website. Synthetic reports only; nothing is sent anywhere.
+on:
+  schedule:
+    - cron: "23 7 * * *"     # nightly (best effort)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  speech:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SITE: https://followthroughhealth.com/
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Install browser
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Read-aloud cases on main
+        run: |
+          python3 -m http.server 4173 >/dev/null 2>&1 &
+          sleep 2
+          node scripts/eval/speech-cases.mjs
+
+      - name: Read-aloud cases on the live website
+        run: |
+          if ! curl -fsSL --max-time 30 "$SITE" -o /dev/null; then echo "::error::$SITE did not answer"; exit 1; fi
+          live=$(curl -fsSL --max-time 30 "${SITE}script.js" | grep -c 'function spokenText' || true)
+          if [ "$live" = "0" ]; then echo "::notice::Live site does not have the read-aloud wording yet (not deployed). Skipping."; exit 0; fi
+          CAREWISE_EVAL_URL="$SITE" node scripts/eval/speech-cases.mjs
