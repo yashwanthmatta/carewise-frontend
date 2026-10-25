@@ -61,8 +61,8 @@ jobs:
         if: always()
         run: CAREWISE_EVAL_URL="$SITE" node scripts/eval/visit-settings-demo.mjs
 
-      # A failed run alone may not notify anyone; an issue notifies the repository's watchers
-      # (the owner by default). It is closed automatically when the checks pass again.
+      # A failed run alone may not notify anyone. The issue is assigned to the repository owner,
+      # which GitHub always emails (new issues alone only reach people watching all activity). It is closed automatically when the checks pass again.
       - name: Open or update the alert issue
         if: failure()
         env:
@@ -76,7 +76,7 @@ jobs:
 
           It checks: latest version deployed, pages load and fit on desktop and phone, sample-report flow, doctor demo, demo video, PDF, CSP and clinic prices. This issue closes itself when the checks pass again."
           number=$(gh issue list --label live-check-alert --state open --json number --jq '.[0].number')
-          if [ -n "$number" ]; then gh issue comment "$number" --body "$body"; else gh issue create --title "Live website check failed" --label live-check-alert --body "$body"; fi
+          if [ -n "$number" ]; then gh issue comment "$number" --body "$body"; else gh issue create --title "Live website check failed" --label live-check-alert --assignee "$GITHUB_REPOSITORY_OWNER" --body "$body"; fi
       - name: Close the alert issue
         if: success()
         env:
