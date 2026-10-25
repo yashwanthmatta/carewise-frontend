@@ -16,13 +16,13 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-199" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-200" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-199" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-200" />
   </head>
   <body>
     <main class="app-shell">
@@ -637,6 +637,26 @@
                 </label>
                 <label class="db-check"><input id="db-set-qa" type="checkbox" /> Let patients ask follow-up questions on their approved results. Answers come only from the approved summary and their own lab values, are written by AI (Anthropic) without a clinician reading each one, and are kept for your review. Off by default; during the evaluation use only with synthetic sample labs.</label>
                 <div class="db-actions"><button class="secondary-button" type="submit">Save settings</button></div>
+              </form>
+              <form id="db-visit-form" class="db-visit-form">
+                <h4>Visit summary</h4>
+                <fieldset class="db-visit-blocks">
+                  <legend>Sections to show</legend>
+                  <div id="db-visit-block-list"></div>
+                </fieldset>
+                <label>Coverage checklist <span class="db-muted">(one item per line; leave empty for the standard list)</span>
+                  <textarea id="db-visit-checklist" rows="3" maxlength="2100"></textarea>
+                </label>
+                <fieldset>
+                  <legend>Your clinic's self-pay prices</legend>
+                  <p class="db-muted">Shown to your team next to the billing code in visit summaries, labelled as your clinic's price with the date you saved it. FollowThrough Health never supplies or estimates prices.</p>
+                  <div id="db-price-rows" class="db-price-rows"></div>
+                  <div class="db-actions">
+                    <button class="text-button" type="button" id="db-price-add">Add a price</button>
+                    <button class="text-button" type="button" id="db-price-known">Add the common lab codes</button>
+                  </div>
+                </fieldset>
+                <div class="db-actions"><button class="secondary-button" type="submit">Save visit summary settings</button></div>
               </form>
               <p class="db-muted">Labs older than this are deleted automatically every night, including patient links. The activity log keeps who did what and when, never lab values.</p>
               <div class="db-actions"><button class="secondary-button" type="button" id="db-audit-download">Download activity log (CSV)</button></div>
@@ -2046,12 +2066,12 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-199"></script>
-    <script src="help.js?v=carewise-product-199"></script>
-    <script src="doctor-share.js?v=carewise-product-199"></script>
-    <script src="docbridge.js?v=carewise-product-199"></script>
-    <script src="reminders.js?v=carewise-product-199"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-199"></script>
-    <script src="twofactor.js?v=carewise-product-199"></script>
+    <script src="script.js?v=carewise-product-200"></script>
+    <script src="help.js?v=carewise-product-200"></script>
+    <script src="doctor-share.js?v=carewise-product-200"></script>
+    <script src="docbridge.js?v=carewise-product-200"></script>
+    <script src="reminders.js?v=carewise-product-200"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-200"></script>
+    <script src="twofactor.js?v=carewise-product-200"></script>
   </body>
 </html>
