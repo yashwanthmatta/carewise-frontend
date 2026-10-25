@@ -1,4 +1,4 @@
-const CAREWISE_CACHE = "carewise-shell-v200";
+const CAREWISE_CACHE = "carewise-shell-v201";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
