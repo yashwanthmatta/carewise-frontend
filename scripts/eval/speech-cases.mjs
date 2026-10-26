@@ -124,6 +124,45 @@ if (listened.before !== 0 || /mmol\/L|ng\/mL|<0/.test(all)) {
   console.log(`FAIL Listen spoke before the button was pressed, or read raw symbols: ${JSON.stringify(all)}`);
 }
 
+// One result only: the Listen button on a card reads that card and nothing else, at the chosen
+// speed; pressing another Listen switches to it; the speed choice is remembered on this device.
+const single = await page.evaluate(() => {
+  const said = [];
+  window.speechSynthesis.cancel = () => {};
+  window.speechSynthesis.speak = (utterance) => said.push({ text: utterance.text, rate: utterance.rate });
+  try { localStorage.removeItem("carewiseListenSpeed"); } catch {}
+  renderLocalReportAnalysis(analyzeReportTextLocally("Troponin I 0.9 ng/mL <0.04\nPotassium 6.8 mmol/L 3.5-5.1"));
+  const cards = [...document.querySelectorAll(".result-card-item")];
+  const potassium = cards.find((card) => /Potassium/.test(card.textContent));
+  const speed = document.querySelector('[data-report-action="listen-speed"]');
+  const speedLabels = [speed?.textContent];
+  speed?.click();
+  speedLabels.push(speed?.textContent);
+  potassium?.querySelector('[data-report-action="listen"]')?.click();
+  const one = said.splice(0);
+  const pressed = potassium?.querySelector('[data-report-action="listen"]')?.getAttribute("aria-pressed");
+  document.querySelector('.result-more-menu [data-report-action="listen"]')?.click();
+  const switched = said.splice(0);
+  const cardPressedAfter = potassium?.querySelector('[data-report-action="listen"]')?.getAttribute("aria-pressed");
+  return { cards: cards.length, one, pressed, switched, cardPressedAfter, speedLabels, saved: localStorage.getItem("carewiseListenSpeed") };
+});
+const oneText = single.one.map((u) => u.text).join(" | ");
+const checksOne = [
+  [single.cards >= 2, "report has two result cards"],
+  [single.one.length > 0 && /6 point 8 millimoles per liter/.test(oneText), "card Listen reads its own result"],
+  [!/Troponin|troponin|Some results/.test(oneText), "card Listen reads nothing from other cards or the summary"],
+  [single.one.every((u) => u.rate === 0.75), "slower speed is used"],
+  [single.speedLabels[0] === "Speed: normal" && single.speedLabels[1] === "Speed: slower" && single.saved === "slow", "speed button cycles and is remembered"],
+  [single.pressed === "true", "card Listen shows it is playing"],
+  [single.switched.length > single.one.length && single.cardPressedAfter === "false", "pressing the main Listen switches to the whole report"],
+];
+for (const [ok, name] of checksOne) {
+  if (!ok) {
+    failures += 1;
+    console.log(`FAIL ${name}\n  ${JSON.stringify(single)}`);
+  }
+}
+
 await browser.close();
 console.log(failures ? `${failures} read-aloud case(s) failed` : `All ${CASES.length} read-aloud cases and ${REPORTS.length * 2} reports passed`);
 process.exit(failures ? 1 : 0);
