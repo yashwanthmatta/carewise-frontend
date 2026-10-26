@@ -7,7 +7,7 @@ import vm from "node:vm";
 const context = { document: { querySelector: () => null } };
 context.globalThis = context;
 vm.runInNewContext(readFileSync(new URL("../reminders.js", import.meta.url), "utf8"), context);
-const { build, firstDay } = context.ftReminderCalendar;
+const { build, buildLab, firstDay } = context.ftReminderCalendar;
 
 const item = { id: "rem_test", person: "Mom", label: "Metformin 500mg", times: ["08:00", "20:30"], days: [], timezone: "America/New_York" };
 const now = new Date(Date.UTC(2026, 9, 21, 16, 0)); // Wednesday noon in New York
@@ -39,5 +39,16 @@ assert.equal(firstDay(["thu"], lateUtc, "America/New_York"), "20261022");
 const fallback = build({ ...item, timezone: "Bad Zone;X" }, now);
 assert.match(fallback, /DTSTART:\d{8}T080000/);
 assert.ok(!fallback.includes("TZID"));
+
+// Next-lab reminder: the date the person picked, never shifted by time zone, and
+// generic words only (no "labs", no name) because it shows on a locked phone.
+const lab = buildLab("2026-11-03", now);
+assert.ok(lab.includes("DTSTART;VALUE=DATE:20261103"));
+assert.ok(lab.includes("DTEND;VALUE=DATE:20261104"));
+assert.ok(lab.includes("SUMMARY:FollowThrough Health reminder"));
+assert.ok(lab.includes("DESCRIPTION:FollowThrough Health: You have a reminder."));
+assert.ok(!/SUMMARY:.*lab/i.test(lab) && !lab.includes("Mom"));
+assert.ok(buildLab("2026-12-31", now).includes("DTEND;VALUE=DATE:20270101"));
+assert.equal(buildLab("not a date", now), "");
 
 console.log("Reminder calendar checks passed.");
