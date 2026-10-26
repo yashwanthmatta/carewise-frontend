@@ -6580,27 +6580,16 @@ function renderReportChanges(analysis) {
 
 // "Remind me about my next labs": a calendar file made on this device, nothing sent.
 function downloadLabReminder(dateText) {
-  const date = new Date(`${dateText}T12:00:00`);
-  const day = date.toISOString().slice(0, 10).replace(/-/g, "");
-  const next = new Date(date.getTime() + 86400000).toISOString().slice(0, 10).replace(/-/g, "");
-  const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
-  const person = normalizeReportPerson(latestReportPerson);
-  const who = person === "Me" ? "" : ` for ${person}`;
-  const ics = [
-    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//FollowThrough Health//Lab reminder//EN", "BEGIN:VEVENT",
-    `UID:carewise-${Date.now()}@carewise`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${day}`, `DTEND;VALUE=DATE:${next}`,
-    `SUMMARY:Time for your next labs${who}`,
-    "DESCRIPTION:The date your doctor gave for your next lab test. After the test, explain the new report on FollowThrough Health to see what changed.",
-    "BEGIN:VALARM", "TRIGGER:-P2D", "ACTION:DISPLAY", "DESCRIPTION:Lab reminder", "END:VALARM",
-    "END:VEVENT", "END:VCALENDAR",
-  ].join("\r\n");
+  const ics = globalThis.ftReminderCalendar?.buildLab(dateText, new Date());
+  if (!ics) return;
+  const [year, month, day] = dateText.split("-").map(Number);
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
-  link.download = "carewise-next-labs.ics";
+  link.download = "followthrough-next-test.ics";
   document.body.appendChild(link);
   link.click();
   link.remove();
-  reportStatus.textContent = `Reminder made for ${date.toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}. Open the file to save it in your calendar.`;
+  reportStatus.textContent = `Reminder made for ${new Date(year, month - 1, day).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}. Open the file to save it in your calendar.`;
 }
 
 // Version of the interpretation rules and wording below. Change it whenever a rule, threshold or
