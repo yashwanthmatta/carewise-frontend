@@ -781,6 +781,8 @@ const REPORT_TRANSLATIONS = {
       shareDoctor: "Compartir con mi médico",
       listen: "Escuchar",
       stopListening: "Detener",
+      listenOne: "Escuchar este resultado",
+      listenSpeed: { slow: "Velocidad: más lenta", normal: "Velocidad: normal", fast: "Velocidad: más rápida" },
       saveToTrends: "Guardar en tendencias",
       copyQuestions: "Copiar preguntas",
       copyPlan: "Copiar plan",
@@ -926,6 +928,8 @@ const REPORT_UI_EN = {
   shareDoctor: "Share with my doctor",
   listen: "Listen",
   stopListening: "Stop",
+  listenOne: "Listen to this result",
+  listenSpeed: { slow: "Speed: slower", normal: "Speed: normal", fast: "Speed: faster" },
   saveToTrends: "Save to trends",
   copyQuestions: "Copy questions",
   copyPlan: "Copy plan",
@@ -1499,6 +1503,7 @@ reportResults?.addEventListener("click", (event) => {
   if (action === "packet-pdf") downloadSharePacketPdf();
   if (action === "share-doctor") window.openDoctorShare?.();
   if (action === "listen") toggleListen(event.target.closest("[data-report-action]"));
+  if (action === "listen-speed") cycleListenSpeed(event.target.closest("[data-report-action]"));
   if (action === "lab-reminder") {
     // The date comes from the person's doctor; FollowThrough Health never picks one.
     const date = reportResults.querySelector("[data-lab-reminder]")?.value;
@@ -6298,37 +6303,67 @@ function stopListening() {
   });
 }
 
-function listenParts() {
+// Reading speed, kept on this device only. "normal" is a little slower than the voice's default.
+const LISTEN_RATES = { slow: 0.75, normal: 0.9, fast: 1.1 };
+function listenSpeed() {
+  try {
+    const saved = localStorage.getItem("carewiseListenSpeed");
+    return LISTEN_RATES[saved] ? saved : "normal";
+  } catch {
+    return "normal";
+  }
+}
+
+function cycleListenSpeed(button) {
+  const order = ["normal", "slow", "fast"];
+  const next = order[(order.indexOf(listenSpeed()) + 1) % order.length];
+  try { localStorage.setItem("carewiseListenSpeed", next); } catch {}
+  const labels = reportUiText().listenSpeed;
+  if (button) button.textContent = labels[next];
+}
+
+function cardParts(card) {
+  const name = card.querySelector("header strong")?.textContent || "";
+  const label = card.querySelector("header em")?.textContent || "";
+  const value = card.querySelector(".result-card-value b")?.textContent || "";
+  const parts = [`${name}: ${value}. ${label}.`];
+  card.querySelectorAll(".result-card-range").forEach((node) => parts.push(node.textContent));
+  card.querySelectorAll("h5 + p").forEach((node) => parts.push(node.textContent));
+  return parts;
+}
+
+// The whole report (summary, then every result), or one result card when "card" is given.
+function listenParts(card = null) {
   const parts = [];
-  const summary = reportResults?.querySelector(".report-summary");
-  if (summary) summary.querySelectorAll("h3, p").forEach((node) => parts.push(node.textContent));
-  reportResults?.querySelectorAll(".result-card-item").forEach((card) => {
-    const name = card.querySelector("header strong")?.textContent || "";
-    const label = card.querySelector("header em")?.textContent || "";
-    const value = card.querySelector(".result-card-value b")?.textContent || "";
-    parts.push(`${name}: ${value}. ${label}.`);
-    card.querySelectorAll(".result-card-range").forEach((node) => parts.push(node.textContent));
-    card.querySelectorAll("h5 + p").forEach((node) => parts.push(node.textContent));
-  });
+  if (card) {
+    parts.push(...cardParts(card));
+  } else {
+    const summary = reportResults?.querySelector(".report-summary");
+    if (summary) summary.querySelectorAll("h3, p").forEach((node) => parts.push(node.textContent));
+    reportResults?.querySelectorAll(".result-card-item").forEach((item) => parts.push(...cardParts(item)));
+  }
   const lang = reportLanguage === "es" ? "es" : "en";
   return parts.map((part) => spokenText(part, lang)).filter(Boolean);
 }
 
 function toggleListen(button) {
   if (!canListen() || !button) return;
-  if (window.speechSynthesis.speaking || button.getAttribute("aria-pressed") === "true") {
+  if (button.getAttribute("aria-pressed") === "true") {
     stopListening();
     return;
   }
-  const parts = listenParts();
+  // Pressing Listen while something else is reading switches to the new choice.
+  stopListening();
+  const parts = listenParts(button.closest(".result-card-item"));
   if (!parts.length) return;
   const lang = reportLanguage === "es" ? "es-US" : "en-US";
+  const rate = LISTEN_RATES[listenSpeed()];
   button.textContent = button.dataset.stopLabel || "Stop";
   button.setAttribute("aria-pressed", "true");
   parts.forEach((part, index) => {
     const utterance = new SpeechSynthesisUtterance(part);
     utterance.lang = lang;
-    utterance.rate = 0.9;
+    utterance.rate = rate;
     if (index === parts.length - 1) utterance.onend = stopListening;
     utterance.onerror = stopListening;
     window.speechSynthesis.speak(utterance);
@@ -6353,6 +6388,7 @@ function sourceLineFor(card) {
 }
 
 function renderResultCard(card, text) {
+  const ui = reportUiText();
   const line = sourceLineFor(card);
   const showLine = reportLanguage === "es" ? "Ver la línea de su informe" : "Show the line from your report";
   return `
@@ -6364,6 +6400,7 @@ function renderResultCard(card, text) {
             ${card.what ? `<h5>${escapeHtml(text.whatIs)}</h5><p>${escapeHtml(card.what)}</p>` : ""}
             ${card.meaning ? `<h5>${escapeHtml(text.whatMeans)}</h5><p>${escapeHtml(card.meaning)}</p>` : ""}
             ${card.ask ? `<h5>${escapeHtml(text.askDoctor)}</h5><p class="result-card-ask">“${escapeHtml(card.ask)}”</p>` : ""}
+            ${canListen() ? `<button class="secondary-button compact result-card-listen" type="button" data-report-action="listen" data-listen-label="${escapeHtml(ui.listenOne)}" data-stop-label="${escapeHtml(ui.stopListening)}" aria-pressed="false">${escapeHtml(ui.listenOne)}</button>` : ""}
             ${line ? `<details class="result-card-source"><summary>${escapeHtml(showLine)}</summary><code>${escapeHtml(line)}</code></details>` : ""}
           </article>`;
 }
@@ -7088,7 +7125,8 @@ function renderLocalReportAnalysis(analysis) {
             <div class="result-more-menu">
               <button class="secondary-button compact" type="button" data-report-action="copy-summary">${escapeHtml(ui.copySummary)}</button>
               <button class="secondary-button compact" type="button" data-report-action="share-summary">${escapeHtml(ui.shareSummary)}</button>
-              ${canListen() ? `<button class="secondary-button compact" type="button" data-report-action="listen" data-listen-label="${escapeHtml(ui.listen)}" data-stop-label="${escapeHtml(ui.stopListening)}" aria-pressed="false">${escapeHtml(ui.listen)}</button>` : ""}
+              ${canListen() ? `<button class="secondary-button compact" type="button" data-report-action="listen" data-listen-label="${escapeHtml(ui.listen)}" data-stop-label="${escapeHtml(ui.stopListening)}" aria-pressed="false">${escapeHtml(ui.listen)}</button>
+              <button class="secondary-button compact" type="button" data-report-action="listen-speed">${escapeHtml(ui.listenSpeed[listenSpeed()])}</button>` : ""}
             </div>
           </details>
         </div>
