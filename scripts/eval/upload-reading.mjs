@@ -36,6 +36,12 @@ await page.goto(`${base}#report-title`, { waitUntil: "load" });
 await page.setInputFiles("#report-file", { name: "sample-report.png", mimeType: "image/png", buffer: png });
 await page.waitForSelector("#reading-card:not([hidden])", { timeout: 3000 }).catch(() => {});
 ok(await page.evaluate(() => !document.querySelector("#reading-bar").hasAttribute("aria-valuenow")), "no percentage is claimed before the reader reports one");
+await page.waitForTimeout(700);
+ok(await page.evaluate(() => {
+  const card = document.querySelector("#reading-card").getBoundingClientRect();
+  const tabBar = document.querySelector(".quick-nav").getBoundingClientRect();
+  return card.top >= 0 && card.bottom <= Math.min(innerHeight, tabBar.top);
+}), "reading card is in view above the phone tab bar");
 await page.click("#reading-cancel");
 ok(await page.isHidden("#reading-card"), "Cancel hides the reading card");
 ok(/Stopped/.test(await page.textContent("#report-status")), "Cancel says reading stopped");

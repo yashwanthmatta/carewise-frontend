@@ -4295,6 +4295,9 @@ function startReading(file) {
     document.querySelector("#reading-meta").textContent = `${kind}${file.size ? ` · ${Math.max(1, Math.round(file.size / 1024))} KB` : ""}`;
     setReadingProgress(null, "Reading on this device. Nothing is uploaded.");
     card.hidden = false;
+    // On a phone the card can open below the bottom tab bar; bring it into view.
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    card.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
   }
   return readingToken;
 }

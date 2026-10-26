@@ -613,3 +613,12 @@ body:not([data-auth="in"]) :is(.billing-panel, .twofactor-panel, .doctor-links-p
 .report-panel .feedback-more[hidden] { display: none; }
 .report-panel .next-steps-list li { align-content: start; align-items: start; }
 .report-panel .next-steps-more > summary .more-open, .report-panel .next-steps-more > summary .more-close { color: var(--ft-brand); font-weight: 700; }
+/* Warm white, per the latest brief: a very light warm neutral rather than the older paper tone. */
+:root {
+  --ft-bg: #f9f8f5;
+  --ft-surface-2: #f3f2ee;
+  --ft-surface-brand: #eef6f3;
+  --ft-line: #e6e3dc;
+  --ft-line-strong: #d0cbc1;
+}
+.summary-meter span { background: #e3ebe8; }
