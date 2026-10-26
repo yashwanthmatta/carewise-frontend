@@ -7,14 +7,14 @@ Statuses: **COMPLETE**, **PARTIALLY COMPLETE**, **NOT STARTED** or **BLOCKED**. 
 - it has an axe scan, reduced-motion support and screenshots
 - it is in a pull request
 
-Last updated: 2026-10-26.
+Last updated: 2026-10-26 (second round: upload and results).
 
 | # | Screen | Website | Phone app | Evidence / remaining |
 |---|---|---|---|---|
 | 1 | Welcome and home | **COMPLETE** | NOT STARTED | `compare-desk-home.png`, `compare-phone-home.png`. Headline "Your health reports, explained clearly." Two actions; "Try a sample report" explains a sample in one tap. Remaining: the founder decides whether to shorten the long phone homepage. |
-| 2 | Upload | PARTIALLY COMPLETE | NOT STARTED | Homepage upload card redone. The Upload screen gets the new buttons and inputs but has the old layout. Remaining: progress and cancel states, plus clearer file guidance. |
-| 3 | Report processing | NOT STARTED | NOT STARTED | — |
-| 4 | Report results | PARTIALLY COMPLETE | NOT STARTED | Three main actions plus More; calmer summary; result cards with labelled chips; one container on phones (`compare-phone-result.png`). Remaining: the order of sections, and the "All tests" and "Detected values" folds. |
+| 2 | Upload | **COMPLETE** | NOT STARTED | `compare2-phone-upload.png`, `after-phone-reading.png`. A reading card shows the file name, type and size, with real progress from the photo reader (a moving bar otherwise; no made-up percentages). Cancel guarantees nothing from that file is used. Drag and drop onto the Upload box; tips for a good read. `scripts/eval/upload-reading.mjs` (15 checks) runs in CI. |
+| 3 | Report processing | **COMPLETE** | NOT STARTED | The same reading card covers PDF, photo and scanned-PDF reading, with page-by-page progress for scans. Explaining is instant on the device, so there is no separate wait screen. |
+| 4 | Report results | **COMPLETE** (pending the usability test) | NOT STARTED | `compare2-phone-result*.png`. The plain-English summary comes first, then a "Take it to your doctor" bar (Doctor brief, PDF, Share, More), then "Results to talk about" with a count. Result cards show the number large with the lab's range under it, sentence-case labels and the doctor question in a quote box. The folds ("All tests on your report", questions) share one style with a count and a chevron. The language picker sits in the header. Checked in Spanish. |
 | 5 | Original report evidence | PARTIALLY COMPLETE | NOT STARTED | "Show the line from your report" restyled with a 44px target. Remaining: a side-by-side source view. |
 | 6 | Doctor brief | NOT STARTED | NOT STARTED | — |
 | 7 | Health record and trends | PARTIALLY COMPLETE | NOT STARTED | Internal follow-up codes are no longer shown in History. Remaining: layout and charts. |
@@ -35,6 +35,7 @@ All of these were run locally against this branch:
 | CSP meta check | passed |
 | CSP browser checks (with headers, and meta only) | no violations |
 | Sign-in | 55 checks passed |
+| Upload reading card and result order | 15 checks passed |
 | Share-packet PDF | passed |
 | Visit settings demo | passed |
 | Safety cases | 34 passed |

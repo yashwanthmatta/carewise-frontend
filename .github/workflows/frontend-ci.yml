@@ -82,6 +82,9 @@ jobs:
       - name: Sign-in card (tabs, Enter key, show password, two-step code, reset, log out)
         run: node scripts/eval/sign-in.mjs
 
+      - name: Upload reading card (progress, Cancel, drag and drop) and result order
+        run: node scripts/eval/upload-reading.mjs
+
       - name: Randomized report check (standard and hard reports)
         run: |
           node scripts/eval/stress.mjs --text 5000 --seed 101
