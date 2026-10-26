@@ -19,7 +19,7 @@ Last updated: 2026-10-26.
 | 6 | Doctor brief | NOT STARTED | NOT STARTED | — |
 | 7 | Health record and trends | PARTIALLY COMPLETE | NOT STARTED | Internal follow-up codes are no longer shown in History. Remaining: layout and charts. |
 | 8 | Reminders | NOT STARTED | NOT STARTED | — |
-| 9 | Account and privacy (sign in) | **COMPLETE** | see mobile PR | `compare-*-account.png`, `after-*-signed-in.png`. Tabs, show password, forgot password, busy state, signed-in view, privacy controls. `scripts/eval/sign-in.mjs` (49 checks) runs in CI. Also checked against the real backend code locally: sign up, wrong password, sign in, duplicate email. |
+| 9 | Account and privacy (sign in) | **COMPLETE** | see mobile PR | `compare-*-account.png`, `after-*-signed-in.png`. Tabs, show password, forgot password, busy state, signed-in view, privacy controls. `scripts/eval/sign-in.mjs` (55 checks) runs in CI. Also checked against the real backend code locally: sign up, wrong password, sign in, duplicate email. |
 | 10 | DocBridge | NOT STARTED (gets the new tokens) | — | — |
 | — | Design system | **COMPLETE (v3)** | mirrored | `ui.css`, `docs/followthrough-design-system.md` |
 | — | Dark mode | BLOCKED | — | Needs the older `styles.css` layers removed first; see the audit. |
@@ -34,7 +34,7 @@ All of these were run locally against this branch:
 | Claims audit | passed |
 | CSP meta check | passed |
 | CSP browser checks (with headers, and meta only) | no violations |
-| Sign-in | 49 checks passed |
+| Sign-in | 55 checks passed |
 | Share-packet PDF | passed |
 | Visit settings demo | passed |
 | Safety cases | 34 passed |
