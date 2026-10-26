@@ -16,13 +16,14 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-202" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-203" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-202" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-203" />
+    <link rel="stylesheet" href="ui.css?v=carewise-product-203" />
   </head>
   <body>
     <main class="app-shell">
@@ -32,56 +33,60 @@
             <img class="brand-logo" src="assets/carewise-logo.svg" alt="" width="34" height="34" />
             <span class="brand-text"><strong>FollowThrough Health</strong></span>
           </a>
-          <nav class="site-links" aria-label="About FollowThrough Health">
-            <a href="#how-it-works">How it works</a>
-            <a href="#safety">Safety</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#early-access-title">For families</a>
-            <a href="#docbridge-title">For doctors</a>
+          <nav class="quick-nav patient-nav" aria-label="FollowThrough Health patient flow">
+            <a href="#app-title">Home</a>
+            <a href="#report-title">Upload</a>
+            <a href="#saved-title">History</a>
+            <a href="#record-title">Record</a>
+            <a href="#account-title">Account</a>
           </nav>
           <div class="topbar-actions">
             <span id="network-status" class="network-pill">Checking network</span>
             <button id="install-app" class="install-button" type="button" hidden>Install</button>
+            <a class="nav-signin" href="#account-title"><span class="when-out">Sign in</span><span class="when-in">Account</span></a>
             <a class="nav-cta" href="#report-title" aria-label="Explain a report">Explain<span class="cta-long">&nbsp;a report</span></a>
           </div>
         </header>
-
-        <nav class="quick-nav patient-nav" aria-label="FollowThrough Health patient flow">
-          <a href="#app-title">Home</a>
-          <a href="#report-title">Upload</a>
-          <a href="#saved-title">History</a>
-          <a href="#record-title">Record</a>
-          <a href="#account-title">Profile</a>
-        </nav>
-
         <div class="landing" id="landing">
           <section class="lp-hero" aria-labelledby="app-title">
-            <p class="lp-chip"><img src="assets/carewise-logo.svg" alt="" width="20" height="20" /> For families who look after a parent's health</p>
-            <h1 id="app-title">Understand your health reports in simple English.</h1>
-            <p class="lp-lede">Add a blood test or scan report. FollowThrough Health explains every result in plain words, shows which ones to ask about first, and gets you ready for the doctor. Free, and read on your own device.</p>
-            <label class="lp-drop" id="hero-drop" for="hero-report-file">
-              <input id="hero-report-file" type="file" accept=".pdf,image/*,.txt,text/plain" />
-              <span class="lp-drop-icon" aria-hidden="true">+</span>
-              <strong>Drop your report here</strong>
-              <span>or tap to choose a photo or PDF</span>
-              <small>Read on this device. Nothing is uploaded.</small>
-            </label>
-            <details class="data-use">
-              <summary>What happens to my data?</summary>
-              <ul>
-                <li><strong>Explaining a report:</strong> the PDF, photo or numbers are read on this phone or computer. Nothing is sent to us.</li>
-                <li><strong>Only if you choose to save it:</strong> signing in and tapping "Save to my account" stores the report and its results on our servers, so you can see them on other devices. You can delete them any time.</li>
-                <li><strong>Only if you share it:</strong> "Share with my doctor" stores the summary you chose, encrypted, behind a private link you can turn off.</li>
-                <li><strong>Only if you use the help chat:</strong> your question goes to our AI provider, Anthropic, to write the answer. Our servers do not save it.</li>
-                <li><strong>Always:</strong> anonymous daily counts such as "a report was explained", with no report text and no account. We never sell your data or use it for ads.</li>
+            <div class="hero-copy">
+              <p class="lp-chip"><img src="assets/carewise-logo.svg" alt="" width="20" height="20" /> For you and the people you look after</p>
+              <h1 id="app-title">Your health reports, explained clearly.</h1>
+              <p class="lp-lede">Add a blood test or scan report. See what each result means in plain words, which ones to ask about first, and what to bring to your doctor.</p>
+              <div class="hero-cta">
+                <label class="lp-drop" id="hero-drop" for="hero-report-file">
+                  <input id="hero-report-file" type="file" accept=".pdf,image/*,.txt,text/plain" />
+                  <span class="lp-drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span>
+                  <span class="lp-drop-text"><strong>Understand a report</strong><span>Choose a photo or PDF, or drop it here</span></span>
+                </label>
+                <a class="hero-sample" href="#try=raj-kidney-heart-uk/explain" data-try-sample>
+                  <span class="hero-sample-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+                  <span class="hero-sample-text"><strong>Try a sample report</strong><span>No upload, no account</span></span>
+                </a>
+              </div>
+              <ul class="hero-trust" aria-label="How FollowThrough Health handles your report">
+                <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/></svg>Read on your device. Nothing is uploaded.</li>
+                <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4 10-10"/></svg>Free, no account needed</li>
+                <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4z"/></svg>English and Español</li>
               </ul>
-              <p><a href="/legal/privacy.html">Privacy policy</a> · <a href="/safety.html">Safety and trust</a></p>
-            </details>
-            <div class="hero-actions lp-actions lp-actions-quiet" aria-label="Other ways to start">
-              <a class="lp-link" href="#report-title">Type the numbers instead</a>
-              <button id="start-tour" class="lp-link" type="button">See a 1-minute demo</button>
+              <details class="data-use">
+                <summary>What happens to my data?</summary>
+                <ul>
+                  <li><strong>Explaining a report:</strong> the PDF, photo or numbers are read on this phone or computer. Nothing is sent to us.</li>
+                  <li><strong>Only if you choose to save it:</strong> signing in and tapping "Save to my account" stores the report and its results on our servers, so you can see them on other devices. You can delete them any time.</li>
+                  <li><strong>Only if you share it:</strong> "Share with my doctor" stores the summary you chose, encrypted, behind a private link you can turn off.</li>
+                  <li><strong>Only if you use the help chat:</strong> your question goes to our AI provider, Anthropic, to write the answer. Our servers do not save it.</li>
+                  <li><strong>Always:</strong> anonymous daily counts such as "a report was explained", with no report text and no account. We never sell your data or use it for ads.</li>
+                </ul>
+                <p><a href="/legal/privacy.html">Privacy policy</a> · <a href="/safety.html">Safety and trust</a></p>
+              </details>
+              <div class="hero-actions lp-actions lp-actions-quiet" aria-label="Other ways to start">
+                <a class="lp-link" href="#report-title">Type the numbers instead</a>
+                <button id="start-tour" class="lp-link" type="button">See a 1-minute demo</button>
+              </div>
+              <p class="hero-disclaimer">For education only. FollowThrough Health does not diagnose or give medical advice; your doctor interprets your results.</p>
+              <p class="hero-early-access"><a href="#early-access-title">Looking after a parent's health? Join early access</a></p>
             </div>
-            <p class="hero-early-access"><a href="#early-access-title">Looking after a parent's health? Join early access</a></p>
 
             <div class="lp-stage" aria-label="Example: a parent's kidney report explained by FollowThrough Health">
               <div class="lp-stage-glow" aria-hidden="true"></div>
@@ -102,6 +107,14 @@
               </article>
             </div>
           </section>
+
+          <nav class="lp-jump" aria-label="About FollowThrough Health">
+            <a href="#how-it-works">How it works</a>
+            <a href="#safety">Safety</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#early-access-title">For families</a>
+            <a href="#for-doctors">For doctors</a>
+          </nav>
 
           <section class="lp-strip" aria-label="What FollowThrough Health does">
             <p class="lp-strip-label">Built for <b>families</b></p>
@@ -304,74 +317,122 @@
         </section>
 
 <section class="panel account-panel" aria-labelledby="account-title">
-          <div class="panel-heading-row">
-            <div>
-              <p class="eyebrow">Profile</p>
-              <h3 id="account-title">Save reports to your account</h3>
-              <p class="panel-intro">Create a free account when you want your reports on all your devices.</p>
+          <div class="auth-layout">
+            <div class="auth-card" id="auth-card" data-auth-mode="signin">
+              <div class="auth-head">
+                <img class="auth-logo" src="assets/carewise-logo.svg" alt="" width="44" height="44" />
+                <h3 id="account-title" data-auth-title>Welcome back</h3>
+                <p class="auth-sub" data-auth-sub>Sign in to see your saved reports on any device.</p>
+              </div>
+              <div class="auth-tabs" role="tablist" aria-label="Sign in or create an account" data-auth-tabs>
+                <button type="button" role="tab" id="auth-tab-signin" aria-selected="true" aria-controls="auth-form" data-auth-tab="signin">Sign in</button>
+                <button type="button" role="tab" id="auth-tab-signup" aria-selected="false" aria-controls="auth-form" tabindex="-1" data-auth-tab="signup">Create account</button>
+              </div>
+              <form id="auth-form" class="auth-form" role="tabpanel" aria-labelledby="auth-tab-signin" novalidate>
+                <div class="field">
+                  <label class="field-label" for="auth-email">Email</label>
+                  <input id="auth-email" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" required placeholder="you@example.com" />
+                </div>
+                <div class="field" data-auth-password-field>
+                  <div class="field-row">
+                    <label class="field-label" for="auth-password">Password</label>
+                    <button type="button" class="link-button" data-auth-go="forgot" data-signin-only>Forgot password?</button>
+                  </div>
+                  <div class="password-wrap">
+                    <input id="auth-password" type="password" autocomplete="current-password" required aria-describedby="auth-password-hint" />
+                    <button type="button" class="password-toggle" data-password-toggle="auth-password" aria-pressed="false" aria-label="Show password">Show</button>
+                  </div>
+                  <p id="auth-password-hint" class="field-hint" data-signup-only hidden>At least 12 characters. A short sentence you'll remember works well.</p>
+                </div>
+                <button id="login" class="primary-button auth-submit" type="submit" data-signin-only>Sign in</button>
+                <button id="signup" class="primary-button auth-submit" type="button" data-signup-only hidden>Create free account</button>
+                <div class="auth-forgot" data-forgot-only hidden>
+                  <button id="password-reset" class="primary-button auth-submit" type="button">Email me a reset link</button>
+                  <details class="auth-code-entry" id="auth-reset-code">
+                    <summary>I have a reset code</summary>
+                    <div class="field">
+                      <label class="field-label" for="reset-token">Reset code from the email</label>
+                      <input id="reset-token" type="text" autocomplete="one-time-code" placeholder="Paste the code" />
+                    </div>
+                    <div class="field">
+                      <label class="field-label" for="reset-password">New password</label>
+                      <div class="password-wrap">
+                        <input id="reset-password" type="password" autocomplete="new-password" aria-describedby="reset-password-hint" />
+                        <button type="button" class="password-toggle" data-password-toggle="reset-password" aria-pressed="false" aria-label="Show password">Show</button>
+                      </div>
+                      <p id="reset-password-hint" class="field-hint">At least 12 characters.</p>
+                    </div>
+                    <button id="confirm-password-reset" class="secondary-button auth-submit" type="button">Set new password</button>
+                  </details>
+                  <button type="button" class="link-button auth-back" data-auth-go="signin">Back to sign in</button>
+                </div>
+                <div id="tf-login" class="tf-login" hidden>
+                  <div class="field">
+                    <label class="field-label" for="tf-login-code">Code from your authenticator app</label>
+                    <input id="tf-login-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="20" placeholder="6-digit code, or a backup code" />
+                  </div>
+                  <button id="tf-login-submit" class="primary-button auth-submit" type="button">Verify and sign in</button>
+                </div>
+                <p id="auth-status" class="auth-status" role="status" aria-live="polite"></p>
+              </form>
+              <p class="auth-terms" data-signup-only hidden>By creating an account you agree to the <a href="legal/terms.html">Terms</a> and <a href="legal/privacy.html">Privacy policy</a>.</p>
             </div>
-            <span id="auth-badge" class="sync-badge offline">Not signed in</span>
+
+            <aside class="auth-aside" aria-label="Why create an account">
+              <h4>An account is optional</h4>
+              <p>You can explain a report without one. Results stay in this browser.</p>
+              <ul class="auth-benefits">
+                <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg><span><strong>Your reports on every device</strong>Save a report and open it on your phone or laptop.</span></li>
+                <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v4M17 3v4M4 9h16M5 5h14v15H5z"/></svg><span><strong>Reminders</strong>Medicine and next-test reminders for you or a parent.</span></li>
+                <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/></svg><span><strong>You stay in control</strong>Delete your account and data any time.</span></li>
+              </ul>
+              <a class="secondary-button auth-try" href="#report-title">Explain a report without an account</a>
+            </aside>
           </div>
-          <div class="account-grid">
-            <label>
-              Email
-              <input id="auth-email" type="email" autocomplete="email" placeholder="you@example.com" />
-            </label>
-            <label>
-              Password
-              <input id="auth-password" type="password" placeholder="At least 12 characters" />
-            </label>
-          </div>
-          <div class="primary-action-row">
-            <button id="signup" class="primary-button narrow-button" type="button">Create account</button>
-            <button id="login" class="secondary-button" type="button">Login</button>
-            <a class="secondary-link inline-action" href="#report-title">Try demo first</a>
-          </div>
-          <div id="tf-login" class="tf-login" hidden>
-            <label>Code from your authenticator app
-              <input id="tf-login-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="20" placeholder="6-digit code, or a backup code" />
-            </label>
-            <button id="tf-login-submit" class="primary-button narrow-button" type="button">Verify and sign in</button>
-          </div>
-          <div class="session-card">
-            <strong id="signed-in-label">Signed out</strong>
-            <span id="signed-in-detail">Your reports stay on this device. Sign in to keep them on all your devices.</span>
+
+          <div class="account-home" id="account-home">
+            <div class="account-id">
+              <span class="account-avatar" id="account-avatar" aria-hidden="true">·</span>
+              <div>
+                <h3 class="account-name" id="signed-in-label">Signed out</h3>
+                <p class="account-detail" id="signed-in-detail">Your reports stay on this device. Sign in to keep them on all your devices.</p>
+              </div>
+              <span id="auth-badge" class="sync-badge offline">Not signed in</span>
+            </div>
+            <div class="account-verify" id="account-verify" hidden>
+              <p><strong>Confirm your email</strong> so we can help you get back in if you forget your password.</p>
+              <div class="account-verify-row">
+                <button id="request-email-verification" class="secondary-button" type="button">Send the email again</button>
+                <details class="auth-code-entry">
+                  <summary>I have a confirmation code</summary>
+                  <div class="field">
+                    <label class="field-label" for="verify-token">Email confirmation code</label>
+                    <input id="verify-token" type="text" placeholder="Paste the code from the email" autocomplete="one-time-code" />
+                  </div>
+                  <button id="confirm-email-verification" class="secondary-button" type="button">Confirm email</button>
+                </details>
+              </div>
+            </div>
+            <div class="account-links">
+              <a class="account-link" href="#saved-title"><strong>Saved reports</strong><span>Reports you saved to your account</span></a>
+              <a class="account-link" href="#your-plan"><strong>Plan</strong><span>Your plan and payments</span></a>
+              <a class="account-link" href="#twofactor-title"><strong>Two-step sign-in</strong><span>Extra protection for your account</span></a>
+              <a class="account-link" href="legal/privacy.html"><strong>Privacy</strong><span>What we keep and why</span></a>
+            </div>
+            <div class="account-actions">
+              <button id="logout" class="secondary-button" type="button">Log out</button>
+              <details class="account-danger">
+                <summary>Privacy and data controls</summary>
+                <p>Record that you agree to FollowThrough Health storing the reports you save, or delete your account and everything saved in it. Deleting can't be undone.</p>
+                <div class="account-verify-row">
+                  <button id="record-consent" class="secondary-button" type="button">Record my consent</button>
+                  <button id="delete-account" class="danger-button" type="button">Delete my account</button>
+                </div>
+              </details>
+            </div>
           </div>
           <input type="hidden" id="auth-role" value="patient" />
-          <details class="advanced-actions">
-            <summary>Log out, verify email, reset password or delete account</summary>
-            <div class="sync-grid secondary-actions">
-              <button id="logout" class="secondary-button" type="button">Logout</button>
-              <button id="delete-account" class="secondary-button" type="button">Delete my account</button>
-              <button id="record-consent" class="secondary-button" type="button">Record consent</button>
-              <button id="request-email-verification" class="secondary-button" type="button">Verify email</button>
-              <button id="password-reset" class="secondary-button" type="button">Reset my password</button>
-            </div>
-            <div class="account-grid">
-              <label>
-                Email confirmation code
-                <input id="verify-token" type="text" placeholder="Paste the code from the email" autocomplete="one-time-code" />
-              </label>
-              <label>
-                Then
-                <button id="confirm-email-verification" class="secondary-button field-button" type="button">Confirm email</button>
-              </label>
-              <label>
-                Password reset code
-                <input id="reset-token" type="text" placeholder="Paste the code from the email" autocomplete="one-time-code" />
-              </label>
-              <label>
-                New password
-                <input id="reset-password" type="password" placeholder="At least 12 characters" />
-              </label>
-              <label>
-                Reset action
-                <button id="confirm-password-reset" class="secondary-button field-button" type="button">Set new password</button>
-              </label>
-            </div>
-          </details>
           <input type="hidden" id="api-url" value="https://carewise-api.onrender.com" />
-          <p id="auth-status" class="status-line" role="status"></p>
         </section>
 
         <section class="panel billing-panel" id="your-plan" aria-labelledby="billing-title">
@@ -2066,12 +2127,13 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-202"></script>
-    <script src="help.js?v=carewise-product-202"></script>
-    <script src="doctor-share.js?v=carewise-product-202"></script>
-    <script src="docbridge.js?v=carewise-product-202"></script>
-    <script src="reminders.js?v=carewise-product-202"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-202"></script>
-    <script src="twofactor.js?v=carewise-product-202"></script>
+    <script src="script.js?v=carewise-product-203"></script>
+    <script src="help.js?v=carewise-product-203"></script>
+    <script src="doctor-share.js?v=carewise-product-203"></script>
+    <script src="docbridge.js?v=carewise-product-203"></script>
+    <script src="reminders.js?v=carewise-product-203"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-203"></script>
+    <script src="twofactor.js?v=carewise-product-203"></script>
+    <script src="account-ui.js?v=carewise-product-203"></script>
   </body>
 </html>

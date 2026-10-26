@@ -3063,9 +3063,13 @@ function updateAuthStatus(message) {
   signedInDetail.textContent = signedIn
     ? (emailVerified ? "Email verified. Reports you save to your account appear on all your devices." : "Please verify your email: open the link we sent you.")
     : "Your reports stay on this device. Sign in to keep them on all your devices.";
-  authStatus.textContent = message || (signedIn
-    ? "You're signed in."
-    : "You can explain reports without an account. Create one to save them.");
+  authStatus.textContent = message || "";
+  // The sign-in card and the signed-in account view swap on this (styles in ui.css).
+  document.body.dataset.auth = signedIn ? "in" : "out";
+  const avatar = document.querySelector("#account-avatar");
+  if (avatar) avatar.textContent = (authEmail || "·").charAt(0).toUpperCase();
+  const verifyBox = document.querySelector("#account-verify");
+  if (verifyBox) verifyBox.hidden = !signedIn || emailVerified;
   refreshReviewDemoProof();
 }
 
@@ -5068,7 +5072,7 @@ function renderReportHistory() {
       <article>
         <div>
           <strong>${escapeHtml(report.fileName || "Untitled report")}</strong>
-          <span>${escapeHtml(`For ${normalizeReportPerson(report.person)} · `)}${escapeHtml(report.riskLevel ? `Follow-up: ${report.riskLevel}` : report.status || "uploaded")}</span>
+          <span>${escapeHtml(`For ${normalizeReportPerson(report.person)} · `)}${escapeHtml(new Date(report.createdAt || report.updatedAt || Date.now()).toLocaleDateString())}</span>
         </div>
         <p>${escapeHtml(report.message || "Saved report. Run or load analysis to see a plain-English explanation.")}</p>
         ${report.questions?.length ? `<p><strong>Doctor question:</strong> ${escapeHtml(report.questions[0])}</p>` : ""}
@@ -6966,14 +6970,19 @@ function renderLocalReportAnalysis(analysis) {
           <span>${escapeHtml(ui.eyebrow)}</span>
           <div class="section-heading-action">
             <strong>${escapeHtml(ui.title)}</strong>
-            <div class="inline-action-group">
-              <button class="secondary-button compact" type="button" data-report-action="copy-summary">${escapeHtml(ui.copySummary)}</button>
-              <button class="secondary-button compact" type="button" data-report-action="share-summary">${escapeHtml(ui.shareSummary)}</button>
+            <div class="inline-action-group result-actions">
               <button class="primary-button compact" type="button" data-report-action="doctor-brief">${escapeHtml(ui.doctorBrief)}</button>
               <button class="secondary-button compact" type="button" data-report-action="packet-pdf">${escapeHtml(ui.packetPdf)}</button>
               <button class="secondary-button compact" type="button" data-report-action="share-doctor">${escapeHtml(ui.shareDoctor)}</button>
-              ${canListen() ? `<button class="secondary-button compact" type="button" data-report-action="listen" data-listen-label="${escapeHtml(ui.listen)}" data-stop-label="${escapeHtml(ui.stopListening)}" aria-pressed="false">${escapeHtml(ui.listen)}</button>` : ""}
-              <select data-report-language aria-label="Report language">${Object.entries(REPORT_LANGUAGES).map(([code, name]) => `<option value="${code}"${code === reportLanguage ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
+              <details class="result-more-actions">
+                <summary class="secondary-button compact">${reportLanguage === "es" ? "Más" : "More"}</summary>
+                <div class="result-more-menu">
+                  <button class="secondary-button compact" type="button" data-report-action="copy-summary">${escapeHtml(ui.copySummary)}</button>
+                  <button class="secondary-button compact" type="button" data-report-action="share-summary">${escapeHtml(ui.shareSummary)}</button>
+                  ${canListen() ? `<button class="secondary-button compact" type="button" data-report-action="listen" data-listen-label="${escapeHtml(ui.listen)}" data-stop-label="${escapeHtml(ui.stopListening)}" aria-pressed="false">${escapeHtml(ui.listen)}</button>` : ""}
+                </div>
+              </details>
+              <select data-report-language aria-label="${reportLanguage === "es" ? "Idioma del informe" : "Report language"}">${Object.entries(REPORT_LANGUAGES).map(([code, name]) => `<option value="${code}"${code === reportLanguage ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
             </div>
           </div>
           ${ui.draftNotice ? `<p class="status-line" role="note">${escapeHtml(ui.draftNotice)}</p>` : ""}
@@ -11352,7 +11361,8 @@ const TRY_SAMPLES = {
 
 async function loadTrySample() {
   reportFromPhoto = false;
-  const id = window.location.hash.match(/^#try=([a-z0-9-]+)$/)?.[1];
+  // "#try=<sample>/explain" (the homepage's "Try a sample report") also explains it in one tap.
+  const [, id, explainNow] = window.location.hash.match(/^#try=([a-z0-9-]+)(\/explain)?$/) || [];
   const sample = id && TRY_SAMPLES[id];
   if (!sample) return;
   if (tourStep >= 0) endTour();
@@ -11373,6 +11383,7 @@ async function loadTrySample() {
   if (history.replaceState) history.replaceState(null, "", "#report-title");
   scrollBelowHeader(document.querySelector(".report-panel"));
   document.querySelector("#analyze-report")?.focus({ preventScroll: true });
+  if (explainNow) document.querySelector("#analyze-report")?.click();
 }
 
 if (window.location.hash === "#tour") startTour();
