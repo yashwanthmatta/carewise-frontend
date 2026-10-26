@@ -766,7 +766,7 @@ const REPORT_TRANSLATIONS = {
       eyebrow: "Explicación de FollowThrough Health",
       title: "Resumen del informe en lenguaje sencillo",
       found: (count) => `FollowThrough Health encontró ${count} punto${count === 1 ? "" : "s"} para comentar en el texto del informe.`,
-      detectedValues: "Valores detectados",
+      detectedValues: "Números leídos de su informe",
       keyFindings: "Hallazgos principales",
       suggestions: "Sugerencias de bienestar",
       questions: "Preguntas para su médico",
@@ -911,7 +911,7 @@ const REPORT_UI_EN = {
   eyebrow: "FollowThrough Health explanation",
   title: "Plain-English report summary",
   found: (count) => `FollowThrough Health found ${count} discussion point${count === 1 ? "" : "s"} in the readable report text.`,
-  detectedValues: "Detected values",
+  detectedValues: "Numbers read from your report",
   keyFindings: "Key findings",
   suggestions: "Wellness suggestions",
   questions: "Questions to ask your doctor",
@@ -4295,6 +4295,9 @@ function startReading(file) {
     document.querySelector("#reading-meta").textContent = `${kind}${file.size ? ` · ${Math.max(1, Math.round(file.size / 1024))} KB` : ""}`;
     setReadingProgress(null, "Reading on this device. Nothing is uploaded.");
     card.hidden = false;
+    // On a phone the card can open below the bottom tab bar; bring it into view.
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    card.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
   }
   return readingToken;
 }
@@ -6200,6 +6203,7 @@ function renderReportSummary(view, nextStep = "") {
       <section class="report-summary report-summary-${view.urgent ? "urgent" : view.outside || view.cards.length ? "attention" : "clear"}" aria-labelledby="report-summary-title">
         <span class="report-summary-eyebrow">${escapeHtml(view.title)}</span>
         <h3 id="report-summary-title">${escapeHtml(view.headline)}</h3>
+        ${view.tests.length > 1 && view.tests.length <= 40 ? `<div class="summary-meter" aria-hidden="true">${view.tests.map((_, index) => `<span class="${index < view.outside ? "is-out" : ""}"></span>`).join("")}</div>` : ""}
         ${view.body.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}
         ${nextStep ? `<p class="report-summary-next">${escapeHtml(nextStep)}</p>` : ""}
       </section>`;
@@ -6354,17 +6358,20 @@ function sourceLineFor(card) {
 
 function renderResultCard(card, text) {
   const line = sourceLineFor(card);
-  const showLine = reportLanguage === "es" ? "Ver la línea de su informe" : "Show the line from your report";
+  const showLine = reportLanguage === "es" ? "La línea de su informe" : "The line from your report";
   return `
           <article class="result-card-item result-card-${escapeHtml(card.tone)}">
             <header><strong>${escapeHtml(card.name)}</strong><em>${escapeHtml(card.label)}</em></header>
             <p class="result-card-value"><b>${escapeHtml(card.value)}</b>${card.unitHint ? `<small>${escapeHtml(card.unitHint)}</small>` : ""}</p>
             ${card.rangeLabel ? `<p class="result-card-range">${escapeHtml(card.rangeLabel)}: ${escapeHtml(card.range || text.noRangePrinted)}</p>` : ""}
             ${card.note ? `<p class="result-card-range">${escapeHtml(card.note)}</p>` : ""}
-            ${card.what ? `<h5>${escapeHtml(text.whatIs)}</h5><p>${escapeHtml(card.what)}</p>` : ""}
             ${card.meaning ? `<h5>${escapeHtml(text.whatMeans)}</h5><p>${escapeHtml(card.meaning)}</p>` : ""}
-            ${card.ask ? `<h5>${escapeHtml(text.askDoctor)}</h5><p class="result-card-ask">“${escapeHtml(card.ask)}”</p>` : ""}
-            ${line ? `<details class="result-card-source"><summary>${escapeHtml(showLine)}</summary><code>${escapeHtml(line)}</code></details>` : ""}
+            ${card.what || card.ask || line ? `<details class="result-card-more">
+              <summary>${reportLanguage === "es" ? "Más sobre este resultado" : "More about this result"}</summary>
+              ${card.what ? `<h5>${escapeHtml(text.whatIs)}</h5><p>${escapeHtml(card.what)}</p>` : ""}
+              ${card.ask ? `<h5>${escapeHtml(text.askDoctor)}</h5><p class="result-card-ask">“${escapeHtml(card.ask)}”</p>` : ""}
+              ${line ? `<h5 class="result-card-source-title">${escapeHtml(showLine)}</h5><code class="result-card-source-line">${escapeHtml(line)}</code>` : ""}
+            </details>` : ""}
           </article>`;
 }
 
@@ -7110,7 +7117,7 @@ function renderLocalReportAnalysis(analysis) {
           // With result cards on screen the questions are already shown once, so the full list folds away.
           return reportView.cards.length ? renderResultMore(list, ui.questions, String(questions.length)) : list;
         })()}
-        ${analysis.noData ? "" : `<div class="lab-reminder"><label for="lab-reminder-date">${escapeHtml(reportView.text.reminderLabel)}</label><input id="lab-reminder-date" type="date" data-lab-reminder min="${new Date().toISOString().slice(0, 10)}" /><button class="secondary-button compact" type="button" data-report-action="lab-reminder">${reportLanguage === "es" ? "Añadir al calendario" : "Add to calendar"}</button></div>`}
+        ${analysis.noData ? "" : renderResultMore(`<div class="lab-reminder"><label for="lab-reminder-date">${escapeHtml(reportView.text.reminderLabel)}</label><input id="lab-reminder-date" type="date" data-lab-reminder min="${new Date().toISOString().slice(0, 10)}" /><button class="secondary-button compact" type="button" data-report-action="lab-reminder">${reportLanguage === "es" ? "Añadir al calendario" : "Add to calendar"}</button></div>`, reportLanguage === "es" ? "Añadir la próxima prueba al calendario" : "Add your next test to your calendar", "")}
         ${showFindings ? `
         <section>
           <h4>${escapeHtml(ui.keyFindings)}</h4>

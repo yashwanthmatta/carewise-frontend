@@ -83,7 +83,7 @@ async function main() {
   assertIncludes("script.js", script, "data-report-action=\"share-summary\"");
   assertIncludes("script.js", script, "buildReportSummaryPack");
   assertIncludes("script.js", script, "buildDetectedReportValues");
-  assertIncludes("script.js", script, "Detected values");
+  assertIncludes("script.js", script, "Numbers read from your report");
   assertIncludes("script.js", script, "data-report-action=\"save-detected-values\"");
   assertIncludes("script.js", script, "saveDetectedValuesToTrends");
   assertIncludes("script.js", script, "normalizeDetectedValueFlag");

@@ -7,15 +7,15 @@ Statuses: **COMPLETE**, **PARTIALLY COMPLETE**, **NOT STARTED** or **BLOCKED**. 
 - it has an axe scan, reduced-motion support and screenshots
 - it is in a pull request
 
-Last updated: 2026-10-26 (second round: upload and results).
+Last updated: 2026-10-26 (third round: results rebuilt, simpler upload, warm white).
 
 | # | Screen | Website | Phone app | Evidence / remaining |
 |---|---|---|---|---|
-| 1 | Welcome and home | **COMPLETE** | NOT STARTED | `compare-desk-home.png`, `compare-phone-home.png`. Headline "Your health reports, explained clearly." Two actions; "Try a sample report" explains a sample in one tap. Remaining: the founder decides whether to shorten the long phone homepage. |
-| 2 | Upload | **COMPLETE** | NOT STARTED | `compare2-phone-upload.png`, `after-phone-reading.png`. A reading card shows the file name, type and size, with real progress from the photo reader (a moving bar otherwise; no made-up percentages). Cancel guarantees nothing from that file is used. Drag and drop onto the Upload box; tips for a good read. `scripts/eval/upload-reading.mjs` (15 checks) runs in CI. |
+| 1 | Welcome and home | **COMPLETE** | NOT STARTED | `after3-desk-home.png`. One upload action and one sample; the extra links (type the numbers, demo, early access) moved out of the hero. The 1-minute demo is now in the in-page links row. Warm white background. |
+| 2 | Upload | **COMPLETE** | NOT STARTED | `compare3-phone-upload.png`. Order: "Whose report?", then one upload box and one "Try a sample report" card, then "Or type the results". Save and load moved under "Save or load reports". The duplicate privacy line is hidden from view (screen readers still hear it). The reading card scrolls into view above the phone tab bar. `upload-reading.mjs` (16 checks). |
 | 3 | Report processing | **COMPLETE** | NOT STARTED | The same reading card covers PDF, photo and scanned-PDF reading, with page-by-page progress for scans. Explaining is instant on the device, so there is no separate wait screen. |
-| 4 | Report results | **COMPLETE** (pending the usability test) | NOT STARTED | `compare2-phone-result*.png`. The plain-English summary comes first, then a "Take it to your doctor" bar (Doctor brief, PDF, Share, More), then "Results to talk about" with a count. Result cards show the number large with the lab's range under it, sentence-case labels and the doctor question in a quote box. The folds ("All tests on your report", questions) share one style with a count and a chevron. The language picker sits in the header. Checked in Spanish. |
-| 5 | Original report evidence | PARTIALLY COMPLETE | NOT STARTED | "Show the line from your report" restyled with a 44px target. Remaining: a side-by-side source view. |
+| 4 | Report results | **COMPLETE** (pending the usability test) | NOT STARTED | `compare3-phone-result*.png`, `after3-desk-result.png`. One surface, no nested boxes. The summary card has a quiet count meter (the same numbers it states in words). Compact result cards show the name, label, value, the lab's range and what it means; "More about this result" opens what the test is, the doctor question and the line from the report. Next steps are numbered cards. The calendar reminder and "Numbers read from your report" (was "Detected values") fold away. Neutral safety note and feedback box. |
+| 5 | Original report evidence | PARTIALLY COMPLETE | NOT STARTED | The line from the report now sits in each card's "More about this result". Remaining: a side-by-side view of the original page for PDFs. |
 | 6 | Doctor brief | NOT STARTED | NOT STARTED | — |
 | 7 | Health record and trends | PARTIALLY COMPLETE | NOT STARTED | Internal follow-up codes are no longer shown in History. Remaining: layout and charts. |
 | 8 | Reminders | NOT STARTED | NOT STARTED | — |
@@ -35,7 +35,7 @@ All of these were run locally against this branch:
 | CSP meta check | passed |
 | CSP browser checks (with headers, and meta only) | no violations |
 | Sign-in | 55 checks passed |
-| Upload reading card and result order | 15 checks passed |
+| Upload reading card and result order | 16 checks passed |
 | Share-packet PDF | passed |
 | Visit settings demo | passed |
 | Safety cases | 34 passed |

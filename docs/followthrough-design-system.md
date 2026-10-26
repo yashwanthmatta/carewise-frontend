@@ -9,14 +9,14 @@
 
 | Token | Value | Use |
 |---|---|---|
-| `--ft-bg` | `#f6f4ef` | Page background (warm paper) |
+| `--ft-bg` | `#f9f8f5` | Page background (warm white) |
 | `--ft-surface` | `#ffffff` | Cards, inputs |
-| `--ft-surface-2` | `#f3f1ec` | Quiet areas: tab track, aside, hover |
+| `--ft-surface-2` | `#f3f2ee` | Quiet areas: tab track, aside, hover |
 | `--ft-surface-brand` | `#eef7f5` | The upload card, the two-step code box |
 | `--ft-ink` | `#15191a` | Text |
-| `--ft-ink-2` | `#474f4d` | Secondary text (8.6:1 on the background) |
-| `--ft-ink-3` | `#5f6866` | Captions (5.7:1 on white) |
-| `--ft-line` / `--ft-line-strong` | `#e3dfd7` / `#cfc9bd` | Borders, input borders |
+| `--ft-ink-2` | `#45504d` | Secondary text (8.3:1 on the background) |
+| `--ft-ink-3` | `#5b6663` | Captions (5.9:1 on white) |
+| `--ft-line` / `--ft-line-strong` | `#e6e3dc` / `#d0cbc1` | Borders, input borders |
 | `--ft-brand` / `--ft-brand-strong` | `#0f766e` / `#0b5c55` | Primary buttons, links, focus (white text 5.5:1) |
 | `--ft-brand-soft` | `#e3f2ef` | Selected tab on phones, avatar |
 | `--ft-attention` / `-ink` / `-soft` | `#b45309` / `#7c3a06` / `#fdf4e7` | "Outside the lab's range" accents and chips; "confirm your email" |
