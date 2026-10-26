@@ -175,7 +175,7 @@
     }
   });
 
-  // Refresh the Profile list when Profile opens or someone signs in or out.
+  // Refresh the list when Account opens or someone signs in or out.
   const panel = document.querySelector(".doctor-links-panel");
   if (panel) {
     new MutationObserver(() => { if (!panel.hidden) renderLists(); }).observe(panel, { attributes: true, attributeFilter: ["hidden"] });

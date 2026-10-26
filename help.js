@@ -53,14 +53,14 @@
       [/thank|thanks|great|perfect|ok(ay)?\b|got it/i, "You're welcome. Ask me anything else about your report or FollowThrough Health."],
       [/who are you|what are you|what can you do|help me|^help$|how does (this|it|the app|the site|carewise) work|what is carewise|how (do i|to) use/i, "I'm the FollowThrough Health helper. FollowThrough Health explains lab and scan reports in plain words, shows what needs attention first, gives you questions for the doctor and a one-page doctor brief, and keeps a health record for you or a family member. Try asking \"What does my result mean?\" or the name of a test, like \"What is eGFR?\""],
       [/upload|photo|picture|pdf|add .*report|new report|how.*start|paste/i, "Open Upload, add a PDF, a photo, or paste the report text, choose whose report it is, then press \"Explain report\". Text PDFs and photos are read on your device, so nothing is uploaded unless you save it."],
-      [/plan|price|pay|cost|cancel|subscri|\bplus\b|family plan|stripe|card|refund|billing|free/i, "Free covers explaining reports, the doctor brief and your health record. Plus is $7 a month for personal plans, reminders and trends. Family is $12 a month for up to 5 people. Choose a plan in Profile under \"Plans and payments\"; you can cancel any time with \"Manage or cancel plan\"."],
+      [/plan|price|pay|cost|cancel|subscri|\bplus\b|family plan|stripe|card|refund|billing|free/i, "Free covers explaining reports, the doctor brief and your health record. Plus is $7 a month for personal plans, reminders and trends. Family is $12 a month for up to 5 people. Sign in, then choose a plan under Account, \"Plans and payments\"; you can cancel any time with \"Manage or cancel plan\"."],
       [/brief|print|share with (my )?doctor|appointment|visit/i, "Under your result, press \"Doctor brief\". It makes a one-page summary of the values, what needs attention and your questions. Print it or save it as a PDF for the visit."],
       [/ask (my |the )?doctor|questions? (for|to ask)/i, "Good questions to start with: Which result matters most for me? Does anything need a repeat test, and when? Is any of this linked to how I have been feeling? Is there anything I should change before the next visit?"],
       [/mom|mum|dad|father|mother|parent|family member|caregiver|someone else/i, "Choose whose report it is (Me, Mom, Dad or another name) before you press \"Explain report\". FollowThrough Health keeps each person's reports and record apart, and the doctor brief shows their name. The Family plan keeps up to 5 people's profiles in one account. Sharing with siblings and caregivers is coming later."],
       [/history|old report|past report|trend|compare/i, "Open History to see reports you saved and how values changed over time. Save a report first with \"Save to my account\" under Upload."],
       [/record|allerg|condition|medicines? list|timeline/i, "Open Record to keep conditions, allergies, visits and what did not suit you, as far back as you remember. It is saved on this device and goes into the doctor brief."],
-      [/account|sign ?up|log ?in|password|save|sync|email/i, "Go to Profile to create a free account with your email. Then press \"Save to my account\" under a report to keep it. Password reset and \"Delete my account\" are under \"Log out, verify email, reset password or delete account\"."],
-      [/privacy|delete|data|safe|secure|hipaa|who can see/i, "Reports are read on your device. When you save to an account, report text is encrypted. To delete everything saved to your account, open Profile and press \"Delete my account\"."],
+      [/account|sign ?up|log ?in|password|save|sync|email/i, "Open Account and choose \"Create account\" to make a free account with your email. Then press \"Save to my account\" under a report to keep it. Forgot your password? Press \"Forgot password?\" on the sign-in screen. \"Delete my account\" is under \"Privacy and data controls\" once you are signed in."],
+      [/privacy|delete|data|safe|secure|hipaa|who can see/i, "Reports are read on your device. When you save to an account, report text is encrypted. To delete everything saved to your account, sign in, open Account, then \"Privacy and data controls\" and press \"Delete my account\"."],
       [/spanish|español|language|translate/i, "Pick Español in the language menu on a result to read it in Spanish. The Spanish text is still being reviewed."],
       [/install|app\b|phone|offline/i, "You can add FollowThrough Health to your phone's home screen from your browser's menu (\"Add to Home Screen\"). Report explaining also works offline once the page has loaded."],
       [/\b(mri|ct|x-?ray|ultrasound|scan|mammogram|radiolog)/i, "For a scan, paste or upload the written report from the radiologist. FollowThrough Health explains the words in it and the Impression; it does not look at the images themselves."],
@@ -71,12 +71,12 @@
       [/gracias|perfecto|vale|de acuerdo/i, "De nada. Pregúntame lo que quieras sobre tu informe o FollowThrough Health."],
       [/quién eres|qué puedes hacer|ayuda|cómo funciona|qué es carewise/i, "Soy el asistente de FollowThrough Health. FollowThrough Health explica informes de laboratorio e imagen con palabras simples, muestra primero lo que necesita atención, te da preguntas para el médico y guarda un historial. Prueba con \"¿Qué significa mi resultado?\" o el nombre de una prueba."],
       [/subir|foto|pdf|agregar|nuevo informe|empez|pegar/i, "Abre Subir, agrega un PDF, una foto o pega el texto del informe, elige de quién es y pulsa \"Explicar informe\"."],
-      [/plan|precio|pag|costo|cancel|suscri|tarjeta|gratis/i, "Gratis incluye explicar informes, el resumen para el médico y tu historial. Plus cuesta $7 al mes y Familia $12 al mes para hasta 5 personas. Elige un plan en Perfil y cancela cuando quieras."],
+      [/plan|precio|pag|costo|cancel|suscri|tarjeta|gratis/i, "Gratis incluye explicar informes, el resumen para el médico y tu historial. Plus cuesta $7 al mes y Familia $12 al mes para hasta 5 personas. Inicia sesión y elige un plan en Cuenta y cancela cuando quieras."],
       [/resumen|imprimir|cita|consulta/i, "Debajo de tu resultado pulsa \"Doctor brief\" para crear un resumen de una página para imprimir o guardar como PDF."],
       [/pregunt.*médico|preguntas/i, "Buenas preguntas: ¿Qué resultado es más importante para mí? ¿Hace falta repetir alguna prueba y cuándo? ¿Tiene relación con cómo me he sentido?"],
       [/mamá|papá|madre|padre|familia|cuidador/i, "Elige de quién es el informe (Yo, Mamá, Papá u otro nombre) antes de pulsar \"Explicar informe\". FollowThrough Health guarda los informes de cada persona por separado."],
-      [/cuenta|contraseña|guardar|iniciar|correo/i, "Ve a Perfil para crear una cuenta gratis con tu correo y guarda tus informes."],
-      [/privacidad|borrar|eliminar|datos|seguro/i, "Los informes se leen en tu dispositivo. Al guardarlos en una cuenta, el texto se cifra. Para borrar todo lo guardado en tu cuenta, abre Perfil y pulsa \"Delete my account\"."],
+      [/cuenta|contraseña|guardar|iniciar|correo/i, "Ve a Cuenta y pulsa \"Create account\" para crear una cuenta gratis con tu correo y guarda tus informes."],
+      [/privacidad|borrar|eliminar|datos|seguro/i, "Los informes se leen en tu dispositivo. Al guardarlos en una cuenta, el texto se cifra. Para borrar todo lo guardado en tu cuenta, inicia sesión, abre Cuenta y pulsa \"Delete my account\"."],
       [/medicina|medicamento|pastilla|dosis|suplemento|tratamiento|puedo tomar|receta/i, "No puedo sugerir medicamentos, suplementos ni dosis. Pregunta a tu médico o farmacéutico."],
     ],
   };
@@ -566,14 +566,21 @@
         choosePlan(code);
         return;
       }
-      // Pricing cards on the home page: open Profile at the plans.
+      // Pricing cards on the home page: open Account at the plans. Plans show once signed in,
+      // so a signed-out visitor lands on Create account with a note about the plan they picked.
       event.preventDefault();
       showPlans();
       if (authToken) choosePlan(code);
-      else billingStatus.textContent = `Create a free account or log in above, then choose ${PLAN_NAMES[code] || "a plan"}.`;
+      else {
+        byId("auth-tab-signup")?.click();
+        const message = `Create a free account or sign in, then choose ${PLAN_NAMES[code] || "a plan"}.`;
+        billingStatus.textContent = message;
+        const authStatus = byId("auth-status");
+        if (authStatus) authStatus.textContent = message;
+      }
     });
     manageButton.addEventListener("click", manageBilling);
-    // Refresh when Profile opens and when someone signs in or out.
+    // Refresh when Account opens and when someone signs in or out.
     new MutationObserver(() => {
       if (!billingPanel.hidden) refreshPlan();
     }).observe(billingPanel, { attributes: true, attributeFilter: ["hidden"] });
