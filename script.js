@@ -3151,7 +3151,7 @@ async function signup() {
       updateAuthStatus("Clinician and admin accounts are set up by the FollowThrough Health team. Choose Patient under FollowThrough Health team sign-in, or ask the team to add your email.");
       return;
     }
-    updateAuthStatus(authErrorMessage(error, "Account may already exist. Try Log in."));
+    updateAuthStatus(authErrorMessage(error, "There may already be an account with this email. Try Sign in instead."));
   }
 }
 
@@ -3313,7 +3313,7 @@ function logout() {
   }
   addAuditEvent("account_logout", "Signed out locally and cleared backend patient link.");
   renderAuditTrail();
-  updateAuthStatus("Signed out. Local prototype data is still on this device.");
+  updateAuthStatus("You have signed out. Reports explained on this device are still here.");
   setBackendStatus(backendAvailable, backendAvailable ? "Signed out." : "Signed out.");
 }
 
@@ -3527,7 +3527,7 @@ async function verifyCurrentSession() {
     const refreshed = await refreshAuthSession();
     if (refreshed) return verifyCurrentSession();
     clearAuthSession();
-    updateAuthStatus("Session expired. Log in again to sync protected data.");
+    updateAuthStatus("You were signed out for your security. Sign in again to see your saved reports.");
     return false;
   }
 }

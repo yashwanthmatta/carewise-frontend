@@ -421,3 +421,23 @@ body:not([data-auth="in"]) :is(.billing-panel, .twofactor-panel, .doctor-links-p
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
   .is-busy::after { animation: none; border-right-color: currentColor; opacity: 0.6; }
 }
+
+/* ---------- Fixes from the first visual review ---------- */
+.lp-hero .lp-float-a { display: none; }   /* the trust row under the actions already says this */
+.lp-hero .lp-actions-quiet .lp-link { padding: 6px 0; }
+.report-panel .result-hero { background: var(--ft-surface) !important; border-bottom-color: var(--ft-line) !important; }
+.report-panel .v1-result-card { border-color: var(--ft-line) !important; border-radius: var(--ft-radius-lg) !important; box-shadow: var(--ft-shadow-md) !important; }
+@media (max-width: 720px) {
+  .nav-signin { display: none; }            /* "Account" is in the bottom bar */
+  .site-nav .topbar-actions { flex-wrap: nowrap; }
+  .topbar.site-nav { border-radius: 20px; }
+  /* Result on a phone: one container, not three nested boxes, and the answer close to the top. */
+  .report-panel .v1-result-card { border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: transparent !important; overflow: visible; }
+  .report-panel .result-hero { padding: 0 0 14px !important; background: transparent !important; }
+  .report-panel .result-hero .result-actions { display: grid !important; grid-template-columns: 1fr 1fr; }
+  .report-panel .result-hero .result-actions > * { width: 100% !important; }
+  .report-panel .result-actions > [data-report-action="doctor-brief"] { grid-column: 1 / -1; }
+  .report-panel .result-actions > .result-more-actions > summary { width: 100%; }
+  .report-panel .report-summary { margin: 4px 0 12px !important; padding: 16px; }
+  .report-panel .result-sections { padding-inline: 0 !important; }
+}
