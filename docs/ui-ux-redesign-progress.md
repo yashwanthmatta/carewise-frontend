@@ -19,9 +19,9 @@ Last updated: 2026-10-26.
 | 6 | Doctor brief | NOT STARTED | NOT STARTED | — |
 | 7 | Health record and trends | PARTIALLY COMPLETE | NOT STARTED | Internal follow-up codes are no longer shown in History. Remaining: layout and charts. |
 | 8 | Reminders | NOT STARTED | NOT STARTED | — |
-| 9 | Account and privacy (sign in) | **COMPLETE** | see mobile PR | `compare-*-account.png`, `after-*-signed-in.png`. Tabs, show password, forgot password, busy state, signed-in view, privacy controls. `scripts/eval/sign-in.mjs` (55 checks) runs in CI. Also checked against the real backend code locally: sign up, wrong password, sign in, duplicate email. |
+| 9 | Account and privacy (sign in) | **COMPLETE** | **COMPLETE**, pending a device check (yashwanthmatta/carewise-mobile-app#49: tabs, show password, reset step, clear messages, signed-in view; `compare-app-account.png` there) | `compare-*-account.png`, `after-*-signed-in.png`. Tabs, show password, forgot password, busy state, signed-in view, privacy controls. `scripts/eval/sign-in.mjs` (55 checks) runs in CI. Also checked against the real backend code locally: sign up, wrong password, sign in, duplicate email. |
 | 10 | DocBridge | NOT STARTED (gets the new tokens) | — | — |
-| — | Design system | **COMPLETE (v3)** | mirrored | `ui.css`, `docs/followthrough-design-system.md` |
+| — | Design system | **COMPLETE (v3)** | mirrored in `src/theme.ts` | `ui.css`, `docs/followthrough-design-system.md` |
 | — | Dark mode | BLOCKED | — | Needs the older `styles.css` layers removed first; see the audit. |
 
 ## Checks run for the first pull request
