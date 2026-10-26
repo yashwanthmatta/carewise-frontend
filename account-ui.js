@@ -120,6 +120,18 @@
     setMode("signin", { keepStatus: true });
   }
 
+  // Shortcuts to panels shown on this same screen (plan, two-step sign-in) scroll to them; the
+  // hash router would otherwise treat their ids as unknown screens and open Home.
+  document.querySelectorAll(".account-link[href^='#']").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      const target = document.getElementById(link.getAttribute("href").slice(1));
+      const panel = target?.closest(".panel");
+      if (!panel || panel.hidden || !panel.offsetParent) return;
+      event.preventDefault();
+      panel.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    });
+  });
+
   // After signing in, move focus from the (now hidden) form to the account heading.
   new MutationObserver(() => {
     if (document.body.dataset.auth === "in" && card.contains(document.activeElement)) {

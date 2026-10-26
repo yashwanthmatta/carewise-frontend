@@ -441,3 +441,11 @@ body:not([data-auth="in"]) :is(.billing-panel, .twofactor-panel, .doctor-links-p
   .report-panel .report-summary { margin: 4px 0 12px !important; padding: 16px; }
   .report-panel .result-sections { padding-inline: 0 !important; }
 }
+.workspace > .panel .account-name { margin: 0 !important; font-size: clamp(1.15rem, 2.2vw, 1.4rem) !important; line-height: 1.25; letter-spacing: -0.01em; }
+.workspace .account-home .sync-badge.offline { background: var(--ft-attention-soft); color: var(--ft-attention-ink); border-color: #f1dcbc; }
+.workspace .account-verify p { color: var(--ft-ink); }
+.account-danger > summary, .auth-code-entry > summary { gap: 8px; list-style: none; }
+.account-danger > summary::-webkit-details-marker, .auth-code-entry > summary::-webkit-details-marker { display: none; }
+.account-danger > summary::before, .auth-code-entry > summary::before { content: ""; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform var(--ft-fast) var(--ft-ease); }
+.account-danger[open] > summary::before, .auth-code-entry[open] > summary::before { transform: rotate(45deg); }
+.workspace #logout { background: var(--ft-surface) !important; }

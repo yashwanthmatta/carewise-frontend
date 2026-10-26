@@ -81,6 +81,11 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
   ok(/person@example\.com/.test(await page.textContent("#signed-in-label")), `${tag} shows who is signed in`);
   ok(viewport.width < 721 || await page.isVisible(".nav-signin .when-in"), `${tag} header link says Account`);
 
+  // Shortcuts on the account screen stay on it.
+  await page.click('.account-link[href="#twofactor-title"]');
+  await page.waitForTimeout(600);
+  ok(await page.isVisible(".twofactor-panel") && await page.evaluate(() => document.body.dataset.activeWorkspace === "account-title"), `${tag} Two-step shortcut scrolls to it on the same screen`);
+
   // Log out returns to the form.
   await page.click("#logout");
   await page.waitForFunction(() => document.body.dataset.auth === "out", null, { timeout: 5000 }).catch(() => {});
