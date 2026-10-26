@@ -1423,6 +1423,18 @@ document.querySelector("#hero-report-file")?.addEventListener("change", (event) 
   startFromHeroFile(event.target.files?.[0]);
 });
 
+const composerDrop = document.querySelector(".composer-drop");
+composerDrop?.addEventListener("dragover", (event) => {
+  event.preventDefault();
+  composerDrop.classList.add("is-over");
+});
+composerDrop?.addEventListener("dragleave", () => composerDrop.classList.remove("is-over"));
+composerDrop?.addEventListener("drop", (event) => {
+  event.preventDefault();
+  composerDrop.classList.remove("is-over");
+  startFromHeroFile(event.dataTransfer?.files?.[0]);
+});
+
 const heroDrop = document.querySelector("#hero-drop");
 heroDrop?.addEventListener("dragover", (event) => {
   event.preventDefault();
@@ -4270,9 +4282,62 @@ async function loadBackendAuditEvents() {
   }
 }
 
+// The card under the upload box: which file is being read, real progress when the photo reader
+// reports it (otherwise a moving bar, never a made-up percentage), and Cancel. Cancel moves the
+// reading token on, so a result that arrives later is ignored.
+let readingToken = 0;
+function startReading(file) {
+  readingToken += 1;
+  const card = document.querySelector("#reading-card");
+  if (card) {
+    document.querySelector("#reading-name").textContent = file.name || "Your report";
+    const kind = file.type === "application/pdf" || /\.pdf$/i.test(file.name) ? "PDF" : file.type.startsWith("image/") ? (reportLanguage === "es" ? "Foto" : "Photo") : (reportLanguage === "es" ? "Texto" : "Text file");
+    document.querySelector("#reading-meta").textContent = `${kind}${file.size ? ` · ${Math.max(1, Math.round(file.size / 1024))} KB` : ""}`;
+    setReadingProgress(null, "Reading on this device. Nothing is uploaded.");
+    card.hidden = false;
+  }
+  return readingToken;
+}
+function readingStopped(token) {
+  return token !== readingToken;
+}
+function setReadingProgress(fraction, step) {
+  const bar = document.querySelector("#reading-bar");
+  if (bar) {
+    const known = typeof fraction === "number" && Number.isFinite(fraction);
+    bar.classList.toggle("is-indeterminate", !known);
+    if (known) {
+      const percent = Math.round(Math.min(1, Math.max(0, fraction)) * 100);
+      bar.setAttribute("aria-valuenow", String(percent));
+      bar.style.setProperty("--reading-progress", `${percent}%`);
+    } else {
+      bar.removeAttribute("aria-valuenow");
+    }
+  }
+  if (step) {
+    const stepLine = document.querySelector("#reading-step");
+    if (stepLine) stepLine.textContent = step;
+  }
+}
+function finishReading(token) {
+  if (readingStopped(token)) return;
+  const card = document.querySelector("#reading-card");
+  if (card) card.hidden = true;
+}
+document.querySelector("#reading-cancel")?.addEventListener("click", () => {
+  readingToken += 1;
+  const card = document.querySelector("#reading-card");
+  if (card) card.hidden = true;
+  const input = document.querySelector("#report-file");
+  if (input) input.value = "";
+  reportStatus.textContent = "Stopped. Nothing from that file was used. Choose another file or type the results.";
+  document.querySelector(".composer-drop input")?.focus();
+});
+
 function handleReportFileSelection() {
   const file = document.querySelector("#report-file").files?.[0];
   if (!file) return;
+  const token = startReading(file);
   latestReportId = "";
   ocrChecks = [];
   ocrReviewed = [];
@@ -4284,11 +4349,15 @@ function handleReportFileSelection() {
     reportStatus.textContent = "Reading text report from file.";
     const reader = new FileReader();
     reader.onload = () => {
+      if (readingStopped(token)) return;
+      finishReading(token);
       document.querySelector("#report-text").value = String(reader.result || "").slice(0, 12000);
       updateProgressRail();
       analyzeAndShowReport();
     };
     reader.onerror = () => {
+      if (readingStopped(token)) return;
+      finishReading(token);
       reportStatus.textContent = "Could not read the text file. Paste the report text manually.";
     };
     reader.readAsText(file);
@@ -4297,13 +4366,14 @@ function handleReportFileSelection() {
   const isImage = file.type.startsWith("image/");
   const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
   if (isPdf) {
-    readPdfTextLocally(file);
+    readPdfTextLocally(file, token);
     return;
   }
   if (isImage) {
-    readPhotoTextLocally(file);
+    readPhotoTextLocally(file, token);
     return;
   }
+  finishReading(token);
   reportStatus.textContent = "FollowThrough Health reads PDFs, photos and text files. Choose one of those, or type the results below.";
 }
 
@@ -4398,21 +4468,26 @@ async function extractPdfText(file, maxPages = 10) {
   return pages.join("\n").trim();
 }
 
-async function readPdfTextLocally(file) {
+async function readPdfTextLocally(file, token = readingToken) {
   reportStatus.textContent = "Reading your PDF on this device. Nothing is uploaded.";
+  setReadingProgress(null, "Reading the PDF on this device…");
   try {
     const text = await extractPdfText(file);
+    if (readingStopped(token)) return;
     if (text.replace(/\s/g, "").length < 20) {
       // A scanned PDF has no text layer: read the page images instead.
-      await readScannedPdfLocally(file);
+      await readScannedPdfLocally(file, 3, token);
       return;
     }
+    finishReading(token);
     document.querySelector("#report-text").value = text.slice(0, 12000);
     updateProgressRail();
     trackReportUsage("pdf_read");
     await analyzeAndShowReport();
     reportStatus.textContent = `PDF read on this device; the file was not uploaded. It only leaves this device if you choose to save or share it. ${reportStatus.textContent}`;
   } catch {
+    if (readingStopped(token)) return;
+    finishReading(token);
     reportStatus.textContent = "FollowThrough Health could not read this PDF. Paste the lab values as text below.";
   }
 }
@@ -4722,7 +4797,9 @@ document.querySelector("#ocr-checks")?.addEventListener("click", (event) => {
   renderOcrChecks();
 });
 
-async function showOcrResult(rawText, sourceLabel) {
+async function showOcrResult(rawText, sourceLabel, token = readingToken) {
+  if (readingStopped(token)) return;
+  finishReading(token);
   if (rawText.replace(/\s/g, "").length < 20) {
     reportStatus.textContent = `FollowThrough Health could not find readable text in this ${sourceLabel}. Try a sharper, well-lit photo taken straight on, or type the results below.`;
     return;
@@ -4739,21 +4816,27 @@ async function showOcrResult(rawText, sourceLabel) {
   reportStatus.textContent = `Read from your ${sourceLabel} on this device; the file was not uploaded. It only leaves this device if you choose to save or share it. Photos can be misread, so please check the numbers against the report.`;
 }
 
-async function readPhotoTextLocally(file) {
+async function readPhotoTextLocally(file, token = readingToken) {
   reportStatus.textContent = "Reading your photo on this device. The first time takes a little longer while the reader loads.";
+  setReadingProgress(null, "Getting the photo reader ready. The first time takes a little longer.");
   try {
     const image = await preparePhotoForOcr(file);
     const text = await recognizeImages([image], (progress) => {
+      if (readingStopped(token)) return;
       reportStatus.textContent = `Reading your photo on this device... ${Math.round(progress * 100)}%`;
+      setReadingProgress(progress, "Reading the numbers on your photo…");
     });
-    await showOcrResult(text, "photo");
+    await showOcrResult(text, "photo", token);
   } catch {
+    if (readingStopped(token)) return;
+    finishReading(token);
     reportStatus.textContent = "FollowThrough Health could not read this photo on this device. Type the results below, or try a PDF.";
   }
 }
 
-async function readScannedPdfLocally(file, maxPages = 3) {
+async function readScannedPdfLocally(file, maxPages = 3, token = readingToken) {
   reportStatus.textContent = "This PDF is a scan. Reading the page images on this device...";
+  setReadingProgress(null, "This PDF is a scan. Preparing the pages…");
   try {
     const pdfjs = await loadPdfjs();
     const loadingTask = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
@@ -4772,11 +4855,20 @@ async function readScannedPdfLocally(file, maxPages = 3) {
     } finally {
       await loadingTask.destroy();
     }
+    if (readingStopped(token)) return;
+    // The reader reports progress within a page, then once per finished page.
+    let pagesDone = 0;
     const text = await recognizeImages(images, (progress, done) => {
-      reportStatus.textContent = `Reading the scanned PDF on this device... page ${Math.min(images.length, (done || 0) + 1)} of ${images.length}`;
+      if (readingStopped(token)) return;
+      if (done) pagesDone = done;
+      const page = Math.min(images.length, pagesDone + 1);
+      reportStatus.textContent = `Reading the scanned PDF on this device... page ${page} of ${images.length}`;
+      setReadingProgress(done ? done / images.length : (pagesDone + progress) / images.length, `Reading page ${page} of ${images.length}…`);
     });
-    await showOcrResult(text, "scanned PDF");
+    await showOcrResult(text, "scanned PDF", token);
   } catch {
+    if (readingStopped(token)) return;
+    finishReading(token);
     reportStatus.textContent = "This PDF looks like a scanned image and FollowThrough Health could not read it on this device. Type the lab values below.";
   }
 }
@@ -6280,7 +6372,7 @@ function renderResultCards(view) {
   if (!view.cards.length) return "";
   return `
       <section class="result-cards" aria-label="${escapeHtml(view.text.attentionTitle)}">
-        <h4>${escapeHtml(view.text.attentionTitle)}</h4>
+        <h4>${escapeHtml(view.text.attentionTitle)} <span class="section-count">${view.cards.length}</span></h4>
         <div class="result-cards-grid">${view.cards.map((card) => renderResultCard(card, view.text)).join("")}</div>
       </section>`;
 }
@@ -6970,20 +7062,9 @@ function renderLocalReportAnalysis(analysis) {
           <span>${escapeHtml(ui.eyebrow)}</span>
           <div class="section-heading-action">
             <strong>${escapeHtml(ui.title)}</strong>
-            <div class="inline-action-group result-actions">
-              <button class="primary-button compact" type="button" data-report-action="doctor-brief">${escapeHtml(ui.doctorBrief)}</button>
-              <button class="secondary-button compact" type="button" data-report-action="packet-pdf">${escapeHtml(ui.packetPdf)}</button>
-              <button class="secondary-button compact" type="button" data-report-action="share-doctor">${escapeHtml(ui.shareDoctor)}</button>
-              <details class="result-more-actions">
-                <summary class="secondary-button compact">${reportLanguage === "es" ? "Más" : "More"}</summary>
-                <div class="result-more-menu">
-                  <button class="secondary-button compact" type="button" data-report-action="copy-summary">${escapeHtml(ui.copySummary)}</button>
-                  <button class="secondary-button compact" type="button" data-report-action="share-summary">${escapeHtml(ui.shareSummary)}</button>
-                  ${canListen() ? `<button class="secondary-button compact" type="button" data-report-action="listen" data-listen-label="${escapeHtml(ui.listen)}" data-stop-label="${escapeHtml(ui.stopListening)}" aria-pressed="false">${escapeHtml(ui.listen)}</button>` : ""}
-                </div>
-              </details>
-              <select data-report-language aria-label="${reportLanguage === "es" ? "Idioma del informe" : "Report language"}">${Object.entries(REPORT_LANGUAGES).map(([code, name]) => `<option value="${code}"${code === reportLanguage ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
-            </div>
+            <label class="result-language"><span class="visually-hidden">${reportLanguage === "es" ? "Idioma del informe" : "Report language"}</span>
+            <select data-report-language aria-label="${reportLanguage === "es" ? "Idioma del informe" : "Report language"}">${Object.entries(REPORT_LANGUAGES).map(([code, name]) => `<option value="${code}"${code === reportLanguage ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
+            </label>
           </div>
           ${ui.draftNotice ? `<p class="status-line" role="note">${escapeHtml(ui.draftNotice)}</p>` : ""}
         </div>
@@ -6995,6 +7076,23 @@ function renderLocalReportAnalysis(analysis) {
         const summary = analysis.noData || analysis.scanOnly ? "" : renderReportSummary(reportView, nextStep);
         return summary || (nextStep ? `<p class="result-next result-next-${escapeHtml(analysis.riskLevel)}">${escapeHtml(nextStep)}</p>` : "");
       })()}
+      ${analysis.noData ? "" : `
+      <div class="result-toolbar" role="group" aria-label="${reportLanguage === "es" ? "Llévelo a su médico" : "Take it to your doctor"}">
+        <span class="result-toolbar-label">${reportLanguage === "es" ? "Llévelo a su médico" : "Take it to your doctor"}</span>
+        <div class="inline-action-group result-actions">
+          <button class="primary-button compact" type="button" data-report-action="doctor-brief">${escapeHtml(ui.doctorBrief)}</button>
+          <button class="secondary-button compact" type="button" data-report-action="packet-pdf">${escapeHtml(ui.packetPdf)}</button>
+          <button class="secondary-button compact" type="button" data-report-action="share-doctor">${escapeHtml(ui.shareDoctor)}</button>
+          <details class="result-more-actions">
+            <summary class="secondary-button compact">${reportLanguage === "es" ? "Más" : "More"}</summary>
+            <div class="result-more-menu">
+              <button class="secondary-button compact" type="button" data-report-action="copy-summary">${escapeHtml(ui.copySummary)}</button>
+              <button class="secondary-button compact" type="button" data-report-action="share-summary">${escapeHtml(ui.shareSummary)}</button>
+              ${canListen() ? `<button class="secondary-button compact" type="button" data-report-action="listen" data-listen-label="${escapeHtml(ui.listen)}" data-stop-label="${escapeHtml(ui.stopListening)}" aria-pressed="false">${escapeHtml(ui.listen)}</button>` : ""}
+            </div>
+          </details>
+        </div>
+      </div>`}
       ${renderReportChanges(analysis)}
       <div class="result-sections">
         ${analysis.noData || analysis.scanOnly ? "" : renderResultCards(reportView)}
