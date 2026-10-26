@@ -26,6 +26,18 @@ await page.waitForSelector("#report-results .report-summary", { timeout: 30000 }
 ok(await page.isVisible("#report-results .report-summary"), "PDF is explained");
 ok(await page.isHidden("#reading-card"), "reading card goes away when the result is shown");
 
+// 1b. On a phone the card scrolls into view above the bottom tab bar. Shown directly, so the check
+// does not depend on how fast the reader finishes on this machine.
+await page.goto("about:blank");
+await page.goto(`${base}#report-title`, { waitUntil: "load" });
+await page.evaluate(() => startReading({ name: "report.jpg", type: "image/jpeg", size: 100000 }));
+await page.waitForTimeout(800);
+ok(await page.evaluate(() => {
+  const card = document.querySelector("#reading-card").getBoundingClientRect();
+  const tabBar = document.querySelector(".quick-nav").getBoundingClientRect();
+  return card.top >= 0 && card.bottom <= Math.min(innerHeight, tabBar.top);
+}), "reading card is in view above the phone tab bar");
+
 // 2. A photo, cancelled straight away: nothing from it is used, even after the reader would have finished.
 const shot = await browser.newPage({ viewport: { width: 900, height: 260 } });
 await shot.setContent('<body style="margin:0;background:#fff;font:34px Arial;padding:24px">Sample Lab<br>Sodium 140 mmol/L 135-145<br>Potassium 4.1 mmol/L 3.5-5.1</body>');
@@ -36,12 +48,6 @@ await page.goto(`${base}#report-title`, { waitUntil: "load" });
 await page.setInputFiles("#report-file", { name: "sample-report.png", mimeType: "image/png", buffer: png });
 await page.waitForSelector("#reading-card:not([hidden])", { timeout: 3000 }).catch(() => {});
 ok(await page.evaluate(() => !document.querySelector("#reading-bar").hasAttribute("aria-valuenow")), "no percentage is claimed before the reader reports one");
-await page.waitForTimeout(700);
-ok(await page.evaluate(() => {
-  const card = document.querySelector("#reading-card").getBoundingClientRect();
-  const tabBar = document.querySelector(".quick-nav").getBoundingClientRect();
-  return card.top >= 0 && card.bottom <= Math.min(innerHeight, tabBar.top);
-}), "reading card is in view above the phone tab bar");
 await page.click("#reading-cancel");
 ok(await page.isHidden("#reading-card"), "Cancel hides the reading card");
 ok(/Stopped/.test(await page.textContent("#report-status")), "Cancel says reading stopped");
