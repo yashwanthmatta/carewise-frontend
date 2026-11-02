@@ -8,7 +8,8 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Pinned: Playwright 1.56.1 cannot install a browser on Ubuntu 26.04 (ubuntu-latest since 29 Oct 2026).
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
