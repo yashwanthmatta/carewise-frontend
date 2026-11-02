@@ -4436,11 +4436,11 @@ function loadPdfjs() {
 // Rebuilds text lines from positioned PDF text. Items within half a line height
 // of each other belong to one row, so a table cell nudged by a superscript
 // footnote (Labcorp's "Cholesterol, Total 01") stays on the row with its value.
-function groupPdfTextRows(items) {
+function pdfTextRows(items) {
   const rows = [];
   items
     .filter((item) => item.str?.trim())
-    .map((item) => ({ x: item.transform[4], y: item.transform[5], h: item.height || 10, text: item.str.trim() }))
+    .map((item) => ({ x: item.transform[4], y: item.transform[5], w: item.width || 0, h: item.height || 10, text: item.str.trim() }))
     .sort((a, b) => b.y - a.y)
     .forEach((item) => {
       const row = rows.find((candidate) => Math.abs(candidate.y - item.y) <= 0.5 * Math.max(candidate.h, item.h));
@@ -4451,31 +4451,63 @@ function groupPdfTextRows(items) {
         rows.push({ y: item.y, h: item.h, parts: [item] });
       }
     });
-  return rows.map((row) => row.parts.sort((a, b) => a.x - b.x).map((part) => part.text).join(" ")).join("\n");
+  return rows.map((row) => {
+    const parts = row.parts.sort((a, b) => a.x - b.x);
+    return {
+      text: parts.map((part) => part.text).join(" "),
+      x0: Math.min(...parts.map((part) => part.x)),
+      x1: Math.max(...parts.map((part) => part.x + part.w)),
+      y: row.y,
+      h: row.h,
+    };
+  });
 }
 
-async function extractPdfText(file, maxPages = 10) {
+function groupPdfTextRows(items) {
+  return pdfTextRows(items).map((row) => row.text).join("\n");
+}
+
+// Text plus where each row sits on its page, so a result can be shown on the original page.
+async function extractPdfPages(file, maxPages = 10) {
   const pdfjs = await loadPdfjs();
   const loadingTask = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
   const pdf = await loadingTask.promise;
   const pages = [];
+  const rows = [];
   try {
     for (let number = 1; number <= Math.min(pdf.numPages, maxPages); number += 1) {
       const content = await (await pdf.getPage(number)).getTextContent();
-      pages.push(groupPdfTextRows(content.items));
+      const pageRows = pdfTextRows(content.items);
+      pages.push(pageRows.map((row) => row.text).join("\n"));
+      pageRows.forEach((row) => rows.push({ ...row, page: number }));
     }
   } finally {
     // Release the parsed document and its worker so repeated uploads do not pile up memory.
     await loadingTask.destroy();
   }
-  return pages.join("\n").trim();
+  return { text: pages.join("\n").trim(), rows };
+}
+
+async function extractPdfText(file, maxPages = 10) {
+  return (await extractPdfPages(file, maxPages)).text;
+}
+
+// The PDF the current report text came from. It stays in this tab's memory only, and is
+// used only while the report box still holds exactly the text read from it.
+let reportSourcePdf = null;
+
+function sourcePdfRowFor(line) {
+  const reportText = document.querySelector("#report-text")?.value || "";
+  if (!line || !reportSourcePdf || reportSourcePdf.text !== reportText) return null;
+  const matches = reportSourcePdf.rows.filter((row) => row.text.trim().slice(0, 200) === line);
+  return matches.length === 1 ? matches[0] : null;
 }
 
 async function readPdfTextLocally(file, token = readingToken) {
   reportStatus.textContent = "Reading your PDF on this device. Nothing is uploaded.";
   setReadingProgress(null, "Reading the PDF on this device…");
   try {
-    const text = await extractPdfText(file);
+    const { text, rows } = await extractPdfPages(file);
     if (readingStopped(token)) return;
     if (text.replace(/\s/g, "").length < 20) {
       // A scanned PDF has no text layer: read the page images instead.
@@ -4484,6 +4516,7 @@ async function readPdfTextLocally(file, token = readingToken) {
     }
     finishReading(token);
     document.querySelector("#report-text").value = text.slice(0, 12000);
+    reportSourcePdf = { file, rows, text: document.querySelector("#report-text").value };
     updateProgressRail();
     trackReportUsage("pdf_read");
     await analyzeAndShowReport();
@@ -6371,6 +6404,7 @@ function renderResultCard(card, text) {
               ${card.what ? `<h5>${escapeHtml(text.whatIs)}</h5><p>${escapeHtml(card.what)}</p>` : ""}
               ${card.ask ? `<h5>${escapeHtml(text.askDoctor)}</h5><p class="result-card-ask">“${escapeHtml(card.ask)}”</p>` : ""}
               ${line ? `<h5 class="result-card-source-title">${escapeHtml(showLine)}</h5><code class="result-card-source-line">${escapeHtml(line)}</code>` : ""}
+              ${sourcePdfRowFor(line) ? `<button class="secondary-button compact result-card-source-page" type="button" data-source-line="${escapeHtml(line)}">${reportLanguage === "es" ? "Verla en la página de su informe" : "See it on your report page"}</button>` : ""}
             </details>` : ""}
           </article>`;
 }
