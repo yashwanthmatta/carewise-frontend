@@ -16,14 +16,14 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-205" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-206" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-205" />
-    <link rel="stylesheet" href="ui.css?v=carewise-product-205" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-206" />
+    <link rel="stylesheet" href="ui.css?v=carewise-product-206" />
   </head>
   <body>
     <main class="app-shell">
@@ -2071,6 +2071,20 @@
         <iframe id="tour-brief-frame" title="Doctor brief preview"></iframe>
       </div>
     </div>
+    <dialog class="share-dialog source-page-dialog" id="source-page-dialog" aria-labelledby="source-page-title">
+      <form method="dialog" class="share-dialog-inner">
+        <header class="share-dialog-head">
+          <h2 id="source-page-title">Where this result comes from</h2>
+          <button class="help-chat-close" type="submit" value="close" aria-label="Close">&times;</button>
+        </header>
+        <p class="source-page-note" id="source-page-note"></p>
+        <div class="source-page-frame" id="source-page-frame" tabindex="0" role="region" aria-label="Report page (scroll to see all of it)">
+          <canvas id="source-page-canvas" role="img"></canvas>
+          <span class="source-page-mark" id="source-page-mark" aria-hidden="true"></span>
+        </div>
+        <p class="source-page-privacy">Shown from the file on this device. Nothing is uploaded.</p>
+      </form>
+    </dialog>
     <dialog class="share-dialog" id="share-dialog" aria-labelledby="share-dialog-title">
       <form method="dialog" class="share-dialog-inner" id="share-form">
         <header class="share-dialog-head">
@@ -2139,13 +2153,13 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-205"></script>
-    <script src="help.js?v=carewise-product-205"></script>
-    <script src="doctor-share.js?v=carewise-product-205"></script>
-    <script src="docbridge.js?v=carewise-product-205"></script>
-    <script src="reminders.js?v=carewise-product-205"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-205"></script>
-    <script src="twofactor.js?v=carewise-product-205"></script>
-    <script src="account-ui.js?v=carewise-product-205"></script>
+    <script src="script.js?v=carewise-product-206"></script>
+    <script src="help.js?v=carewise-product-206"></script>
+    <script src="doctor-share.js?v=carewise-product-206"></script>
+    <script src="docbridge.js?v=carewise-product-206"></script>
+    <script src="reminders.js?v=carewise-product-206"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-206"></script>
+    <script src="twofactor.js?v=carewise-product-206"></script>
+    <script src="account-ui.js?v=carewise-product-206"></script>
   </body>
 </html>

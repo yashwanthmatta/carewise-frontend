@@ -7,15 +7,15 @@ Statuses: **COMPLETE**, **PARTIALLY COMPLETE**, **NOT STARTED** or **BLOCKED**. 
 - it has an axe scan, reduced-motion support and screenshots
 - it is in a pull request
 
-Last updated: 2026-10-26 (third round: results rebuilt, simpler upload, warm white).
+Last updated: 2026-11-02 (fourth round: results in the order summary → results → check numbers → doctor questions → original report → save; PDF page view; slate and teal palette).
 
 | # | Screen | Website | Phone app | Evidence / remaining |
 |---|---|---|---|---|
 | 1 | Welcome and home | **COMPLETE** | NOT STARTED | `after3-desk-home.png`. One upload action and one sample; the extra links (type the numbers, demo, early access) moved out of the hero. The 1-minute demo is now in the in-page links row. Warm white background. |
 | 2 | Upload | **COMPLETE** | NOT STARTED | `compare3-phone-upload.png`. Order: "Whose report?", then one upload box and one "Try a sample report" card, then "Or type the results". Save and load moved under "Save or load reports". The duplicate privacy line is hidden from view (screen readers still hear it). The reading card scrolls into view above the phone tab bar. `upload-reading.mjs` (16 checks). |
 | 3 | Report processing | **COMPLETE** | NOT STARTED | The same reading card covers PDF, photo and scanned-PDF reading, with page-by-page progress for scans. Explaining is instant on the device, so there is no separate wait screen. |
-| 4 | Report results | **COMPLETE** (pending the usability test) | NOT STARTED | `compare3-phone-result*.png`, `after3-desk-result.png`. One surface, no nested boxes. The summary card has a quiet count meter (the same numbers it states in words). Compact result cards show the name, label, value, the lab's range and what it means; "More about this result" opens what the test is, the doctor question and the line from the report. Next steps are numbered cards. The calendar reminder and "Numbers read from your report" (was "Detected values") fold away. Neutral safety note and feedback box. |
-| 5 | Original report evidence | PARTIALLY COMPLETE | NOT STARTED | The line from the report now sits in each card's "More about this result". Remaining: a side-by-side view of the original page for PDFs. |
+| 4 | Report results | **PARTIALLY COMPLETE** (round 4 in review; usability test not yet run) | NOT STARTED | `compare3-phone-result*.png`, `after3-desk-result.png`. One surface, no nested boxes. The summary card has a quiet count meter (the same numbers it states in words). Compact result cards show the name, label, value, the lab's range and what it means; "More about this result" opens what the test is, the doctor question and the line from the report. Next steps are numbered cards. The calendar reminder and "Numbers read from your report" (was "Detected values") fold away. Neutral safety note and feedback box. |
+| 5 | Original report evidence | **COMPLETE** for PDFs; photos remaining | NOT STARTED | Each card's "More, and the line in your report" shows the line. For a PDF, "See it on the report page" draws the original page on the device and marks the row (`after4-*-source-page.png`). It is offered only while the report box still holds exactly the PDF's text. Tested in `upload-reading.mjs`; axe finds no violations. Remaining: the same for photos (Tesseract line boxes). |
 | 6 | Doctor brief | NOT STARTED | NOT STARTED | — |
 | 7 | Health record and trends | PARTIALLY COMPLETE | NOT STARTED | Internal follow-up codes are no longer shown in History. Remaining: layout and charts. |
 | 8 | Reminders | NOT STARTED | NOT STARTED | — |

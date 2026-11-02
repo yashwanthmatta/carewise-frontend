@@ -20,6 +20,17 @@ for (const [choice, expectUrgent] of [["2.40", false], ["240", true]]) {
   ok(/Check this number/.test(before), `[${choice}] the doubtful calcium is marked "Check this number"`);
   ok(/prompt attention/i.test(before) && /Contact your doctor today/.test(before), `[${choice}] a possibly critical value keeps the report urgent while unconfirmed`);
   ok(/still to confirm/.test(before) && !/^.*0 of your 3 lab results are outside the lab's ranges\./.test(before), `[${choice}] the count says a number is still to confirm`);
+  // "Please check these numbers" sits above the results and takes the person to the check.
+  ok(await page.locator("#report-results .result-check").count() === 1 && /Please check these numbers/.test(before), `[${choice}] the results start with "Please check these numbers"`);
+  const firstOrder = await page.evaluate(() => {
+    const check = document.querySelector("#report-results .result-check");
+    const cards = document.querySelector("#report-results .result-cards");
+    return Boolean(check && (!cards || check.compareDocumentPosition(cards) & Node.DOCUMENT_POSITION_FOLLOWING));
+  });
+  ok(firstOrder, `[${choice}] the number check comes before the result cards`);
+  await page.click('#report-results [data-report-action="check-numbers"]');
+  await page.waitForTimeout(500);
+  ok(await page.evaluate(() => document.activeElement?.closest("#ocr-checks") !== null), `[${choice}] "Check the numbers" moves focus to the number to confirm`);
   for (const action of ["doctor-brief", "save-detected-values", "copy-summary"]) {
     const button = page.locator(`[data-report-action="${action}"]`).first();
     if (await button.count()) {
@@ -35,6 +46,7 @@ for (const [choice, expectUrgent] of [["2.40", false], ["240", true]]) {
   const state = await page.evaluate(() => ({ text: document.querySelector("#report-text").value, pack: latestReportSummaryPack, brief: buildDoctorBriefHtml(latestReportAnalysis), pending: unsureOcrKeys().length }));
   ok(state.text.includes(`Calcium ${choice} mmol/L`), `[${choice}] the report text now says ${choice}`);
   ok(state.pending === 0 && !/Check this number|still to confirm/.test(after), `[${choice}] nothing is left waiting for confirmation`);
+  ok(await page.locator("#report-results .result-check").count() === 0, `[${choice}] the number check goes away once confirmed`);
   if (expectUrgent) {
     ok(/prompt attention/i.test(after) && /level labs often treat as urgent/.test(after), "[240] a confirmed critical value stays urgent and is labelled as such");
     ok(/1 of your 3 lab results is outside the lab's ranges/.test(after), "[240] the count includes the confirmed value");

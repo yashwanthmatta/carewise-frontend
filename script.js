@@ -764,7 +764,7 @@ const REPORT_TRANSLATIONS = {
   es: {
     ui: {
       eyebrow: "Explicación de FollowThrough Health",
-      title: "Resumen del informe en lenguaje sencillo",
+      title: "Su informe está listo",
       found: (count) => `FollowThrough Health encontró ${count} punto${count === 1 ? "" : "s"} para comentar en el texto del informe.`,
       detectedValues: "Números leídos de su informe",
       keyFindings: "Hallazgos principales",
@@ -776,12 +776,12 @@ const REPORT_TRANSLATIONS = {
       safetyText: "Esto no es un diagnóstico ni un plan de tratamiento. Un profesional de salud autorizado debe interpretar su informe original junto con su historial completo.",
       copySummary: "Copiar resumen",
       shareSummary: "Compartir resumen",
-      doctorBrief: "Resumen para el médico",
-      packetPdf: "PDF para el médico",
-      shareDoctor: "Compartir con mi médico",
+      doctorBrief: "Preparar preguntas para su médico",
+      packetPdf: "PDF para su médico",
+      shareDoctor: "Enviar un enlace a su médico",
       listen: "Escuchar",
       stopListening: "Detener",
-      saveToTrends: "Guardar en tendencias",
+      saveToTrends: "Guardar en mi registro de análisis",
       copyQuestions: "Copiar preguntas",
       copyPlan: "Copiar plan",
       draftNotice: "Traducción preliminar, pendiente de revisión por un médico y un traductor médico. El resumen para el médico se genera en inglés.",
@@ -909,24 +909,24 @@ const REPORT_TRANSLATIONS = {
 
 const REPORT_UI_EN = {
   eyebrow: "FollowThrough Health explanation",
-  title: "Plain-English report summary",
+  title: "Your report is ready",
   found: (count) => `FollowThrough Health found ${count} discussion point${count === 1 ? "" : "s"} in the readable report text.`,
   detectedValues: "Numbers read from your report",
   keyFindings: "Key findings",
   suggestions: "Wellness suggestions",
-  questions: "Questions to ask your doctor",
+  questions: "Questions for your doctor",
   nextStep: "Next step",
   ask: "Ask",
   safetyTitle: "Safety note",
   safetyText: "This is not a diagnosis or treatment plan. A licensed professional should interpret your original report with your full history.",
   copySummary: "Copy summary",
   shareSummary: "Share summary",
-  doctorBrief: "Doctor brief",
-  packetPdf: "PDF for the doctor",
-  shareDoctor: "Share with my doctor",
+  doctorBrief: "Prepare questions for your doctor",
+  packetPdf: "PDF for your doctor",
+  shareDoctor: "Send a link to your doctor",
   listen: "Listen",
   stopListening: "Stop",
-  saveToTrends: "Save to trends",
+  saveToTrends: "Save to my lab tracker",
   copyQuestions: "Copy questions",
   copyPlan: "Copy plan",
   draftNotice: "",
@@ -1499,6 +1499,15 @@ reportResults?.addEventListener("click", (event) => {
   if (action === "packet-pdf") downloadSharePacketPdf();
   if (action === "share-doctor") window.openDoctorShare?.();
   if (action === "listen") toggleListen(event.target.closest("[data-report-action]"));
+  const sourcePage = event.target.closest("[data-source-line]");
+  if (sourcePage) showSourcePage(sourcePage.dataset.sourceLine).catch(() => {
+    reportStatus.textContent = reportLanguage === "es" ? "No se pudo mostrar la página. La línea de su informe sigue en la tarjeta." : "We couldn't show the page. The line from your report is still on the card.";
+  });
+  if (action === "check-numbers") {
+    const box = document.querySelector("#ocr-checks");
+    box?.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    box?.querySelector("button")?.focus({ preventScroll: true });
+  }
   if (action === "lab-reminder") {
     // The date comes from the person's doctor; FollowThrough Health never picks one.
     const date = reportResults.querySelector("[data-lab-reminder]")?.value;
@@ -4496,6 +4505,48 @@ async function extractPdfText(file, maxPages = 10) {
 // used only while the report box still holds exactly the text read from it.
 let reportSourcePdf = null;
 
+// Opens the original PDF page and marks the row a result was read from. The page is drawn
+// from the file still held in this tab; nothing is uploaded.
+async function showSourcePage(line) {
+  const row = sourcePdfRowFor(line);
+  const dialog = document.querySelector("#source-page-dialog");
+  if (!row || !dialog?.showModal) return;
+  const es = reportLanguage === "es";
+  const canvas = dialog.querySelector("#source-page-canvas");
+  const mark = dialog.querySelector("#source-page-mark");
+  const frame = dialog.querySelector("#source-page-frame");
+  dialog.querySelector("#source-page-title").textContent = es ? "De dónde viene este resultado" : "Where this result comes from";
+  dialog.querySelector(".source-page-privacy").textContent = es ? "Se muestra desde el archivo en este dispositivo. No se sube nada." : "Shown from the file on this device. Nothing is uploaded.";
+  dialog.querySelector("#source-page-note").textContent = es ? `Página ${row.page} de su informe. La línea marcada es: ${line}` : `Page ${row.page} of your report. The marked line is: ${line}`;
+  canvas.setAttribute("aria-label", es ? `Página ${row.page} de su informe, con la línea "${line}" marcada` : `Page ${row.page} of your report, with the line "${line}" marked`);
+  mark.hidden = true;
+  if (!dialog.open) dialog.showModal();
+  const pdfjs = await loadPdfjs();
+  const loadingTask = pdfjs.getDocument({ data: new Uint8Array(await reportSourcePdf.file.arrayBuffer()) });
+  try {
+    const page = await (await loadingTask.promise).getPage(row.page);
+    // At least 720px wide so the text is readable on a phone; the frame scrolls to the marked row.
+    const width = Math.min(Math.max(frame.clientWidth || 640, 720), 1000);
+    const viewport = page.getViewport({ scale: width / page.getViewport({ scale: 1 }).width });
+    const ratio = window.devicePixelRatio || 1;
+    canvas.width = Math.round(viewport.width * ratio);
+    canvas.height = Math.round(viewport.height * ratio);
+    canvas.style.width = `${viewport.width}px`;
+    canvas.style.height = `${viewport.height}px`;
+    await page.render({ canvasContext: canvas.getContext("2d"), viewport, transform: ratio === 1 ? null : [ratio, 0, 0, ratio, 0, 0] }).promise;
+    // PDF points to canvas pixels with the viewport's transform (works across pdf.js versions).
+    const [a, b, c, d, e, f] = viewport.transform;
+    const toPixels = (x, y) => [a * x + c * y + e, b * x + d * y + f];
+    const [x1, y1] = toPixels(row.x0 - 3, row.y - row.h * 0.45);
+    const [x2, y2] = toPixels(row.x1 + 3, row.y + row.h * 1.2);
+    Object.assign(mark.style, { left: `${Math.min(x1, x2)}px`, top: `${Math.min(y1, y2)}px`, width: `${Math.abs(x2 - x1)}px`, height: `${Math.abs(y2 - y1)}px` });
+    mark.hidden = false;
+    frame.scrollTo({ top: Math.max(0, mark.offsetTop - frame.clientHeight / 2), left: Math.max(0, mark.offsetLeft - 8) });
+  } finally {
+    await loadingTask.destroy();
+  }
+}
+
 function sourcePdfRowFor(line) {
   const reportText = document.querySelector("#report-text")?.value || "";
   if (!line || !reportSourcePdf || reportSourcePdf.text !== reportText) return null;
@@ -6345,7 +6396,7 @@ function listenParts() {
     const value = card.querySelector(".result-card-value b")?.textContent || "";
     parts.push(`${name}: ${value}. ${label}.`);
     card.querySelectorAll(".result-card-range").forEach((node) => parts.push(node.textContent));
-    card.querySelectorAll("h5 + p").forEach((node) => parts.push(node.textContent));
+    card.querySelectorAll(".result-card-meaning").forEach((node) => parts.push(node.textContent));
   });
   const lang = reportLanguage === "es" ? "es" : "en";
   return parts.map((part) => spokenText(part, lang)).filter(Boolean);
@@ -6391,22 +6442,36 @@ function sourceLineFor(card) {
 
 function renderResultCard(card, text) {
   const line = sourceLineFor(card);
-  const showLine = reportLanguage === "es" ? "La línea de su informe" : "The line from your report";
+  const es = reportLanguage === "es";
+  const pageRow = sourcePdfRowFor(line);
   return `
           <article class="result-card-item result-card-${escapeHtml(card.tone)}">
             <header><strong>${escapeHtml(card.name)}</strong><em>${escapeHtml(card.label)}</em></header>
             <p class="result-card-value"><b>${escapeHtml(card.value)}</b>${card.unitHint ? `<small>${escapeHtml(card.unitHint)}</small>` : ""}</p>
             ${card.rangeLabel ? `<p class="result-card-range">${escapeHtml(card.rangeLabel)}: ${escapeHtml(card.range || text.noRangePrinted)}</p>` : ""}
             ${card.note ? `<p class="result-card-range">${escapeHtml(card.note)}</p>` : ""}
-            ${card.meaning ? `<h5>${escapeHtml(text.whatMeans)}</h5><p>${escapeHtml(card.meaning)}</p>` : ""}
+            ${card.meaning ? `<h5 class="visually-hidden">${escapeHtml(text.whatMeans)}</h5><p class="result-card-meaning">${escapeHtml(card.meaning)}</p>` : ""}
             ${card.what || card.ask || line ? `<details class="result-card-more">
-              <summary>${reportLanguage === "es" ? "Más sobre este resultado" : "More about this result"}</summary>
+              <summary>${line ? (es ? "Más, y la línea de su informe" : "More, and the line in your report") : (es ? "Más sobre este resultado" : "More about this result")}</summary>
+              ${line ? `<div class="result-card-source"><h5 class="result-card-source-title">${es ? "La línea de su informe" : "The line in your report"}</h5><code class="result-card-source-line">${escapeHtml(line)}</code>${pageRow ? `<button class="secondary-button compact result-card-source-page" type="button" data-source-line="${escapeHtml(line)}">${es ? "Ver la página del informe" : "See it on the report page"}</button>` : ""}</div>` : ""}
               ${card.what ? `<h5>${escapeHtml(text.whatIs)}</h5><p>${escapeHtml(card.what)}</p>` : ""}
               ${card.ask ? `<h5>${escapeHtml(text.askDoctor)}</h5><p class="result-card-ask">“${escapeHtml(card.ask)}”</p>` : ""}
-              ${line ? `<h5 class="result-card-source-title">${escapeHtml(showLine)}</h5><code class="result-card-source-line">${escapeHtml(line)}</code>` : ""}
-              ${sourcePdfRowFor(line) ? `<button class="secondary-button compact result-card-source-page" type="button" data-source-line="${escapeHtml(line)}">${reportLanguage === "es" ? "Verla en la página de su informe" : "See it on your report page"}</button>` : ""}
             </details>` : ""}
           </article>`;
+}
+
+function renderCheckNumbers(view) {
+  const count = view.tests.filter((item) => item.tone === "check").length;
+  if (!count) return "";
+  const es = reportLanguage === "es";
+  return `
+      <section class="result-check" aria-labelledby="result-check-title">
+        <h4 id="result-check-title">${es ? "Revise estos números" : "Please check these numbers"}</h4>
+        <p>${es
+          ? `No estamos seguros de haber leído bien ${count === 1 ? "1 número" : `${count} números`} de su foto. Revíse${count === 1 ? "lo" : "los"} antes de compartir o guardar.`
+          : `We're not sure we read ${count === 1 ? "1 number" : `${count} numbers`} from your photo correctly. Please check ${count === 1 ? "it" : "them"} before you share or save.`}</p>
+        <button class="primary-button compact" type="button" data-report-action="check-numbers">${es ? "Revisar los números" : "Check the numbers"}</button>
+      </section>`;
 }
 
 function renderResultCards(view) {
@@ -6728,7 +6793,7 @@ function unitHint(unit, language = "en") {
 
 const VIEW_TEXT = {
   en: {
-    summaryTitle: "Your lab report summary",
+    summaryTitle: "Your report in plain words",
     allInLabs: "Your lab results are within the lab's ranges",
     dangerLabel: (label) => `${label} — a level labs often treat as urgent`,
     dangerMeaning: "Labs often treat a result at this level as urgent, even when it is not flagged. Contact your doctor today, or get emergency care if you feel very unwell.",
@@ -6771,7 +6836,7 @@ const VIEW_TEXT = {
     noRange: (n) => `${n === 1 ? "One result has" : `${n} results have`} no range printed; ask your doctor what ${n === 1 ? "it means" : "they mean"}.`,
     noneCompared: (n) => `We read ${n} result${n === 1 ? "" : "s"}, but your report printed no ranges to compare with. Ask your doctor what they mean for you.`,
     and: "and",
-    attentionTitle: "Results to talk about",
+    attentionTitle: "Your results to look at",
     whatIs: "What is it?", whatMeans: "What does this mean?", askDoctor: "Ask your doctor", yourResult: "Your result",
     labRange: "Lab's range", noRangePrinted: "Not printed on your report", generalGuide: "Common guide (no range on your report)",
     labels: { guideHigh: "High compared with a common guide", guideLow: "Low compared with a common guide", lowLab: "Low — below this lab's range", farHigh: "Far above the lab's range", farLow: "Far below the lab's range", check: "Check this number", high: "High", low: "Low", in: "In range", none: "No range printed", critical: "Critical", abnormal: "Flagged by the lab", goalAbove: "In range, above a common goal", goalBelow: "In range, below a common goal", pre: "High — prediabetes range", diabetes: "High — diabetes range" },
@@ -6799,7 +6864,7 @@ const VIEW_TEXT = {
     allTestsNote: "Compared with the range printed by your lab. Ranges differ by lab, age and sex.",
   },
   es: {
-    summaryTitle: "Resumen de su análisis",
+    summaryTitle: "Su informe en palabras sencillas",
     allInLabs: "Sus resultados de laboratorio están dentro de los rangos del laboratorio",
     dangerLabel: (label) => `${label} — un nivel que los laboratorios suelen tratar como urgente`,
     dangerMeaning: "Los laboratorios suelen tratar un resultado a este nivel como urgente, aunque no esté marcado. Comuníquese hoy con su médico o busque atención de emergencia si se siente muy mal.",
@@ -6842,7 +6907,7 @@ const VIEW_TEXT = {
     noRange: (n) => `${n === 1 ? "Un resultado no tiene" : `${n} resultados no tienen`} rango impreso; pregunte a su médico qué ${n === 1 ? "significa" : "significan"}.`,
     noneCompared: (n) => `Leímos ${n} resultado${n === 1 ? "" : "s"}, pero su informe no trae rangos para comparar. Pregunte a su médico qué significan para usted.`,
     and: "y",
-    attentionTitle: "Resultados para hablar con su médico",
+    attentionTitle: "Sus resultados para revisar",
     whatIs: "¿Qué es?", whatMeans: "¿Qué significa?", askDoctor: "Pregunte a su médico", yourResult: "Su resultado",
     labRange: "Rango del laboratorio", noRangePrinted: "No aparece en su informe", generalGuide: "Guía común (su informe no trae rango)",
     labels: { guideHigh: "Alto según una guía común", guideLow: "Bajo según una guía común", lowLab: "Bajo — por debajo del rango de este laboratorio", farHigh: "Muy por encima del rango del laboratorio", farLow: "Muy por debajo del rango del laboratorio", check: "Revise este número", high: "Alto", low: "Bajo", in: "En rango", none: "Sin rango impreso", critical: "Crítico", abnormal: "Marcado por el laboratorio", goalAbove: "En rango, por encima de una meta común", goalBelow: "En rango, por debajo de una meta común", pre: "Alto — rango de prediabetes", diabetes: "Alto — rango de diabetes" },
@@ -7106,6 +7171,7 @@ function renderLocalReportAnalysis(analysis) {
             <label class="result-language"><span class="visually-hidden">${reportLanguage === "es" ? "Idioma del informe" : "Report language"}</span>
             <select data-report-language aria-label="${reportLanguage === "es" ? "Idioma del informe" : "Report language"}">${Object.entries(REPORT_LANGUAGES).map(([code, name]) => `<option value="${code}"${code === reportLanguage ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
             </label>
+            ${canListen() && !analysis.noData ? `<button class="secondary-button compact result-listen" type="button" data-report-action="listen" data-listen-label="${escapeHtml(ui.listen)}" data-stop-label="${escapeHtml(ui.stopListening)}" aria-pressed="false">${escapeHtml(ui.listen)}</button>` : ""}
           </div>
           ${ui.draftNotice ? `<p class="status-line" role="note">${escapeHtml(ui.draftNotice)}</p>` : ""}
         </div>
@@ -7117,53 +7183,33 @@ function renderLocalReportAnalysis(analysis) {
         const summary = analysis.noData || analysis.scanOnly ? "" : renderReportSummary(reportView, nextStep);
         return summary || (nextStep ? `<p class="result-next result-next-${escapeHtml(analysis.riskLevel)}">${escapeHtml(nextStep)}</p>` : "");
       })()}
-      ${analysis.noData ? "" : `
-      <div class="result-toolbar" role="group" aria-label="${reportLanguage === "es" ? "Llévelo a su médico" : "Take it to your doctor"}">
-        <span class="result-toolbar-label">${reportLanguage === "es" ? "Llévelo a su médico" : "Take it to your doctor"}</span>
-        <div class="inline-action-group result-actions">
-          <button class="primary-button compact" type="button" data-report-action="doctor-brief">${escapeHtml(ui.doctorBrief)}</button>
-          <button class="secondary-button compact" type="button" data-report-action="packet-pdf">${escapeHtml(ui.packetPdf)}</button>
-          <button class="secondary-button compact" type="button" data-report-action="share-doctor">${escapeHtml(ui.shareDoctor)}</button>
-          <details class="result-more-actions">
-            <summary class="secondary-button compact">${reportLanguage === "es" ? "Más" : "More"}</summary>
-            <div class="result-more-menu">
-              <button class="secondary-button compact" type="button" data-report-action="copy-summary">${escapeHtml(ui.copySummary)}</button>
-              <button class="secondary-button compact" type="button" data-report-action="share-summary">${escapeHtml(ui.shareSummary)}</button>
-              ${canListen() ? `<button class="secondary-button compact" type="button" data-report-action="listen" data-listen-label="${escapeHtml(ui.listen)}" data-stop-label="${escapeHtml(ui.stopListening)}" aria-pressed="false">${escapeHtml(ui.listen)}</button>` : ""}
-            </div>
-          </details>
-        </div>
-      </div>`}
+      ${analysis.noData ? "" : renderCheckNumbers(reportView)}
       ${renderReportChanges(analysis)}
       <div class="result-sections">
         ${analysis.noData || analysis.scanOnly ? "" : renderResultCards(reportView)}
         ${analysis.noData || analysis.scanOnly ? "" : renderOtherInfo(reportView)}
-        ${plan ? renderNextSteps(reportView) : ""}
-        ${(() => {
-          const list = `
-        <section>
-          <div class="section-heading-action">
-            <h4>${escapeHtml(ui.questions)}</h4>
-            <button class="secondary-button compact" type="button" data-report-action="copy-questions">${escapeHtml(ui.copyQuestions)}</button>
-          </div>
-          <ul>${questions.map((item) => `<li><strong>${escapeHtml(ui.ask)}</strong><span>${escapeHtml(item)}</span></li>`).join("")}</ul>
-        </section>`;
-          // With result cards on screen the questions are already shown once, so the full list folds away.
-          return reportView.cards.length ? renderResultMore(list, ui.questions, String(questions.length)) : list;
-        })()}
-        ${analysis.noData ? "" : renderResultMore(`<div class="lab-reminder"><label for="lab-reminder-date">${escapeHtml(reportView.text.reminderLabel)}</label><input id="lab-reminder-date" type="date" data-lab-reminder min="${new Date().toISOString().slice(0, 10)}" /><button class="secondary-button compact" type="button" data-report-action="lab-reminder">${reportLanguage === "es" ? "Añadir al calendario" : "Add to calendar"}</button></div>`, reportLanguage === "es" ? "Añadir la próxima prueba al calendario" : "Add your next test to your calendar", "")}
         ${showFindings ? `
         <section>
           <h4>${escapeHtml(ui.keyFindings)}</h4>
           <ul>${view.findings.map((item) => `<li><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.level)}. ${escapeHtml(item.detail)}</span></li>`).join("")}</ul>
         </section>` : ""}
         ${renderScanSection(analysis)}
-        ${renderResultMore(renderLabPanelSection(analysis, reportView), LAB_PANEL_TEXT[reportLanguage === "es" ? "es" : "en"].title, reportView.tests.length ? ui.allTests(reportView.tests.length, reportView.outside) : "")}
-        ${view.labValues?.length ? renderResultMore(`
-        <section>
-          <div class="section-heading-action">
-            <button class="secondary-button compact" type="button" data-report-action="save-detected-values">${escapeHtml(ui.saveToTrends)}</button>
+        ${analysis.noData ? "" : `
+        <section class="result-doctor" aria-labelledby="result-doctor-title">
+          <h4 id="result-doctor-title">${escapeHtml(ui.questions)}</h4>
+          <ol class="result-doctor-questions">${questions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ol>
+          <div class="result-doctor-actions">
+            <button class="primary-button" type="button" data-report-action="doctor-brief">${escapeHtml(ui.doctorBrief)}</button>
+            <button class="secondary-button compact" type="button" data-report-action="copy-questions">${escapeHtml(ui.copyQuestions)}</button>
           </div>
+          <p class="result-doctor-hint">${reportLanguage === "es" ? "Una página con sus resultados y estas preguntas, para imprimir o guardar como PDF." : "One page with your results and these questions, to print or save as a PDF."}</p>
+        </section>`}
+        ${plan ? renderNextSteps(reportView) : ""}
+        ${analysis.noData ? "" : `
+        <section class="result-source" aria-labelledby="result-source-title">
+          <h4 id="result-source-title">${reportLanguage === "es" ? "Su informe original" : "Your original report"}</h4>
+          ${renderResultMore(renderLabPanelSection(analysis, reportView), LAB_PANEL_TEXT[reportLanguage === "es" ? "es" : "en"].title, reportView.tests.length ? ui.allTests(reportView.tests.length, reportView.outside) : "")}
+          ${view.labValues?.length ? renderResultMore(`
           <div class="detected-values-grid">
             ${view.labValues.map((item) => `
               <article>
@@ -7171,8 +7217,18 @@ function renderLocalReportAnalysis(analysis) {
                 <span>${escapeHtml(String(item.value))} ${escapeHtml(item.unit)}</span>
               </article>
             `).join("")}
+          </div>`, ui.detectedValues, "") : ""}
+        </section>
+        <section class="result-save" aria-labelledby="result-save-title">
+          <h4 id="result-save-title">${reportLanguage === "es" ? "Guardar o compartir" : "Save or share"}</h4>
+          <div class="result-save-actions">
+            <button class="secondary-button compact" type="button" data-report-action="packet-pdf">${escapeHtml(ui.packetPdf)}</button>
+            <button class="secondary-button compact" type="button" data-report-action="share-doctor">${escapeHtml(ui.shareDoctor)}</button>
+            ${view.labValues?.length ? `<button class="secondary-button compact" type="button" data-report-action="save-detected-values">${escapeHtml(ui.saveToTrends)}</button>` : ""}
+            ${navigator.share ? `<button class="secondary-button compact" type="button" data-report-action="share-summary">${escapeHtml(ui.shareSummary)}</button>` : `<button class="secondary-button compact" type="button" data-report-action="copy-summary">${escapeHtml(ui.copySummary)}</button>`}
           </div>
-        </section>`, ui.detectedValues, "") : ""}
+          ${renderResultMore(`<div class="lab-reminder"><label for="lab-reminder-date">${escapeHtml(reportView.text.reminderLabel)}</label><input id="lab-reminder-date" type="date" data-lab-reminder min="${new Date().toISOString().slice(0, 10)}" /><button class="secondary-button compact" type="button" data-report-action="lab-reminder">${reportLanguage === "es" ? "Añadir al calendario" : "Add to calendar"}</button></div>`, reportLanguage === "es" ? "Añadir la próxima prueba al calendario" : "Add your next test to your calendar", "")}
+        </section>`}
       </div>
       <div class="safety-note"><strong>${escapeHtml(ui.safetyTitle)}</strong><span>${escapeHtml(ui.safetyText)}</span></div>
       ${analysis.noData ? "" : renderFeedbackBox(ui)}
