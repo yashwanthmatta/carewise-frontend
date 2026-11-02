@@ -84,6 +84,33 @@ await page.waitForTimeout(20000);
 ok((await page.inputValue("#report-text")) === "", "a cancelled photo never fills in the report");
 ok(!(await page.isVisible("#report-results .report-summary")), "a cancelled photo is never explained");
 
+// 2b. A result read from a photo can be shown on the photo, with its line marked.
+{
+  const photo = await browser.newPage({ viewport: { width: 900, height: 360 } });
+  await photo.setContent('<body style="margin:0;background:#fff;font:34px Arial;padding:24px">Sample Lab<br>LDL cholesterol 148 mg/dL &lt;100<br>Sodium 140 mmol/L 135-145<br>Potassium 5.9 mmol/L 3.5-5.1</body>');
+  const shotPng = await photo.screenshot();
+  await photo.close();
+  await page.goto("about:blank");
+  await page.goto(`${base}#report-title`, { waitUntil: "load" });
+  await page.setInputFiles("#report-file", { name: "lab-photo.png", mimeType: "image/png", buffer: shotPng });
+  await page.waitForSelector("#report-results [data-source-line]", { state: "attached", timeout: 90000 }).catch(() => {});
+  const photoButton = page.locator("#report-results [data-source-line]").first();
+  ok(await photoButton.count() === 1 && /See it on your photo/.test(await photoButton.textContent()), "a result read from a photo offers \"See it on your photo\"");
+  if (await photoButton.count()) {
+    const line = await photoButton.getAttribute("data-source-line");
+    await page.evaluate((l) => showSourcePage(l), line);
+    await page.waitForFunction(() => !document.querySelector("#source-page-mark").hidden, null, { timeout: 15000 }).catch(() => {});
+    const view = await page.evaluate(() => {
+      const mark = document.querySelector("#source-page-mark").getBoundingClientRect();
+      const canvas = document.querySelector("#source-page-canvas").getBoundingClientRect();
+      return { note: document.querySelector("#source-page-note").textContent, w: mark.width, h: mark.height, inside: mark.left >= canvas.left - 8 && mark.right <= canvas.right + 8 && mark.top >= canvas.top - 8 && mark.bottom <= canvas.bottom + 8 };
+    });
+    ok(/^Your photo\./.test(view.note) && view.note.includes(line), `the photo view names the photo and the line (${view.note.slice(0, 60)})`);
+    ok(view.w > 40 && view.h > 8 && view.inside, `the marked line sits on the photo (${Math.round(view.w)}x${Math.round(view.h)})`);
+    await page.keyboard.press("Escape");
+  }
+}
+
 // 3. A photo read to the end reports real progress.
 await page.goto("about:blank");
 await page.goto(`${base}#report-title`, { waitUntil: "load" });

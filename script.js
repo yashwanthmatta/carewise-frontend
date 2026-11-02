@@ -4501,8 +4501,9 @@ async function extractPdfText(file, maxPages = 10) {
   return (await extractPdfPages(file, maxPages)).text;
 }
 
-// The PDF the current report text came from. It stays in this tab's memory only, and is
-// used only while the report box still holds exactly the text read from it.
+// The file the current report text came from: a PDF (its text rows) or the images read from a
+// photo or scan (their line boxes). It stays in this tab's memory only, and is used only while
+// the report box still holds exactly the text read from it.
 let reportSourcePdf = null;
 
 // Opens the original PDF page and marks the row a result was read from. The page is drawn
@@ -4517,10 +4518,31 @@ async function showSourcePage(line) {
   const frame = dialog.querySelector("#source-page-frame");
   dialog.querySelector("#source-page-title").textContent = es ? "De dónde viene este resultado" : "Where this result comes from";
   dialog.querySelector(".source-page-privacy").textContent = es ? "Se muestra desde el archivo en este dispositivo. No se sube nada." : "Shown from the file on this device. Nothing is uploaded.";
-  dialog.querySelector("#source-page-note").textContent = es ? `Página ${row.page} de su informe. La línea marcada es: ${line}` : `Page ${row.page} of your report. The marked line is: ${line}`;
+  const what = reportSourcePdf.images && reportSourcePdf.kind === "photo" ? (es ? "Su foto" : "Your photo") : (es ? `Página ${row.page} de su informe` : `Page ${row.page} of your report`);
+  dialog.querySelector("#source-page-note").textContent = es ? `${what}. La línea marcada es: ${line}` : `${what}. The marked line is: ${line}`;
   canvas.setAttribute("aria-label", es ? `Página ${row.page} de su informe, con la línea "${line}" marcada` : `Page ${row.page} of your report, with the line "${line}" marked`);
   mark.hidden = true;
   if (!dialog.open) dialog.showModal();
+  if (reportSourcePdf.images) {
+    const image = reportSourcePdf.images[row.page - 1];
+    const width = Math.min(Math.max(frame.clientWidth || 640, 720), 1000);
+    const scale = width / image.width;
+    canvas.width = image.width;
+    canvas.height = image.height;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${image.height * scale}px`;
+    canvas.getContext("2d").drawImage(image, 0, 0);
+    const pad = 4;
+    Object.assign(mark.style, {
+      left: `${(row.box.x0 - pad) * scale}px`,
+      top: `${(row.box.y0 - pad) * scale}px`,
+      width: `${(row.box.x1 - row.box.x0 + pad * 2) * scale}px`,
+      height: `${(row.box.y1 - row.box.y0 + pad * 2) * scale}px`,
+    });
+    mark.hidden = false;
+    frame.scrollTo({ top: Math.max(0, mark.offsetTop - frame.clientHeight / 2), left: Math.max(0, mark.offsetLeft - 8) });
+    return;
+  }
   const pdfjs = await loadPdfjs();
   const loadingTask = pdfjs.getDocument({ data: new Uint8Array(await reportSourcePdf.file.arrayBuffer()) });
   try {
@@ -4551,6 +4573,8 @@ function sourcePdfRowFor(line) {
   const reportText = document.querySelector("#report-text")?.value || "";
   if (!line || !reportSourcePdf || reportSourcePdf.text !== reportText) return null;
   const matches = reportSourcePdf.rows.filter((row) => row.text.trim().slice(0, 200) === line);
+  // A photo line may have been corrected after reading; then it no longer matches and no
+  // page view is offered for it, rather than show a different number than the card.
   return matches.length === 1 ? matches[0] : null;
 }
 
@@ -4628,7 +4652,7 @@ function cleanOcrText(text) {
     .trim();
 }
 
-async function recognizeImages(images, onProgress) {
+async function recognizeImages(images, onProgress, lines = null) {
   const Tesseract = await loadTesseract();
   const base = new URL(TESSERACT_BASE, window.location.href).href;
   const worker = await Tesseract.createWorker("eng", 1, {
@@ -4647,6 +4671,11 @@ async function recognizeImages(images, onProgress) {
     for (const [index, image] of images.entries()) {
       const { data } = await worker.recognize(image);
       texts.push(data.text);
+      // Where each line is on this image, so a result can be shown on the photo later.
+      (data.lines || []).forEach((line) => {
+        const text = cleanOcrText(line.text || "");
+        if (text && line.bbox) lines?.push({ page: index + 1, text, box: line.bbox });
+      });
       onProgress?.((index + 1) / images.length, index + 1);
     }
     return cleanOcrText(texts.join("\n"));
@@ -4875,6 +4904,9 @@ document.querySelector("#ocr-checks")?.addEventListener("click", (event) => {
     lines[check.line] = lines[check.line].replace(new RegExp(`(^|[^\\d.])${current.replace(".", "\\.")}(?![\\d.])`), `$1${choice}`);
     textArea.value = lines.join("\n");
   }
+  // The person checked a number against their report: the other lines still match the photo,
+  // so the photo view stays available for them (a corrected line no longer matches and loses it).
+  if (reportSourcePdf?.images) reportSourcePdf.text = textArea.value;
   addAuditEvent(choice === current ? "ocr_number_confirmed" : "ocr_number_corrected", `${check.name}: photo read "${check.read}"; the person confirmed "${choice}".`);
   // Only the number the person confirmed is shown; a misread value never reaches the brief.
   ocrReviewed.push(`${check.name}: ${choice} (${choice === check.read ? "confirmed" : "corrected"} by the patient against the report)`);
@@ -4884,7 +4916,7 @@ document.querySelector("#ocr-checks")?.addEventListener("click", (event) => {
   renderOcrChecks();
 });
 
-async function showOcrResult(rawText, sourceLabel, token = readingToken) {
+async function showOcrResult(rawText, sourceLabel, token = readingToken, source = null) {
   if (readingStopped(token)) return;
   finishReading(token);
   if (rawText.replace(/\s/g, "").length < 20) {
@@ -4896,6 +4928,7 @@ async function showOcrResult(rawText, sourceLabel, token = readingToken) {
   ocrReviewed = [];
   reportFromPhoto = true;
   document.querySelector("#report-text").value = text.slice(0, 12000);
+  reportSourcePdf = source ? { kind: sourceLabel, images: source.images, rows: source.lines, text: document.querySelector("#report-text").value } : null;
   updateProgressRail();
   trackReportUsage("photo_read");
   await analyzeAndShowReport();
@@ -4908,12 +4941,13 @@ async function readPhotoTextLocally(file, token = readingToken) {
   setReadingProgress(null, "Getting the photo reader ready. The first time takes a little longer.");
   try {
     const image = await preparePhotoForOcr(file);
+    const lines = [];
     const text = await recognizeImages([image], (progress) => {
       if (readingStopped(token)) return;
       reportStatus.textContent = `Reading your photo on this device... ${Math.round(progress * 100)}%`;
       setReadingProgress(progress, "Reading the numbers on your photo…");
-    });
-    await showOcrResult(text, "photo", token);
+    }, lines);
+    await showOcrResult(text, "photo", token, { images: [image], lines });
   } catch {
     if (readingStopped(token)) return;
     finishReading(token);
@@ -4945,14 +4979,15 @@ async function readScannedPdfLocally(file, maxPages = 3, token = readingToken) {
     if (readingStopped(token)) return;
     // The reader reports progress within a page, then once per finished page.
     let pagesDone = 0;
+    const lines = [];
     const text = await recognizeImages(images, (progress, done) => {
       if (readingStopped(token)) return;
       if (done) pagesDone = done;
       const page = Math.min(images.length, pagesDone + 1);
       reportStatus.textContent = `Reading the scanned PDF on this device... page ${page} of ${images.length}`;
       setReadingProgress(done ? done / images.length : (pagesDone + progress) / images.length, `Reading page ${page} of ${images.length}…`);
-    });
-    await showOcrResult(text, "scanned PDF", token);
+    }, lines);
+    await showOcrResult(text, "scanned PDF", token, { images, lines });
   } catch {
     if (readingStopped(token)) return;
     finishReading(token);
@@ -6509,7 +6544,7 @@ function renderResultCard(card, text) {
             ${card.meaning ? `<h5 class="visually-hidden">${escapeHtml(text.whatMeans)}</h5><p class="result-card-meaning">${escapeHtml(card.meaning)}</p>` : ""}
             ${card.what || card.ask || line ? `<details class="result-card-more">
               <summary>${line ? (es ? "Más, y la línea de su informe" : "More, and the line in your report") : (es ? "Más sobre este resultado" : "More about this result")}</summary>
-              ${line ? `<div class="result-card-source"><h5 class="result-card-source-title">${es ? "La línea de su informe" : "The line in your report"}</h5><code class="result-card-source-line">${escapeHtml(line)}</code>${pageRow ? `<button class="secondary-button compact result-card-source-page" type="button" data-source-line="${escapeHtml(line)}">${es ? "Ver la página del informe" : "See it on the report page"}</button>` : ""}</div>` : ""}
+              ${line ? `<div class="result-card-source"><h5 class="result-card-source-title">${es ? "La línea de su informe" : "The line in your report"}</h5><code class="result-card-source-line">${escapeHtml(line)}</code>${pageRow ? `<button class="secondary-button compact result-card-source-page" type="button" data-source-line="${escapeHtml(line)}">${reportSourcePdf?.kind === "photo" ? (es ? "Verla en su foto" : "See it on your photo") : (es ? "Ver la página del informe" : "See it on the report page")}</button>` : ""}</div>` : ""}
               ${card.what ? `<h5>${escapeHtml(text.whatIs)}</h5><p>${escapeHtml(card.what)}</p>` : ""}
               ${card.ask ? `<h5>${escapeHtml(text.askDoctor)}</h5><p class="result-card-ask">“${escapeHtml(card.ask)}”</p>` : ""}
             </details>` : ""}
