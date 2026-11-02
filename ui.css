@@ -691,3 +691,5 @@ body[data-auth="in"] button.when-in { display: inline-flex; }
 .history-empty .inline-action-group { display: flex; flex-wrap: wrap; gap: 8px; }
 body:not([data-auth="in"]) button.when-in { display: none !important; }
 .history-person-filter[hidden] { display: none !important; }
+.trend-date { display: grid; gap: 6px; font-size: var(--ft-text-sm); font-weight: 600; color: var(--ft-ink); }
+.trend-date input { max-width: 220px; min-height: 44px; }

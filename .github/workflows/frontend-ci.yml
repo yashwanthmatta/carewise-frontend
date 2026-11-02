@@ -93,6 +93,9 @@ jobs:
       - name: History with nothing saved (no Clear buttons, next step offered)
         run: node scripts/eval/history-empty.mjs
 
+      - name: Lab tracker saves (test date, no duplicates, nothing dropped after 60)
+        run: node scripts/eval/lab-tracker-save.mjs
+
       - name: Randomized report check (standard and hard reports)
         run: |
           node scripts/eval/stress.mjs --text 5000 --seed 101

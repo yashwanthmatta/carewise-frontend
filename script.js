@@ -5490,10 +5490,55 @@ function getLabTrendForm() {
   };
 }
 
+// The tracker on this device. It used to keep only the newest 60 values and drop the rest
+// without a word; it now keeps up to 500 and says so if older values ever have to go.
+const LAB_TREND_LIMIT = 500;
+function storeLabTrends(labs) {
+  localStorage.setItem("carewiseLabTrends", JSON.stringify(labs.slice(0, LAB_TREND_LIMIT)));
+  return Math.max(0, labs.length - LAB_TREND_LIMIT);
+}
+
 function addLabTrendEntry(entry) {
   const labs = getLabTrends();
   labs.unshift(entry);
-  localStorage.setItem("carewiseLabTrends", JSON.stringify(labs.slice(0, 60)));
+  return storeLabTrends(labs);
+}
+
+// Same test, same value, same unit, same test date: the same result, saved once.
+function labTrendKey(entry) {
+  return [entry.test, entry.value, entry.unit, entry.date].map((part) => String(part ?? "").trim().toLowerCase()).join("|");
+}
+
+// The date the sample was taken, when the report states it unambiguously. A date like 03/04/2026
+// could be March or April, so it is left for the person to enter rather than guessed.
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+function reportTestDate(text) {
+  const lines = String(text || "").split(/\r?\n/);
+  const labelled = (pattern) => lines.filter((line) => pattern.test(line));
+  const candidates = [
+    ...labelled(/\b(collected|collection|specimen|sample (taken|date)|drawn|date of (test|collection))\b/i),
+    ...labelled(/\b(reported|report date|date)\b/i),
+  ];
+  const iso = (y, m, d) => {
+    const date = new Date(Date.UTC(y, m - 1, d));
+    return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d && y > 1900 && y < 2100 ? date.toISOString().slice(0, 10) : "";
+  };
+  for (const line of candidates) {
+    let match = line.match(/\b(\d{4})-(\d{2})-(\d{2})\b/);
+    if (match) return iso(+match[1], +match[2], +match[3]);
+    match = line.match(/\b(\d{1,2})[ -]([A-Za-z]{3})[a-z]*[ -,]+(\d{4})\b/);
+    if (match && MONTHS.includes(match[2].toLowerCase())) return iso(+match[3], MONTHS.indexOf(match[2].toLowerCase()) + 1, +match[1]);
+    match = line.match(/\b([A-Za-z]{3})[a-z]*\.? (\d{1,2}),? (\d{4})\b/);
+    if (match && MONTHS.includes(match[1].toLowerCase())) return iso(+match[3], MONTHS.indexOf(match[1].toLowerCase()) + 1, +match[2]);
+    match = line.match(/\b(\d{1,2})[/.](\d{1,2})[/.](\d{4})\b/);
+    if (match) {
+      const [a, b, y] = [+match[1], +match[2], +match[3]];
+      if (a > 12 && b <= 12) return iso(y, b, a);
+      if (b > 12 && a <= 12) return iso(y, a, b);
+      return "";
+    }
+  }
+  return "";
 }
 
 function normalizeBackendLabTrendFlag(flag) {
@@ -5567,7 +5612,7 @@ async function loadLabTrendsFromBackend() {
       ...cloudEntries,
       ...getLabTrends().filter((item) => !cloudEntries.some((cloud) => cloud.backendLabTrendId && cloud.backendLabTrendId === item.backendLabTrendId)),
     ];
-    localStorage.setItem("carewiseLabTrends", JSON.stringify(merged.slice(0, 60)));
+    storeLabTrends(merged);
     renderLabTrends();
     renderVisitBriefs();
     addAuditEvent("backend_lab_trends_loaded", `${cloudEntries.length} backend lab trend${cloudEntries.length === 1 ? "" : "s"} loaded.`);
@@ -5630,7 +5675,7 @@ async function saveLabTrend() {
     const synced = await syncLabTrendToBackend(entry, patientId, "", true);
     if (synced) {
       const labs = getLabTrends().map((item) => item.id === entry.id ? entry : item);
-      localStorage.setItem("carewiseLabTrends", JSON.stringify(labs.slice(0, 60)));
+      storeLabTrends(labs);
     }
   }
   document.querySelector("#lab-value").value = "";
@@ -7238,6 +7283,7 @@ function renderLocalReportAnalysis(analysis) {
             ${view.labValues?.length ? `<button class="secondary-button compact" type="button" data-report-action="save-detected-values">${escapeHtml(ui.saveToTrends)}</button>` : ""}
             ${navigator.share ? `<button class="secondary-button compact" type="button" data-report-action="share-summary">${escapeHtml(ui.shareSummary)}</button>` : `<button class="secondary-button compact" type="button" data-report-action="copy-summary">${escapeHtml(ui.copySummary)}</button>`}
           </div>
+          ${view.labValues?.length ? `<label class="trend-date" for="trend-date">${reportLanguage === "es" ? "Fecha del análisis (de su informe), para el registro de análisis" : "Date of the test (from your report), for the lab tracker"}<input id="trend-date" type="date" data-trend-date value="${escapeHtml(reportTestDate(getLocalReportText()))}" max="${new Date().toISOString().slice(0, 10)}" /></label>` : ""}
           ${renderResultMore(`<div class="lab-reminder"><label for="lab-reminder-date">${escapeHtml(reportView.text.reminderLabel)}</label><input id="lab-reminder-date" type="date" data-lab-reminder min="${new Date().toISOString().slice(0, 10)}" /><button class="secondary-button compact" type="button" data-report-action="lab-reminder">${reportLanguage === "es" ? "Añadir al calendario" : "Add to calendar"}</button></div>`, reportLanguage === "es" ? "Añadir la próxima prueba al calendario" : "Add your next test to your calendar", "")}
         </section>`}
       </div>
@@ -7615,19 +7661,40 @@ async function saveDetectedValuesToTrends() {
     reportStatus.textContent = "No detected values are ready to save. Paste readable lab values and analyze first.";
     return;
   }
-  const today = new Date().toISOString().slice(0, 10);
+  // Each value is dated by the test, not by today, so older reports land in the right place.
+  const dateInput = reportResults.querySelector("[data-trend-date]");
+  const testDate = dateInput?.value || "";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(testDate)) {
+    reportStatus.textContent = reportLanguage === "es"
+      ? "Escriba la fecha del análisis que aparece en su informe y luego guarde."
+      : "Enter the date of the test from your report, then save.";
+    dateInput?.focus();
+    return;
+  }
+  const saved = new Set(getLabTrends().map(labTrendKey));
   const entries = labValues.map((item, index) => ({
     id: `lab-${Date.now()}-${index}`,
     test: item.label,
     value: String(item.value),
     unit: item.unit,
-    date: today,
+    date: testDate,
     flag: normalizeDetectedValueFlag(item.flag),
     notes: "Saved from FollowThrough Health detected report values. Verify against the original report and reference range.",
     source: "detected_report_value",
     createdAt: new Date().toISOString(),
-  }));
-  entries.forEach((entry) => addLabTrendEntry(entry));
+  })).filter((entry) => {
+    const key = labTrendKey(entry);
+    if (saved.has(key)) return false;
+    saved.add(key);
+    return true;
+  });
+  const already = labValues.length - entries.length;
+  if (!entries.length) {
+    reportStatus.textContent = `These ${labValues.length} value${labValues.length === 1 ? " is" : "s are"} already in your lab tracker for ${testDate}. Nothing was added twice.`;
+    return;
+  }
+  let dropped = 0;
+  entries.slice().reverse().forEach((entry) => { dropped += addLabTrendEntry(entry); });
   let syncedCount = 0;
   const patientId = authToken ? (report?.patientId || backendPatientId || await ensureBackendPatient(false)) : "";
   if (patientId) {
@@ -7636,15 +7703,19 @@ async function saveDetectedValuesToTrends() {
     syncedCount = results.filter(Boolean).length;
     if (syncedCount) {
       const syncedById = new Map(entries.map((entry) => [entry.id, entry]));
-      const labs = getLabTrends().map((item) => syncedById.get(item.id) || item);
-      localStorage.setItem("carewiseLabTrends", JSON.stringify(labs.slice(0, 60)));
+      storeLabTrends(getLabTrends().map((item) => syncedById.get(item.id) || item));
     }
   }
   renderLabTrends();
   renderVisitBriefs();
-  addAuditEvent("detected_report_values_saved", `${labValues.length} detected report value${labValues.length === 1 ? "" : "s"} saved to lab trends${syncedCount ? `; ${syncedCount} synced to backend` : ""}.`);
+  addAuditEvent("detected_report_values_saved", `${entries.length} detected report value${entries.length === 1 ? "" : "s"} saved to lab trends${syncedCount ? `; ${syncedCount} synced to backend` : ""}.`);
   renderAuditTrail();
-  reportStatus.textContent = `${labValues.length} detected value${labValues.length === 1 ? "" : "s"} saved to lab trends${syncedCount ? ` and ${syncedCount} saved to your account` : ""}. Verify with the original report.`;
+  reportStatus.textContent = [
+    `${entries.length} value${entries.length === 1 ? "" : "s"} saved to your lab tracker for ${testDate}${syncedCount ? ` and ${syncedCount} saved to your account` : ""}.`,
+    already ? `${already} ${already === 1 ? "was" : "were"} already there and not added twice.` : "",
+    dropped ? `Your tracker on this device is full, so the ${dropped} oldest value${dropped === 1 ? " was" : "s were"} removed; values saved to your account are kept there.` : "",
+    "Verify with the original report.",
+  ].filter(Boolean).join(" ");
 }
 
 function buildReportQuestionPack(analysis) {
