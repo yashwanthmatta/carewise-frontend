@@ -5215,13 +5215,22 @@ function renderReportHistory() {
   // Keep an explained result on screen (for example after signing in); the saved
   // list only fills the result area when nothing has been explained yet.
   const showingResult = Boolean(reportResults.querySelector(".result-hero"));
+  // Nothing to clear means no "Clear history" button.
+  const clearSaved = document.querySelector("#clear-saved");
+  if (clearSaved) clearSaved.hidden = !allReports.length;
+  const personFilterRow = document.querySelector("#history-person-filter")?.closest(".history-person-filter");
+  if (personFilterRow) personFilterRow.hidden = !allReports.length;
   if (!allReports.length) {
     if (!showingResult) reportResults.innerHTML = "<p>No report analysis yet.</p>";
     if (reportHistoryList) {
       reportHistoryList.innerHTML = `
-        <article>
-          <div><strong>No reports saved yet</strong><span>Add a report first</span></div>
-          <p>Add a lab PDF or type your results to see plain-English explanations here.</p>
+        <article class="history-empty">
+          <div><strong>No reports saved yet</strong></div>
+          <p>Reports you explain are kept here on this device, so you can compare them later.</p>
+          <div class="inline-action-group">
+            <a class="primary-button compact" href="#report-title">Explain a report</a>
+            <a class="secondary-button compact" href="#try=raj-kidney-heart-uk/explain">Try a sample report</a>
+          </div>
         </article>
       `;
     }
@@ -5652,8 +5661,10 @@ function getLabTrendSuggestion(item) {
 function renderLabTrends() {
   if (!labTrendList) return;
   const labs = getLabTrends();
+  const clearLabs = document.querySelector("#clear-lab-trends");
+  if (clearLabs) clearLabs.hidden = !labs.length;
   if (!labs.length) {
-    labTrendList.innerHTML = "<p>No lab values saved yet.</p>";
+    labTrendList.innerHTML = "<p>No lab values saved yet. On a result, use \"Save to my lab tracker\", or add one below.</p>";
     return;
   }
   const groups = getLabTrendGroups();

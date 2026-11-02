@@ -90,6 +90,9 @@ jobs:
       - name: Upload reading card (progress, Cancel, drag and drop) and result order
         run: node scripts/eval/upload-reading.mjs
 
+      - name: History with nothing saved (no Clear buttons, next step offered)
+        run: node scripts/eval/history-empty.mjs
+
       - name: Randomized report check (standard and hard reports)
         run: |
           node scripts/eval/stress.mjs --text 5000 --seed 101

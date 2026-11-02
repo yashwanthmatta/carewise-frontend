@@ -683,3 +683,11 @@ body:not([data-auth="in"]) :is(.billing-panel, .twofactor-panel, .doctor-links-p
 @media (min-width: 641px) {
   .report-panel .result-doctor-actions .primary-button { width: auto !important; padding: 0 24px !important; }
 }
+/* History: no "Clear" buttons when there is nothing to clear; the empty state offers the next step. */
+#clear-saved[hidden], #clear-lab-trends[hidden] { display: none !important; }
+body[data-auth="in"] button.when-in { display: inline-flex; }
+.history-empty { display: grid; gap: 10px; }
+.history-empty p { margin: 0; }
+.history-empty .inline-action-group { display: flex; flex-wrap: wrap; gap: 8px; }
+body:not([data-auth="in"]) button.when-in { display: none !important; }
+.history-person-filter[hidden] { display: none !important; }
