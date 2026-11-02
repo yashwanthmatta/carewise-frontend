@@ -16,14 +16,14 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-204" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-205" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-204" />
-    <link rel="stylesheet" href="ui.css?v=carewise-product-204" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-205" />
+    <link rel="stylesheet" href="ui.css?v=carewise-product-205" />
   </head>
   <body>
     <main class="app-shell">
@@ -80,12 +80,7 @@
                 </ul>
                 <p><a href="/legal/privacy.html">Privacy policy</a> · <a href="/safety.html">Safety and trust</a></p>
               </details>
-              <div class="hero-actions lp-actions lp-actions-quiet" aria-label="Other ways to start">
-                <a class="lp-link" href="#report-title">Type the numbers instead</a>
-                <button id="start-tour" class="lp-link" type="button">See a 1-minute demo</button>
-              </div>
               <p class="hero-disclaimer">For education only. FollowThrough Health does not diagnose or give medical advice; your doctor interprets your results.</p>
-              <p class="hero-early-access"><a href="#early-access-title">Looking after a parent's health? Join early access</a></p>
             </div>
 
             <div class="lp-stage" aria-label="Example: a parent's kidney report explained by FollowThrough Health">
@@ -109,6 +104,7 @@
           </section>
 
           <nav class="lp-jump" aria-label="About FollowThrough Health">
+            <button id="start-tour" class="lp-jump-button" type="button">1-minute demo</button>
             <a href="#how-it-works">How it works</a>
             <a href="#safety">Safety</a>
             <a href="#pricing">Pricing</a>
@@ -750,7 +746,7 @@
             <div>
               <p class="eyebrow">Explain a report</p>
               <h3 id="report-title">Add your report</h3>
-              <p class="panel-intro">A photo, a PDF, or the numbers typed in. Read on this device; nothing is uploaded.</p>
+              <p class="panel-intro">Read on this device. Nothing is uploaded.</p>
               <details class="data-use">
                 <summary>What happens to my data?</summary>
                 <ul>
@@ -766,17 +762,28 @@
             <span id="report-badge" class="sync-badge offline">Cloud storage ready</span>
           </div>
           <div class="composer">
-            <label class="file-input-card composer-drop">
-              <span class="composer-drop-icon" aria-hidden="true"></span>
-              <strong>Take a photo, choose a file, or drop it here</strong>
-              <small>Photo, PDF or text file · read on this device</small>
-              <input id="report-file" type="file" accept=".pdf,image/*,.txt,text/plain" />
-            </label>
-            <ul class="composer-tips" aria-label="Tips for a good read">
-              <li>Best: the PDF from your lab or patient portal.</li>
-              <li>Photos: flat, well lit, taken straight on, with every number in view.</li>
-              <li>Scanned PDFs: the first 3 pages are read.</li>
-            </ul>
+            <div class="composer-whose">
+              <label for="report-person">Whose report?</label>
+              <div class="whose-chips" role="group" aria-label="Whose report">
+                <button type="button" class="whose-chip is-active" data-whose="">Me</button>
+                <button type="button" class="whose-chip" data-whose="Mum">Mum</button>
+                <button type="button" class="whose-chip" data-whose="Dad">Dad</button>
+                <input id="report-person" type="text" list="report-people" maxlength="40" placeholder="Someone else" />
+                <datalist id="report-people"></datalist>
+              </div>
+            </div>
+            <div class="composer-start">
+              <label class="file-input-card composer-drop">
+                <span class="composer-drop-icon" aria-hidden="true"></span>
+                <strong>Take a photo, choose a file, or drop it here</strong>
+                <small>A PDF from your lab works best. Photos: flat and well lit.</small>
+                <input id="report-file" type="file" accept=".pdf,image/*,.txt,text/plain" />
+              </label>
+              <button id="sample-report-text" class="composer-sample" type="button">
+                <span class="hero-sample-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+                <span class="hero-sample-text"><strong>Try a sample report</strong><span>A made-up report, ready to explain</span></span>
+              </button>
+            </div>
             <div id="reading-card" class="reading-card" role="group" aria-labelledby="reading-name" hidden>
               <div class="reading-file">
                 <span class="reading-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg></span>
@@ -789,27 +796,17 @@
               <div id="reading-bar" class="reading-bar is-indeterminate" role="progressbar" aria-labelledby="reading-step" aria-valuemin="0" aria-valuemax="100"><span></span></div>
               <p id="reading-step" class="reading-step">Reading on this device. Nothing is uploaded.</p>
             </div>
-            <p class="composer-or"><span>or type the results</span></p>
-            <label class="composer-text">
-              <span class="visually-hidden">Report text</span>
-              <textarea id="report-text" rows="4" placeholder="For example: Hemoglobin 11.2, TSH 6.8, fasting sugar 130, LDL 160"></textarea>
-            </label>
-            <div class="composer-whose">
-              <label for="report-person">Whose report?</label>
-              <div class="whose-chips" role="group" aria-label="Whose report">
-                <button type="button" class="whose-chip is-active" data-whose="">Me</button>
-                <button type="button" class="whose-chip" data-whose="Mum">Mum</button>
-                <button type="button" class="whose-chip" data-whose="Dad">Dad</button>
-                <input id="report-person" type="text" list="report-people" maxlength="40" placeholder="Someone else" />
-                <datalist id="report-people"></datalist>
+            <div class="composer-type">
+              <label class="composer-type-label" for="report-text">Or type the results</label>
+              <textarea id="report-text" rows="3" placeholder="For example: Hemoglobin 11.2, TSH 6.8, fasting sugar 130, LDL 160"></textarea>
+              <div class="composer-actions">
+                <button id="analyze-report" class="primary-button narrow-button" type="button">Explain report</button>
               </div>
             </div>
-            <div class="composer-actions">
-              <button id="analyze-report" class="primary-button narrow-button" type="button">Explain report</button>
-              <button id="sample-report-text" class="text-button" type="button">Try a sample report</button>
-            </div>
+            <p id="report-status" class="status-line" role="status">Add a photo or PDF, type the results, or try the sample.</p>
+            <p id="ocr-status" class="visually-hidden" role="status">Educational, not a diagnosis. PDFs and photos are read on your device.</p>
             <details class="composer-more">
-              <summary>More options</summary>
+              <summary>Save or load reports</summary>
               <label>
                 Report name
                 <input id="report-name" type="text" placeholder="blood-work-june.pdf" />
@@ -819,8 +816,6 @@
                 <button id="load-reports" class="secondary-button" type="button">Load saved reports</button>
               </div>
             </details>
-            <p id="report-status" class="status-line" role="status">Add a photo or PDF, type the results, or try the sample.</p>
-            <p id="ocr-status" class="status-line composer-privacy" role="status">Educational, not a diagnosis. PDFs and photos are read on your device.</p>
           </div>
           <div class="mvp-alert legacy-hidden">
             <strong>Safe by design</strong>
@@ -2144,13 +2139,13 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-204"></script>
-    <script src="help.js?v=carewise-product-204"></script>
-    <script src="doctor-share.js?v=carewise-product-204"></script>
-    <script src="docbridge.js?v=carewise-product-204"></script>
-    <script src="reminders.js?v=carewise-product-204"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-204"></script>
-    <script src="twofactor.js?v=carewise-product-204"></script>
-    <script src="account-ui.js?v=carewise-product-204"></script>
+    <script src="script.js?v=carewise-product-205"></script>
+    <script src="help.js?v=carewise-product-205"></script>
+    <script src="doctor-share.js?v=carewise-product-205"></script>
+    <script src="docbridge.js?v=carewise-product-205"></script>
+    <script src="reminders.js?v=carewise-product-205"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-205"></script>
+    <script src="twofactor.js?v=carewise-product-205"></script>
+    <script src="account-ui.js?v=carewise-product-205"></script>
   </body>
 </html>
