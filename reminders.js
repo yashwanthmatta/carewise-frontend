@@ -57,7 +57,28 @@ globalThis.ftReminderCalendar = (() => {
     return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//FollowThrough Health//Reminder//EN", ...events, "END:VCALENDAR"].join("\r\n");
   }
 
-  return { build, firstDay };
+  // All-day reminder for the next lab test on the date the doctor gave. The date is
+  // used as written (no time zone conversion), so it can't shift by a day, and the
+  // title is generic because calendars show it on a locked phone.
+  function buildLab(dateText, now) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateText || "");
+    if (!match) return "";
+    const day = `${match[1]}${match[2]}${match[3]}`;
+    const after = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]) + 1));
+    const next = `${after.getUTCFullYear()}${pad(after.getUTCMonth() + 1)}${pad(after.getUTCDate())}`;
+    const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
+    return [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//FollowThrough Health//Reminder//EN", "BEGIN:VEVENT",
+      `UID:followthrough-lab-${day}-${now.getTime()}@followthroughhealth.com`, `DTSTAMP:${stamp}`,
+      `DTSTART;VALUE=DATE:${day}`, `DTEND;VALUE=DATE:${next}`,
+      "SUMMARY:FollowThrough Health reminder",
+      "DESCRIPTION:The date your doctor gave for the next test. Open FollowThrough Health for details.",
+      "BEGIN:VALARM", "TRIGGER:-P2D", "ACTION:DISPLAY", "DESCRIPTION:FollowThrough Health: You have a reminder.", "END:VALARM",
+      "END:VEVENT", "END:VCALENDAR",
+    ].join("\r\n");
+  }
+
+  return { build, buildLab, firstDay };
 })();
 
 (() => {
