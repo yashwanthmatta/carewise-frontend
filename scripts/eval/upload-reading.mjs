@@ -26,6 +26,35 @@ await page.waitForSelector("#report-results .report-summary", { timeout: 30000 }
 ok(await page.isVisible("#report-results .report-summary"), "PDF is explained");
 ok(await page.isHidden("#reading-card"), "reading card goes away when the result is shown");
 
+// 1a. A result read from a PDF can be shown on its original page, with its row marked.
+await page.goto("about:blank");
+await page.goto(`${base}#report-title`, { waitUntil: "load" });
+await page.setInputFiles("#report-file", "scripts/eval/pdfs/cbc-labcorp.pdf");
+await page.waitForSelector("#report-results .result-card-item", { timeout: 30000 }).catch(() => {});
+const pageButton = page.locator("#report-results [data-source-line]").first();
+ok(await pageButton.count() === 1, "a result read from a PDF offers its report page");
+if (await pageButton.count()) {
+  const line = await pageButton.getAttribute("data-source-line");
+  await page.locator("#report-results .result-card-more").first().evaluate((node) => { node.open = true; });
+  await pageButton.click();
+  await page.waitForFunction(() => !document.querySelector("#source-page-mark").hidden, null, { timeout: 15000 }).catch(() => {});
+  const shown = await page.evaluate(() => {
+    const dialog = document.querySelector("#source-page-dialog");
+    const mark = document.querySelector("#source-page-mark").getBoundingClientRect();
+    const canvas = document.querySelector("#source-page-canvas").getBoundingClientRect();
+    return { open: dialog.open, note: dialog.querySelector("#source-page-note").textContent, mark: { w: mark.width, h: mark.height, inside: mark.left >= canvas.left - 4 && mark.right <= canvas.right + 4 && mark.top >= canvas.top - 4 && mark.bottom <= canvas.bottom + 4 }, label: document.querySelector("#source-page-canvas").getAttribute("aria-label") };
+  });
+  ok(shown.open && shown.note.includes(line) && shown.label.includes(line), "the page view names the line it marks");
+  ok(shown.mark.w > 20 && shown.mark.h > 4 && shown.mark.inside, `the marked row sits on the drawn page (${Math.round(shown.mark.w)}x${Math.round(shown.mark.h)})`);
+  await page.keyboard.press("Escape");
+  ok(!(await page.evaluate(() => document.querySelector("#source-page-dialog").open)), "Escape closes the page view");
+  // Editing the text means the PDF no longer matches, so the page view is no longer offered.
+  await page.fill("#report-text", (await page.inputValue("#report-text")) + "\n");
+  await page.click("#analyze-report");
+  await page.waitForTimeout(800);
+  ok(await page.locator("#report-results [data-source-line]").count() === 0, "after the text is edited, no page view is offered");
+}
+
 // 1b. On a phone the card scrolls into view above the bottom tab bar. Shown directly, so the check
 // does not depend on how fast the reader finishes on this machine.
 await page.goto("about:blank");
@@ -55,6 +84,33 @@ await page.waitForTimeout(20000);
 ok((await page.inputValue("#report-text")) === "", "a cancelled photo never fills in the report");
 ok(!(await page.isVisible("#report-results .report-summary")), "a cancelled photo is never explained");
 
+// 2b. A result read from a photo can be shown on the photo, with its line marked.
+{
+  const photo = await browser.newPage({ viewport: { width: 900, height: 360 } });
+  await photo.setContent('<body style="margin:0;background:#fff;font:34px Arial;padding:24px">Sample Lab<br>LDL cholesterol 148 mg/dL &lt;100<br>Sodium 140 mmol/L 135-145<br>Potassium 5.9 mmol/L 3.5-5.1</body>');
+  const shotPng = await photo.screenshot();
+  await photo.close();
+  await page.goto("about:blank");
+  await page.goto(`${base}#report-title`, { waitUntil: "load" });
+  await page.setInputFiles("#report-file", { name: "lab-photo.png", mimeType: "image/png", buffer: shotPng });
+  await page.waitForSelector("#report-results [data-source-line]", { state: "attached", timeout: 90000 }).catch(() => {});
+  const photoButton = page.locator("#report-results [data-source-line]").first();
+  ok(await photoButton.count() === 1 && /See it on your photo/.test(await photoButton.textContent()), "a result read from a photo offers \"See it on your photo\"");
+  if (await photoButton.count()) {
+    const line = await photoButton.getAttribute("data-source-line");
+    await page.evaluate((l) => showSourcePage(l), line);
+    await page.waitForFunction(() => !document.querySelector("#source-page-mark").hidden, null, { timeout: 15000 }).catch(() => {});
+    const view = await page.evaluate(() => {
+      const mark = document.querySelector("#source-page-mark").getBoundingClientRect();
+      const canvas = document.querySelector("#source-page-canvas").getBoundingClientRect();
+      return { note: document.querySelector("#source-page-note").textContent, w: mark.width, h: mark.height, inside: mark.left >= canvas.left - 8 && mark.right <= canvas.right + 8 && mark.top >= canvas.top - 8 && mark.bottom <= canvas.bottom + 8 };
+    });
+    ok(/^Your photo\./.test(view.note) && view.note.includes(line), `the photo view names the photo and the line (${view.note.slice(0, 60)})`);
+    ok(view.w > 40 && view.h > 8 && view.inside, `the marked line sits on the photo (${Math.round(view.w)}x${Math.round(view.h)})`);
+    await page.keyboard.press("Escape");
+  }
+}
+
 // 3. A photo read to the end reports real progress.
 await page.goto("about:blank");
 await page.goto(`${base}#report-title`, { waitUntil: "load" });
@@ -82,13 +138,14 @@ await page.evaluate(() => {
 await page.waitForSelector("#report-results .report-summary", { timeout: 15000 }).catch(() => {});
 ok(/LDL/.test(await page.inputValue("#report-text")) && await page.isVisible("#report-results .report-summary"), "a dropped file is read and explained");
 
-// 5. On the result, the plain-English summary comes before the doctor actions.
+// 5. On the result: the summary, then the results, then questions for the doctor, the original
+// report, and saving or sharing, in that order.
 const order = await page.evaluate(() => {
-  const summary = document.querySelector("#report-results .report-summary");
-  const toolbar = document.querySelector("#report-results .result-toolbar");
-  return Boolean(summary && toolbar && summary.compareDocumentPosition(toolbar) & Node.DOCUMENT_POSITION_FOLLOWING);
+  const at = (selector) => document.querySelector(`#report-results ${selector}`);
+  const parts = [".report-summary", ".result-cards", ".result-doctor", ".result-source", ".result-save"].map(at);
+  return parts.every(Boolean) && parts.every((part, i) => i === 0 || parts[i - 1].compareDocumentPosition(part) & Node.DOCUMENT_POSITION_FOLLOWING);
 });
-ok(order, "summary comes first, then Take it to your doctor");
+ok(order, "summary, results, doctor questions, original report, then save or share");
 ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "fits a phone screen");
 
 await browser.close();

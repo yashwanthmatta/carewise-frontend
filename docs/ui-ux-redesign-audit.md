@@ -61,3 +61,37 @@ Its UX rules also shaped the sign-in card:
 - Password visibility toggle.
 - Visible submit feedback.
 - Labels on every input, never a placeholder alone.
+
+## Round 4 (2 Nov 2026): screen-by-screen issue register
+
+**Sources:**
+- The owner's report that people like the product but find it hard to use. The specific complaints recorded are the results screen, uploading, the mobile navigation, and too much on screen.
+- Measured browser behaviour on this branch versus `main`, with the sample "Raj" report on a 390 × 844 phone viewport.
+
+No usability sessions have been run yet. Rows marked **Observed** were seen and measured in the browser; rows marked **Hypothesis** need a person to confirm.
+
+| Screen | Issue | Evidence | Kind | Severity | Status |
+|---|---|---|---|---|---|
+| Results | Four doctor actions (Doctor brief, PDF, Share, More) sat **above** the results, before the person had read anything | Screenshot `compare4-phone-result-top.png` | Observed | High | Fixed: moved to "Questions for your doctor" and "Save or share", after the results |
+| Results | The questions for the doctor were folded away at the bottom | `compare4-phone-result-questions.png` | Observed | High | Fixed: "Questions for your doctor" is open, with one main action |
+| Results | "Doctor brief" does not say what it does | Label text | Hypothesis | Medium | Renamed "Prepare questions for your doctor", with a one-line description |
+| Results | Each card repeated a "What does this mean?" heading | Screenshot | Observed | Low | Heading kept for screen readers only; the meaning shows directly |
+| Results | The line from the report sat inside a toggle labelled "More about this result", so finding the source meant guessing | Card markup | Observed | Medium | Toggle renamed "More, and the line in your report". For PDFs, "See it on the report page" opens the page with the row marked |
+| Results | Nothing on the results said that a number read from a photo still needed checking; the check box was back in the upload area | `ocr-resolution.mjs` flow | Observed | High (safety) | "Please check these numbers" now sits above the results, with a button that moves focus to the check |
+| Results | Copy summary and Share summary did the same job | Markup | Observed | Low | Now one button: Share where the device can share, Copy elsewhere |
+| Results | 26 tappable controls on the phone result | Count from the browser | Observed | Medium | 23 (the remaining ones are per-card "More" toggles) |
+| Results | The phone page grew from 4,795 px to 5,119 px | Measured | Observed | — | Because the questions (6) and save actions are now visible rather than folded. The cards themselves are shorter. |
+| Upload | One upload box, one sample card, typing as a fallback | Round 3 | Observed | — | Done in round 3 |
+| Navigation | Five tabs on the phone bar (Home, Upload, History, Record, Account) | Screenshot | Hypothesis | Medium | Next stage: check every tab leads to a working feature before changing the labels |
+
+## Journey map (target)
+
+| Step | Where am I? | What can I do here? | What happens next? |
+|---|---|---|---|
+| Open | Home: "Your health reports, explained clearly" | Understand a report / Try a sample report | The upload screen or the sample result |
+| Upload or sample | "Upload": whose report, one upload box, sample card | Choose a file, take a photo, try the sample, or type | The reading card shows the file name; Cancel is available |
+| Understand | "Your report is ready" + "Your report in plain words" | Read the summary, change language, Listen | Scroll to the results |
+| Explore | "Your results to look at" | Open "More, and the line in your report"; see the PDF page | — |
+| Check (photos only) | "Please check these numbers" | Confirm or fix the doubtful numbers | Sharing and saving unlock |
+| Prepare | "Questions for your doctor" | Prepare questions for your doctor (one page), Copy questions | Print or save as PDF |
+| Save or finish | "Save or share" | PDF for your doctor, Send a link, Save to my lab tracker, Share or Copy, Calendar | Done; History keeps saved reports |

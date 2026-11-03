@@ -1,4 +1,4 @@
-# FollowThrough Health design system (v3)
+# FollowThrough Health design system (v4)
 
 **One rule:** calm, clear and honest. Every colour, size and motion helps someone understand a health report. None of it decorates.
 
@@ -9,16 +9,16 @@
 
 | Token | Value | Use |
 |---|---|---|
-| `--ft-bg` | `#f9f8f5` | Page background (warm white) |
+| `--ft-bg` | `#f8fafc` | Page background (soft off-white) |
 | `--ft-surface` | `#ffffff` | Cards, inputs |
-| `--ft-surface-2` | `#f3f2ee` | Quiet areas: tab track, aside, hover |
-| `--ft-surface-brand` | `#eef7f5` | The upload card, the two-step code box |
-| `--ft-ink` | `#15191a` | Text |
-| `--ft-ink-2` | `#45504d` | Secondary text (8.3:1 on the background) |
-| `--ft-ink-3` | `#5b6663` | Captions (5.9:1 on white) |
-| `--ft-line` / `--ft-line-strong` | `#e6e3dc` / `#d0cbc1` | Borders, input borders |
+| `--ft-surface-2` | `#f1f5f9` | Quiet areas: tab track, aside, hover |
+| `--ft-surface-brand` | `#f0fdfa` | The upload card, "Questions for your doctor", the two-step code box |
+| `--ft-ink` | `#1e293b` | Text, dark slate (14.6:1 on the background) |
+| `--ft-ink-2` | `#475569` | Secondary text (7.2:1 on the background) |
+| `--ft-ink-3` | `#64748b` | Captions only (4.6:1 on white) |
+| `--ft-line` / `--ft-line-strong` | `#e2e8f0` / `#cbd5e1` | Borders, input borders |
 | `--ft-brand` / `--ft-brand-strong` | `#0f766e` / `#0b5c55` | Primary buttons, links, focus (white text 5.5:1) |
-| `--ft-brand-soft` | `#e3f2ef` | Selected tab on phones, avatar |
+| `--ft-brand-soft` | `#ccfbf1` | Light teal accent: selected tab on phones, avatar, step numbers |
 | `--ft-attention` / `-ink` / `-soft` | `#b45309` / `#7c3a06` / `#fdf4e7` | "Outside the lab's range" accents and chips; "confirm your email" |
 | `--ft-danger` / `-soft` | `#b42318` / `#fdf0ee` | Errors, Delete my account, existing urgent and critical states |
 | `--ft-info-soft` | `#eef3f8` | Neutral status messages (sign-in answers) |

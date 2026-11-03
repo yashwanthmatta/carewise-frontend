@@ -613,12 +613,83 @@ body:not([data-auth="in"]) :is(.billing-panel, .twofactor-panel, .doctor-links-p
 .report-panel .feedback-more[hidden] { display: none; }
 .report-panel .next-steps-list li { align-content: start; align-items: start; }
 .report-panel .next-steps-more > summary .more-open, .report-panel .next-steps-more > summary .more-close { color: var(--ft-brand); font-weight: 700; }
-/* Warm white, per the latest brief: a very light warm neutral rather than the older paper tone. */
+/* Palette from the 2 Nov brief: soft off-white, dark slate text, deep teal, light teal accent.
+   Contrast: #1E293B on #F8FAFC 14.6:1; #475569 7.2:1; #64748B 4.6:1 (captions only);
+   white on #0F766E 5.5:1. */
 :root {
-  --ft-bg: #f9f8f5;
-  --ft-surface-2: #f3f2ee;
-  --ft-surface-brand: #eef6f3;
-  --ft-line: #e6e3dc;
-  --ft-line-strong: #d0cbc1;
+  --ft-bg: #f8fafc;
+  --ft-surface-2: #f1f5f9;
+  --ft-surface-brand: #f0fdfa;
+  --ft-ink: #1e293b;
+  --ft-ink-2: #475569;
+  --ft-ink-3: #64748b;
+  --ft-line: #e2e8f0;
+  --ft-line-strong: #cbd5e1;
+  --ft-brand-soft: #ccfbf1;
 }
-.summary-meter span { background: #e3ebe8; }
+.summary-meter span { background: #e2e8f0; }
+
+/* Results, simplified (Stage 1): summary, results, questions, original report, save. */
+.report-panel .result-hero .section-heading-action { gap: 8px; }
+.result-listen { min-height: 40px; }
+.result-card-item { gap: 4px; }
+.result-card-meaning { margin: 8px 0 0 !important; color: var(--ft-ink-2); }
+.result-card-source { display: grid; justify-items: start; gap: 6px; }
+.result-card-source .result-card-source-line { justify-self: stretch; }
+.result-card-more > summary { min-height: 44px; }
+.result-check, .result-doctor, .result-source, .result-save { display: grid; gap: 12px; margin: 0 0 20px; padding: 18px; border: 1px solid var(--ft-line); border-radius: var(--ft-radius-md); background: var(--ft-surface); }
+.result-check { border-color: var(--ft-attention); background: var(--ft-attention-soft); }
+.result-check p { margin: 0; color: var(--ft-ink); }
+.result-check .primary-button { justify-self: start; }
+.result-check h4, .result-doctor h4, .result-source h4, .result-save h4 { margin: 0 !important; font-size: var(--ft-text-lg) !important; }
+.result-doctor { border-color: var(--ft-brand); background: var(--ft-surface-brand); }
+.report-panel .result-doctor-questions { display: grid; gap: 6px; margin: 0; padding: 0 0 0 1.4em; list-style: decimal; color: var(--ft-ink); }
+.report-panel .result-doctor-questions li { display: list-item; padding: 0; border: 0; background: none; box-shadow: none; }
+.result-doctor-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.result-doctor-hint { margin: 0; color: var(--ft-ink-2); font-size: var(--ft-text-sm); }
+.result-source .result-more, .result-save .result-more { margin: 0; }
+.result-save-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+/* Next steps as a short numbered list rather than three boxes. */
+.report-panel .next-steps-list { display: grid; gap: 10px !important; padding-left: 1.4em !important; list-style: decimal !important; }
+.report-panel .next-steps-list li { display: list-item !important; padding: 0 !important; border: 0 !important; background: none !important; box-shadow: none !important; }
+.report-panel .next-steps-list li strong { display: block; }
+.report-panel .next-steps-list li::marker { color: var(--ft-brand-strong); font-weight: 700; }
+.report-panel .next-steps-list li::before { display: none !important; }
+.report-panel .next-steps .section-heading-action { flex-wrap: nowrap; }
+.report-panel .result-hero .section-heading-action > strong { flex: 1 1 100%; }
+@media (max-width: 640px) {
+  .result-doctor-actions .primary-button { width: 100%; }
+  .result-save-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .result-save-actions > * { width: 100%; }
+  .report-panel .result-hero .section-heading-action > strong { flex-basis: 100%; }
+  .report-panel .result-hero .section-heading-action .result-language, .result-listen { flex: 1 1 0; }
+  .result-listen { width: auto !important; }
+}
+.source-page-dialog { width: min(920px, calc(100vw - 16px)); }
+.source-page-note { margin: 0; color: var(--ft-ink); overflow-wrap: anywhere; }
+.source-page-frame { position: relative; max-height: 70vh; overflow: auto; border: 1px solid var(--ft-line); border-radius: var(--ft-radius-sm); background: #fff; }
+.source-page-frame canvas { display: block; }
+.source-page-mark { position: absolute; border: 3px solid var(--ft-brand); border-radius: 4px; background: rgba(15, 118, 110, 0.12); pointer-events: none; }
+.source-page-mark[hidden] { display: none; }
+.source-page-privacy { margin: 0; color: var(--ft-ink-3); font-size: var(--ft-text-xs); }
+.report-panel .feedback-question .inline-action-group { display: flex !important; flex-wrap: nowrap; gap: 8px; }
+.report-panel .feedback-question .inline-action-group > * { flex: 0 0 auto; width: auto !important; min-width: 88px; }
+@media (max-width: 640px) {
+  .result-card-value { font-size: 1.2rem !important; }
+  .report-panel .next-steps .section-heading-action { align-items: center; }
+  .report-panel .next-steps .section-heading-action h4 { flex: 1 1 auto; }
+  .report-panel .next-steps [data-report-action="copy-plan"] { flex: 0 0 auto; width: auto !important; }
+}
+@media (min-width: 641px) {
+  .report-panel .result-doctor-actions .primary-button { width: auto !important; padding: 0 24px !important; }
+}
+/* History: no "Clear" buttons when there is nothing to clear; the empty state offers the next step. */
+#clear-saved[hidden], #clear-lab-trends[hidden] { display: none !important; }
+body[data-auth="in"] button.when-in { display: inline-flex; }
+.history-empty { display: grid; gap: 10px; }
+.history-empty p { margin: 0; }
+.history-empty .inline-action-group { display: flex; flex-wrap: wrap; gap: 8px; }
+body:not([data-auth="in"]) button.when-in { display: none !important; }
+.history-person-filter[hidden] { display: none !important; }
+.trend-date { display: grid; gap: 6px; font-size: var(--ft-text-sm); font-weight: 600; color: var(--ft-ink); }
+.trend-date input { max-width: 220px; min-height: 44px; }
