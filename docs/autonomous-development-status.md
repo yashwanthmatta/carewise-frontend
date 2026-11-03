@@ -47,6 +47,7 @@ Last verified run: 2026-11-03, daily run at 04:23 UTC.
 3. ~~**Website:** a "Care team" screen (add, list and revoke clinicians) using the API from #55.~~ Built on 3 Nov in PR #140: Account → Care team (`#clinician-access`). It shows only when signed in, with a saved profile, and when the server has the API, so nothing appears until #55 is deployed. Eval `care-team.mjs` runs in CI. ~~Your Data page~~ built on 3 Nov (Account → Your data: device and account counts, downloads that leave out sign-in tokens, recorded activity only, clear this device, delete account). Eval `your-data.mjs` runs in CI.
 4. ~~Website: the page view for photos~~ Done on 2 Nov: "See it on your photo" (PR #138).
 5. **Backend:** staff two-step sign-in enforcement, staged behind a setting.
+5a. ~~Website sign-in buttons and Sign-in methods~~ Built on 3 Nov (frontend PR from this branch): "Continue with Google / Apple / Microsoft" and Account → Sign-in methods. Both are hidden until the server lists a configured provider (backend #55). Eval `provider-sign-in.mjs` runs in CI. **Before switching on:** replace the text-only buttons with each provider's official button artwork (Google, Apple and Microsoft brand kits), and run a real sign-in in staging.
 6. **CI:** dependency audit (`npm audit` / `pip-audit`), secret scan, and a nightly axe scan.
 
 ## Found and fixed on 3 Nov

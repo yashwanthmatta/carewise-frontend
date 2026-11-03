@@ -2185,6 +2185,7 @@ function initializeWorkspaceNavigation() {
     ["account-title", document.querySelector(".twofactor-panel")],
     ["account-title", document.querySelector(".your-data-panel")],
     ["account-title", document.querySelector(".clinician-access-panel")],
+    ["account-title", document.querySelector(".signin-methods-panel")],
     // The landing page (hero, how it works, safety, pricing) only shows on Home.
     ["home-title", document.querySelector(".landing")],
   ].filter(([, element]) => Boolean(element));
@@ -3159,6 +3160,8 @@ async function saveAuthToken(response, action) {
   updateAuthStatus(`Signed in after ${action}.`);
   updateProgressRail();
   await checkBackend(false);
+  // Google, Apple or Microsoft sign-in has no email in the form: ask the server who this is.
+  if (!authEmail) await verifyCurrentSession();
 }
 
 async function ensureTeamReviewSession() {
@@ -11767,6 +11770,8 @@ const YD_ACTIVITY_LABELS = {
   subscription_checkout_created: "Plan checkout started",
   subscription_portal_opened: "Plan settings opened",
   data_deletion_requested: "Deletion requested",
+  sign_in_method_added: "Sign-in method connected",
+  sign_in_method_removed: "Sign-in method removed",
 };
 
 function ydStoredKeys() {
@@ -12060,3 +12065,187 @@ function initializeCareTeam() {
 }
 
 initializeCareTeam();
+
+// ---- Continue with Google / Apple / Microsoft, and Account → Sign-in methods. ----
+// The server (backend #55) runs the provider flow. This page only:
+// 1. makes a random secret, keeps it in this tab, and sends its SHA-256 to /start;
+// 2. on return, trades the one-time code in the URL fragment, plus the secret, for a sign-in.
+// Nothing shows until the server lists a configured provider.
+const PROVIDER_NAMES = { google: "Google", apple: "Apple", microsoft: "Microsoft" };
+const SIGNIN_SECRET_KEY = "carewiseSignInSecret";
+const SIGNIN_ERRORS = {
+  cancelled: "Sign-in was cancelled. Nothing was changed.",
+  expired: "That sign-in took too long or was already used. Please try again.",
+  failed: "We couldn't finish signing you in. Please try again.",
+  invalid: "We couldn't finish signing you in. Please try again.",
+};
+let signInProviders = [];
+
+function randomSecret() {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function sha256Hex(text) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function startProviderSignIn(provider, link = false) {
+  const status = link ? document.querySelector("#signin-methods-status") : null;
+  try {
+    const secret = randomSecret();
+    sessionStorage.setItem(SIGNIN_SECRET_KEY, secret);
+    const binding = await sha256Hex(secret);
+    const path = `/auth/oidc/${encodeURIComponent(provider)}/${link ? "link-start" : "start"}`;
+    const response = await apiPost(path, { platform: "web", binding }, link ? {} : { skipAuth: true });
+    const url = String(response?.authorization_url || "");
+    if (!/^https:\/\/(accounts\.google\.com|appleid\.apple\.com|login\.microsoftonline\.com)\//.test(url)) throw new Error("unexpected provider URL");
+    window.location.assign(url);
+  } catch {
+    const message = "We couldn't open that sign-in right now. Please try again.";
+    if (status) status.textContent = message;
+    else updateAuthStatus(message);
+  }
+}
+
+function providerErrorMessage(error) {
+  const status = getBackendErrorStatus(error);
+  if (status === 409) return "This email is already linked to an account. Sign in to that account first to connect this method.";
+  if (status === 403) return "This account can't be used to sign in here. Sign in with your email, then connect it from Account.";
+  return SIGNIN_ERRORS.failed;
+}
+
+async function finishProviderSignIn() {
+  const params = new URLSearchParams(window.location.hash.slice(1));
+  const code = params.get("signin-code");
+  const failure = params.get("signin-error");
+  if (!code && !failure) return;
+  // Take the code out of the address bar and history straight away.
+  history.replaceState(null, "", `${window.location.pathname}${window.location.search}#account-title`);
+  window.showCareWiseSection?.("account-title", false);
+  let secret = "";
+  try { secret = sessionStorage.getItem(SIGNIN_SECRET_KEY) || ""; sessionStorage.removeItem(SIGNIN_SECRET_KEY); } catch {}
+  if (failure || !secret) {
+    updateAuthStatus(SIGNIN_ERRORS[failure] || SIGNIN_ERRORS.expired);
+    return;
+  }
+  try {
+    const response = await apiPost("/auth/oidc/exchange", { code, secret }, { skipAuth: true });
+    if (response.linked) {
+      const status = document.querySelector("#signin-methods-status");
+      if (status) status.textContent = `${PROVIDER_NAMES[response.linked] || "That account"} is now connected. You can use it to sign in.`;
+      loadSignInMethods();
+      return;
+    }
+    if (response.two_factor_required) {
+      askForTwoFactorCode(response.challenge);
+      return;
+    }
+    await saveAuthToken(response, response.created ? "signup" : "login");
+  } catch (error) {
+    const message = providerErrorMessage(error);
+    updateAuthStatus(message);
+    const status = document.querySelector("#signin-methods-status");
+    if (status && authToken) status.textContent = message;
+  }
+}
+
+async function loadSignInProviders() {
+  const box = document.querySelector("#auth-providers");
+  if (!box) return;
+  try {
+    const payload = await apiGet("/auth/providers", { skipAuth: true, timeoutMs: 8000 });
+    signInProviders = (payload?.providers || []).filter((name) => PROVIDER_NAMES[name]);
+  } catch {
+    signInProviders = [];
+  }
+  box.querySelectorAll("[data-provider]").forEach((button) => {
+    button.hidden = !signInProviders.includes(button.dataset.provider);
+  });
+  box.hidden = signInProviders.length === 0;
+}
+
+async function loadSignInMethods() {
+  const panel = document.querySelector("#signin-methods");
+  if (!panel) return;
+  if (!authToken) {
+    delete panel.dataset.ready;
+    return;
+  }
+  let payload;
+  try {
+    payload = await apiGet("/auth/identities");
+  } catch {
+    delete panel.dataset.ready; // older server without sign-in methods: show nothing
+    return;
+  }
+  const list = document.querySelector("#signin-methods-list");
+  const identities = payload.identities || [];
+  const rows = [];
+  if (payload.has_password) {
+    rows.push(`<li><span class="signin-method-who"><strong>Email and password</strong><span>${escapeHtml(payload.email || "")}</span></span></li>`);
+  }
+  identities.forEach((item) => {
+    rows.push(`<li><span class="signin-method-who"><strong>${escapeHtml(PROVIDER_NAMES[item.provider] || item.provider)}</strong><span>${escapeHtml(item.email || "Connected")}</span></span>
+      <button class="secondary-button" type="button" data-signin-remove="${escapeHtml(item.id)}" data-signin-name="${escapeHtml(PROVIDER_NAMES[item.provider] || item.provider)}">Remove</button></li>`);
+  });
+  list.innerHTML = rows.join("") || "<li>No sign-in methods found.</li>";
+  const linked = new Set(identities.map((item) => item.provider));
+  const add = document.querySelector("#signin-methods-add");
+  const available = (payload.available || []).filter((name) => PROVIDER_NAMES[name] && !linked.has(name));
+  add.innerHTML = available.map((name) => `<button class="secondary-button" type="button" data-signin-connect="${escapeHtml(name)}">Connect ${escapeHtml(PROVIDER_NAMES[name])}</button>`).join("");
+  // With no provider switched on and only a password, there is nothing to manage yet.
+  if (!identities.length && !available.length) {
+    delete panel.dataset.ready;
+    return;
+  }
+  panel.dataset.ready = "true";
+}
+
+async function removeSignInMethod(button) {
+  const status = document.querySelector("#signin-methods-status");
+  const name = button.dataset.signinName || "this sign-in method";
+  if (!window.confirm(`Remove ${name} as a way to sign in? Your account and saved reports stay as they are.`)) return;
+  let password = "";
+  const listHasPassword = Boolean(document.querySelector("#signin-methods-list")?.textContent.includes("Email and password"));
+  if (listHasPassword) {
+    password = window.prompt("To confirm it's you, enter your FollowThrough Health password.") || "";
+    if (!password) {
+      status.textContent = "Nothing was removed.";
+      return;
+    }
+  }
+  button.disabled = true;
+  try {
+    await apiPost(`/auth/identities/${encodeURIComponent(button.dataset.signinRemove)}/remove`, { password });
+    status.textContent = `${name} was removed. You can connect it again at any time.`;
+    loadSignInMethods();
+  } catch (error) {
+    button.disabled = false;
+    const code = getBackendErrorStatus(error);
+    status.textContent = code === 409
+      ? "This is your only way to sign in. Set a password with \"Forgot password?\" first, then remove it."
+      : code === 403
+        ? "That password didn't match. Nothing was removed."
+        : "We couldn't remove it right now. Please try again.";
+  }
+}
+
+function initializeProviderSignIn() {
+  document.querySelector("#auth-providers")?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-provider]");
+    if (button) startProviderSignIn(button.dataset.provider);
+  });
+  document.querySelector("#signin-methods")?.addEventListener("click", (event) => {
+    const connect = event.target.closest("[data-signin-connect]");
+    if (connect) startProviderSignIn(connect.dataset.signinConnect, true);
+    const remove = event.target.closest("[data-signin-remove]");
+    if (remove) removeSignInMethod(remove);
+  });
+  loadSignInProviders();
+  finishProviderSignIn().finally(() => loadSignInMethods());
+}
+
+initializeProviderSignIn();
