@@ -96,6 +96,9 @@ jobs:
       - name: Your data (counts, downloads without tokens, activity, clear this device)
         run: node scripts/eval/your-data.mjs
 
+      - name: Care team (only under Account, only when the server supports it; add, refuse, remove)
+        run: node scripts/eval/care-team.mjs
+
       - name: Lab tracker saves (test date, no duplicates, nothing dropped after 60)
         run: node scripts/eval/lab-tracker-save.mjs
 

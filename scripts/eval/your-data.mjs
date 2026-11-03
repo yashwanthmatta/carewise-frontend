@@ -39,6 +39,17 @@ ok(await page.isHidden("#yd-download-account"), "signed out: no account download
 ok(await page.isHidden("#delete-account"), "signed out: no Delete my account button");
 ok(await page.isHidden("#yd-activity-details"), "signed out: no account activity");
 ok(await page.isVisible("#yd-clear-device"), "Clear this device is always offered");
+ok(await page.evaluate(() => document.body.dataset.activeWorkspace === "account-title"), "a #your-data link opens the Account screen");
+for (const other of ["home-title", "report-title", "saved-title"]) {
+  await page.goto(`${base}#${other}`, { waitUntil: "load" });
+  await page.waitForTimeout(300);
+  ok(await page.isHidden("#your-data"), `Your data is not shown on ${other}`);
+}
+await page.goto(`${base}#account-title`, { waitUntil: "load" });
+await page.waitForTimeout(300);
+ok(await page.isVisible("#your-data"), "Your data is shown under Account");
+await page.goto(`${base}#your-data`, { waitUntil: "load" });
+await page.waitForTimeout(300);
 
 // Synthetic local data plus a fake sign-in token.
 await page.evaluate(() => {
