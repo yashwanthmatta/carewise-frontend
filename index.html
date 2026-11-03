@@ -16,14 +16,14 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-206" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-207" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-206" />
-    <link rel="stylesheet" href="ui.css?v=carewise-product-206" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-207" />
+    <link rel="stylesheet" href="ui.css?v=carewise-product-207" />
   </head>
   <body>
     <main class="app-shell">
@@ -413,18 +413,10 @@
               <a class="account-link" href="#saved-title"><strong>Saved reports</strong><span>Reports you saved to your account</span></a>
               <a class="account-link" href="#your-plan"><strong>Plan</strong><span>Your plan and payments</span></a>
               <a class="account-link" href="#twofactor-title"><strong>Two-step sign-in</strong><span>Extra protection for your account</span></a>
-              <a class="account-link" href="legal/privacy.html"><strong>Privacy</strong><span>What we keep and why</span></a>
+              <a class="account-link" href="#your-data"><strong>Your data</strong><span>See, download or delete what we keep</span></a>
             </div>
             <div class="account-actions">
               <button id="logout" class="secondary-button" type="button">Log out</button>
-              <details class="account-danger">
-                <summary>Privacy and data controls</summary>
-                <p>Record that you agree to FollowThrough Health storing the reports you save, or delete your account and everything saved in it. Deleting can't be undone.</p>
-                <div class="account-verify-row">
-                  <button id="record-consent" class="secondary-button" type="button">Record my consent</button>
-                  <button id="delete-account" class="danger-button" type="button">Delete my account</button>
-                </div>
-              </details>
             </div>
           </div>
           <input type="hidden" id="auth-role" value="patient" />
@@ -510,6 +502,69 @@
             <button id="tf-disable" class="secondary-button" type="button">Turn off two-step sign-in</button>
           </div>
           <p id="tf-status" class="status-line" role="status"></p>
+        </section>
+
+        <section class="panel your-data-panel" id="your-data" aria-labelledby="your-data-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Privacy</p>
+              <h3 id="your-data-title">Your data</h3>
+              <p class="panel-intro">What FollowThrough Health keeps about you, where it is kept, and how to download or delete it.</p>
+            </div>
+          </div>
+          <div class="yd-grid">
+            <article class="yd-card">
+              <h4>On this device</h4>
+              <ul id="yd-device-list" class="yd-list"></ul>
+              <p class="yd-note">Kept only in this browser. Nobody else sees it unless you share it.</p>
+            </article>
+            <article class="yd-card">
+              <h4>In your account</h4>
+              <ul id="yd-account-list" class="yd-list"><li>Sign in to see what is saved in your account.</li></ul>
+              <p class="yd-note">Health details saved to your account are stored encrypted.</p>
+              <button id="yd-account-check" class="secondary-button when-in" type="button">Check my account</button>
+            </article>
+          </div>
+
+          <h4 class="yd-heading">Download a copy</h4>
+          <div class="yd-actions">
+            <button id="yd-download-device" class="secondary-button" type="button">Download this device's data</button>
+            <button id="yd-download-account" class="secondary-button when-in" type="button">Download my account data</button>
+          </div>
+          <p class="yd-note">The file contains your health information. Keep it somewhere private.</p>
+
+          <details class="yd-details when-in" id="yd-activity-details">
+            <summary>Recent account activity</summary>
+            <p class="yd-note">Sign-ins, saves, shares and other changes to your account, newest first.</p>
+            <ol id="yd-activity" class="yd-activity"></ol>
+          </details>
+
+          <details class="yd-details">
+            <summary>Who else handles your data</summary>
+            <ul class="yd-list">
+              <li><strong>Render</strong>: runs our servers and the account database.</li>
+              <li><strong>Amazon Web Services S3</strong>: stores report files you save to your account, encrypted.</li>
+              <li><strong>Anthropic</strong>: writes help-chat answers, only when you use the helper.</li>
+              <li><strong>Twilio</strong>: places reminder calls, only if you turn them on.</li>
+              <li><strong>Our email provider</strong>: sends sign-in and reminder emails.</li>
+              <li><strong>Stripe</strong>: handles payments. Card details never reach us.</li>
+            </ul>
+            <p class="yd-note">Full list and details: <a href="legal/privacy.html">Privacy policy</a>. We don't sell your information or use it to train AI.</p>
+          </details>
+
+          <h4 class="yd-heading">Your choices</h4>
+          <div class="yd-actions">
+            <button id="record-consent" class="secondary-button when-in" type="button">Record my consent</button>
+            <a class="secondary-button" href="#twofactor-title">Two-step sign-in</a>
+          </div>
+
+          <h4 class="yd-heading">Delete</h4>
+          <div class="yd-actions">
+            <button id="yd-clear-device" class="secondary-button" type="button">Clear this device</button>
+            <button id="delete-account" class="danger-button when-in" type="button">Delete my account</button>
+          </div>
+          <p class="yd-note">Clearing this device removes reports, reminders and other things kept in this browser, and signs you out here. Deleting your account removes everything saved in it and cannot be undone. Copies in our hosting provider's backups, if any, are removed when those backups expire on their normal schedule. <a href="legal/data-deletion.html">How deletion works</a>.</p>
+          <p id="yd-status" class="status-line" role="status"></p>
         </section>
 
         <section class="panel doctor-links-panel" aria-labelledby="doctor-links-title">
@@ -2153,13 +2208,13 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-206"></script>
-    <script src="help.js?v=carewise-product-206"></script>
-    <script src="doctor-share.js?v=carewise-product-206"></script>
-    <script src="docbridge.js?v=carewise-product-206"></script>
-    <script src="reminders.js?v=carewise-product-206"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-206"></script>
-    <script src="twofactor.js?v=carewise-product-206"></script>
-    <script src="account-ui.js?v=carewise-product-206"></script>
+    <script src="script.js?v=carewise-product-207"></script>
+    <script src="help.js?v=carewise-product-207"></script>
+    <script src="doctor-share.js?v=carewise-product-207"></script>
+    <script src="docbridge.js?v=carewise-product-207"></script>
+    <script src="reminders.js?v=carewise-product-207"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-207"></script>
+    <script src="twofactor.js?v=carewise-product-207"></script>
+    <script src="account-ui.js?v=carewise-product-207"></script>
   </body>
 </html>

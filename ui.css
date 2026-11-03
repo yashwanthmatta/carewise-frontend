@@ -693,3 +693,20 @@ body:not([data-auth="in"]) button.when-in { display: none !important; }
 .history-person-filter[hidden] { display: none !important; }
 .trend-date { display: grid; gap: 6px; font-size: var(--ft-text-sm); font-weight: 600; color: var(--ft-ink); }
 .trend-date input { max-width: 220px; min-height: 44px; }
+
+/* Your data (Account): what is kept, download, delete. */
+.your-data-panel h4 { margin: 0; font-size: var(--ft-text-md, 1.05rem); color: var(--ft-ink); }
+.yd-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 8px; }
+.yd-card { display: grid; gap: 8px; align-content: start; padding: 16px; border: 1px solid var(--ft-line, #e2e8f0); border-radius: 12px; background: var(--ft-surface-2, #f8fafc); }
+.yd-list { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--ft-ink); }
+.yd-list .yd-count { font-weight: 700; }
+.yd-note { margin: 0; font-size: var(--ft-text-sm); color: var(--ft-ink-2, #475569); }
+.yd-heading { margin-top: 20px !important; }
+.yd-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.yd-actions a.secondary-button { display: inline-flex; align-items: center; text-decoration: none; }
+.yd-details { margin-top: 16px; border-top: 1px solid var(--ft-line, #e2e8f0); padding-top: 12px; }
+.yd-details summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+.yd-details > * + * { margin-top: 8px; }
+body[data-auth="in"] details.when-in { display: block; }
+.yd-activity { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: var(--ft-text-sm); }
+.yd-activity time { color: var(--ft-ink-2, #475569); margin-left: 6px; }

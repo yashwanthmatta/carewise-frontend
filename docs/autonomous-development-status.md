@@ -1,6 +1,6 @@
 # Development status (read this first on every run)
 
-Last verified run: 2026-11-02, about 22:30 UTC.
+Last verified run: 2026-11-03.
 
 ## Repository state
 
@@ -44,7 +44,7 @@ Last verified run: 2026-11-02, about 22:30 UTC.
 
 1. Keep #138, #55 and #51 green; resolve the #134 cache-version collision when it happens.
 2. **Backend, after #55 merges:** fix the checkout price conversion. `subscriptions.py` uses `int(plan["monthly_price_usd"]) * 100`, so $6.99 would be charged as $6.00. Use `Decimal` and round to cents, with a test. No price changes without the owner's approval.
-3. **Website:** a "Care team" screen (add, list and revoke clinicians) using the API from #55; then the Your Data page.
+3. **Website:** a "Care team" screen (add, list and revoke clinicians) using the API from #55. ~~Your Data page~~ built on 3 Nov (Account → Your data: device and account counts, downloads that leave out sign-in tokens, recorded activity only, clear this device, delete account). Eval `your-data.mjs` runs in CI.
 4. ~~Website: the page view for photos~~ Done on 2 Nov: "See it on your photo" (PR #138).
 5. **Backend:** staff two-step sign-in enforcement, staged behind a setting.
 6. **CI:** dependency audit (`npm audit` / `pip-audit`), secret scan, and a nightly axe scan.
