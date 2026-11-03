@@ -21,6 +21,13 @@ const CASES = [
   ["LDL cholesterol not performed\nHDL cholesterol 52 mg/dL >40", "LDL cholesterol", null],
   ["Hemoglobin A1c: sample hemolysed, not reported\nGlucose 98 mg/dL 70-99", "A1C", null],
   ["Vitamin D, 25-hydroxy\nTSH 2.1 mIU/L 0.4-4.5", "Vitamin D", null],
+  // Rules .6: the "3" in "vitamin D3" (or "D2", "D2+D3") is part of the name, never a value of 3.
+  ["Vitamin D3\nPending", "Vitamin D", null],
+  ["Vitamin D3 deficiency screen\nFerritin 45 ng/mL 15-150", "Vitamin D", null],
+  ["Vitamin D2+D3, 25-hydroxy\nTSH 2.1 mIU/L 0.4-4.5", "Vitamin D", null],
+  ["Vitamin D3 25 ng/mL 30-100 L", "Vitamin D", 25],
+  ["Vitamin D2+D3 (25-OH) 41 ng/mL 30-100", "Vitamin D", 41],
+  ["Vitamin D3, 25-hydroxy: 18.5 ng/mL", "Vitamin D", 18.5],
   // Rows in a different order still read their own values.
   ["Triglycerides 162 mg/dL <150 H\nLDL cholesterol 151 mg/dL <100 H", "LDL cholesterol", 151],
   // A value on the next line, directly under its own name, is still read.

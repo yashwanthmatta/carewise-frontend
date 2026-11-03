@@ -18,7 +18,7 @@
   const DEMO_CLINIC = { id: "demo", name: "Sample Family Practice", clinician_name: "Dr. Sample", member_role: "owner", tone: "friendly", retention_days: 90, patient_qa_enabled: false, patient_qa_available: false, intake_address: "" };
 
   function demoReset() {
-    demoState = { packets: [], audit: {}, seq: 1000 };
+    demoState = { packets: [], audit: {}, seq: 1000, visit: { prices: [], prices_updated_at: null, hidden_blocks: [], coverage_checklist: [] } };
   }
 
   function demoLog(id, action) {
@@ -56,9 +56,17 @@
     if (parts[2] === "metrics") return demoMetrics();
     if (parts[2] === "members") return [{ id: "demo", name: DEMO_CLINIC.clinician_name, role: "owner", you: true }];
     if (parts[2] === "settings") return { ...DEMO_CLINIC, ...body };
+    if (parts[2] === "visit-settings") {
+      if (method === "PUT") {
+        const changed = JSON.stringify(body.prices || []) !== JSON.stringify(demoState.visit.prices);
+        demoState.visit = { prices: body.prices || [], hidden_blocks: body.hidden_blocks || [], coverage_checklist: body.coverage_checklist || [],
+          prices_updated_at: changed ? new Date().toISOString() : demoState.visit.prices_updated_at };
+      }
+      return { ...demoState.visit };
+    }
     if (parts[2] === "patients") {
       const ref = decodeURIComponent(parts[3]);
-      return { packets: demoState.packets.filter((p) => p.patient_ref === ref).reverse(), changes: [] };
+      return { packets: demoState.packets.filter((p) => p.patient_ref === ref).reverse(), changes: [], settings: { ...demoState.visit } };
     }
     if (parts[2] !== "packets") throw new Error("Not available in the demo");
     if (parts.length === 3 && method === "GET") return demoState.packets.map((p) => ({ ...p }));
@@ -245,16 +253,37 @@
     [/crp/i, "86140", "C-reactive protein"],
   ];
 
-  function coverageBlock(markers) {
+  const DEFAULT_CHECKLIST = [
+    "Confirm the lab is in the patient's network before booking.",
+    "Some plans limit how often screening tests are covered, so check before reordering.",
+    "For cash-pay patients, ask the lab for its self-pay price list.",
+  ];
+  const VISIT_BLOCKS = [
+    ["changes", "What changed since the last lab"],
+    ["flagged", "Outside the usual range now"],
+    ["told", "What the patient was told"],
+    ["questions", "Questions the patient may ask"],
+    ["agenda", "Suggested visit agenda"],
+    ["coverage", "Coverage and cost check"],
+  ];
+  const usd = (value) => `$${Number(value).toFixed(2)}`;
+
+  // Prices shown here are only ever the clinic's own, entered in Clinic settings.
+  function coverageBlock(markers, settings = {}) {
     const codes = [];
     LAB_CODES.forEach(([re, code, name]) => {
       if (markers.some((m) => re.test(m.name)) && !codes.some((c) => c.code === code)) codes.push({ code, name });
     });
     if (!codes.length) return "";
-    return `<h5>Coverage and cost check (educational)</h5>
-      <p class="db-muted">Common billing codes if these tests are repeated. Confirm codes with your billing team and coverage with the patient's insurer. Not a price quote.</p>
-      <ul>${codes.map((c) => `<li>${escapeHtml(c.name)}: CPT ${escapeHtml(c.code)}</li>`).join("")}</ul>
-      <ul class="db-muted"><li>Confirm the lab is in the patient's network before booking.</li><li>Some plans limit how often screening tests are covered, so check before reordering.</li><li>For cash-pay patients, ask the lab for its self-pay price list.</li></ul>`;
+    const prices = new Map((settings.prices || []).map((p) => [p.cpt, p]));
+    const priced = codes.filter((c) => prices.has(c.code));
+    const checklist = (settings.coverage_checklist || []).length ? settings.coverage_checklist : DEFAULT_CHECKLIST;
+    const when = settings.prices_updated_at ? new Date(settings.prices_updated_at).toLocaleDateString() : "";
+    return `<h5>Coverage and cost check</h5>
+      <p class="db-muted">Common billing codes if these tests are repeated. Confirm codes with your billing team and coverage with the patient's insurer.</p>
+      <ul>${codes.map((c) => `<li>${escapeHtml(c.name)}: CPT ${escapeHtml(c.code)}${prices.has(c.code) ? ` · <span class="db-price-tag">your clinic's self-pay price ${escapeHtml(usd(prices.get(c.code).usd))}</span>` : ""}</li>`).join("")}</ul>
+      ${priced.length ? `<p class="db-muted">Self-pay prices as entered by your clinic${when ? ` on ${escapeHtml(when)}` : ""}. Not a quote from the lab or an insurer; check they're current before telling a patient.</p>` : `<p class="db-muted">No clinic self-pay prices entered for these codes. The owner can add them in Clinic settings.</p>`}
+      <ul class="db-muted">${checklist.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>`;
   }
 
   function agendaBlock(flaggedCount, questionCount, changeCount) {
@@ -645,20 +674,27 @@
       const data = await apiGet(`/clinics/${clinic.id}/patients/${encodeURIComponent(ref)}/summary`);
       const latest = data.packets[data.packets.length - 1];
       const flagged = (latest?.markers || []).filter(isFlagged);
+      const settings = data.settings || {};
+      const hidden = new Set(settings.hidden_blocks || []);
+      const blocks = {
+        changes: `<h5>What changed since the last lab</h5>
+        ${data.changes.length ? `<ul>${data.changes.map((c) => `<li><b>${escapeHtml(c.name)}</b>: ${escapeHtml(c.before)} → ${escapeHtml(c.now)} ${escapeHtml(c.unit)}${c.status ? ` (${escapeHtml(c.status)})` : ""}</li>`).join("")}</ul>` : "<p>No earlier lab with the same tests to compare.</p>"}`,
+        flagged: `<h5>Outside the usual range now</h5>
+        ${flagged.length ? `<ul>${flagged.map((m) => `<li>${escapeHtml(m.name)}: ${escapeHtml(`${m.value} ${m.unit}`.trim())}</li>`).join("")}</ul>` : "<p>None flagged.</p>"}`,
+        told: `<h5>What the patient was told</h5>
+        <p>${latest?.status === "approved" ? `Approved by ${escapeHtml(latest.approved_by_name)}${latest.patient_viewed ? " · the patient opened it" : " · not opened yet"}` : "Not sent yet."}</p>
+        <blockquote>${escapeHtml(latest?.summary || "").replace(/\n/g, "<br>")}</blockquote>`,
+        questions: `<h5>Questions the patient may ask</h5>
+        ${(latest?.questions || []).length ? `<ol>${latest.questions.map((q) => `<li>${escapeHtml(q)}</li>`).join("")}</ol>` : "<p>None recorded.</p>"}`,
+        agenda: agendaBlock(flagged.length, (latest?.questions || []).length, data.changes.length),
+        coverage: coverageBlock(latest?.markers || [], settings),
+      };
+      const shown = VISIT_BLOCKS.filter(([key]) => !hidden.has(key) && blocks[key]);
+      // Each section can also be hidden for this view only (it comes back next time).
       $("db-visit").innerHTML = `
         <div class="db-list-head"><h4>Visit summary · ${escapeHtml(ref)}</h4><button class="text-button" type="button" data-db-close-visit>Close</button></div>
-        <p class="db-muted">${data.packets.length} lab${data.packets.length === 1 ? "" : "s"} on file · latest ${escapeHtml(latest?.lab_date || "undated")}</p>
-        <h5>What changed since the last lab</h5>
-        ${data.changes.length ? `<ul>${data.changes.map((c) => `<li><b>${escapeHtml(c.name)}</b>: ${escapeHtml(c.before)} → ${escapeHtml(c.now)} ${escapeHtml(c.unit)}${c.status ? ` (${escapeHtml(c.status)})` : ""}</li>`).join("")}</ul>` : "<p>No earlier lab with the same tests to compare.</p>"}
-        <h5>Outside the usual range now</h5>
-        ${flagged.length ? `<ul>${flagged.map((m) => `<li>${escapeHtml(m.name)}: ${escapeHtml(`${m.value} ${m.unit}`.trim())}</li>`).join("")}</ul>` : "<p>None flagged.</p>"}
-        <h5>What the patient was told</h5>
-        <p>${latest?.status === "approved" ? `Approved by ${escapeHtml(latest.approved_by_name)}${latest.patient_viewed ? " · the patient opened it" : " · not opened yet"}` : "Not sent yet."}</p>
-        <blockquote>${escapeHtml(latest?.summary || "").replace(/\n/g, "<br>")}</blockquote>
-        <h5>Questions the patient may ask</h5>
-        ${(latest?.questions || []).length ? `<ol>${latest.questions.map((q) => `<li>${escapeHtml(q)}</li>`).join("")}</ol>` : "<p>None recorded.</p>"}
-        ${agendaBlock(flagged.length, (latest?.questions || []).length, data.changes.length)}
-        ${coverageBlock(latest?.markers || [])}`;
+        <p class="db-muted">${data.packets.length} lab${data.packets.length === 1 ? "" : "s"} on file · latest ${escapeHtml(latest?.lab_date || "undated")}${hidden.size ? ` · ${hidden.size} section${hidden.size === 1 ? "" : "s"} hidden in Clinic settings` : ""}</p>
+        ${shown.map(([key, label]) => `<section class="db-visit-block" data-visit-block="${key}"><button class="text-button db-block-hide" type="button" data-db-hide-block aria-label="Hide ${escapeHtml(label)} for this view">Hide</button>${blocks[key]}</section>`).join("")}`;
       $("db-visit").hidden = false;
       if (typeof scrollBelowHeader === "function") scrollBelowHeader($("db-visit"));
       else $("db-visit").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -728,7 +764,75 @@
     $("db-set-qa").checked = Boolean(clinic.patient_qa_enabled);
     // Locked on the server until the safety check is signed off; don't offer it until then.
     $("db-set-qa").closest("label").hidden = !clinic.patient_qa_available;
+    loadVisitSettings();
   }
+
+  // ----- Visit summary settings (owner only): sections, checklist, the clinic's own prices -----
+  function priceRow(price = {}) {
+    const row = document.createElement("div");
+    row.className = "db-price-row";
+    row.innerHTML = `<input type="text" data-price-cpt maxlength="5" placeholder="CPT" aria-label="CPT code" value="${escapeHtml(price.cpt || "")}" />
+      <input type="text" data-price-name maxlength="80" placeholder="Test" aria-label="Test name" value="${escapeHtml(price.name || "")}" />
+      <input type="number" data-price-usd min="0.01" max="100000" step="0.01" inputmode="decimal" placeholder="$ price" aria-label="Self-pay price in US dollars" value="${price.usd ?? ""}" />
+      <button class="text-button" type="button" data-price-remove aria-label="Remove this price">Remove</button>`;
+    return row;
+  }
+
+  function renderVisitSettings(settings) {
+    const hidden = new Set(settings.hidden_blocks || []);
+    $("db-visit-block-list").innerHTML = VISIT_BLOCKS.map(([key, label]) =>
+      `<label class="db-check"><input type="checkbox" data-visit-show="${key}"${hidden.has(key) ? "" : " checked"} /> ${escapeHtml(label)}</label>`).join("");
+    $("db-visit-checklist").value = (settings.coverage_checklist || []).join("\n");
+    $("db-visit-checklist").placeholder = DEFAULT_CHECKLIST.join("\n");
+    $("db-price-rows").replaceChildren(...(settings.prices || []).map(priceRow));
+  }
+
+  async function loadVisitSettings() {
+    try {
+      renderVisitSettings(await apiGet(`/clinics/${clinic.id}/visit-settings`));
+    } catch {
+      renderVisitSettings({});
+    }
+  }
+
+  $("db-price-add").addEventListener("click", () => $("db-price-rows").append(priceRow()));
+  $("db-price-known").addEventListener("click", () => {
+    const have = new Set([...document.querySelectorAll("#db-price-rows [data-price-cpt]")].map((i) => i.value.trim().toUpperCase()));
+    LAB_CODES.forEach(([, cpt, name]) => { if (!have.has(cpt)) $("db-price-rows").append(priceRow({ cpt, name })); });
+    say("Common lab codes added. Enter your clinic's self-pay price for the ones you offer and remove the rest.");
+  });
+  $("db-price-rows").addEventListener("click", (event) => {
+    if (event.target.closest("[data-price-remove]")) event.target.closest(".db-price-row").remove();
+  });
+  $("db-visit-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const prices = [];
+    for (const row of document.querySelectorAll("#db-price-rows .db-price-row")) {
+      const cpt = row.querySelector("[data-price-cpt]").value.trim().toUpperCase();
+      const name = row.querySelector("[data-price-name]").value.trim();
+      const amount = row.querySelector("[data-price-usd]").value.trim();
+      if (!cpt && !name && !amount) continue;
+      if (!amount) continue; // a code without a price is left out
+      if (!/^\d{4}[0-9A-Z]$/.test(cpt) || !name || !(Number(amount) > 0 && Number(amount) <= 100000)) {
+        say(`Check this price row: ${cpt || "(no code)"}. A CPT code has 5 characters (for example 80061), and the price must be between $0.01 and $100,000.`);
+        row.querySelector("input").focus();
+        return;
+      }
+      prices.push({ cpt, name, usd: Math.round(Number(amount) * 100) / 100 });
+    }
+    if (new Set(prices.map((p) => p.cpt)).size !== prices.length) return say("Each CPT code can appear only once.");
+    const payload = {
+      prices,
+      hidden_blocks: VISIT_BLOCKS.map(([key]) => key).filter((key) => !document.querySelector(`[data-visit-show="${key}"]`).checked),
+      coverage_checklist: $("db-visit-checklist").value.split("\n").map((l) => l.trim()).filter(Boolean).slice(0, 10),
+    };
+    try {
+      renderVisitSettings(await apiPut(`/clinics/${clinic.id}/visit-settings`, payload));
+      say(`Visit summary settings saved${prices.length ? `, with ${prices.length} self-pay price${prices.length === 1 ? "" : "s"}` : ""}.`);
+    } catch {
+      say("Visit summary settings could not be saved. Check the codes and prices and try again.");
+    }
+  });
   $("db-settings-form").addEventListener("submit", async (event) => {
     event.preventDefault();
     try {
@@ -902,6 +1006,7 @@
     const visit = event.target.closest("[data-db-visit]");
     if (visit) visitSummary(visit.dataset.dbVisit);
     if (event.target.closest("[data-db-close-visit]")) $("db-visit").hidden = true;
+    if (event.target.closest("[data-db-hide-block]")) event.target.closest("[data-visit-block]")?.remove();
     const audit = event.target.closest("[data-db-audit]");
     if (audit) showAudit(audit.dataset.dbAudit);
   });

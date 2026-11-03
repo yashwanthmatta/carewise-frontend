@@ -9,7 +9,7 @@ were checked; mark everything else unverified.
 |---|---|---|
 | Website (followthroughhealth.com) | ✅ Live | GitHub live check 2026-10-23 01:15 UTC: both addresses 200; http→https 301; www forwards to the main domain; live rules `2026-10-20.5`; Render deploy matches main |
 | Backend API | ✅ Live | Live smoke (sign-up, readiness with database) passes; 112 tests on main |
-| Rules version | `2026-10-20.5` live (web and app identical on 8,032 reports) | Frozen review candidate `2026-10-20.2` is protected and unchanged |
+| Rules version | `2026-10-20.5` live; `2026-10-20.6` (repeated-result and misread-number fixes) in review as a PR, not deployed | Frozen review candidate `2026-10-20.2` is protected and unchanged |
 | Clinical review | ⛔ Pending | Pack, .2→.5 change record and cover note ready (`clinical-review-package.md`) |
 | Security | 🟡 Open items | `SECURITY-REVIEW.md`: database network access and the encryption decision are open |
 | iOS | Build-ready, not submission-ready | `carewise-mobile-app/docs/APP-STORE-READINESS.md` |

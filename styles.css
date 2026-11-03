@@ -6564,6 +6564,21 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .docbridge-panel input[type="text"], .docbridge-panel input[type="date"], .docbridge-panel select, .docbridge-panel textarea { min-height: 42px; padding: 8px 12px; border: 1px solid var(--lp-line, #e2dcd2); border-radius: 12px; font: inherit; font-weight: 400; }
 .db-check { display: flex !important; align-items: center; gap: 8px; font-weight: 500 !important; }
 .db-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.db-visit-form { display: grid; gap: 12px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+.db-visit-form h4 { margin: 0; }
+.db-visit-form fieldset { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 0; min-width: 0; }
+.db-visit-form legend { font-weight: 600; padding: 0 4px; }
+#db-visit-block-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 4px 12px; }
+.db-price-rows { display: grid; gap: 8px; margin-bottom: 6px; }
+.db-price-row { display: grid; grid-template-columns: 7rem minmax(0, 1fr) 7rem auto; gap: 8px; align-items: center; }
+.db-price-row input { min-width: 0; }
+.db-visit-block { position: relative; }
+.db-visit-block > .db-block-hide { position: absolute; top: 0; right: 0; }
+.db-price-tag { font-weight: 600; }
+@media (max-width: 560px) {
+  .db-price-row { grid-template-columns: 6rem minmax(0, 1fr); }
+  .db-price-row input[data-price-usd] { grid-column: 1; }
+}
 .db-metrics { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
 .db-metrics div { padding: 12px; border: 1px solid var(--lp-line, #e2dcd2); border-radius: 14px; background: #fff; display: grid; gap: 2px; }
 .db-metrics strong { font-size: 1.5rem; letter-spacing: -0.02em; }

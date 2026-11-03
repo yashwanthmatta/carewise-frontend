@@ -5,7 +5,7 @@ Update this at the end of every working session. Status categories, used exactly
 requirements remain) · **BLOCKED** (needs unavailable access, an external action or an approval) ·
 **NOT STARTED** (no meaningful execution).
 
-Last updated: 2026-10-23.
+Last updated: 2026-10-25.
 
 ---
 
@@ -111,7 +111,7 @@ are **BLOCKED** on human approval (not legal advice; no approval is claimed).
 | Paid plans unlock nothing (LA-01) | ⛔ BLOCKED | Owner decision on plan contents or relabelling |
 | Stripe ToS consent box, refund policy, cancel billing on account deletion | ⛔ BLOCKED | Counsel (Terms, refund) and owner (Stripe dashboard terms URL) |
 | Urgency wording / FDA question (LA-04), Spanish wording | ⛔ BLOCKED | Clinician and regulatory counsel |
-| Reminder calls follow the reminded person's time zone (not the caregiver's device); editing keeps the saved zone | ✅ | Website: `reminders.js` picker + `scripts/eval/reminder-timezone.mjs` (9 checks, in CI). Mobile: `src/reminderZones.ts` + `reminders:check` (8 checks, in `ci:check`). Backend already validated and stored the zone |
+| Reminder calls follow the reminded person's time zone (not the caregiver's device); editing keeps the saved zone | ✅ app (PR #47 merged); website when PR #116 merges | Website: `reminders.js` picker + `scripts/eval/reminder-timezone.mjs` (9 checks, in CI). Mobile: `src/reminderZones.ts` + `reminders:check` (8 checks, in `ci:check`). Backend already validated and stored the zone |
 | Re-record DocBridge demo video without the "AI draft" label | Open | Owner or engineering |
 | Continuous review | ✅ CI only | Claims check runs on every push and PR. No other scheduled legal monitoring exists |
 
@@ -124,6 +124,66 @@ PRs:
 - Frontend: legal review PR on `claude/agent-legal` (this branch)
 - Backend: https://github.com/yashwanthmatta/carewise-production-backend/pull/47
 - Mobile: https://github.com/yashwanthmatta/carewise-mobile-app/pull/45
+
+## T8. Doctor outreach: DocBridge pilot recruitment kit
+
+**Status: COMPLETE.** The kit is built and checked. Sending anything is the founder's job.
+
+**Assigned task:** Build a pilot recruitment kit the founder can use, published as one private
+Claude artifact, with wording that matches what DocBridge really does.
+
+**Requirements and result**
+
+| # | Requirement | Result |
+|---|---|---|
+| 1 | Who to target first (practice types, roles, why) and legitimate places to find them, with no scraping | Done |
+| 2 | First email under 120 words, three versions (physician, practice manager, personal contact), each with a small ask | Done (117, 112 and 112 words) |
+| 3 | Follow-up emails for day 4 and day 10, short and easy to say no to | Done |
+| 4 | Phone script: front-desk opener, who to ask for, 20-second pitch, voicemail | Done |
+| 5 | Five-question interview guide for a 15-minute call, not a sales pitch | Done |
+| 6 | Tracking sheet layout for logging contacts by hand | Done (21 columns, status list, copyable header row) |
+| 7 | Publish as one private artifact | Done: https://claude.ai/artifact/Y1vRjDbsvM8iGxtEBuJpkq (private, owner only) |
+| 8 | Follow-on (2026-10-24): replies for the next step: book the call, thank-you with pilot offer, pilot setup confirmation, "not now", waitlist welcome, LinkedIn note, honest answers to common questions | Done (Part 7 of the same artifact) |
+
+**Source of truth checked:** the DocBridge section of `index.html` and
+`docs/pilot-clinic-onboarding.md` on `main`. Where they differ, the kit follows the stricter
+onboarding rules: made-up sample labs only, approved links go to clinic staff only during the
+pilot, patient follow-up questions are off. The kit points doctors to the no-sign-in demo at
+`followthroughhealth.com/#doctor-demo` (handled in `docbridge.js`).
+
+**Tests run (headless Chromium, on the published page file)**
+
+- No sideways scrolling at 390px and 1280px, in light and dark themes: pass.
+- No script errors, and the right background in each theme: pass.
+- Email word counts under 120 (first emails) and under 80 (follow-ups): pass.
+- Tracking sheet: 21 columns in the table and in the copyable header row: pass.
+- Copy buttons copy, or select the text when the clipboard is blocked: pass.
+- Reply emails under 130 words (70 to 106), LinkedIn note under 300 characters (223), answers to
+  common questions make no compliance or validation claims: pass.
+- Everything you would send or say (emails, scripts, answers) passes the same claim rules as
+  `scripts/claims_audit.mjs`, including "drafts are rule-based, not AI": pass (36 checks in all).
+- Scripts say "made-up sample labs only", make no "HIPAA compliant", "clinically validated" or
+  "proven" claims, and link to the demo: pass.
+
+**Changed files in this repo:** `docs/agent-task-completion.md` (this file only). No served page
+changed.
+
+**Not done on purpose (hard rules):** no emails, calls or LinkedIn messages sent; no contact lists
+built; no personal emails looked up.
+
+**Open items for the founder (decisions, not blockers)**
+
+- Trial length: the emails ask for a two-week trial with sample labs. The website offers a free
+  30-day pilot. The shorter ask fits inside it. Change it if you want them to match.
+- Add your business postal address to the email signature before sending cold emails (US
+  CAN-SPAM rule).
+- Website wording: resolved. The DocBridge section now says synthetic sample labs only (legal
+  review, T7), which matches the kit.
+- The DocBridge demo video still shows the old "AI draft" label (see T7). The kit tells you to
+  mention this if you share the video.
+
+This file is served publicly with the website, so this section holds status only. The drafts
+themselves (emails, phone script, interview guide) stay in the private artifact.
 
 ---
 
@@ -151,6 +211,30 @@ founder's to do; no outreach is sent automatically.
 | Tracker | ✅ | `docs/outreach/clinic-pipeline.csv` (business contacts only) |
 | Demo used in calls works | ✅ | Doctor demo browser test: all checks pass, zero server calls |
 | Contact practices and hold calls | ⛔ owner | Founder sends the messages personally |
+
+## T10. Replies to families, doctors and partners (replies agent)
+
+**Status: PARTIALLY COMPLETE.** The reply playbook and the help chat fixes are done and verified. No
+real inquiries were answered, because none reached a connected inbox. Every reply is a draft the founder
+sends personally.
+
+| Requirement | Done | Evidence |
+|---|---|---|
+| Reply playbook: families (14), doctors and clinic staff (11), social media (8), partners (6), rules for messages that must not get a template | ✅ | Private Claude artifact shared with the owner. Kept out of this repo on purpose, because everything here is public. Every reply is under 120 words and checked against the site on 2026-10-25 |
+| Help chat answers match the site | ✅ | `help.js`: the Family plan answer no longer says it shares with siblings (the site says "coming later"); the delete answer names the real "Delete my account" button (EN and ES) |
+| Stop it happening again | ✅ | `scripts/eval/help-answers.mjs` in CI: every button name quoted in a help answer must exist on the site, and no help answer may promise caregiver sharing while the site says "coming later". It fails on the old `help.js` and passes on the new one |
+| Verified in a browser | ✅ | Asked the help chat "Can my brother see Dad's reports too?" and "How do I delete my data?" with the online helper unreachable. Both gave the corrected answers |
+| Full CI suite locally | ✅ | Syntax, cache version (201), reference audit, smoke, claims audit, reading accuracy (200 tests, 100%), CSP (both modes), 34 safety cases, OCR correction, headings, help answers, share-packet PDF, visit settings, stress (5,000 + 5,000 hard), 36 read-aloud cases: all passed |
+| Pull request | ✅ opened | https://github.com/yashwanthmatta/carewise-frontend/pull/124 (not merged; waits on review) |
+| Review real inbound messages and draft replies | ⛔ BLOCKED | The connected Gmail is the founder's personal account and had no FollowThrough Health inquiries. The work inbox, social accounts and the in-app "Was this helpful?" messages are not connected to this agent |
+
+Open points for the owner (also listed in the playbook):
+- Clinic price: the site says $79 per clinician per month after the pilot, while the outreach kit tests
+  $199 per month. Replies use the site's $79 until you decide.
+- The privacy policy still says pilot clinics may add "de-identified or sample labs"; the DocBridge
+  screens now say synthetic sample labs only. Legal page, so counsel or the legal agent should align it.
+- There is no support email for doctors and partners, and no refund policy. The refund reply promises
+  nothing until a refund is decided and processed.
 
 ## Pull requests this session (all merged after green CI)
 

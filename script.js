@@ -175,6 +175,9 @@ let lastGeneratedPlan = null;
 let backendPatientId = localStorage.getItem("carewiseBackendPatientId") || "";
 let backendAvailable = false;
 let authToken = localStorage.getItem("carewiseAuthToken") || "";
+let ydExportCache = null; // Your data: cached account export, cleared on sign-out
+let careTeamLoadedFor = ""; // Care team: the sign-in it was last loaded for
+let careTeamPatientId = "";
 let refreshToken = localStorage.getItem("carewiseRefreshToken") || "";
 let authEmail = localStorage.getItem("carewiseAuthEmail") || "";
 let authRole = localStorage.getItem("carewiseAuthRole") || document.querySelector?.("#auth-role")?.value || "patient";
@@ -252,6 +255,9 @@ const LAB_TESTS = [
 ];
 const UNIT_PATTERN = /(?:x\s?10\^?E?\d+\s?\/\s?[uµμ]?l|10\^?\d+\s?\/\s?[uµμ]?l|[km]\/[uµμ]l|thousand\/[uµμ]l|million\/[uµμ]l|cells\/[uµμ]l|ml\/min(?:\/1\.73\s?m2)?|mg\/dl|(?:[uµμ]|mc)g\/dl|(?:[uµμ]|mc)g\/l|(?:[uµμ]|mc)g\/ml|gm\/dl|g\/dl|g\/l|mg\/l|lakhs?\s?\/\s?(?:cu\.?\s?mm|[uµμ]l)|lakhs?|mmol\/l|[uµμ]mol\/l|nmol\/l|pmol\/l|meq\/l|miu\/l|[uµμ]iu\/ml|iu\/l|u\/l|ng\/ml|ng\/dl|ng\/l|pg\/ml|mm\/hr?|seconds|sec|fl|pg|%)/i;
 const RANGE_PATTERN = /(\d+(?:\.\d+)?)\s*(?:-|–|to)\s*(\d+(?:\.\d+)?)|(<=?|>=?|≤|≥)\s*(\d+(?:\.\d+)?)/;
+// Dates ("2025-03-01", "03/01/2025", "01.03.2025", never a range like "8.6-10.3") are blanked out before a range is looked for, so a date is
+// never read as the lab's range.
+const DATE_PATTERN = /\b\d{4}-\d{1,2}-\d{1,2}\b|\b\d{1,2}\/\d{1,2}\/\d{2,4}\b|\b\d{1,2}\.\d{1,2}\.\d{4}\b/g;
 const FLAG_PATTERN = /(?:^|[\s(])(HH|LL|H|L|High|Low|HIGH|LOW|Critical|CRITICAL|CRIT|Panic|PANIC|Abnormal|ABNORMAL)(?=[\s*)]|$)/;
 const COMPILED = LAB_TESTS.map((test) => ({ test, patterns: test.aliases.map((alias) => new RegExp(`\\b${alias}\\b`, "i")) }));
 function statusFrom(value, flag, low, high, bound) {
@@ -432,14 +438,25 @@ function joinWrappedNames(lines) {
     }
     return out;
 }
-// One result per test; each line is matched to the test named earliest on it.
+// How concerning a reading is, so a repeated test keeps its most concerning value.
+function readingConcern(item) {
+    if (item.danger)
+        return 4;
+    if (item.status === "critical")
+        return 3;
+    if (item.far)
+        return 2;
+    return item.status === "within" || item.status === "unknown" ? 0 : 1;
+}
+// One result per test; each line is matched to the test named earliest on it. A test printed
+// again with a different value keeps its most concerning reading and names the other one.
 function readLabPanel(text) {
     const results = [];
     const seen = new Set();
-    joinWrappedNames(normalizeReportText(text).split(/\r?\n/)).flatMap(splitTypedLine).flatMap(splitSideBySide).forEach((line) => {
+    const bestMatch = (line, wantSeen) => {
         let best = null;
         COMPILED.forEach(({ test, patterns }) => {
-            if (seen.has(test.key))
+            if (seen.has(test.key) !== wantSeen)
                 return;
             patterns.forEach((pattern) => {
                 const match = line.match(pattern);
@@ -450,13 +467,22 @@ function readLabPanel(text) {
                 }
             });
         });
-        if (!best)
+        return best;
+    };
+    joinWrappedNames(normalizeReportText(text).split(/\r?\n/)).flatMap(splitTypedLine).flatMap(splitSideBySide).forEach((line) => {
+        const fresh = bestMatch(line, false);
+        // A line naming only a test that was already read is a repeat of that test (below).
+        const found = fresh || bestMatch(line, true);
+        if (!found)
             return;
-        const { test, index, length } = best;
+        const repeat = !fresh;
+        const { test, index, length } = found;
         const rest = line.slice(index + length);
         if (/ratio/i.test(line.slice(index, index + length + 12)))
             return;
         if (test.key.startsWith("urine")) {
+            if (repeat)
+                return;
             const word = rest.match(QUALITATIVE);
             if (!word)
                 return;
@@ -468,6 +494,18 @@ function readLabPanel(text) {
         const valueMatch = rest.match(/^[^\d<>\n]{0,40}?\s*(?:\b0\d\s+[^\d\n]{0,12}?)?([<>]?)\s*(\d+(?:\.\d+)?)/);
         if (!valueMatch || valueMatch.index === undefined)
             return;
+        // A number glued to letters ("S.9", "1O8") is a misread, not a result: read nothing
+        // rather than a wrong value (an A1C of 9 %, or a glucose of 1 mg/dL).
+        const numberAt = valueMatch.index + valueMatch[0].length - valueMatch[2].length;
+        if (/[A-Za-z][.,]?$/.test(rest.slice(Math.max(0, numberAt - 2), numberAt)) || /^[OoIlS|]\d/.test(rest.slice(numberAt + valueMatch[2].length)))
+            return;
+        // A repeat counts only when it is a plain result with a unit or range, not a goal like "<100".
+        if (repeat && valueMatch[1])
+            return;
+        // A blank result: the only number is the start of the range ("Potassium  mmol/L  3.5-5.1").
+        // Read nothing rather than calling the range's low end the result.
+        if (!valueMatch[1] && /^\s*(?:-|–|to)\s*\d/.test(rest.slice(numberAt + valueMatch[2].length)))
+            return;
         const value = Number(valueMatch[2]);
         let after = rest.slice(valueMatch.index + valueMatch[0].length);
         const unitMatch = after.match(UNIT_PATTERN);
@@ -475,15 +513,17 @@ function readLabPanel(text) {
         if (unitMatch && unitMatch.index !== undefined)
             after = after.slice(0, unitMatch.index) + " " + after.slice(unitMatch.index + unitMatch[0].length);
         const flag = after.match(FLAG_PATTERN)?.[1] ?? "";
+        after = after.replace(DATE_PATTERN, " ");
         const range = after.match(RANGE_PATTERN);
+        if (repeat && !unit && !range)
+            return;
         const low = range ? (range[1] !== undefined ? Number(range[1]) : range[3].startsWith(">") || range[3] === "≥" ? Number(range[4]) : null) : null;
         const high = range ? (range[2] !== undefined ? Number(range[2]) : range[3].startsWith("<") || range[3] === "≤" ? Number(range[4]) : null) : null;
         const general = range || flag ? null : generalRangeFor(test.key, line, value, unit);
         const lowUsed = general ? general.low : low;
         const highUsed = general ? general.high : high;
         const status = statusFrom(value, flag, lowUsed, highUsed, general ? general.bound : range?.[3] ?? "");
-        seen.add(test.key);
-        results.push({
+        const reading = {
             key: test.key,
             name: test.name,
             value,
@@ -495,7 +535,19 @@ function readLabPanel(text) {
             far: farFrom(status, value, lowUsed, highUsed),
             generalRange: Boolean(general),
             danger: dangerFrom(test.key, value, unit, status, highUsed)
-        });
+        };
+        if (repeat) {
+            const at = results.findIndex((item) => item.key === test.key);
+            const first = results[at];
+            if (at < 0 || first.value === reading.value)
+                return;
+            const keep = readingConcern(reading) > readingConcern(first) ? reading : first;
+            const other = keep === first ? reading : first;
+            results[at] = { ...keep, otherValueText: `${other.valueText} ${other.unit}`.trim() };
+            return;
+        }
+        seen.add(test.key);
+        results.push(reading);
     });
     return results;
 }
@@ -715,9 +767,9 @@ const REPORT_TRANSLATIONS = {
   es: {
     ui: {
       eyebrow: "Explicación de FollowThrough Health",
-      title: "Resumen del informe en lenguaje sencillo",
+      title: "Su informe está listo",
       found: (count) => `FollowThrough Health encontró ${count} punto${count === 1 ? "" : "s"} para comentar en el texto del informe.`,
-      detectedValues: "Valores detectados",
+      detectedValues: "Números leídos de su informe",
       keyFindings: "Hallazgos principales",
       suggestions: "Sugerencias de bienestar",
       questions: "Preguntas para su médico",
@@ -727,12 +779,12 @@ const REPORT_TRANSLATIONS = {
       safetyText: "Esto no es un diagnóstico ni un plan de tratamiento. Un profesional de salud autorizado debe interpretar su informe original junto con su historial completo.",
       copySummary: "Copiar resumen",
       shareSummary: "Compartir resumen",
-      doctorBrief: "Resumen para el médico",
-      packetPdf: "PDF para el médico",
-      shareDoctor: "Compartir con mi médico",
+      doctorBrief: "Preparar preguntas para su médico",
+      packetPdf: "PDF para su médico",
+      shareDoctor: "Enviar un enlace a su médico",
       listen: "Escuchar",
       stopListening: "Detener",
-      saveToTrends: "Guardar en tendencias",
+      saveToTrends: "Guardar en mi registro de análisis",
       copyQuestions: "Copiar preguntas",
       copyPlan: "Copiar plan",
       draftNotice: "Traducción preliminar, pendiente de revisión por un médico y un traductor médico. El resumen para el médico se genera en inglés.",
@@ -816,6 +868,8 @@ const REPORT_TRANSLATIONS = {
       "Marked abnormal by the lab": "Marcado como anormal por el laboratorio",
       "Within the lab's range": "Dentro del rango del laboratorio",
       "Other tests": "Otras pruebas",
+      "More than one result": "Más de un resultado",
+      "My report shows more than one result for the same test. Which one is current, and do I need a repeat test?": "Mi informe muestra más de un resultado para la misma prueba. ¿Cuál es el actual y necesito repetir la prueba?",
       "Possible danger level": "Posible nivel de peligro",
       "No range to compare": "Sin rango para comparar",
       "Detected (usually negative)": "Detectado (normalmente negativo)",
@@ -832,6 +886,7 @@ const REPORT_TRANSLATIONS = {
       "Bring the full report, and any earlier scans, to your appointment so your doctor can compare them.": "Lleve el informe completo y cualquier estudio anterior a su cita para que su médico pueda compararlos.",
     },
     patterns: [
+      [/^Your report shows another (.+) result \((.+)\)\. This explanation uses the more concerning one\. Ask your doctor which result is current\.$/, "Su informe muestra otro resultado de $1 ($2). Esta explicación usa el más preocupante. Pregunte a su médico cuál es el resultado actual."],
       [/^LDL appears around (.+) mg\/dL\.$/, "El LDL aparece alrededor de $1 mg/dL."],
       [/^Total cholesterol appears around (.+) mg\/dL\.$/, "El colesterol total aparece alrededor de $1 mg/dL."],
       [/^Triglycerides appear around (.+) mg\/dL\.$/, "Los triglicéridos aparecen alrededor de $1 mg/dL."],
@@ -857,24 +912,24 @@ const REPORT_TRANSLATIONS = {
 
 const REPORT_UI_EN = {
   eyebrow: "FollowThrough Health explanation",
-  title: "Plain-English report summary",
+  title: "Your report is ready",
   found: (count) => `FollowThrough Health found ${count} discussion point${count === 1 ? "" : "s"} in the readable report text.`,
-  detectedValues: "Detected values",
+  detectedValues: "Numbers read from your report",
   keyFindings: "Key findings",
   suggestions: "Wellness suggestions",
-  questions: "Questions to ask your doctor",
+  questions: "Questions for your doctor",
   nextStep: "Next step",
   ask: "Ask",
   safetyTitle: "Safety note",
   safetyText: "This is not a diagnosis or treatment plan. A licensed professional should interpret your original report with your full history.",
   copySummary: "Copy summary",
   shareSummary: "Share summary",
-  doctorBrief: "Doctor brief",
-  packetPdf: "PDF for the doctor",
-  shareDoctor: "Share with my doctor",
+  doctorBrief: "Prepare questions for your doctor",
+  packetPdf: "PDF for your doctor",
+  shareDoctor: "Send a link to your doctor",
   listen: "Listen",
   stopListening: "Stop",
-  saveToTrends: "Save to trends",
+  saveToTrends: "Save to my lab tracker",
   copyQuestions: "Copy questions",
   copyPlan: "Copy plan",
   draftNotice: "",
@@ -1371,6 +1426,18 @@ document.querySelector("#hero-report-file")?.addEventListener("change", (event) 
   startFromHeroFile(event.target.files?.[0]);
 });
 
+const composerDrop = document.querySelector(".composer-drop");
+composerDrop?.addEventListener("dragover", (event) => {
+  event.preventDefault();
+  composerDrop.classList.add("is-over");
+});
+composerDrop?.addEventListener("dragleave", () => composerDrop.classList.remove("is-over"));
+composerDrop?.addEventListener("drop", (event) => {
+  event.preventDefault();
+  composerDrop.classList.remove("is-over");
+  startFromHeroFile(event.dataTransfer?.files?.[0]);
+});
+
 const heroDrop = document.querySelector("#hero-drop");
 heroDrop?.addEventListener("dragover", (event) => {
   event.preventDefault();
@@ -1435,6 +1502,15 @@ reportResults?.addEventListener("click", (event) => {
   if (action === "packet-pdf") downloadSharePacketPdf();
   if (action === "share-doctor") window.openDoctorShare?.();
   if (action === "listen") toggleListen(event.target.closest("[data-report-action]"));
+  const sourcePage = event.target.closest("[data-source-line]");
+  if (sourcePage) showSourcePage(sourcePage.dataset.sourceLine).catch(() => {
+    reportStatus.textContent = reportLanguage === "es" ? "No se pudo mostrar la página. La línea de su informe sigue en la tarjeta." : "We couldn't show the page. The line from your report is still on the card.";
+  });
+  if (action === "check-numbers") {
+    const box = document.querySelector("#ocr-checks");
+    box?.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    box?.querySelector("button")?.focus({ preventScroll: true });
+  }
   if (action === "lab-reminder") {
     // The date comes from the person's doctor; FollowThrough Health never picks one.
     const date = reportResults.querySelector("[data-lab-reminder]")?.value;
@@ -2107,6 +2183,8 @@ function initializeWorkspaceNavigation() {
     ["account-title", document.querySelector(".billing-panel")],
     ["account-title", document.querySelector(".doctor-links-panel")],
     ["account-title", document.querySelector(".twofactor-panel")],
+    ["account-title", document.querySelector(".your-data-panel")],
+    ["account-title", document.querySelector(".clinician-access-panel")],
     // The landing page (hero, how it works, safety, pricing) only shows on Home.
     ["home-title", document.querySelector(".landing")],
   ].filter(([, element]) => Boolean(element));
@@ -2117,6 +2195,17 @@ function initializeWorkspaceNavigation() {
   });
 
   const showSection = (targetId, shouldScroll = true) => {
+    // A link to something inside a companion panel ("#your-data") opens that panel's section
+    // and scrolls to it, instead of falling back to Home.
+    if (targetId && !sectionsById.has(targetId)) {
+      const inner = document.getElementById(targetId);
+      const owner = inner && sectionCompanions.find(([, element]) => element.contains(inner));
+      if (owner) {
+        showSection(owner[0], false);
+        requestAnimationFrame(() => scrollBelowHeader(inner));
+        return;
+      }
+    }
     const target = sectionsById.get(targetId) || sectionsById.get("home-title");
     const activeId = [...sectionsById.entries()].find(([, element]) => element === target)?.[0] || "home-title";
 
@@ -3011,9 +3100,23 @@ function updateAuthStatus(message) {
   signedInDetail.textContent = signedIn
     ? (emailVerified ? "Email verified. Reports you save to your account appear on all your devices." : "Please verify your email: open the link we sent you.")
     : "Your reports stay on this device. Sign in to keep them on all your devices.";
-  authStatus.textContent = message || (signedIn
-    ? "You're signed in."
-    : "You can explain reports without an account. Create one to save them.");
+  authStatus.textContent = message || "";
+  // The sign-in card and the signed-in account view swap on this (styles in ui.css).
+  document.body.dataset.auth = signedIn ? "in" : "out";
+  const avatar = document.querySelector("#account-avatar");
+  if (avatar) avatar.textContent = (authEmail || "·").charAt(0).toUpperCase();
+  const verifyBox = document.querySelector("#account-verify");
+  if (verifyBox) verifyBox.hidden = !signedIn || emailVerified;
+  const ydAccount = document.querySelector("#yd-account-list");
+  if (ydAccount && !signedIn) ydAccount.innerHTML = "<li>Sign in to see what is saved in your account.</li>";
+  if (!signedIn) ydExportCache = null;
+  const careTeamPanel = document.querySelector("#clinician-access");
+  if (careTeamPanel && !signedIn) delete careTeamPanel.dataset.ready;
+  if (careTeamPanel && signedIn && careTeamLoadedFor !== authToken && document.readyState !== "loading") {
+    careTeamLoadedFor = authToken;
+    loadCareTeam();
+  }
+  if (!signedIn) careTeamLoadedFor = "";
   refreshReviewDemoProof();
 }
 
@@ -3095,7 +3198,7 @@ async function signup() {
       updateAuthStatus("Clinician and admin accounts are set up by the FollowThrough Health team. Choose Patient under FollowThrough Health team sign-in, or ask the team to add your email.");
       return;
     }
-    updateAuthStatus(authErrorMessage(error, "Account may already exist. Try Log in."));
+    updateAuthStatus(authErrorMessage(error, "There may already be an account with this email. Try Sign in instead."));
   }
 }
 
@@ -3257,7 +3360,7 @@ function logout() {
   }
   addAuditEvent("account_logout", "Signed out locally and cleared backend patient link.");
   renderAuditTrail();
-  updateAuthStatus("Signed out. Local prototype data is still on this device.");
+  updateAuthStatus("You have signed out. Reports explained on this device are still here.");
   setBackendStatus(backendAvailable, backendAvailable ? "Signed out." : "Signed out.");
 }
 
@@ -3471,7 +3574,7 @@ async function verifyCurrentSession() {
     const refreshed = await refreshAuthSession();
     if (refreshed) return verifyCurrentSession();
     clearAuthSession();
-    updateAuthStatus("Session expired. Log in again to sync protected data.");
+    updateAuthStatus("You were signed out for your security. Sign in again to see your saved reports.");
     return false;
   }
 }
@@ -4214,9 +4317,65 @@ async function loadBackendAuditEvents() {
   }
 }
 
+// The card under the upload box: which file is being read, real progress when the photo reader
+// reports it (otherwise a moving bar, never a made-up percentage), and Cancel. Cancel moves the
+// reading token on, so a result that arrives later is ignored.
+let readingToken = 0;
+function startReading(file) {
+  readingToken += 1;
+  const card = document.querySelector("#reading-card");
+  if (card) {
+    document.querySelector("#reading-name").textContent = file.name || "Your report";
+    const kind = file.type === "application/pdf" || /\.pdf$/i.test(file.name) ? "PDF" : file.type.startsWith("image/") ? (reportLanguage === "es" ? "Foto" : "Photo") : (reportLanguage === "es" ? "Texto" : "Text file");
+    document.querySelector("#reading-meta").textContent = `${kind}${file.size ? ` · ${Math.max(1, Math.round(file.size / 1024))} KB` : ""}`;
+    setReadingProgress(null, "Reading on this device. Nothing is uploaded.");
+    card.hidden = false;
+    // On a phone the card can open below the bottom tab bar; bring it into view.
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    card.scrollIntoView({ block: "center", behavior: reduceMotion ? "auto" : "smooth" });
+  }
+  return readingToken;
+}
+function readingStopped(token) {
+  return token !== readingToken;
+}
+function setReadingProgress(fraction, step) {
+  const bar = document.querySelector("#reading-bar");
+  if (bar) {
+    const known = typeof fraction === "number" && Number.isFinite(fraction);
+    bar.classList.toggle("is-indeterminate", !known);
+    if (known) {
+      const percent = Math.round(Math.min(1, Math.max(0, fraction)) * 100);
+      bar.setAttribute("aria-valuenow", String(percent));
+      bar.style.setProperty("--reading-progress", `${percent}%`);
+    } else {
+      bar.removeAttribute("aria-valuenow");
+    }
+  }
+  if (step) {
+    const stepLine = document.querySelector("#reading-step");
+    if (stepLine) stepLine.textContent = step;
+  }
+}
+function finishReading(token) {
+  if (readingStopped(token)) return;
+  const card = document.querySelector("#reading-card");
+  if (card) card.hidden = true;
+}
+document.querySelector("#reading-cancel")?.addEventListener("click", () => {
+  readingToken += 1;
+  const card = document.querySelector("#reading-card");
+  if (card) card.hidden = true;
+  const input = document.querySelector("#report-file");
+  if (input) input.value = "";
+  reportStatus.textContent = "Stopped. Nothing from that file was used. Choose another file or type the results.";
+  document.querySelector(".composer-drop input")?.focus();
+});
+
 function handleReportFileSelection() {
   const file = document.querySelector("#report-file").files?.[0];
   if (!file) return;
+  const token = startReading(file);
   latestReportId = "";
   ocrChecks = [];
   ocrReviewed = [];
@@ -4228,11 +4387,15 @@ function handleReportFileSelection() {
     reportStatus.textContent = "Reading text report from file.";
     const reader = new FileReader();
     reader.onload = () => {
+      if (readingStopped(token)) return;
+      finishReading(token);
       document.querySelector("#report-text").value = String(reader.result || "").slice(0, 12000);
       updateProgressRail();
       analyzeAndShowReport();
     };
     reader.onerror = () => {
+      if (readingStopped(token)) return;
+      finishReading(token);
       reportStatus.textContent = "Could not read the text file. Paste the report text manually.";
     };
     reader.readAsText(file);
@@ -4241,13 +4404,14 @@ function handleReportFileSelection() {
   const isImage = file.type.startsWith("image/");
   const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
   if (isPdf) {
-    readPdfTextLocally(file);
+    readPdfTextLocally(file, token);
     return;
   }
   if (isImage) {
-    readPhotoTextLocally(file);
+    readPhotoTextLocally(file, token);
     return;
   }
+  finishReading(token);
   reportStatus.textContent = "FollowThrough Health reads PDFs, photos and text files. Choose one of those, or type the results below.";
 }
 
@@ -4307,11 +4471,11 @@ function loadPdfjs() {
 // Rebuilds text lines from positioned PDF text. Items within half a line height
 // of each other belong to one row, so a table cell nudged by a superscript
 // footnote (Labcorp's "Cholesterol, Total 01") stays on the row with its value.
-function groupPdfTextRows(items) {
+function pdfTextRows(items) {
   const rows = [];
   items
     .filter((item) => item.str?.trim())
-    .map((item) => ({ x: item.transform[4], y: item.transform[5], h: item.height || 10, text: item.str.trim() }))
+    .map((item) => ({ x: item.transform[4], y: item.transform[5], w: item.width || 0, h: item.height || 10, text: item.str.trim() }))
     .sort((a, b) => b.y - a.y)
     .forEach((item) => {
       const row = rows.find((candidate) => Math.abs(candidate.y - item.y) <= 0.5 * Math.max(candidate.h, item.h));
@@ -4322,41 +4486,145 @@ function groupPdfTextRows(items) {
         rows.push({ y: item.y, h: item.h, parts: [item] });
       }
     });
-  return rows.map((row) => row.parts.sort((a, b) => a.x - b.x).map((part) => part.text).join(" ")).join("\n");
+  return rows.map((row) => {
+    const parts = row.parts.sort((a, b) => a.x - b.x);
+    return {
+      text: parts.map((part) => part.text).join(" "),
+      x0: Math.min(...parts.map((part) => part.x)),
+      x1: Math.max(...parts.map((part) => part.x + part.w)),
+      y: row.y,
+      h: row.h,
+    };
+  });
 }
 
-async function extractPdfText(file, maxPages = 10) {
+function groupPdfTextRows(items) {
+  return pdfTextRows(items).map((row) => row.text).join("\n");
+}
+
+// Text plus where each row sits on its page, so a result can be shown on the original page.
+async function extractPdfPages(file, maxPages = 10) {
   const pdfjs = await loadPdfjs();
   const loadingTask = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
   const pdf = await loadingTask.promise;
   const pages = [];
+  const rows = [];
   try {
     for (let number = 1; number <= Math.min(pdf.numPages, maxPages); number += 1) {
       const content = await (await pdf.getPage(number)).getTextContent();
-      pages.push(groupPdfTextRows(content.items));
+      const pageRows = pdfTextRows(content.items);
+      pages.push(pageRows.map((row) => row.text).join("\n"));
+      pageRows.forEach((row) => rows.push({ ...row, page: number }));
     }
   } finally {
     // Release the parsed document and its worker so repeated uploads do not pile up memory.
     await loadingTask.destroy();
   }
-  return pages.join("\n").trim();
+  return { text: pages.join("\n").trim(), rows };
 }
 
-async function readPdfTextLocally(file) {
-  reportStatus.textContent = "Reading your PDF on this device. Nothing is uploaded.";
+async function extractPdfText(file, maxPages = 10) {
+  return (await extractPdfPages(file, maxPages)).text;
+}
+
+// The file the current report text came from: a PDF (its text rows) or the images read from a
+// photo or scan (their line boxes). It stays in this tab's memory only, and is used only while
+// the report box still holds exactly the text read from it.
+let reportSourcePdf = null;
+
+// Opens the original PDF page and marks the row a result was read from. The page is drawn
+// from the file still held in this tab; nothing is uploaded.
+async function showSourcePage(line) {
+  const row = sourcePdfRowFor(line);
+  const dialog = document.querySelector("#source-page-dialog");
+  if (!row || !dialog?.showModal) return;
+  const es = reportLanguage === "es";
+  const canvas = dialog.querySelector("#source-page-canvas");
+  const mark = dialog.querySelector("#source-page-mark");
+  const frame = dialog.querySelector("#source-page-frame");
+  dialog.querySelector("#source-page-title").textContent = es ? "De dónde viene este resultado" : "Where this result comes from";
+  dialog.querySelector(".source-page-privacy").textContent = es ? "Se muestra desde el archivo en este dispositivo. No se sube nada." : "Shown from the file on this device. Nothing is uploaded.";
+  const what = reportSourcePdf.images && reportSourcePdf.kind === "photo" ? (es ? "Su foto" : "Your photo") : (es ? `Página ${row.page} de su informe` : `Page ${row.page} of your report`);
+  dialog.querySelector("#source-page-note").textContent = es ? `${what}. La línea marcada es: ${line}` : `${what}. The marked line is: ${line}`;
+  canvas.setAttribute("aria-label", es ? `Página ${row.page} de su informe, con la línea "${line}" marcada` : `Page ${row.page} of your report, with the line "${line}" marked`);
+  mark.hidden = true;
+  if (!dialog.open) dialog.showModal();
+  if (reportSourcePdf.images) {
+    const image = reportSourcePdf.images[row.page - 1];
+    const width = Math.min(Math.max(frame.clientWidth || 640, 720), 1000);
+    const scale = width / image.width;
+    canvas.width = image.width;
+    canvas.height = image.height;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${image.height * scale}px`;
+    canvas.getContext("2d").drawImage(image, 0, 0);
+    const pad = 4;
+    Object.assign(mark.style, {
+      left: `${(row.box.x0 - pad) * scale}px`,
+      top: `${(row.box.y0 - pad) * scale}px`,
+      width: `${(row.box.x1 - row.box.x0 + pad * 2) * scale}px`,
+      height: `${(row.box.y1 - row.box.y0 + pad * 2) * scale}px`,
+    });
+    mark.hidden = false;
+    frame.scrollTo({ top: Math.max(0, mark.offsetTop - frame.clientHeight / 2), left: Math.max(0, mark.offsetLeft - 8) });
+    return;
+  }
+  const pdfjs = await loadPdfjs();
+  const loadingTask = pdfjs.getDocument({ data: new Uint8Array(await reportSourcePdf.file.arrayBuffer()) });
   try {
-    const text = await extractPdfText(file);
+    const page = await (await loadingTask.promise).getPage(row.page);
+    // At least 720px wide so the text is readable on a phone; the frame scrolls to the marked row.
+    const width = Math.min(Math.max(frame.clientWidth || 640, 720), 1000);
+    const viewport = page.getViewport({ scale: width / page.getViewport({ scale: 1 }).width });
+    const ratio = window.devicePixelRatio || 1;
+    canvas.width = Math.round(viewport.width * ratio);
+    canvas.height = Math.round(viewport.height * ratio);
+    canvas.style.width = `${viewport.width}px`;
+    canvas.style.height = `${viewport.height}px`;
+    await page.render({ canvasContext: canvas.getContext("2d"), viewport, transform: ratio === 1 ? null : [ratio, 0, 0, ratio, 0, 0] }).promise;
+    // PDF points to canvas pixels with the viewport's transform (works across pdf.js versions).
+    const [a, b, c, d, e, f] = viewport.transform;
+    const toPixels = (x, y) => [a * x + c * y + e, b * x + d * y + f];
+    const [x1, y1] = toPixels(row.x0 - 3, row.y - row.h * 0.45);
+    const [x2, y2] = toPixels(row.x1 + 3, row.y + row.h * 1.2);
+    Object.assign(mark.style, { left: `${Math.min(x1, x2)}px`, top: `${Math.min(y1, y2)}px`, width: `${Math.abs(x2 - x1)}px`, height: `${Math.abs(y2 - y1)}px` });
+    mark.hidden = false;
+    frame.scrollTo({ top: Math.max(0, mark.offsetTop - frame.clientHeight / 2), left: Math.max(0, mark.offsetLeft - 8) });
+  } finally {
+    await loadingTask.destroy();
+  }
+}
+
+function sourcePdfRowFor(line) {
+  const reportText = document.querySelector("#report-text")?.value || "";
+  if (!line || !reportSourcePdf || reportSourcePdf.text !== reportText) return null;
+  const matches = reportSourcePdf.rows.filter((row) => row.text.trim().slice(0, 200) === line);
+  // A photo line may have been corrected after reading; then it no longer matches and no
+  // page view is offered for it, rather than show a different number than the card.
+  return matches.length === 1 ? matches[0] : null;
+}
+
+async function readPdfTextLocally(file, token = readingToken) {
+  reportStatus.textContent = "Reading your PDF on this device. Nothing is uploaded.";
+  setReadingProgress(null, "Reading the PDF on this device…");
+  try {
+    const { text, rows } = await extractPdfPages(file);
+    if (readingStopped(token)) return;
     if (text.replace(/\s/g, "").length < 20) {
       // A scanned PDF has no text layer: read the page images instead.
-      await readScannedPdfLocally(file);
+      await readScannedPdfLocally(file, 3, token);
       return;
     }
+    finishReading(token);
     document.querySelector("#report-text").value = text.slice(0, 12000);
+    reportSourcePdf = { file, rows, text: document.querySelector("#report-text").value };
     updateProgressRail();
     trackReportUsage("pdf_read");
     await analyzeAndShowReport();
     reportStatus.textContent = `PDF read on this device; the file was not uploaded. It only leaves this device if you choose to save or share it. ${reportStatus.textContent}`;
   } catch {
+    if (readingStopped(token)) return;
+    finishReading(token);
     reportStatus.textContent = "FollowThrough Health could not read this PDF. Paste the lab values as text below.";
   }
 }
@@ -4410,7 +4678,7 @@ function cleanOcrText(text) {
     .trim();
 }
 
-async function recognizeImages(images, onProgress) {
+async function recognizeImages(images, onProgress, lines = null) {
   const Tesseract = await loadTesseract();
   const base = new URL(TESSERACT_BASE, window.location.href).href;
   const worker = await Tesseract.createWorker("eng", 1, {
@@ -4429,6 +4697,11 @@ async function recognizeImages(images, onProgress) {
     for (const [index, image] of images.entries()) {
       const { data } = await worker.recognize(image);
       texts.push(data.text);
+      // Where each line is on this image, so a result can be shown on the photo later.
+      (data.lines || []).forEach((line) => {
+        const text = cleanOcrText(line.text || "");
+        if (text && line.bbox) lines?.push({ page: index + 1, text, box: line.bbox });
+      });
       onProgress?.((index + 1) / images.length, index + 1);
     }
     return cleanOcrText(texts.join("\n"));
@@ -4657,6 +4930,9 @@ document.querySelector("#ocr-checks")?.addEventListener("click", (event) => {
     lines[check.line] = lines[check.line].replace(new RegExp(`(^|[^\\d.])${current.replace(".", "\\.")}(?![\\d.])`), `$1${choice}`);
     textArea.value = lines.join("\n");
   }
+  // The person checked a number against their report: the other lines still match the photo,
+  // so the photo view stays available for them (a corrected line no longer matches and loses it).
+  if (reportSourcePdf?.images) reportSourcePdf.text = textArea.value;
   addAuditEvent(choice === current ? "ocr_number_confirmed" : "ocr_number_corrected", `${check.name}: photo read "${check.read}"; the person confirmed "${choice}".`);
   // Only the number the person confirmed is shown; a misread value never reaches the brief.
   ocrReviewed.push(`${check.name}: ${choice} (${choice === check.read ? "confirmed" : "corrected"} by the patient against the report)`);
@@ -4666,7 +4942,9 @@ document.querySelector("#ocr-checks")?.addEventListener("click", (event) => {
   renderOcrChecks();
 });
 
-async function showOcrResult(rawText, sourceLabel) {
+async function showOcrResult(rawText, sourceLabel, token = readingToken, source = null) {
+  if (readingStopped(token)) return;
+  finishReading(token);
   if (rawText.replace(/\s/g, "").length < 20) {
     reportStatus.textContent = `FollowThrough Health could not find readable text in this ${sourceLabel}. Try a sharper, well-lit photo taken straight on, or type the results below.`;
     return;
@@ -4676,6 +4954,7 @@ async function showOcrResult(rawText, sourceLabel) {
   ocrReviewed = [];
   reportFromPhoto = true;
   document.querySelector("#report-text").value = text.slice(0, 12000);
+  reportSourcePdf = source ? { kind: sourceLabel, images: source.images, rows: source.lines, text: document.querySelector("#report-text").value } : null;
   updateProgressRail();
   trackReportUsage("photo_read");
   await analyzeAndShowReport();
@@ -4683,21 +4962,28 @@ async function showOcrResult(rawText, sourceLabel) {
   reportStatus.textContent = `Read from your ${sourceLabel} on this device; the file was not uploaded. It only leaves this device if you choose to save or share it. Photos can be misread, so please check the numbers against the report.`;
 }
 
-async function readPhotoTextLocally(file) {
+async function readPhotoTextLocally(file, token = readingToken) {
   reportStatus.textContent = "Reading your photo on this device. The first time takes a little longer while the reader loads.";
+  setReadingProgress(null, "Getting the photo reader ready. The first time takes a little longer.");
   try {
     const image = await preparePhotoForOcr(file);
+    const lines = [];
     const text = await recognizeImages([image], (progress) => {
+      if (readingStopped(token)) return;
       reportStatus.textContent = `Reading your photo on this device... ${Math.round(progress * 100)}%`;
-    });
-    await showOcrResult(text, "photo");
+      setReadingProgress(progress, "Reading the numbers on your photo…");
+    }, lines);
+    await showOcrResult(text, "photo", token, { images: [image], lines });
   } catch {
+    if (readingStopped(token)) return;
+    finishReading(token);
     reportStatus.textContent = "FollowThrough Health could not read this photo on this device. Type the results below, or try a PDF.";
   }
 }
 
-async function readScannedPdfLocally(file, maxPages = 3) {
+async function readScannedPdfLocally(file, maxPages = 3, token = readingToken) {
   reportStatus.textContent = "This PDF is a scan. Reading the page images on this device...";
+  setReadingProgress(null, "This PDF is a scan. Preparing the pages…");
   try {
     const pdfjs = await loadPdfjs();
     const loadingTask = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
@@ -4716,11 +5002,21 @@ async function readScannedPdfLocally(file, maxPages = 3) {
     } finally {
       await loadingTask.destroy();
     }
+    if (readingStopped(token)) return;
+    // The reader reports progress within a page, then once per finished page.
+    let pagesDone = 0;
+    const lines = [];
     const text = await recognizeImages(images, (progress, done) => {
-      reportStatus.textContent = `Reading the scanned PDF on this device... page ${Math.min(images.length, (done || 0) + 1)} of ${images.length}`;
-    });
-    await showOcrResult(text, "scanned PDF");
+      if (readingStopped(token)) return;
+      if (done) pagesDone = done;
+      const page = Math.min(images.length, pagesDone + 1);
+      reportStatus.textContent = `Reading the scanned PDF on this device... page ${page} of ${images.length}`;
+      setReadingProgress(done ? done / images.length : (pagesDone + progress) / images.length, `Reading page ${page} of ${images.length}…`);
+    }, lines);
+    await showOcrResult(text, "scanned PDF", token, { images, lines });
   } catch {
+    if (readingStopped(token)) return;
+    finishReading(token);
     reportStatus.textContent = "This PDF looks like a scanned image and FollowThrough Health could not read it on this device. Type the lab values below.";
   }
 }
@@ -4980,13 +5276,22 @@ function renderReportHistory() {
   // Keep an explained result on screen (for example after signing in); the saved
   // list only fills the result area when nothing has been explained yet.
   const showingResult = Boolean(reportResults.querySelector(".result-hero"));
+  // Nothing to clear means no "Clear history" button.
+  const clearSaved = document.querySelector("#clear-saved");
+  if (clearSaved) clearSaved.hidden = !allReports.length;
+  const personFilterRow = document.querySelector("#history-person-filter")?.closest(".history-person-filter");
+  if (personFilterRow) personFilterRow.hidden = !allReports.length;
   if (!allReports.length) {
     if (!showingResult) reportResults.innerHTML = "<p>No report analysis yet.</p>";
     if (reportHistoryList) {
       reportHistoryList.innerHTML = `
-        <article>
-          <div><strong>No reports saved yet</strong><span>Add a report first</span></div>
-          <p>Add a lab PDF or type your results to see plain-English explanations here.</p>
+        <article class="history-empty">
+          <div><strong>No reports saved yet</strong></div>
+          <p>Reports you explain are kept here on this device, so you can compare them later.</p>
+          <div class="inline-action-group">
+            <a class="primary-button compact" href="#report-title">Explain a report</a>
+            <a class="secondary-button compact" href="#try=raj-kidney-heart-uk/explain">Try a sample report</a>
+          </div>
         </article>
       `;
     }
@@ -5016,7 +5321,7 @@ function renderReportHistory() {
       <article>
         <div>
           <strong>${escapeHtml(report.fileName || "Untitled report")}</strong>
-          <span>${escapeHtml(`For ${normalizeReportPerson(report.person)} · `)}${escapeHtml(report.riskLevel ? `Follow-up: ${report.riskLevel}` : report.status || "uploaded")}</span>
+          <span>${escapeHtml(`For ${normalizeReportPerson(report.person)} · `)}${escapeHtml(new Date(report.createdAt || report.updatedAt || Date.now()).toLocaleDateString())}</span>
         </div>
         <p>${escapeHtml(report.message || "Saved report. Run or load analysis to see a plain-English explanation.")}</p>
         ${report.questions?.length ? `<p><strong>Doctor question:</strong> ${escapeHtml(report.questions[0])}</p>` : ""}
@@ -5246,10 +5551,55 @@ function getLabTrendForm() {
   };
 }
 
+// The tracker on this device. It used to keep only the newest 60 values and drop the rest
+// without a word; it now keeps up to 500 and says so if older values ever have to go.
+const LAB_TREND_LIMIT = 500;
+function storeLabTrends(labs) {
+  localStorage.setItem("carewiseLabTrends", JSON.stringify(labs.slice(0, LAB_TREND_LIMIT)));
+  return Math.max(0, labs.length - LAB_TREND_LIMIT);
+}
+
 function addLabTrendEntry(entry) {
   const labs = getLabTrends();
   labs.unshift(entry);
-  localStorage.setItem("carewiseLabTrends", JSON.stringify(labs.slice(0, 60)));
+  return storeLabTrends(labs);
+}
+
+// Same test, same value, same unit, same test date: the same result, saved once.
+function labTrendKey(entry) {
+  return [entry.test, entry.value, entry.unit, entry.date].map((part) => String(part ?? "").trim().toLowerCase()).join("|");
+}
+
+// The date the sample was taken, when the report states it unambiguously. A date like 03/04/2026
+// could be March or April, so it is left for the person to enter rather than guessed.
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+function reportTestDate(text) {
+  const lines = String(text || "").split(/\r?\n/);
+  const labelled = (pattern) => lines.filter((line) => pattern.test(line));
+  const candidates = [
+    ...labelled(/\b(collected|collection|specimen|sample (taken|date)|drawn|date of (test|collection))\b/i),
+    ...labelled(/\b(reported|report date|date)\b/i),
+  ];
+  const iso = (y, m, d) => {
+    const date = new Date(Date.UTC(y, m - 1, d));
+    return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d && y > 1900 && y < 2100 ? date.toISOString().slice(0, 10) : "";
+  };
+  for (const line of candidates) {
+    let match = line.match(/\b(\d{4})-(\d{2})-(\d{2})\b/);
+    if (match) return iso(+match[1], +match[2], +match[3]);
+    match = line.match(/\b(\d{1,2})[ -]([A-Za-z]{3})[a-z]*[ -,]+(\d{4})\b/);
+    if (match && MONTHS.includes(match[2].toLowerCase())) return iso(+match[3], MONTHS.indexOf(match[2].toLowerCase()) + 1, +match[1]);
+    match = line.match(/\b([A-Za-z]{3})[a-z]*\.? (\d{1,2}),? (\d{4})\b/);
+    if (match && MONTHS.includes(match[1].toLowerCase())) return iso(+match[3], MONTHS.indexOf(match[1].toLowerCase()) + 1, +match[2]);
+    match = line.match(/\b(\d{1,2})[/.](\d{1,2})[/.](\d{4})\b/);
+    if (match) {
+      const [a, b, y] = [+match[1], +match[2], +match[3]];
+      if (a > 12 && b <= 12) return iso(y, b, a);
+      if (b > 12 && a <= 12) return iso(y, a, b);
+      return "";
+    }
+  }
+  return "";
 }
 
 function normalizeBackendLabTrendFlag(flag) {
@@ -5323,7 +5673,7 @@ async function loadLabTrendsFromBackend() {
       ...cloudEntries,
       ...getLabTrends().filter((item) => !cloudEntries.some((cloud) => cloud.backendLabTrendId && cloud.backendLabTrendId === item.backendLabTrendId)),
     ];
-    localStorage.setItem("carewiseLabTrends", JSON.stringify(merged.slice(0, 60)));
+    storeLabTrends(merged);
     renderLabTrends();
     renderVisitBriefs();
     addAuditEvent("backend_lab_trends_loaded", `${cloudEntries.length} backend lab trend${cloudEntries.length === 1 ? "" : "s"} loaded.`);
@@ -5386,7 +5736,7 @@ async function saveLabTrend() {
     const synced = await syncLabTrendToBackend(entry, patientId, "", true);
     if (synced) {
       const labs = getLabTrends().map((item) => item.id === entry.id ? entry : item);
-      localStorage.setItem("carewiseLabTrends", JSON.stringify(labs.slice(0, 60)));
+      storeLabTrends(labs);
     }
   }
   document.querySelector("#lab-value").value = "";
@@ -5417,8 +5767,10 @@ function getLabTrendSuggestion(item) {
 function renderLabTrends() {
   if (!labTrendList) return;
   const labs = getLabTrends();
+  const clearLabs = document.querySelector("#clear-lab-trends");
+  if (clearLabs) clearLabs.hidden = !labs.length;
   if (!labs.length) {
-    labTrendList.innerHTML = "<p>No lab values saved yet.</p>";
+    labTrendList.innerHTML = "<p>No lab values saved yet. On a result, use \"Save to my lab tracker\", or add one below.</p>";
     return;
   }
   const groups = getLabTrendGroups();
@@ -5493,18 +5845,41 @@ const LAB_FOOTNOTE = String.raw`(?:\b0\d\s+\D{0,12}?)?`;
 const LAB_UNIT = String.raw`\s*(?:(?:h|l|hh|ll|hi|lo|high|low|\*)\s+(?=mmol|mg|%))?(mmol\s*\/\s*mol|mmol\s*\/\s*l|mg\s*\/\s*dl|%)?`;
 
 // The value must not start inside a word, so the "1" in "Hemoglobin A1c" is never read as a result.
-function readLabMeasure(text, namePattern, maxGap = 24) {
+// A number glued to letters is a misread ("s.9" for 5.9, "1o8" for 108), and a number that starts a
+// range ("a1c % 4.0-5.6" with the result left blank) is the range, not a result, and neither is a
+// bare limit like "ldl cholesterol <100 mg/dl" (usually a target, not a result): none of them is read.
+// When the same test is printed again with a different value ("Previous result: LDL 98" then
+// "LDL 151"), the higher reading is used (every caller is a test where higher is worse) and the
+// other value is reported through onRepeat, so an older or lower value never reassures on its own.
+function readLabMeasure(text, namePattern, maxGap = 24, onRepeat) {
   // The value is on the same line as the test name, or starts the next line ("A1C:" then
   // "7.2 %"). It is never taken from another test further down: in "Lipid panel and A1C" then
   // "Total cholesterol 228", 228 is not an A1C.
-  const gap = `(?:[^\\d\\n]{0,${maxGap}}?|[^\\d\\n]{0,${maxGap}}?(?:\\n[ \\t:]*){1,2})`;
-  const match = text.match(new RegExp(`${namePattern}${gap}${LAB_FOOTNOTE}(?<![a-z])(\\d+(?:\\.\\d+)?)${LAB_UNIT}`, "i"));
-  if (!match) return null;
-  const value = Number(match[1]);
-  const rest = cutAtNextTest(text.slice(match.index + match[0].length).split("\n")[0].slice(0, 60));
-  // The unit can come after a previous-result column ("17 L 17 03/2026 mmol/mol").
-  const unit = match[2] || rest.match(/(mmol\s*\/\s*mol|mmol\s*\/\s*l|mg\s*\/\s*dl)/i)?.[1] || "";
-  return { value, unit: unit.replace(/\s+/g, "").toLowerCase(), outside: compareWithPrintedRange(value, rest) };
+  const gap = `([^\\d\\n]{0,${maxGap}}?|[^\\d\\n]{0,${maxGap}}?(?:\\n[ \\t:]*){1,2})`;
+  const pattern = new RegExp(`${namePattern}${gap}${LAB_FOOTNOTE}(?<![a-z])(?<![a-z][.,])(?<![<>≤≥]=?\\s*)(\\d+(?:\\.\\d+)?)(?![\\d.]\\d|[oil|]\\d)(?!\\s*(?:-|–|to)\\s*\\d)${LAB_UNIT}`, "gi");
+  const matches = [...text.matchAll(pattern)];
+  if (!matches.length || matches[0].index === undefined) return null;
+  const measure = (match) => {
+    const value = Number(match[2]);
+    const rest = cutAtNextTest(text.slice((match.index ?? 0) + match[0].length).split("\n")[0].slice(0, 60));
+    // The unit can come after a previous-result column ("17 L 17 03/2026 mmol/mol").
+    const unit = (match[3] || rest.match(/(mmol\s*\/\s*mol|mmol\s*\/\s*l|mg\s*\/\s*dl)/i)?.[1] || "").replace(/\s+/g, "").toLowerCase();
+    return { value, unit, rest, outside: compareWithPrintedRange(value, rest) };
+  };
+  let chosen = measure(matches[0]);
+  if (onRepeat) {
+    matches.slice(1).forEach((match) => {
+      // Goals, ratios and limits ("LDL goal <100", "LDL/HDL ratio 3.2") are not repeat results.
+      if (/[<>≤≥\/]|goal|target|ratio|optimal|desirable|less than|greater than/.test(match[1])) return;
+      const other = measure(match);
+      if (other.unit !== chosen.unit || other.value === chosen.value) return;
+      if (!other.unit && !/\d\s*[-–]\s*\d|[<>≤≥]\s*=?\s*\d/.test(other.rest)) return;
+      const lower = other.value > chosen.value ? chosen : other;
+      if (other.value > chosen.value) chosen = other;
+      onRepeat(lower.value);
+    });
+  }
+  return { value: chosen.value, unit: chosen.unit, outside: chosen.outside };
 }
 
 // Reads the reference range printed on the same line after a value ("0-99", "<5.7",
@@ -5530,8 +5905,8 @@ function printedRangeStatus(text, namePattern, maxGap) {
 // UK and European labs report lipids in mmol/L and A1C in mmol/mol (IFCC).
 // Convert to the US units the explanations use; a value with no unit that is
 // only plausible in the other unit is treated as that unit.
-function readCholesterolMgDl(text, namePattern) {
-  const measure = readLabMeasure(text, namePattern);
+function readCholesterolMgDl(text, namePattern, onRepeat) {
+  const measure = readLabMeasure(text, namePattern, 24, onRepeat);
   if (!measure) return null;
   if (measure.unit === "mmol/l" || (!measure.unit && measure.value < 25)) return Math.round(measure.value * 38.67);
   return measure.value;
@@ -5553,16 +5928,16 @@ function readPlainCholesterolMgDl(text) {
   return null;
 }
 
-function readTriglyceridesMgDl(text) {
-  const measure = readLabMeasure(text, "triglycerides");
+function readTriglyceridesMgDl(text, onRepeat) {
+  const measure = readLabMeasure(text, "triglycerides", 24, onRepeat);
   if (!measure) return null;
   if (measure.unit === "mmol/l" || (!measure.unit && measure.value < 15)) return Math.round(measure.value * 88.57);
   return measure.value;
 }
 
-function readA1cPercent(text) {
+function readA1cPercent(text, onRepeat) {
   // UK reports say "HbA1c level - IFCC standardised 44 mmol/mol", so allow a longer label.
-  const measure = readLabMeasure(text, String.raw`(?:hemoglobin\s*)?a1c`, 40);
+  const measure = readLabMeasure(text, String.raw`(?:hemoglobin\s*)?a1c`, 40, onRepeat);
   if (!measure) return null;
   if (measure.unit === "mmol/mol" || (!measure.unit && measure.value > 20)) return Math.round((0.0915 * measure.value + 2.15) * 10) / 10;
   return measure.value;
@@ -5656,15 +6031,17 @@ function analyzeReportTextLocally(rawText) {
   const emergencySymptoms = urgentMatches.filter((term) => EMERGENCY_CARE_TERMS.has(term));
   if (hasHypertensiveCrisis(lower)) urgentMatches.push("blood pressure over 180/120");
 
-  const ldl = readCholesterolMgDl(lower, String.raw`\bldl(?: cholesterol)?`);
-  const totalCholesterol = readCholesterolMgDl(lower, String.raw`(?:total cholesterol|cholesterol,?\s*total)`) ?? readPlainCholesterolMgDl(lower);
-  const triglycerides = readTriglyceridesMgDl(lower);
-  const a1c = readA1cPercent(lower);
+  // Tests printed more than once with different values: [name, the other value as printed].
+  const repeats = [];
+  const ldl = readCholesterolMgDl(lower, String.raw`\bldl(?: cholesterol)?`, (other) => repeats.push(["LDL cholesterol", String(other)]));
+  const totalCholesterol = readCholesterolMgDl(lower, String.raw`(?:total cholesterol|cholesterol,?\s*total)`, (other) => repeats.push(["Total cholesterol", String(other)])) ?? readPlainCholesterolMgDl(lower);
+  const triglycerides = readTriglyceridesMgDl(lower, (other) => repeats.push(["Triglycerides", String(other)]));
+  const a1c = readA1cPercent(lower, (other) => repeats.push(["A1C", String(other)]));
   // Skip the "25-hydroxy" / "25-OH" in the test name so it is not read as the value.
-  const vitaminD = readReportNumber(lower, [/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?(?:[^\d\n]{0,24}?|[^\d\n]{0,24}?(?:\n[ \t:]*){1,2})(\d+(?:\.\d+)?)(?![\d.]|[\s-]*(?:hydroxy|oh)\b)/i]);
+  const vitaminD = readReportNumber(lower, [/vitamin d(?:[23](?:\s*[+/&]\s*d?[23])?(?![\d.]))?(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?(?:[^\d\n]{0,24}?|[^\d\n]{0,24}?(?:\n[ \t:]*){1,2})(?<![a-z])(\d+(?:\.\d+)?)(?![\d.]|[\s-]*(?:hydroxy|oh)\b)/i]);
   const systolic = readReportNumber(lower, [/(?:blood pressure|\bbp\b)\D{0,60}(\d{2,3})\s*\/\s*\d{2,3}/i]);
   const diastolic = readReportNumber(lower, [/(?:blood pressure|\bbp\b)\D{0,60}\d{2,3}\s*\/\s*(\d{2,3})/i]);
-  const vitaminDMatch = lower.match(/vitamin d(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?(?:[^\d\n]{0,24}?|[^\d\n]{0,24}?(?:\n[ \t:]*){1,2})\d+(?:\.\d+)?(?![\d.]|[\s-]*(?:hydroxy|oh)\b)([^\n]{0,60})/i);
+  const vitaminDMatch = lower.match(/vitamin d(?:[23](?:\s*[+/&]\s*d?[23])?(?![\d.]))?(?:[\s,]*\(?25[\s-]*(?:hydroxy|oh)\)?)?(?:[^\d\n]{0,24}?|[^\d\n]{0,24}?(?:\n[ \t:]*){1,2})(?<![a-z])\d+(?:\.\d+)?(?![\d.]|[\s-]*(?:hydroxy|oh)\b)([^\n]{0,60})/i);
   if (vitaminDMatch) vitaminDMatch[1] = cutAtNextTest(vitaminDMatch[1]);
   // European and UK labs report vitamin D in nmol/L; the common 30 ng/mL cut-off is about 75 nmol/L.
   const vitaminDUnit = vitaminDMatch && /^[^a-z]*(?:(?:h|l|hi|lo|high|low|\*)\s+)?(?:[\d.,/\s]*)nmol\s*\/\s*l/i.test(vitaminDMatch[1]) ? "nmol/L" : "ng/mL";
@@ -5812,6 +6189,14 @@ function analyzeReportTextLocally(rawText) {
     }
   });
   score -= Math.min(30, panelPenalty);
+  // A test printed twice with different values: say so, and say which value was used.
+  panelResults.forEach((item) => {
+    if (item.otherValueText) repeats.push([item.name, item.otherValueText]);
+  });
+  repeats.forEach(([name, other]) => {
+    findings.push({ label: name, level: "More than one result", detail: `Your report shows another ${name} result (${other}). This explanation uses the more concerning one. Ask your doctor which result is current.` });
+  });
+  if (repeats.length) questions.push("My report shows more than one result for the same test. Which one is current, and do I need a repeat test?");
   // A result far outside its range is never "routine", however good the rest looks.
   if (anyFar) {
     score = Math.min(score, 74);
@@ -6019,6 +6404,7 @@ function renderReportSummary(view, nextStep = "") {
       <section class="report-summary report-summary-${view.urgent ? "urgent" : view.outside || view.cards.length ? "attention" : "clear"}" aria-labelledby="report-summary-title">
         <span class="report-summary-eyebrow">${escapeHtml(view.title)}</span>
         <h3 id="report-summary-title">${escapeHtml(view.headline)}</h3>
+        ${view.tests.length > 1 && view.tests.length <= 40 ? `<div class="summary-meter" aria-hidden="true">${view.tests.map((_, index) => `<span class="${index < view.outside ? "is-out" : ""}"></span>`).join("")}</div>` : ""}
         ${view.body.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}
         ${nextStep ? `<p class="report-summary-next">${escapeHtml(nextStep)}</p>` : ""}
       </section>`;
@@ -6127,7 +6513,7 @@ function listenParts() {
     const value = card.querySelector(".result-card-value b")?.textContent || "";
     parts.push(`${name}: ${value}. ${label}.`);
     card.querySelectorAll(".result-card-range").forEach((node) => parts.push(node.textContent));
-    card.querySelectorAll("h5 + p").forEach((node) => parts.push(node.textContent));
+    card.querySelectorAll(".result-card-meaning").forEach((node) => parts.push(node.textContent));
   });
   const lang = reportLanguage === "es" ? "es" : "en";
   return parts.map((part) => spokenText(part, lang)).filter(Boolean);
@@ -6173,25 +6559,43 @@ function sourceLineFor(card) {
 
 function renderResultCard(card, text) {
   const line = sourceLineFor(card);
-  const showLine = reportLanguage === "es" ? "Ver la línea de su informe" : "Show the line from your report";
+  const es = reportLanguage === "es";
+  const pageRow = sourcePdfRowFor(line);
   return `
           <article class="result-card-item result-card-${escapeHtml(card.tone)}">
             <header><strong>${escapeHtml(card.name)}</strong><em>${escapeHtml(card.label)}</em></header>
             <p class="result-card-value"><b>${escapeHtml(card.value)}</b>${card.unitHint ? `<small>${escapeHtml(card.unitHint)}</small>` : ""}</p>
             ${card.rangeLabel ? `<p class="result-card-range">${escapeHtml(card.rangeLabel)}: ${escapeHtml(card.range || text.noRangePrinted)}</p>` : ""}
             ${card.note ? `<p class="result-card-range">${escapeHtml(card.note)}</p>` : ""}
-            ${card.what ? `<h5>${escapeHtml(text.whatIs)}</h5><p>${escapeHtml(card.what)}</p>` : ""}
-            ${card.meaning ? `<h5>${escapeHtml(text.whatMeans)}</h5><p>${escapeHtml(card.meaning)}</p>` : ""}
-            ${card.ask ? `<h5>${escapeHtml(text.askDoctor)}</h5><p class="result-card-ask">“${escapeHtml(card.ask)}”</p>` : ""}
-            ${line ? `<details class="result-card-source"><summary>${escapeHtml(showLine)}</summary><code>${escapeHtml(line)}</code></details>` : ""}
+            ${card.meaning ? `<h5 class="visually-hidden">${escapeHtml(text.whatMeans)}</h5><p class="result-card-meaning">${escapeHtml(card.meaning)}</p>` : ""}
+            ${card.what || card.ask || line ? `<details class="result-card-more">
+              <summary>${line ? (es ? "Más, y la línea de su informe" : "More, and the line in your report") : (es ? "Más sobre este resultado" : "More about this result")}</summary>
+              ${line ? `<div class="result-card-source"><h5 class="result-card-source-title">${es ? "La línea de su informe" : "The line in your report"}</h5><code class="result-card-source-line">${escapeHtml(line)}</code>${pageRow ? `<button class="secondary-button compact result-card-source-page" type="button" data-source-line="${escapeHtml(line)}">${reportSourcePdf?.kind === "photo" ? (es ? "Verla en su foto" : "See it on your photo") : (es ? "Ver la página del informe" : "See it on the report page")}</button>` : ""}</div>` : ""}
+              ${card.what ? `<h5>${escapeHtml(text.whatIs)}</h5><p>${escapeHtml(card.what)}</p>` : ""}
+              ${card.ask ? `<h5>${escapeHtml(text.askDoctor)}</h5><p class="result-card-ask">“${escapeHtml(card.ask)}”</p>` : ""}
+            </details>` : ""}
           </article>`;
+}
+
+function renderCheckNumbers(view) {
+  const count = view.tests.filter((item) => item.tone === "check").length;
+  if (!count) return "";
+  const es = reportLanguage === "es";
+  return `
+      <section class="result-check" aria-labelledby="result-check-title">
+        <h4 id="result-check-title">${es ? "Revise estos números" : "Please check these numbers"}</h4>
+        <p>${es
+          ? `No estamos seguros de haber leído bien ${count === 1 ? "1 número" : `${count} números`} de su foto. Revíse${count === 1 ? "lo" : "los"} antes de compartir o guardar.`
+          : `We're not sure we read ${count === 1 ? "1 number" : `${count} numbers`} from your photo correctly. Please check ${count === 1 ? "it" : "them"} before you share or save.`}</p>
+        <button class="primary-button compact" type="button" data-report-action="check-numbers">${es ? "Revisar los números" : "Check the numbers"}</button>
+      </section>`;
 }
 
 function renderResultCards(view) {
   if (!view.cards.length) return "";
   return `
       <section class="result-cards" aria-label="${escapeHtml(view.text.attentionTitle)}">
-        <h4>${escapeHtml(view.text.attentionTitle)}</h4>
+        <h4>${escapeHtml(view.text.attentionTitle)} <span class="section-count">${view.cards.length}</span></h4>
         <div class="result-cards-grid">${view.cards.map((card) => renderResultCard(card, view.text)).join("")}</div>
       </section>`;
 }
@@ -6399,32 +6803,21 @@ function renderReportChanges(analysis) {
 
 // "Remind me about my next labs": a calendar file made on this device, nothing sent.
 function downloadLabReminder(dateText) {
-  const date = new Date(`${dateText}T12:00:00`);
-  const day = date.toISOString().slice(0, 10).replace(/-/g, "");
-  const next = new Date(date.getTime() + 86400000).toISOString().slice(0, 10).replace(/-/g, "");
-  const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
-  const person = normalizeReportPerson(latestReportPerson);
-  const who = person === "Me" ? "" : ` for ${person}`;
-  const ics = [
-    "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//FollowThrough Health//Lab reminder//EN", "BEGIN:VEVENT",
-    `UID:carewise-${Date.now()}@carewise`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${day}`, `DTEND;VALUE=DATE:${next}`,
-    `SUMMARY:Time for your next labs${who}`,
-    "DESCRIPTION:The date your doctor gave for your next lab test. After the test, explain the new report on FollowThrough Health to see what changed.",
-    "BEGIN:VALARM", "TRIGGER:-P2D", "ACTION:DISPLAY", "DESCRIPTION:Lab reminder", "END:VALARM",
-    "END:VEVENT", "END:VCALENDAR",
-  ].join("\r\n");
+  const ics = globalThis.ftReminderCalendar?.buildLab(dateText, new Date());
+  if (!ics) return;
+  const [year, month, day] = dateText.split("-").map(Number);
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
-  link.download = "carewise-next-labs.ics";
+  link.download = "followthrough-next-test.ics";
   document.body.appendChild(link);
   link.click();
   link.remove();
-  reportStatus.textContent = `Reminder made for ${date.toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}. Open the file to save it in your calendar.`;
+  reportStatus.textContent = `Reminder made for ${new Date(year, month - 1, day).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}. Open the file to save it in your calendar.`;
 }
 
 // Version of the interpretation rules and wording below. Change it whenever a rule, threshold or
 // explanation changes, so every output can be traced to the rules that produced it.
-const EXPLANATION_RULES_VERSION = "2026-10-20.5";
+const EXPLANATION_RULES_VERSION = "2026-10-20.6";
 
 // Plain-language guide per test: what it is, what a high or low result can mean, and a
 // question for the doctor. Educational wording only: no diagnosis, medicine names or doses.
@@ -6506,7 +6899,7 @@ function unitHint(unit, language = "en") {
 
 const VIEW_TEXT = {
   en: {
-    summaryTitle: "Your lab report summary",
+    summaryTitle: "Your report in plain words",
     allInLabs: "Your lab results are within the lab's ranges",
     dangerLabel: (label) => `${label} — a level labs often treat as urgent`,
     dangerMeaning: "Labs often treat a result at this level as urgent, even when it is not flagged. Contact your doctor today, or get emergency care if you feel very unwell.",
@@ -6549,7 +6942,7 @@ const VIEW_TEXT = {
     noRange: (n) => `${n === 1 ? "One result has" : `${n} results have`} no range printed; ask your doctor what ${n === 1 ? "it means" : "they mean"}.`,
     noneCompared: (n) => `We read ${n} result${n === 1 ? "" : "s"}, but your report printed no ranges to compare with. Ask your doctor what they mean for you.`,
     and: "and",
-    attentionTitle: "Results to talk about",
+    attentionTitle: "Your results to look at",
     whatIs: "What is it?", whatMeans: "What does this mean?", askDoctor: "Ask your doctor", yourResult: "Your result",
     labRange: "Lab's range", noRangePrinted: "Not printed on your report", generalGuide: "Common guide (no range on your report)",
     labels: { guideHigh: "High compared with a common guide", guideLow: "Low compared with a common guide", lowLab: "Low — below this lab's range", farHigh: "Far above the lab's range", farLow: "Far below the lab's range", check: "Check this number", high: "High", low: "Low", in: "In range", none: "No range printed", critical: "Critical", abnormal: "Flagged by the lab", goalAbove: "In range, above a common goal", goalBelow: "In range, below a common goal", pre: "High — prediabetes range", diabetes: "High — diabetes range" },
@@ -6577,7 +6970,7 @@ const VIEW_TEXT = {
     allTestsNote: "Compared with the range printed by your lab. Ranges differ by lab, age and sex.",
   },
   es: {
-    summaryTitle: "Resumen de su análisis",
+    summaryTitle: "Su informe en palabras sencillas",
     allInLabs: "Sus resultados de laboratorio están dentro de los rangos del laboratorio",
     dangerLabel: (label) => `${label} — un nivel que los laboratorios suelen tratar como urgente`,
     dangerMeaning: "Los laboratorios suelen tratar un resultado a este nivel como urgente, aunque no esté marcado. Comuníquese hoy con su médico o busque atención de emergencia si se siente muy mal.",
@@ -6620,7 +7013,7 @@ const VIEW_TEXT = {
     noRange: (n) => `${n === 1 ? "Un resultado no tiene" : `${n} resultados no tienen`} rango impreso; pregunte a su médico qué ${n === 1 ? "significa" : "significan"}.`,
     noneCompared: (n) => `Leímos ${n} resultado${n === 1 ? "" : "s"}, pero su informe no trae rangos para comparar. Pregunte a su médico qué significan para usted.`,
     and: "y",
-    attentionTitle: "Resultados para hablar con su médico",
+    attentionTitle: "Sus resultados para revisar",
     whatIs: "¿Qué es?", whatMeans: "¿Qué significa?", askDoctor: "Pregunte a su médico", yourResult: "Su resultado",
     labRange: "Rango del laboratorio", noRangePrinted: "No aparece en su informe", generalGuide: "Guía común (su informe no trae rango)",
     labels: { guideHigh: "Alto según una guía común", guideLow: "Bajo según una guía común", lowLab: "Bajo — por debajo del rango de este laboratorio", farHigh: "Muy por encima del rango del laboratorio", farLow: "Muy por debajo del rango del laboratorio", check: "Revise este número", high: "Alto", low: "Bajo", in: "En rango", none: "Sin rango impreso", critical: "Crítico", abnormal: "Marcado por el laboratorio", goalAbove: "En rango, por encima de una meta común", goalBelow: "En rango, por debajo de una meta común", pre: "Alto — rango de prediabetes", diabetes: "Alto — rango de diabetes" },
@@ -6881,15 +7274,10 @@ function renderLocalReportAnalysis(analysis) {
           <span>${escapeHtml(ui.eyebrow)}</span>
           <div class="section-heading-action">
             <strong>${escapeHtml(ui.title)}</strong>
-            <div class="inline-action-group">
-              <button class="secondary-button compact" type="button" data-report-action="copy-summary">${escapeHtml(ui.copySummary)}</button>
-              <button class="secondary-button compact" type="button" data-report-action="share-summary">${escapeHtml(ui.shareSummary)}</button>
-              <button class="primary-button compact" type="button" data-report-action="doctor-brief">${escapeHtml(ui.doctorBrief)}</button>
-              <button class="secondary-button compact" type="button" data-report-action="packet-pdf">${escapeHtml(ui.packetPdf)}</button>
-              <button class="secondary-button compact" type="button" data-report-action="share-doctor">${escapeHtml(ui.shareDoctor)}</button>
-              ${canListen() ? `<button class="secondary-button compact" type="button" data-report-action="listen" data-listen-label="${escapeHtml(ui.listen)}" data-stop-label="${escapeHtml(ui.stopListening)}" aria-pressed="false">${escapeHtml(ui.listen)}</button>` : ""}
-              <select data-report-language aria-label="Report language">${Object.entries(REPORT_LANGUAGES).map(([code, name]) => `<option value="${code}"${code === reportLanguage ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
-            </div>
+            <label class="result-language"><span class="visually-hidden">${reportLanguage === "es" ? "Idioma del informe" : "Report language"}</span>
+            <select data-report-language aria-label="${reportLanguage === "es" ? "Idioma del informe" : "Report language"}">${Object.entries(REPORT_LANGUAGES).map(([code, name]) => `<option value="${code}"${code === reportLanguage ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
+            </label>
+            ${canListen() && !analysis.noData ? `<button class="secondary-button compact result-listen" type="button" data-report-action="listen" data-listen-label="${escapeHtml(ui.listen)}" data-stop-label="${escapeHtml(ui.stopListening)}" aria-pressed="false">${escapeHtml(ui.listen)}</button>` : ""}
           </div>
           ${ui.draftNotice ? `<p class="status-line" role="note">${escapeHtml(ui.draftNotice)}</p>` : ""}
         </div>
@@ -6901,36 +7289,33 @@ function renderLocalReportAnalysis(analysis) {
         const summary = analysis.noData || analysis.scanOnly ? "" : renderReportSummary(reportView, nextStep);
         return summary || (nextStep ? `<p class="result-next result-next-${escapeHtml(analysis.riskLevel)}">${escapeHtml(nextStep)}</p>` : "");
       })()}
+      ${analysis.noData ? "" : renderCheckNumbers(reportView)}
       ${renderReportChanges(analysis)}
       <div class="result-sections">
         ${analysis.noData || analysis.scanOnly ? "" : renderResultCards(reportView)}
         ${analysis.noData || analysis.scanOnly ? "" : renderOtherInfo(reportView)}
-        ${plan ? renderNextSteps(reportView) : ""}
-        ${(() => {
-          const list = `
-        <section>
-          <div class="section-heading-action">
-            <h4>${escapeHtml(ui.questions)}</h4>
-            <button class="secondary-button compact" type="button" data-report-action="copy-questions">${escapeHtml(ui.copyQuestions)}</button>
-          </div>
-          <ul>${questions.map((item) => `<li><strong>${escapeHtml(ui.ask)}</strong><span>${escapeHtml(item)}</span></li>`).join("")}</ul>
-        </section>`;
-          // With result cards on screen the questions are already shown once, so the full list folds away.
-          return reportView.cards.length ? renderResultMore(list, ui.questions, String(questions.length)) : list;
-        })()}
-        ${analysis.noData ? "" : `<div class="lab-reminder"><label for="lab-reminder-date">${escapeHtml(reportView.text.reminderLabel)}</label><input id="lab-reminder-date" type="date" data-lab-reminder min="${new Date().toISOString().slice(0, 10)}" /><button class="secondary-button compact" type="button" data-report-action="lab-reminder">${reportLanguage === "es" ? "Añadir al calendario" : "Add to calendar"}</button></div>`}
         ${showFindings ? `
         <section>
           <h4>${escapeHtml(ui.keyFindings)}</h4>
           <ul>${view.findings.map((item) => `<li><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.level)}. ${escapeHtml(item.detail)}</span></li>`).join("")}</ul>
         </section>` : ""}
         ${renderScanSection(analysis)}
-        ${renderResultMore(renderLabPanelSection(analysis, reportView), LAB_PANEL_TEXT[reportLanguage === "es" ? "es" : "en"].title, reportView.tests.length ? ui.allTests(reportView.tests.length, reportView.outside) : "")}
-        ${view.labValues?.length ? renderResultMore(`
-        <section>
-          <div class="section-heading-action">
-            <button class="secondary-button compact" type="button" data-report-action="save-detected-values">${escapeHtml(ui.saveToTrends)}</button>
+        ${analysis.noData ? "" : `
+        <section class="result-doctor" aria-labelledby="result-doctor-title">
+          <h4 id="result-doctor-title">${escapeHtml(ui.questions)}</h4>
+          <ol class="result-doctor-questions">${questions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ol>
+          <div class="result-doctor-actions">
+            <button class="primary-button" type="button" data-report-action="doctor-brief">${escapeHtml(ui.doctorBrief)}</button>
+            <button class="secondary-button compact" type="button" data-report-action="copy-questions">${escapeHtml(ui.copyQuestions)}</button>
           </div>
+          <p class="result-doctor-hint">${reportLanguage === "es" ? "Una página con sus resultados y estas preguntas, para imprimir o guardar como PDF." : "One page with your results and these questions, to print or save as a PDF."}</p>
+        </section>`}
+        ${plan ? renderNextSteps(reportView) : ""}
+        ${analysis.noData ? "" : `
+        <section class="result-source" aria-labelledby="result-source-title">
+          <h4 id="result-source-title">${reportLanguage === "es" ? "Su informe original" : "Your original report"}</h4>
+          ${renderResultMore(renderLabPanelSection(analysis, reportView), LAB_PANEL_TEXT[reportLanguage === "es" ? "es" : "en"].title, reportView.tests.length ? ui.allTests(reportView.tests.length, reportView.outside) : "")}
+          ${view.labValues?.length ? renderResultMore(`
           <div class="detected-values-grid">
             ${view.labValues.map((item) => `
               <article>
@@ -6938,8 +7323,19 @@ function renderLocalReportAnalysis(analysis) {
                 <span>${escapeHtml(String(item.value))} ${escapeHtml(item.unit)}</span>
               </article>
             `).join("")}
+          </div>`, ui.detectedValues, "") : ""}
+        </section>
+        <section class="result-save" aria-labelledby="result-save-title">
+          <h4 id="result-save-title">${reportLanguage === "es" ? "Guardar o compartir" : "Save or share"}</h4>
+          <div class="result-save-actions">
+            <button class="secondary-button compact" type="button" data-report-action="packet-pdf">${escapeHtml(ui.packetPdf)}</button>
+            <button class="secondary-button compact" type="button" data-report-action="share-doctor">${escapeHtml(ui.shareDoctor)}</button>
+            ${view.labValues?.length ? `<button class="secondary-button compact" type="button" data-report-action="save-detected-values">${escapeHtml(ui.saveToTrends)}</button>` : ""}
+            ${navigator.share ? `<button class="secondary-button compact" type="button" data-report-action="share-summary">${escapeHtml(ui.shareSummary)}</button>` : `<button class="secondary-button compact" type="button" data-report-action="copy-summary">${escapeHtml(ui.copySummary)}</button>`}
           </div>
-        </section>`, ui.detectedValues, "") : ""}
+          ${view.labValues?.length ? `<label class="trend-date" for="trend-date">${reportLanguage === "es" ? "Fecha del análisis (de su informe), para el registro de análisis" : "Date of the test (from your report), for the lab tracker"}<input id="trend-date" type="date" data-trend-date value="${escapeHtml(reportTestDate(getLocalReportText()))}" max="${new Date().toISOString().slice(0, 10)}" /></label>` : ""}
+          ${renderResultMore(`<div class="lab-reminder"><label for="lab-reminder-date">${escapeHtml(reportView.text.reminderLabel)}</label><input id="lab-reminder-date" type="date" data-lab-reminder min="${new Date().toISOString().slice(0, 10)}" /><button class="secondary-button compact" type="button" data-report-action="lab-reminder">${reportLanguage === "es" ? "Añadir al calendario" : "Add to calendar"}</button></div>`, reportLanguage === "es" ? "Añadir la próxima prueba al calendario" : "Add your next test to your calendar", "")}
+        </section>`}
       </div>
       <div class="safety-note"><strong>${escapeHtml(ui.safetyTitle)}</strong><span>${escapeHtml(ui.safetyText)}</span></div>
       ${analysis.noData ? "" : renderFeedbackBox(ui)}
@@ -7315,19 +7711,40 @@ async function saveDetectedValuesToTrends() {
     reportStatus.textContent = "No detected values are ready to save. Paste readable lab values and analyze first.";
     return;
   }
-  const today = new Date().toISOString().slice(0, 10);
+  // Each value is dated by the test, not by today, so older reports land in the right place.
+  const dateInput = reportResults.querySelector("[data-trend-date]");
+  const testDate = dateInput?.value || "";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(testDate)) {
+    reportStatus.textContent = reportLanguage === "es"
+      ? "Escriba la fecha del análisis que aparece en su informe y luego guarde."
+      : "Enter the date of the test from your report, then save.";
+    dateInput?.focus();
+    return;
+  }
+  const saved = new Set(getLabTrends().map(labTrendKey));
   const entries = labValues.map((item, index) => ({
     id: `lab-${Date.now()}-${index}`,
     test: item.label,
     value: String(item.value),
     unit: item.unit,
-    date: today,
+    date: testDate,
     flag: normalizeDetectedValueFlag(item.flag),
     notes: "Saved from FollowThrough Health detected report values. Verify against the original report and reference range.",
     source: "detected_report_value",
     createdAt: new Date().toISOString(),
-  }));
-  entries.forEach((entry) => addLabTrendEntry(entry));
+  })).filter((entry) => {
+    const key = labTrendKey(entry);
+    if (saved.has(key)) return false;
+    saved.add(key);
+    return true;
+  });
+  const already = labValues.length - entries.length;
+  if (!entries.length) {
+    reportStatus.textContent = `These ${labValues.length} value${labValues.length === 1 ? " is" : "s are"} already in your lab tracker for ${testDate}. Nothing was added twice.`;
+    return;
+  }
+  let dropped = 0;
+  entries.slice().reverse().forEach((entry) => { dropped += addLabTrendEntry(entry); });
   let syncedCount = 0;
   const patientId = authToken ? (report?.patientId || backendPatientId || await ensureBackendPatient(false)) : "";
   if (patientId) {
@@ -7336,15 +7753,19 @@ async function saveDetectedValuesToTrends() {
     syncedCount = results.filter(Boolean).length;
     if (syncedCount) {
       const syncedById = new Map(entries.map((entry) => [entry.id, entry]));
-      const labs = getLabTrends().map((item) => syncedById.get(item.id) || item);
-      localStorage.setItem("carewiseLabTrends", JSON.stringify(labs.slice(0, 60)));
+      storeLabTrends(getLabTrends().map((item) => syncedById.get(item.id) || item));
     }
   }
   renderLabTrends();
   renderVisitBriefs();
-  addAuditEvent("detected_report_values_saved", `${labValues.length} detected report value${labValues.length === 1 ? "" : "s"} saved to lab trends${syncedCount ? `; ${syncedCount} synced to backend` : ""}.`);
+  addAuditEvent("detected_report_values_saved", `${entries.length} detected report value${entries.length === 1 ? "" : "s"} saved to lab trends${syncedCount ? `; ${syncedCount} synced to backend` : ""}.`);
   renderAuditTrail();
-  reportStatus.textContent = `${labValues.length} detected value${labValues.length === 1 ? "" : "s"} saved to lab trends${syncedCount ? ` and ${syncedCount} saved to your account` : ""}. Verify with the original report.`;
+  reportStatus.textContent = [
+    `${entries.length} value${entries.length === 1 ? "" : "s"} saved to your lab tracker for ${testDate}${syncedCount ? ` and ${syncedCount} saved to your account` : ""}.`,
+    already ? `${already} ${already === 1 ? "was" : "were"} already there and not added twice.` : "",
+    dropped ? `Your tracker on this device is full, so the ${dropped} oldest value${dropped === 1 ? " was" : "s were"} removed; values saved to your account are kept there.` : "",
+    "Verify with the original report.",
+  ].filter(Boolean).join(" ");
 }
 
 function buildReportQuestionPack(analysis) {
@@ -11267,7 +11688,8 @@ const TRY_SAMPLES = {
 
 async function loadTrySample() {
   reportFromPhoto = false;
-  const id = window.location.hash.match(/^#try=([a-z0-9-]+)$/)?.[1];
+  // "#try=<sample>/explain" (the homepage's "Try a sample report") also explains it in one tap.
+  const [, id, explainNow] = window.location.hash.match(/^#try=([a-z0-9-]+)(\/explain)?$/) || [];
   const sample = id && TRY_SAMPLES[id];
   if (!sample) return;
   if (tourStep >= 0) endTour();
@@ -11288,6 +11710,7 @@ async function loadTrySample() {
   if (history.replaceState) history.replaceState(null, "", "#report-title");
   scrollBelowHeader(document.querySelector(".report-panel"));
   document.querySelector("#analyze-report")?.focus({ preventScroll: true });
+  if (explainNow) document.querySelector("#analyze-report")?.click();
 }
 
 if (window.location.hash === "#tour") startTour();
@@ -11317,3 +11740,323 @@ registerCareWiseServiceWorker();
 document.querySelector("#report-text")?.addEventListener("input", () => {
   reportFromPhoto = false;
 });
+
+// ---- Your data (Account): what is kept, download, activity, delete. ----
+// Counts come only from this browser's storage and from the account's own
+// export endpoints. Nothing here is invented: an empty list says so.
+const YD_SECRET_KEYS = new Set(["carewiseAuthToken", "carewiseRefreshToken", "carewiseFounderToken"]);
+const YD_ACTIVITY_LABELS = {
+  user_created: "Account created",
+  user_login: "Signed in",
+  email_verification_requested: "Confirmation email sent",
+  email_verified: "Email confirmed",
+  password_reset_completed: "Password changed",
+  refresh_token_rotated: "Sign-in renewed",
+  refresh_token_revoked: "Signed out",
+  two_factor_enabled: "Two-step sign-in turned on",
+  two_factor_disabled: "Two-step sign-in turned off",
+  profile_upserted: "Profile saved",
+  report_uploaded: "Report saved",
+  report_analyzed: "Report explained",
+  medication_saved: "Medicine saved",
+  care_plan_created: "Care plan made",
+  doctor_share_created: "Doctor link made",
+  doctor_share_revoked: "Doctor link turned off",
+  care_team_added: "Clinician added to your care team",
+  care_team_removed: "Clinician removed from your care team",
+  subscription_checkout_created: "Plan checkout started",
+  subscription_portal_opened: "Plan settings opened",
+  data_deletion_requested: "Deletion requested",
+};
+
+function ydStoredKeys() {
+  const keys = [];
+  try {
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (key && key.startsWith("carewise")) keys.push(key);
+    }
+  } catch {}
+  return keys;
+}
+
+function ydPlural(count, one, many) {
+  return `${count} ${count === 1 ? one : many}`;
+}
+
+function renderYourDataDevice() {
+  const list = document.querySelector("#yd-device-list");
+  if (!list) return;
+  const reports = getReportHistory().length;
+  const labs = getLabTrends().length;
+  const reminders = getReminders().length;
+  const record = getHealthRecord().length;
+  const counted = new Set(["carewiseReports", "carewiseLabTrends", "carewiseReminders", HEALTH_RECORD_KEY]);
+  const other = ydStoredKeys().filter((key) => !counted.has(key) && !YD_SECRET_KEYS.has(key)).length;
+  const rows = [
+    [reports, ydPlural(reports, "saved report", "saved reports")],
+    [labs, ydPlural(labs, "lab tracker value", "lab tracker values")],
+    [reminders, ydPlural(reminders, "reminder", "reminders")],
+    [record, ydPlural(record, "health record item", "health record items")],
+  ].filter(([count]) => count > 0).map(([, text]) => text);
+  if (other) rows.push(ydPlural(other, "other setting or note", "other settings and notes"));
+  list.innerHTML = rows.length
+    ? rows.map((text) => `<li>${escapeHtml(text)}</li>`).join("")
+    : "<li>Nothing is saved on this device yet.</li>";
+}
+
+async function checkYourDataAccount() {
+  const list = document.querySelector("#yd-account-list");
+  const status = document.querySelector("#yd-status");
+  if (!list) return;
+  if (!authToken) {
+    list.innerHTML = "<li>Sign in to see what is saved in your account.</li>";
+    return;
+  }
+  list.innerHTML = "<li>Checking…</li>";
+  try {
+    const payload = await apiGet("/privacy/me/export-summary");
+    const counts = payload.counts || {};
+    const rows = [
+      [counts.reports, "saved report", "saved reports"],
+      [counts.report_analyses, "report explanation", "report explanations"],
+      [counts.medications, "medicine", "medicines"],
+      [counts.care_plans, "care plan", "care plans"],
+      [counts.consent_records, "consent record", "consent records"],
+      [counts.subscriptions, "plan record", "plan records"],
+    ].map(([count, one, many]) => [Number(count) || 0, one, many])
+      .filter(([count]) => count > 0)
+      .map(([count, one, many]) => ydPlural(count, one, many));
+    list.innerHTML = rows.length
+      ? rows.map((text) => `<li>${escapeHtml(text)}</li>`).join("")
+      : "<li>Nothing is saved in your account yet.</li>";
+    if (status) status.textContent = "";
+  } catch {
+    list.innerHTML = "<li>We couldn't check your account right now. Please try again.</li>";
+  }
+}
+
+function ydDownload(name, data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = name;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function ydToday() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function downloadYourDeviceData() {
+  const data = {};
+  for (const key of ydStoredKeys()) {
+    if (YD_SECRET_KEYS.has(key)) continue; // sign-in tokens never go in the file
+    const raw = localStorage.getItem(key);
+    try { data[key] = JSON.parse(raw); } catch { data[key] = raw; }
+  }
+  ydDownload(`followthrough-this-device-${ydToday()}.json`, {
+    exported_at: new Date().toISOString(),
+    source: "This browser only",
+    data,
+  });
+  const status = document.querySelector("#yd-status");
+  if (status) status.textContent = "Downloaded the data kept on this device.";
+}
+
+
+async function fetchYourAccountExport() {
+  if (!ydExportCache) ydExportCache = await apiGet("/privacy/me/export");
+  return ydExportCache;
+}
+
+async function downloadYourAccountData() {
+  const status = document.querySelector("#yd-status");
+  if (!authToken) {
+    if (status) status.textContent = "Sign in to download your account data.";
+    return;
+  }
+  if (status) status.textContent = "Preparing your download…";
+  try {
+    ydExportCache = null;
+    const payload = await fetchYourAccountExport();
+    ydDownload(`followthrough-account-${ydToday()}.json`, payload);
+    if (status) status.textContent = "Downloaded your account data.";
+  } catch {
+    if (status) status.textContent = "We couldn't prepare your download right now. Please try again.";
+  }
+}
+
+async function renderYourDataActivity() {
+  const list = document.querySelector("#yd-activity");
+  if (!list || !authToken) return;
+  list.innerHTML = "<li>Loading…</li>";
+  try {
+    const payload = await fetchYourAccountExport();
+    const events = (payload.audit_events || [])
+      .filter((event) => event && event.action && event.created_at)
+      .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))
+      .slice(0, 20);
+    if (!events.length) {
+      list.innerHTML = "<li>No account activity recorded yet.</li>";
+      return;
+    }
+    list.innerHTML = events.map((event) => {
+      const label = YD_ACTIVITY_LABELS[event.action] || "Other account activity";
+      const when = new Date(event.created_at);
+      const shown = Number.isNaN(when.getTime()) ? "" : when.toLocaleString();
+      return `<li>${escapeHtml(label)}${shown ? `<time datetime="${escapeHtml(String(event.created_at))}">${escapeHtml(shown)}</time>` : ""}</li>`;
+    }).join("");
+  } catch {
+    list.innerHTML = "<li>We couldn't load your activity right now. Please try again.</li>";
+  }
+}
+
+function clearYourDevice() {
+  const confirmed = window.confirm("Clear this device? This removes reports, reminders and everything else FollowThrough Health keeps in this browser, and signs you out here. Your account, if you have one, is not deleted.");
+  const status = document.querySelector("#yd-status");
+  if (!confirmed) {
+    if (status) status.textContent = "Nothing was cleared.";
+    return;
+  }
+  for (const key of ydStoredKeys()) localStorage.removeItem(key);
+  try { sessionStorage.removeItem("carewiseFounderToken"); } catch {}
+  clearAuthSession();
+  window.location.hash = "#your-data";
+  window.location.reload();
+}
+
+function initializeYourData() {
+  if (!document.querySelector("#your-data")) return;
+  renderYourDataDevice();
+  if (authToken) checkYourDataAccount();
+  document.querySelector("#yd-account-check")?.addEventListener("click", checkYourDataAccount);
+  document.querySelector("#yd-download-device")?.addEventListener("click", downloadYourDeviceData);
+  document.querySelector("#yd-download-account")?.addEventListener("click", downloadYourAccountData);
+  document.querySelector("#yd-clear-device")?.addEventListener("click", clearYourDevice);
+  document.querySelector("#yd-activity-details")?.addEventListener("toggle", (event) => {
+    if (event.target.open) renderYourDataActivity();
+  });
+  window.addEventListener("storage", renderYourDataDevice);
+  document.querySelector("a[href='#your-data']")?.addEventListener("click", renderYourDataDevice);
+}
+
+initializeYourData();
+
+// ---- Care team (Account): which clinicians may see this patient's saved records. ----
+// Uses /patients/{id}/care-team. The panel stays hidden unless the person is signed in,
+// has a saved profile, and the server answers, so it never shows a screen that can't work.
+
+function careTeamDate(value) {
+  const date = value ? new Date(value) : null;
+  return date && !Number.isNaN(date.getTime()) ? date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) : "";
+}
+
+function careTeamActive(item) {
+  if (item.revoked_at) return false;
+  return !item.expires_at || new Date(item.expires_at).getTime() > Date.now();
+}
+
+function renderCareTeam(items) {
+  const list = document.querySelector("#clinician-access-list");
+  if (!list) return;
+  const active = items.filter(careTeamActive);
+  if (!active.length) {
+    list.innerHTML = '<li class="clinician-access-empty">No clinicians can see your records.</li>';
+    return;
+  }
+  list.innerHTML = active.map((item) => {
+    const since = careTeamDate(item.created_at);
+    const until = item.expires_at ? `until ${careTeamDate(item.expires_at)}` : "until you remove them";
+    return `<li>
+      <span class="clinician-access-who"><strong>${escapeHtml(item.clinician_email || "Clinician")}</strong><span>${since ? `Added ${escapeHtml(since)}, ` : ""}${escapeHtml(until)}</span></span>
+      <button class="secondary-button" type="button" data-clinician-remove="${escapeHtml(item.id)}" data-clinician-email="${escapeHtml(item.clinician_email || "")}">Remove</button>
+    </li>`;
+  }).join("");
+}
+
+async function loadCareTeam() {
+  const panel = document.querySelector("#clinician-access");
+  if (!panel) return;
+  if (!authToken) {
+    delete panel.dataset.ready;
+    careTeamPatientId = "";
+    return;
+  }
+  try {
+    const me = await apiGet("/patients/me/profile");
+    careTeamPatientId = me?.profile?.id || "";
+    if (!careTeamPatientId) {
+      delete panel.dataset.ready;
+      return;
+    }
+    const payload = await apiGet(`/patients/${encodeURIComponent(careTeamPatientId)}/care-team`);
+    renderCareTeam(Array.isArray(payload?.items) ? payload.items : []);
+    panel.dataset.ready = "true";
+  } catch {
+    // Not available on this server yet, or offline: show nothing rather than a broken screen.
+    delete panel.dataset.ready;
+  }
+}
+
+async function addToCareTeam(event) {
+  event.preventDefault();
+  const status = document.querySelector("#clinician-access-status");
+  const emailInput = document.querySelector("#clinician-access-email");
+  const email = emailInput.value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    status.textContent = "Enter the clinician's email address.";
+    emailInput.focus();
+    return;
+  }
+  const days = Number(document.querySelector("#clinician-access-days").value) || null;
+  const button = document.querySelector("#clinician-access-add");
+  button.disabled = true;
+  status.textContent = "Adding…";
+  try {
+    await apiPost(`/patients/${encodeURIComponent(careTeamPatientId)}/care-team`, { clinician_email: email, days });
+    emailInput.value = "";
+    status.textContent = `${email} can now see your saved records${days ? ` for ${days} days` : ""}.`;
+    await loadCareTeam();
+  } catch (error) {
+    status.textContent = getBackendErrorStatus(error) === 400
+      ? "That email isn't a confirmed FollowThrough Health clinician account. Check the address with your clinic."
+      : "We couldn't add them right now. Please try again.";
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function removeFromCareTeam(button) {
+  const status = document.querySelector("#clinician-access-status");
+  const email = button.dataset.clinicianEmail || "this clinician";
+  if (!window.confirm(`Remove ${email} from your care team? They will no longer be able to see your records.`)) return;
+  button.disabled = true;
+  try {
+    await requestJson("DELETE", `/patients/${encodeURIComponent(careTeamPatientId)}/care-team/${encodeURIComponent(button.dataset.clinicianRemove)}`);
+    status.textContent = `${email} was removed and can no longer see your records.`;
+    await loadCareTeam();
+  } catch {
+    button.disabled = false;
+    status.textContent = "We couldn't remove them right now. Please try again.";
+  }
+}
+
+function initializeCareTeam() {
+  if (!document.querySelector("#clinician-access")) return;
+  document.querySelector("#clinician-access-form")?.addEventListener("submit", addToCareTeam);
+  document.querySelector("#clinician-access-list")?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-clinician-remove]");
+    if (button) removeFromCareTeam(button);
+  });
+  if (authToken && careTeamLoadedFor !== authToken) {
+    careTeamLoadedFor = authToken;
+    loadCareTeam();
+  }
+}
+
+initializeCareTeam();

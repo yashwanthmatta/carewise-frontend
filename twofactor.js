@@ -1,4 +1,4 @@
-// Two-step sign-in settings on the Profile screen: turn on with an authenticator app
+// Two-step sign-in settings on the Account screen: turn on with an authenticator app
 // (QR code drawn on this device), save one-time backup codes, or turn it off.
 // Loaded after script.js and uses its helpers (apiGet, apiPost, authToken, escapeHtml).
 
