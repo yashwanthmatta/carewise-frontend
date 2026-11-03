@@ -74,10 +74,16 @@ const png = await shot.screenshot();
 await shot.close();
 await page.goto("about:blank");
 await page.goto(`${base}#report-title`, { waitUntil: "load" });
+// Hold the photo reader's language file back for a few seconds, so the reading is certainly
+// still running when Cancel is pressed. On a fast runner a small photo can otherwise be read
+// before the click lands, and the test would race the reader instead of checking Cancel.
+const holdReader = (route) => setTimeout(() => route.continue().catch(() => {}), 4000);
+await page.route(/eng\.traineddata/, holdReader);
 await page.setInputFiles("#report-file", { name: "sample-report.png", mimeType: "image/png", buffer: png });
 await page.waitForSelector("#reading-card:not([hidden])", { timeout: 3000 }).catch(() => {});
 ok(await page.evaluate(() => !document.querySelector("#reading-bar").hasAttribute("aria-valuenow")), "no percentage is claimed before the reader reports one");
 await page.click("#reading-cancel");
+await page.unroute(/eng\.traineddata/, holdReader);
 ok(await page.isHidden("#reading-card"), "Cancel hides the reading card");
 ok(/Stopped/.test(await page.textContent("#report-status")), "Cancel says reading stopped");
 await page.waitForTimeout(20000);

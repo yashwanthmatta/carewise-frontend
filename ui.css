@@ -693,3 +693,32 @@ body:not([data-auth="in"]) button.when-in { display: none !important; }
 .history-person-filter[hidden] { display: none !important; }
 .trend-date { display: grid; gap: 6px; font-size: var(--ft-text-sm); font-weight: 600; color: var(--ft-ink); }
 .trend-date input { max-width: 220px; min-height: 44px; }
+
+/* Your data (Account): what is kept, download, delete. */
+.your-data-panel h4 { margin: 0; font-size: var(--ft-text-md, 1.05rem); color: var(--ft-ink); }
+.yd-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 8px; }
+.yd-card { display: grid; gap: 8px; align-content: start; padding: 16px; border: 1px solid var(--ft-line, #e2e8f0); border-radius: 12px; background: var(--ft-surface-2, #f8fafc); }
+.yd-list { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--ft-ink); }
+.yd-list .yd-count { font-weight: 700; }
+.yd-note { margin: 0; font-size: var(--ft-text-sm); color: var(--ft-ink-2, #475569); }
+.yd-heading { margin-top: 20px !important; }
+.yd-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.yd-actions a.secondary-button { display: inline-flex; align-items: center; text-decoration: none; }
+.yd-details { margin-top: 16px; border-top: 1px solid var(--ft-line, #e2e8f0); padding-top: 12px; }
+.yd-details summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+.yd-details > * + * { margin-top: 8px; }
+body[data-auth="in"] details.when-in { display: block; }
+.yd-activity { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: var(--ft-text-sm); }
+.yd-activity time { color: var(--ft-ink-2, #475569); margin-left: 6px; }
+
+/* Care team (Account): clinicians a patient lets see their records. */
+/* Shown only once the server confirms the clinician-access API (data-ready), and only under Account. */
+.clinician-access-panel:not([data-ready]), .clinician-access-panel[hidden] { display: none !important; }
+.clinician-access-list { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 8px; }
+.clinician-access-list li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px; border: 1px solid var(--ft-line); border-radius: 12px; background: var(--ft-surface-2); }
+.clinician-access-list li.clinician-access-empty { display: block; background: transparent; border-style: dashed; color: var(--ft-ink-2); }
+.clinician-access-who { display: grid; gap: 2px; min-width: 0; }
+.clinician-access-who strong { overflow-wrap: anywhere; }
+.clinician-access-who span { font-size: var(--ft-text-sm); color: var(--ft-ink-2); }
+.clinician-access-form { display: grid; gap: 12px; grid-template-columns: 1fr; align-items: end; }
+@media (min-width: 641px) { .clinician-access-form { grid-template-columns: 2fr 1fr auto; } }

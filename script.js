@@ -175,6 +175,9 @@ let lastGeneratedPlan = null;
 let backendPatientId = localStorage.getItem("carewiseBackendPatientId") || "";
 let backendAvailable = false;
 let authToken = localStorage.getItem("carewiseAuthToken") || "";
+let ydExportCache = null; // Your data: cached account export, cleared on sign-out
+let careTeamLoadedFor = ""; // Care team: the sign-in it was last loaded for
+let careTeamPatientId = "";
 let refreshToken = localStorage.getItem("carewiseRefreshToken") || "";
 let authEmail = localStorage.getItem("carewiseAuthEmail") || "";
 let authRole = localStorage.getItem("carewiseAuthRole") || document.querySelector?.("#auth-role")?.value || "patient";
@@ -2180,6 +2183,8 @@ function initializeWorkspaceNavigation() {
     ["account-title", document.querySelector(".billing-panel")],
     ["account-title", document.querySelector(".doctor-links-panel")],
     ["account-title", document.querySelector(".twofactor-panel")],
+    ["account-title", document.querySelector(".your-data-panel")],
+    ["account-title", document.querySelector(".clinician-access-panel")],
     // The landing page (hero, how it works, safety, pricing) only shows on Home.
     ["home-title", document.querySelector(".landing")],
   ].filter(([, element]) => Boolean(element));
@@ -2190,6 +2195,17 @@ function initializeWorkspaceNavigation() {
   });
 
   const showSection = (targetId, shouldScroll = true) => {
+    // A link to something inside a companion panel ("#your-data") opens that panel's section
+    // and scrolls to it, instead of falling back to Home.
+    if (targetId && !sectionsById.has(targetId)) {
+      const inner = document.getElementById(targetId);
+      const owner = inner && sectionCompanions.find(([, element]) => element.contains(inner));
+      if (owner) {
+        showSection(owner[0], false);
+        requestAnimationFrame(() => scrollBelowHeader(inner));
+        return;
+      }
+    }
     const target = sectionsById.get(targetId) || sectionsById.get("home-title");
     const activeId = [...sectionsById.entries()].find(([, element]) => element === target)?.[0] || "home-title";
 
@@ -3091,6 +3107,16 @@ function updateAuthStatus(message) {
   if (avatar) avatar.textContent = (authEmail || "·").charAt(0).toUpperCase();
   const verifyBox = document.querySelector("#account-verify");
   if (verifyBox) verifyBox.hidden = !signedIn || emailVerified;
+  const ydAccount = document.querySelector("#yd-account-list");
+  if (ydAccount && !signedIn) ydAccount.innerHTML = "<li>Sign in to see what is saved in your account.</li>";
+  if (!signedIn) ydExportCache = null;
+  const careTeamPanel = document.querySelector("#clinician-access");
+  if (careTeamPanel && !signedIn) delete careTeamPanel.dataset.ready;
+  if (careTeamPanel && signedIn && careTeamLoadedFor !== authToken && document.readyState !== "loading") {
+    careTeamLoadedFor = authToken;
+    loadCareTeam();
+  }
+  if (!signedIn) careTeamLoadedFor = "";
   refreshReviewDemoProof();
 }
 
@@ -11714,3 +11740,323 @@ registerCareWiseServiceWorker();
 document.querySelector("#report-text")?.addEventListener("input", () => {
   reportFromPhoto = false;
 });
+
+// ---- Your data (Account): what is kept, download, activity, delete. ----
+// Counts come only from this browser's storage and from the account's own
+// export endpoints. Nothing here is invented: an empty list says so.
+const YD_SECRET_KEYS = new Set(["carewiseAuthToken", "carewiseRefreshToken", "carewiseFounderToken"]);
+const YD_ACTIVITY_LABELS = {
+  user_created: "Account created",
+  user_login: "Signed in",
+  email_verification_requested: "Confirmation email sent",
+  email_verified: "Email confirmed",
+  password_reset_completed: "Password changed",
+  refresh_token_rotated: "Sign-in renewed",
+  refresh_token_revoked: "Signed out",
+  two_factor_enabled: "Two-step sign-in turned on",
+  two_factor_disabled: "Two-step sign-in turned off",
+  profile_upserted: "Profile saved",
+  report_uploaded: "Report saved",
+  report_analyzed: "Report explained",
+  medication_saved: "Medicine saved",
+  care_plan_created: "Care plan made",
+  doctor_share_created: "Doctor link made",
+  doctor_share_revoked: "Doctor link turned off",
+  care_team_added: "Clinician added to your care team",
+  care_team_removed: "Clinician removed from your care team",
+  subscription_checkout_created: "Plan checkout started",
+  subscription_portal_opened: "Plan settings opened",
+  data_deletion_requested: "Deletion requested",
+};
+
+function ydStoredKeys() {
+  const keys = [];
+  try {
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (key && key.startsWith("carewise")) keys.push(key);
+    }
+  } catch {}
+  return keys;
+}
+
+function ydPlural(count, one, many) {
+  return `${count} ${count === 1 ? one : many}`;
+}
+
+function renderYourDataDevice() {
+  const list = document.querySelector("#yd-device-list");
+  if (!list) return;
+  const reports = getReportHistory().length;
+  const labs = getLabTrends().length;
+  const reminders = getReminders().length;
+  const record = getHealthRecord().length;
+  const counted = new Set(["carewiseReports", "carewiseLabTrends", "carewiseReminders", HEALTH_RECORD_KEY]);
+  const other = ydStoredKeys().filter((key) => !counted.has(key) && !YD_SECRET_KEYS.has(key)).length;
+  const rows = [
+    [reports, ydPlural(reports, "saved report", "saved reports")],
+    [labs, ydPlural(labs, "lab tracker value", "lab tracker values")],
+    [reminders, ydPlural(reminders, "reminder", "reminders")],
+    [record, ydPlural(record, "health record item", "health record items")],
+  ].filter(([count]) => count > 0).map(([, text]) => text);
+  if (other) rows.push(ydPlural(other, "other setting or note", "other settings and notes"));
+  list.innerHTML = rows.length
+    ? rows.map((text) => `<li>${escapeHtml(text)}</li>`).join("")
+    : "<li>Nothing is saved on this device yet.</li>";
+}
+
+async function checkYourDataAccount() {
+  const list = document.querySelector("#yd-account-list");
+  const status = document.querySelector("#yd-status");
+  if (!list) return;
+  if (!authToken) {
+    list.innerHTML = "<li>Sign in to see what is saved in your account.</li>";
+    return;
+  }
+  list.innerHTML = "<li>Checking…</li>";
+  try {
+    const payload = await apiGet("/privacy/me/export-summary");
+    const counts = payload.counts || {};
+    const rows = [
+      [counts.reports, "saved report", "saved reports"],
+      [counts.report_analyses, "report explanation", "report explanations"],
+      [counts.medications, "medicine", "medicines"],
+      [counts.care_plans, "care plan", "care plans"],
+      [counts.consent_records, "consent record", "consent records"],
+      [counts.subscriptions, "plan record", "plan records"],
+    ].map(([count, one, many]) => [Number(count) || 0, one, many])
+      .filter(([count]) => count > 0)
+      .map(([count, one, many]) => ydPlural(count, one, many));
+    list.innerHTML = rows.length
+      ? rows.map((text) => `<li>${escapeHtml(text)}</li>`).join("")
+      : "<li>Nothing is saved in your account yet.</li>";
+    if (status) status.textContent = "";
+  } catch {
+    list.innerHTML = "<li>We couldn't check your account right now. Please try again.</li>";
+  }
+}
+
+function ydDownload(name, data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = name;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function ydToday() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function downloadYourDeviceData() {
+  const data = {};
+  for (const key of ydStoredKeys()) {
+    if (YD_SECRET_KEYS.has(key)) continue; // sign-in tokens never go in the file
+    const raw = localStorage.getItem(key);
+    try { data[key] = JSON.parse(raw); } catch { data[key] = raw; }
+  }
+  ydDownload(`followthrough-this-device-${ydToday()}.json`, {
+    exported_at: new Date().toISOString(),
+    source: "This browser only",
+    data,
+  });
+  const status = document.querySelector("#yd-status");
+  if (status) status.textContent = "Downloaded the data kept on this device.";
+}
+
+
+async function fetchYourAccountExport() {
+  if (!ydExportCache) ydExportCache = await apiGet("/privacy/me/export");
+  return ydExportCache;
+}
+
+async function downloadYourAccountData() {
+  const status = document.querySelector("#yd-status");
+  if (!authToken) {
+    if (status) status.textContent = "Sign in to download your account data.";
+    return;
+  }
+  if (status) status.textContent = "Preparing your download…";
+  try {
+    ydExportCache = null;
+    const payload = await fetchYourAccountExport();
+    ydDownload(`followthrough-account-${ydToday()}.json`, payload);
+    if (status) status.textContent = "Downloaded your account data.";
+  } catch {
+    if (status) status.textContent = "We couldn't prepare your download right now. Please try again.";
+  }
+}
+
+async function renderYourDataActivity() {
+  const list = document.querySelector("#yd-activity");
+  if (!list || !authToken) return;
+  list.innerHTML = "<li>Loading…</li>";
+  try {
+    const payload = await fetchYourAccountExport();
+    const events = (payload.audit_events || [])
+      .filter((event) => event && event.action && event.created_at)
+      .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))
+      .slice(0, 20);
+    if (!events.length) {
+      list.innerHTML = "<li>No account activity recorded yet.</li>";
+      return;
+    }
+    list.innerHTML = events.map((event) => {
+      const label = YD_ACTIVITY_LABELS[event.action] || "Other account activity";
+      const when = new Date(event.created_at);
+      const shown = Number.isNaN(when.getTime()) ? "" : when.toLocaleString();
+      return `<li>${escapeHtml(label)}${shown ? `<time datetime="${escapeHtml(String(event.created_at))}">${escapeHtml(shown)}</time>` : ""}</li>`;
+    }).join("");
+  } catch {
+    list.innerHTML = "<li>We couldn't load your activity right now. Please try again.</li>";
+  }
+}
+
+function clearYourDevice() {
+  const confirmed = window.confirm("Clear this device? This removes reports, reminders and everything else FollowThrough Health keeps in this browser, and signs you out here. Your account, if you have one, is not deleted.");
+  const status = document.querySelector("#yd-status");
+  if (!confirmed) {
+    if (status) status.textContent = "Nothing was cleared.";
+    return;
+  }
+  for (const key of ydStoredKeys()) localStorage.removeItem(key);
+  try { sessionStorage.removeItem("carewiseFounderToken"); } catch {}
+  clearAuthSession();
+  window.location.hash = "#your-data";
+  window.location.reload();
+}
+
+function initializeYourData() {
+  if (!document.querySelector("#your-data")) return;
+  renderYourDataDevice();
+  if (authToken) checkYourDataAccount();
+  document.querySelector("#yd-account-check")?.addEventListener("click", checkYourDataAccount);
+  document.querySelector("#yd-download-device")?.addEventListener("click", downloadYourDeviceData);
+  document.querySelector("#yd-download-account")?.addEventListener("click", downloadYourAccountData);
+  document.querySelector("#yd-clear-device")?.addEventListener("click", clearYourDevice);
+  document.querySelector("#yd-activity-details")?.addEventListener("toggle", (event) => {
+    if (event.target.open) renderYourDataActivity();
+  });
+  window.addEventListener("storage", renderYourDataDevice);
+  document.querySelector("a[href='#your-data']")?.addEventListener("click", renderYourDataDevice);
+}
+
+initializeYourData();
+
+// ---- Care team (Account): which clinicians may see this patient's saved records. ----
+// Uses /patients/{id}/care-team. The panel stays hidden unless the person is signed in,
+// has a saved profile, and the server answers, so it never shows a screen that can't work.
+
+function careTeamDate(value) {
+  const date = value ? new Date(value) : null;
+  return date && !Number.isNaN(date.getTime()) ? date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) : "";
+}
+
+function careTeamActive(item) {
+  if (item.revoked_at) return false;
+  return !item.expires_at || new Date(item.expires_at).getTime() > Date.now();
+}
+
+function renderCareTeam(items) {
+  const list = document.querySelector("#clinician-access-list");
+  if (!list) return;
+  const active = items.filter(careTeamActive);
+  if (!active.length) {
+    list.innerHTML = '<li class="clinician-access-empty">No clinicians can see your records.</li>';
+    return;
+  }
+  list.innerHTML = active.map((item) => {
+    const since = careTeamDate(item.created_at);
+    const until = item.expires_at ? `until ${careTeamDate(item.expires_at)}` : "until you remove them";
+    return `<li>
+      <span class="clinician-access-who"><strong>${escapeHtml(item.clinician_email || "Clinician")}</strong><span>${since ? `Added ${escapeHtml(since)}, ` : ""}${escapeHtml(until)}</span></span>
+      <button class="secondary-button" type="button" data-clinician-remove="${escapeHtml(item.id)}" data-clinician-email="${escapeHtml(item.clinician_email || "")}">Remove</button>
+    </li>`;
+  }).join("");
+}
+
+async function loadCareTeam() {
+  const panel = document.querySelector("#clinician-access");
+  if (!panel) return;
+  if (!authToken) {
+    delete panel.dataset.ready;
+    careTeamPatientId = "";
+    return;
+  }
+  try {
+    const me = await apiGet("/patients/me/profile");
+    careTeamPatientId = me?.profile?.id || "";
+    if (!careTeamPatientId) {
+      delete panel.dataset.ready;
+      return;
+    }
+    const payload = await apiGet(`/patients/${encodeURIComponent(careTeamPatientId)}/care-team`);
+    renderCareTeam(Array.isArray(payload?.items) ? payload.items : []);
+    panel.dataset.ready = "true";
+  } catch {
+    // Not available on this server yet, or offline: show nothing rather than a broken screen.
+    delete panel.dataset.ready;
+  }
+}
+
+async function addToCareTeam(event) {
+  event.preventDefault();
+  const status = document.querySelector("#clinician-access-status");
+  const emailInput = document.querySelector("#clinician-access-email");
+  const email = emailInput.value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    status.textContent = "Enter the clinician's email address.";
+    emailInput.focus();
+    return;
+  }
+  const days = Number(document.querySelector("#clinician-access-days").value) || null;
+  const button = document.querySelector("#clinician-access-add");
+  button.disabled = true;
+  status.textContent = "Adding…";
+  try {
+    await apiPost(`/patients/${encodeURIComponent(careTeamPatientId)}/care-team`, { clinician_email: email, days });
+    emailInput.value = "";
+    status.textContent = `${email} can now see your saved records${days ? ` for ${days} days` : ""}.`;
+    await loadCareTeam();
+  } catch (error) {
+    status.textContent = getBackendErrorStatus(error) === 400
+      ? "That email isn't a confirmed FollowThrough Health clinician account. Check the address with your clinic."
+      : "We couldn't add them right now. Please try again.";
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function removeFromCareTeam(button) {
+  const status = document.querySelector("#clinician-access-status");
+  const email = button.dataset.clinicianEmail || "this clinician";
+  if (!window.confirm(`Remove ${email} from your care team? They will no longer be able to see your records.`)) return;
+  button.disabled = true;
+  try {
+    await requestJson("DELETE", `/patients/${encodeURIComponent(careTeamPatientId)}/care-team/${encodeURIComponent(button.dataset.clinicianRemove)}`);
+    status.textContent = `${email} was removed and can no longer see your records.`;
+    await loadCareTeam();
+  } catch {
+    button.disabled = false;
+    status.textContent = "We couldn't remove them right now. Please try again.";
+  }
+}
+
+function initializeCareTeam() {
+  if (!document.querySelector("#clinician-access")) return;
+  document.querySelector("#clinician-access-form")?.addEventListener("submit", addToCareTeam);
+  document.querySelector("#clinician-access-list")?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-clinician-remove]");
+    if (button) removeFromCareTeam(button);
+  });
+  if (authToken && careTeamLoadedFor !== authToken) {
+    careTeamLoadedFor = authToken;
+    loadCareTeam();
+  }
+}
+
+initializeCareTeam();
