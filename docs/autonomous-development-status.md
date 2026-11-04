@@ -1,6 +1,6 @@
 # Development status (read this first on every run)
 
-Last verified run: 2026-11-03, daily run at 04:23 UTC.
+Last verified run: 2026-11-04, daily run at 04:23 UTC.
 
 ## Repository state
 
@@ -48,7 +48,10 @@ Last verified run: 2026-11-03, daily run at 04:23 UTC.
 4. ~~Website: the page view for photos~~ Done on 2 Nov: "See it on your photo" (PR #138).
 5. **Backend:** staff two-step sign-in enforcement, staged behind a setting.
 5a. ~~Website sign-in buttons and Sign-in methods~~ Built on 3 Nov (frontend PR from this branch): "Continue with Google / Apple / Microsoft" and Account → Sign-in methods. Both are hidden until the server lists a configured provider (backend #55). Eval `provider-sign-in.mjs` runs in CI. **Before switching on:** replace the text-only buttons with each provider's official button artwork (Google, Apple and Microsoft brand kits), and run a real sign-in in staging.
-6. **CI:** dependency audit (`npm audit` / `pip-audit`), secret scan, and a nightly axe scan.
+6. **CI:** ~~dependency audit~~ Partly done on 4 Nov:
+   - **Backend:** pip-audit found 7 advisories in pypdf 6.21.2, which reads uploaded PDFs. The minimum is now 6.21.4, and a weekly `dependency-audit.yml` job runs pip-audit. Both are in backend #55.
+   - **Mobile:** npm audit found 13 advisories (3 high) in Expo tooling. A lockfile-only update leaves 5 moderate (mobile #52).
+   - Still to do: a secret scan, and a nightly axe scan.
 
 ## Found and fixed on 3 Nov
 
