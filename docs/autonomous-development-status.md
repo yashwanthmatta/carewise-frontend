@@ -1,6 +1,6 @@
 # Development status (read this first on every run)
 
-Last verified run: 2026-11-04, daily run at 04:23 UTC.
+Last verified run: 2026-11-05, daily run at 04:23 UTC.
 
 ## Repository state
 
@@ -51,7 +51,10 @@ Last verified run: 2026-11-04, daily run at 04:23 UTC.
 6. **CI:** ~~dependency audit~~ Partly done on 4 Nov:
    - **Backend:** pip-audit found 7 advisories in pypdf 6.21.2, which reads uploaded PDFs. The minimum is now 6.21.4, and a weekly `dependency-audit.yml` job runs pip-audit. Both are in backend #55.
    - **Mobile:** npm audit found 13 advisories (3 high) in Expo tooling. A lockfile-only update leaves 5 moderate (mobile #52).
-   - Still to do: a secret scan, and a nightly axe scan.
+   - **Secret scan (5 Nov):** a full-history scan of all three repos found no credentials. `scripts/security/secret_scan.py` now runs in Backend CI (backend #56).
+   - Still to do: a nightly axe scan.
+5b. **Staff two-step sign-in requirement:** built, off by default (`CAREWISE_STAFF_TWO_FACTOR_REQUIRED`, backend #56). Next: a website banner when `/auth/me` reports `staff_two_factor_needed`.
+5c. **Main red on 5 Nov:** #116 merged after #142 with the same cache version, 208. Frontend #143 bumps it to 209. **Owner:** merge cache-version PRs one at a time.
 
 ## Found and fixed on 3 Nov
 
