@@ -722,3 +722,17 @@ body[data-auth="in"] details.when-in { display: block; }
 .clinician-access-who span { font-size: var(--ft-text-sm); color: var(--ft-ink-2); }
 .clinician-access-form { display: grid; gap: 12px; grid-template-columns: 1fr; align-items: end; }
 @media (min-width: 641px) { .clinician-access-form { grid-template-columns: 2fr 1fr auto; } }
+
+/* Continue with Google / Apple / Microsoft, shown only for providers the server offers. */
+.auth-providers[hidden], .auth-provider[hidden] { display: none !important; }
+.auth-providers { display: grid; gap: 10px; margin: 4px 0 8px; }
+.auth-provider { width: 100%; justify-content: center; }
+.auth-or { display: flex; align-items: center; gap: 10px; margin: 6px 0 0; color: var(--ft-ink-2); font-size: var(--ft-text-sm); }
+.auth-or::before, .auth-or::after { content: ""; flex: 1; border-top: 1px solid var(--ft-line); }
+/* Sign-in methods (Account): shown only once the server answers /auth/identities. */
+.signin-methods-panel:not([data-ready]), .signin-methods-panel[hidden] { display: none !important; }
+.signin-methods-list { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 8px; }
+.signin-methods-list li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px; border: 1px solid var(--ft-line); border-radius: 12px; background: var(--ft-surface-2); }
+.signin-methods-list .signin-method-who { display: grid; gap: 2px; min-width: 0; }
+.signin-methods-list .signin-method-who strong { overflow-wrap: anywhere; }
+.signin-methods-list .signin-method-who span { font-size: var(--ft-text-sm); color: var(--ft-ink-2); overflow-wrap: anywhere; }

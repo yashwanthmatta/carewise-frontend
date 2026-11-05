@@ -16,14 +16,14 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-207" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-208" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-207" />
-    <link rel="stylesheet" href="ui.css?v=carewise-product-207" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-208" />
+    <link rel="stylesheet" href="ui.css?v=carewise-product-208" />
   </head>
   <body>
     <main class="app-shell">
@@ -324,6 +324,12 @@
                 <button type="button" role="tab" id="auth-tab-signin" aria-selected="true" aria-controls="auth-form" data-auth-tab="signin">Sign in</button>
                 <button type="button" role="tab" id="auth-tab-signup" aria-selected="false" aria-controls="auth-form" tabindex="-1" data-auth-tab="signup">Create account</button>
               </div>
+              <div class="auth-providers" id="auth-providers" hidden>
+                <button type="button" class="secondary-button auth-provider" data-provider="google" hidden>Continue with Google</button>
+                <button type="button" class="secondary-button auth-provider" data-provider="apple" hidden>Continue with Apple</button>
+                <button type="button" class="secondary-button auth-provider" data-provider="microsoft" hidden>Continue with Microsoft</button>
+                <p class="auth-or"><span>or use your email</span></p>
+              </div>
               <form id="auth-form" class="auth-form" role="tabpanel" aria-labelledby="auth-tab-signin" novalidate>
                 <div class="field">
                   <label class="field-label" for="auth-email">Email</label>
@@ -548,6 +554,7 @@
               <li><strong>Twilio</strong>: places reminder calls, only if you turn them on.</li>
               <li><strong>Our email provider</strong>: sends sign-in and reminder emails.</li>
               <li><strong>Stripe</strong>: handles payments. Card details never reach us.</li>
+              <li><strong>Google, Apple or Microsoft</strong>: only if you sign in with them, to confirm it's you. They never see your reports.</li>
             </ul>
             <p class="yd-note">Full list and details: <a href="legal/privacy.html">Privacy policy</a>. We don't sell your information or use it to train AI.</p>
           </details>
@@ -594,6 +601,19 @@
           </form>
           <p class="yd-note">Only clinicians with a confirmed FollowThrough Health clinician account can be added. Ask your clinic for the email they use.</p>
           <p id="clinician-access-status" class="status-line" role="status"></p>
+        </section>
+
+        <section class="panel signin-methods-panel" id="signin-methods" aria-labelledby="signin-methods-title">
+          <div class="panel-heading-row">
+            <div>
+              <p class="eyebrow">Account security</p>
+              <h3 id="signin-methods-title">Sign-in methods</h3>
+              <p class="panel-intro">Ways you can sign in to this one account. Google, Apple and Microsoft are used only to confirm it's you: they never see your reports.</p>
+            </div>
+          </div>
+          <ul id="signin-methods-list" class="signin-methods-list" aria-live="polite"></ul>
+          <div id="signin-methods-add" class="yd-actions"></div>
+          <p id="signin-methods-status" class="status-line" role="status"></p>
         </section>
 
         <section class="panel doctor-links-panel" aria-labelledby="doctor-links-title">
@@ -2237,13 +2257,13 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-207"></script>
-    <script src="help.js?v=carewise-product-207"></script>
-    <script src="doctor-share.js?v=carewise-product-207"></script>
-    <script src="docbridge.js?v=carewise-product-207"></script>
-    <script src="reminders.js?v=carewise-product-207"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-207"></script>
-    <script src="twofactor.js?v=carewise-product-207"></script>
-    <script src="account-ui.js?v=carewise-product-207"></script>
+    <script src="script.js?v=carewise-product-208"></script>
+    <script src="help.js?v=carewise-product-208"></script>
+    <script src="doctor-share.js?v=carewise-product-208"></script>
+    <script src="docbridge.js?v=carewise-product-208"></script>
+    <script src="reminders.js?v=carewise-product-208"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-208"></script>
+    <script src="twofactor.js?v=carewise-product-208"></script>
+    <script src="account-ui.js?v=carewise-product-208"></script>
   </body>
 </html>
