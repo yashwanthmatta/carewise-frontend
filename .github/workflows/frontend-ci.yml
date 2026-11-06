@@ -78,6 +78,9 @@ jobs:
       - name: Repeated results keep the concerning value; misread numbers are not read
         run: node scripts/eval/repeat-and-misread-values.mjs
 
+      - name: Photo ranges that lost their decimal point
+        run: node scripts/eval/ocr-range-decimals.mjs
+
       - name: Help chat answers match the website
         run: node scripts/eval/help-answers.mjs
 

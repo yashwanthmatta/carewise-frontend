@@ -4834,6 +4834,11 @@ function checkOcrNumbers(rawText) {
     if (checks.some((check) => check.line === index)) return;
     const row = readLabPanel(line)[0] || ruleLineRow(line);
     if (!row || !row.rangeText || row.generalRange) return;
+    const rangeCheck = ocrRangeDecimalCheck(line, row);
+    if (rangeCheck) {
+      checks.push({ line: index, key: row.key, name: TEST_GUIDE[row.key]?.name || labTestInfo(row.key)?.name || row.name, ...rangeCheck, kind: "ask" });
+      return;
+    }
     const token0 = String(row.valueText);
     // Lipids in mmol/L whose printed limit lost its point too ("1,5 <1,7" read as "15 <17").
     const siLimit = OCR_SI_LIPID_LIMITS[row.key];
@@ -4858,6 +4863,56 @@ function checkOcrNumbers(rawText) {
     if (other) checks.push({ line: index, key: row.key, name: TEST_GUIDE[row.key]?.name || labTestInfo(row.key)?.name || row.name, read: token, value: token, other, kind: "ask" });
   });
   return { text: lines.join("\n"), checks };
+}
+
+// A photo can drop the decimal point from a printed range as well as from the result:
+// "1.6-2.3" read as "16-23" (a normal 1.9 then looks low), or only one side, "6.0-8.5"
+// read as "6.0-85" (a result read as 94 instead of 9.4 then looks only slightly high).
+// When putting the point back makes the result fit its range, and the reading changes,
+// the person is asked to check the result and range against the report. Nothing is assumed.
+function ocrRangeDecimalCheck(line, row) {
+  const ranges = [...line.matchAll(/(\d+(?:[.,]\d+)?)(\s*(?:-|–)\s*)(\d+(?:[.,]\d+)?)/g)];
+  const range = ranges[ranges.length - 1];
+  const valueText = String(row.valueText ?? "");
+  if (!range || !/^\d+(?:[.,]\d+)?$/.test(valueText)) return null;
+  const [rangeToken, lowText, joiner, highText] = range;
+  const number = (text) => Number(String(text).replace(",", "."));
+  const hasPoint = (text) => /[.,]/.test(text);
+  const pointIn = (text, mark) => (text.length > 1 ? `${text.slice(0, -1)}${mark}${text.slice(-1)}` : `0${mark}${text}`);
+  const mark = [lowText, highText, valueText].find(hasPoint)?.match(/[.,]/)[0] || ".";
+  let low = lowText;
+  let high = highText;
+  if (hasPoint(lowText) !== hasPoint(highText)) {
+    // One side kept its point and the other lost it.
+    if (!hasPoint(highText) && highText.length >= 2) high = pointIn(highText, mark);
+    else if (!hasPoint(lowText) && lowText.length >= 2) low = pointIn(lowText, mark);
+  } else if (!hasPoint(lowText) && hasPoint(valueText) && highText.length >= 2) {
+    // The result kept its point but the whole range lost it.
+    low = pointIn(lowText, mark);
+    high = pointIn(highText, mark);
+  }
+  if (low === lowText && high === highText) return null;
+  if (!(number(low) < number(high))) return null;
+  const near = (value, l, h) => value >= l * 0.5 && value <= h * 2;
+  const status = (value, l, h) => (value < l ? "low" : value > h ? "high" : "normal");
+  const value = number(valueText);
+  const [oldLow, oldHigh, newLow, newHigh] = [lowText, highText, low, high].map(number);
+  let newValueText = valueText;
+  if (!near(value, newLow, newHigh)) {
+    if (hasPoint(valueText) || valueText.length < 2 || !near(value / 10, newLow, newHigh)) return null;
+    newValueText = pointIn(valueText, mark);
+  }
+  const unchanged = newValueText === valueText && status(value, oldLow, oldHigh) === status(value, newLow, newHigh);
+  if (unchanged || near(value, oldLow, oldHigh) && newValueText === valueText && !hasPoint(lowText) && !hasPoint(highText)) return null;
+  // The part of the line from the result to the end of its range, as read and as it probably is.
+  const rangeAt = range.index;
+  const valueAt = line.slice(0, rangeAt).search(new RegExp(`(?<![\\d.,])${valueText.replace(/[.,]/g, "[.,]")}(?![\\d.,])(?!.*(?<![\\d.,])${valueText.replace(/[.,]/g, "[.,]")}(?![\\d.,]))`));
+  if (valueAt < 0) return null;
+  const read = line.slice(valueAt, rangeAt + rangeToken.length);
+  // Keep the report's own decimal mark ("9,3" stays "9,3").
+  const shownValue = newValueText === valueText ? read.slice(0, valueText.length) : newValueText;
+  const other = `${shownValue}${read.slice(valueText.length, rangeAt - valueAt)}${low}${joiner}${high}`;
+  return { read, value: read, other };
 }
 
 // The tests read by their own rules (cholesterol, triglycerides, A1C), as a row for one line.
@@ -4930,7 +4985,8 @@ document.querySelector("#ocr-checks")?.addEventListener("click", (event) => {
     return;
   }
   if (lines[check.line] !== undefined && choice !== current) {
-    lines[check.line] = lines[check.line].replace(new RegExp(`(^|[^\\d.])${current.replace(".", "\\.")}(?![\\d.])`), `$1${choice}`);
+    // A check can cover a whole "result ... range" segment ("16-23", "94H g/dL 6.0-85"), so escape it fully.
+    lines[check.line] = lines[check.line].replace(new RegExp(`(^|[^\\d.])${current.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\d.])`), (match, before) => `${before}${choice}`);
     textArea.value = lines.join("\n");
   }
   // The person checked a number against their report: the other lines still match the photo,
@@ -6820,7 +6876,7 @@ function downloadLabReminder(dateText) {
 
 // Version of the interpretation rules and wording below. Change it whenever a rule, threshold or
 // explanation changes, so every output can be traced to the rules that produced it.
-const EXPLANATION_RULES_VERSION = "2026-10-20.6";
+const EXPLANATION_RULES_VERSION = "2026-10-20.7";
 
 // Plain-language guide per test: what it is, what a high or low result can mean, and a
 // question for the doctor. Educational wording only: no diagnosis, medicine names or doses.
