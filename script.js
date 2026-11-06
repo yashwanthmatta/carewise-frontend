@@ -4830,39 +4830,85 @@ function checkOcrNumbers(rawText) {
   });
   // Any test with a printed range: a value far outside it that fits once a decimal point
   // is moved (1.4 read as 14, 2.75 as 275, 139 as 13.9) is asked about, never assumed.
+  // Reports printed in two columns carry two tests on one line: each column is checked on its own.
   lines.forEach((line, index) => {
-    if (checks.some((check) => check.line === index)) return;
-    const row = readLabPanel(line)[0] || ruleLineRow(line);
-    if (!row || !row.rangeText || row.generalRange) return;
-    const rangeCheck = ocrRangeDecimalCheck(line, row);
-    if (rangeCheck) {
-      checks.push({ line: index, key: row.key, name: TEST_GUIDE[row.key]?.name || labTestInfo(row.key)?.name || row.name, ...rangeCheck, kind: "ask" });
-      return;
+    let at = 0;
+    for (const column of splitSideBySide(line)) {
+      const columnAt = line.indexOf(column, at);
+      at = columnAt + column.length;
+      const check = checkOcrColumn(column);
+      if (!check || checks.some((other) => other.line === index && other.key === check.key)) continue;
+      checks.push({ line: index, at: columnAt, ...check, kind: "ask" });
     }
-    const token0 = String(row.valueText);
-    // Lipids in mmol/L whose printed limit lost its point too ("1,5 <1,7" read as "15 <17").
-    const siLimit = OCR_SI_LIPID_LIMITS[row.key];
-    const printedLimit = Number(row.rangeText.match(/(\d+(?:\.\d+)?)\s*$/)?.[1]);
-    if (siLimit && /mmol/i.test(line) && printedLimit > siLimit * 5 && /^\d{2,3}$/.test(token0)) {
-      checks.push({ line: index, key: row.key, name: TEST_GUIDE[row.key]?.name || row.name, read: token0, value: token0, other: withDecimal(token0), kind: "ask" });
-      return;
-    }
-    const dash = row.rangeText.match(/^(\d+(?:\.\d+)?)\s*(?:-|–|to)\s*(\d+(?:\.\d+)?)$/);
-    const comparator = row.rangeText.match(/^(<=?|>=?|≤|≥)\s*(\d+(?:\.\d+)?)$/);
-    if (!dash && !comparator) return;
-    const [low, high] = dash ? [Number(dash[1]), Number(dash[2])] : /[<≤]/.test(comparator[1]) ? [0, Number(comparator[2])] : [Number(comparator[2]), Number(comparator[2]) * 10];
-    const near = (value) => value >= low * 0.5 && value <= high * 2;
-    const token = String(row.valueText);
-    if (near(row.value) || !/^\d+(?:\.\d)?$/.test(token)) return;
-    const rangeDecimals = /\./.test(row.rangeText);
-    let other = null;
-    if (!token.includes(".")) {
-      if (near(row.value / 10)) other = withDecimal(token);
-      else if (token.length > 2 && near(row.value / 100)) other = `${token.slice(0, -2)}.${token.slice(-2)}`;
-    } else if (!rangeDecimals && near(row.value * 10)) other = token.replace(".", "");
-    if (other) checks.push({ line: index, key: row.key, name: TEST_GUIDE[row.key]?.name || labTestInfo(row.key)?.name || row.name, read: token, value: token, other, kind: "ask" });
   });
   return { text: lines.join("\n"), checks };
+}
+
+// One test's result and range, as read from a photo: a question to ask, or null.
+function checkOcrColumn(line) {
+  const row = readLabPanel(line)[0] || ruleLineRow(line);
+  if (!row || !row.rangeText || row.generalRange) return null;
+  const name = TEST_GUIDE[row.key]?.name || labTestInfo(row.key)?.name || row.name;
+  const rangeCheck = ocrRangeDecimalCheck(line, row) || ocrScaledPairCheck(line, row);
+  if (rangeCheck) return { key: row.key, name, ...rangeCheck };
+  const token0 = String(row.valueText);
+  // Lipids in mmol/L whose printed limit lost its point too ("1,5 <1,7" read as "15 <17").
+  const siLimit = OCR_SI_LIPID_LIMITS[row.key];
+  const printedLimit = Number(row.rangeText.match(/(\d+(?:\.\d+)?)\s*$/)?.[1]);
+  if (siLimit && /mmol/i.test(line) && printedLimit > siLimit * 5 && /^\d{2,3}$/.test(token0)) {
+    return { key: row.key, name, read: token0, value: token0, other: withDecimal(token0) };
+  }
+  const dash = row.rangeText.match(/^(\d+(?:\.\d+)?)\s*(?:-|–|to)\s*(\d+(?:\.\d+)?)$/);
+  const comparator = row.rangeText.match(/^(<=?|>=?|≤|≥)\s*(\d+(?:\.\d+)?)$/);
+  if (!dash && !comparator) return null;
+  const [low, high] = dash ? [Number(dash[1]), Number(dash[2])] : /[<≤]/.test(comparator[1]) ? [0, Number(comparator[2])] : [Number(comparator[2]), Number(comparator[2]) * 10];
+  const near = (value) => value >= low * 0.5 && value <= high * 2;
+  const token = String(row.valueText);
+  if (near(row.value) || !/^\d+(?:\.\d)?$/.test(token)) return null;
+  const rangeDecimals = /\./.test(row.rangeText);
+  let other = null;
+  if (!token.includes(".")) {
+    if (near(row.value / 10)) other = withDecimal(token);
+    else if (token.length > 2 && near(row.value / 100)) other = `${token.slice(0, -2)}.${token.slice(-2)}`;
+  } else if (!rangeDecimals && near(row.value * 10)) other = token.replace(".", "");
+  return other ? { key: row.key, name, read: token, value: token, other } : null;
+}
+
+// Usual adult ranges, used only to spot a printed range that lost its decimal point together
+// with its result ("Lymphocytes 4.8 x10^9/L 1.5-4.0" read as "48 ... 15-40"): both look
+// consistent, so the range itself is the clue. Only units where ten times the usual range is
+// not a real range: absolute cell counts (not %), glucose and urea in mmol/L, A1C in %.
+const OCR_ABSOLUTE_COUNT = /x\s*10|10\s*\W?\s*[39]\s*\/|10[eE][39]|\/\s*(?:u|µ|μ|n)l\b|\/\s*mm3|cumm/i;
+const OCR_USUAL_RANGES = {
+  lymphocytes: [OCR_ABSOLUTE_COUNT, 1.0, 4.0],
+  neutrophils: [OCR_ABSOLUTE_COUNT, 1.8, 7.7],
+  monocytes: [OCR_ABSOLUTE_COUNT, 0.2, 1.0],
+  glucose: [/mmol/i, 3.9, 6.1],
+  bun: [/mmol/i, 2.5, 7.8],
+  a1c: [/%/, 4.0, 6.0],
+};
+
+function ocrScaledPairCheck(line, row) {
+  const usual = OCR_USUAL_RANGES[row.key];
+  if (!usual || !usual[0].test(line)) return null;
+  const [, usualLow, usualHigh] = usual;
+  const ranges = [...line.matchAll(/(?<![\d.,])(\d{1,3})(\s*(?:-|–)\s*)(\d{2,3})(?![\d.,])/g)];
+  const range = ranges[ranges.length - 1];
+  const valueText = String(row.valueText ?? "");
+  if (!range || !/^\d{2,3}$/.test(valueText)) return null;
+  const [rangeToken, lowText, joiner, highText] = range;
+  const close = (printed, expected) => printed >= expected * 0.6 && printed <= expected * 1.6;
+  const lowOk = (printed) => (usualLow === 0 ? printed <= usualHigh * 0.3 : close(printed, usualLow));
+  // The printed range is about ten times the usual one, and is not the usual one itself.
+  if (!(lowOk(Number(lowText) / 10) && close(Number(highText) / 10, usualHigh))) return null;
+  if (lowOk(Number(lowText)) && close(Number(highText), usualHigh)) return null;
+  const valueAt = line.slice(0, range.index).search(new RegExp(`(?<![\\d.,])${valueText}(?![\\d.,])(?!.*(?<![\\d.,])${valueText}(?![\\d.,]))`));
+  if (valueAt < 0) return null;
+  const mark = /,\d/.test(line) && !/\.\d/.test(line) ? "," : ".";
+  const point = (text) => (text.length > 1 ? `${text.slice(0, -1)}${mark}${text.slice(-1)}` : `0${mark}${text}`);
+  const read = line.slice(valueAt, range.index + rangeToken.length);
+  const other = `${point(valueText)}${read.slice(valueText.length, range.index - valueAt)}${point(lowText)}${joiner}${point(highText)}`;
+  return { read, value: read, other };
 }
 
 // A photo can drop the decimal point from a printed range as well as from the result:
@@ -4986,7 +5032,9 @@ document.querySelector("#ocr-checks")?.addEventListener("click", (event) => {
   }
   if (lines[check.line] !== undefined && choice !== current) {
     // A check can cover a whole "result ... range" segment ("16-23", "94H g/dL 6.0-85"), so escape it fully.
-    lines[check.line] = lines[check.line].replace(new RegExp(`(^|[^\\d.])${current.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\d.])`), (match, before) => `${before}${choice}`);
+    const head = lines[check.line].slice(0, check.at || 0);
+    const tail = lines[check.line].slice(check.at || 0);
+    lines[check.line] = head + tail.replace(new RegExp(`(^|[^\\d.])${current.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\d.])`), (match, before) => `${before}${choice}`);
     textArea.value = lines.join("\n");
   }
   // The person checked a number against their report: the other lines still match the photo,

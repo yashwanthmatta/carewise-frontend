@@ -15,7 +15,16 @@ const CASES = [
   ["Neutrophils 9,3 x10^9/L 2,0-75", "9,3 x10^9/L 2,0-7,5"],
   ["Protein, Total 94H g/dL 6.0-85", "9.4H g/dL 6.0-8.5"],
   ["Prothrombin Time 105 sec 9.4-125", "10.5 sec 9.4-12.5"],
+  // The result and its range both lost the point: the range is ten times the usual one.
+  ["Lymphocytes 48H x10^9/L 15-40", "4.8H x10^9/L 1.5-4.0"],
+  ["Neutrophils 15 x10M9/L 20-75", "1.5 x10M9/L 2.0-7.5"],
+  ["HbA1c 44 % 40-56", "4.4 % 4.0-5.6"],
+  ["Glucose 48 mmol/L 39-55", "4.8 mmol/L 3.9-5.5"],
   // Read correctly: never asked.
+  ["Lymphocytes 30 % 20-40", null],
+  ["Lymphocytes 2.1 x10^9/L 1.0-4.0", null],
+  ["Glucose 95 mg/dL 70-99 (fasting)", null],
+  ["HbA1c 42 mmol/mol 20-42", null],
   ["Hemoglobin 13.5 g/dL 12-16", null],
   ["Hematocrit 40.8 % 37.5-51.0", null],
   ["Glucose 95 mg/dL 70-99", null],
@@ -33,11 +42,23 @@ await page.goto(base, { waitUntil: "domcontentloaded" });
 await page.waitForFunction(() => typeof checkOcrNumbers === "function");
 let failed = 0;
 for (const [line, expected] of CASES) {
+  const { text, checks } = await page.evaluate((text) => checkOcrNumbers(`Sample Lab\n${text}`), line);
+  const ask = checks.find((check) => check.line === 1 && check.kind === "ask");
+  // Tests with their own photo rule (A1C among them) fix an impossible number and say so instead.
+  const fixed = checks.find((check) => check.line === 1 && check.kind === "fixed");
+  const ok = expected === null ? !ask && !fixed : ask?.other === expected || (fixed && text.split("\n")[1].endsWith(expected));
+  if (!ok) failed += 1;
+  console.log(`${ok ? "ok  " : "FAIL"} ${line} -> ${ask ? `asks "${ask.read}" or "${ask.other}"` : fixed ? `fixed and shown: "${text.split("\n")[1]}"` : "no question"}`);
+}
+
+// Two columns on one line: each test is checked on its own, and confirming fixes only its column.
+{
+  const line = "Creatinine 93 umol/L 59-104 Lymphocytes 2.5 x10^9/L 15-40";
   const { checks } = await page.evaluate((text) => checkOcrNumbers(`Sample Lab\n${text}`), line);
   const ask = checks.find((check) => check.line === 1 && check.kind === "ask");
-  const ok = expected === null ? !ask : ask?.other === expected;
+  const ok = ask?.key === "lymphocytes" && ask.other === "2.5 x10^9/L 1.5-4.0" && ask.at > 0;
   if (!ok) failed += 1;
-  console.log(`${ok ? "ok  " : "FAIL"} ${line} -> ${ask ? `asks "${ask.read}" or "${ask.other}"` : "no question"}`);
+  console.log(`${ok ? "ok  " : "FAIL"} two columns: ${ask ? `asks "${ask.read}" or "${ask.other}" at ${ask.at}` : "no question"}`);
 }
 
 // Tests with their own photo rules (magnesium among them) already put the range's point back.
