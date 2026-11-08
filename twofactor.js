@@ -76,6 +76,8 @@
       setBadge(true);
       show("tf-codes");
       statusLine.textContent = "Two-step sign-in is on.";
+      // Staff tools that were waiting on two-step sign-in open again; refresh the account view.
+      if (typeof verifyCurrentSession === "function") verifyCurrentSession();
     } catch (error) {
       statusLine.textContent = /429/.test(String(error?.message))
         ? "Too many tries. Wait a few minutes and try again."
@@ -95,6 +97,7 @@
       setBadge(false);
       show("tf-off");
       statusLine.textContent = "Two-step sign-in is off. You can turn it on again any time.";
+      if (typeof verifyCurrentSession === "function") verifyCurrentSession();
     } catch {
       statusLine.textContent = "That code didn't work.";
     }

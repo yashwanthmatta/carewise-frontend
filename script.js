@@ -182,6 +182,8 @@ let refreshToken = localStorage.getItem("carewiseRefreshToken") || "";
 let authEmail = localStorage.getItem("carewiseAuthEmail") || "";
 let authRole = localStorage.getItem("carewiseAuthRole") || document.querySelector?.("#auth-role")?.value || "patient";
 let emailVerified = localStorage.getItem("carewiseEmailVerified") === "true";
+// True when the server says this staff account must turn on two-step sign-in before staff tools work.
+let staffTwoFactorNeeded = false;
 let latestReportId = localStorage.getItem("carewiseLatestReportId") || "";
 let latestCheckoutUrl = localStorage.getItem("carewiseCheckoutUrl") || "";
 let latestReportQuestionPack = "";
@@ -3108,6 +3110,9 @@ function updateAuthStatus(message) {
   if (avatar) avatar.textContent = (authEmail || "·").charAt(0).toUpperCase();
   const verifyBox = document.querySelector("#account-verify");
   if (verifyBox) verifyBox.hidden = !signedIn || emailVerified;
+  if (!signedIn) staffTwoFactorNeeded = false;
+  const staffTwoFactorBox = document.querySelector("#account-staff-2fa");
+  if (staffTwoFactorBox) staffTwoFactorBox.hidden = !signedIn || !staffTwoFactorNeeded;
   const ydAccount = document.querySelector("#yd-account-list");
   if (ydAccount && !signedIn) ydAccount.innerHTML = "<li>Sign in to see what is saved in your account.</li>";
   if (!signedIn) ydExportCache = null;
@@ -3566,6 +3571,7 @@ async function verifyCurrentSession() {
     authEmail = session.email || authEmail;
     authRole = session.role || authRole;
     emailVerified = Boolean(session.email_verified);
+    staffTwoFactorNeeded = Boolean(session.staff_two_factor_needed);
     localStorage.setItem("carewiseAuthEmail", authEmail);
     localStorage.setItem("carewiseAuthRole", authRole);
     localStorage.setItem("carewiseEmailVerified", String(emailVerified));

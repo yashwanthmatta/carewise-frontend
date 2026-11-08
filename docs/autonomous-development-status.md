@@ -1,18 +1,19 @@
 # Development status (read this first on every run)
 
-Last verified run: 2026-11-05, daily run at 04:23 UTC.
+Last verified run: 2026-11-08, daily run at 04:23 UTC.
 
 ## Repository state
 
 | Repo | main | Working branch | Open PRs from this work |
 |---|---|---|---|
-| carewise-frontend | `216cd8c` (#133 merged) | `claude/carewise-api-project-jmxg7f` | #138: results order, PDF page view, History empty state, lab tracker data fixes |
-| carewise-mobile-app | `507c00f` | `claude/carewise-api-project-jmxg7f` | #51: palette |
-| carewise-production-backend | `9cd2ad3` | `claude/carewise-api-project-jmxg7f` | #55: field encryption and key rotation, plus care-team-only staff access (needs independent review) |
+| carewise-frontend | `a731ec3` (#143 merged) | `claude/carewise-api-project-jmxg7f` (restarted from main on 8 Nov) | New PR: staff two-step sign-in notice |
+| carewise-mobile-app | `2116924` | `claude/carewise-api-project-jmxg7f` | #52: Expo tooling advisories (lockfile only), green |
+| carewise-production-backend | `c653336` | `claude/carewise-api-project-jmxg7f` | #56: secret scan in CI, staff two-step sign-in requirement (off by default), green, needs owner review |
 
 **Other agents' open PRs:**
-- frontend #134: calendar reminder, sets the cache version to 206. It **collides with #138's 206**; whichever merges second bumps.
-- frontend #137 and backend #54: Dependabot.
+- frontend #132 (Listen per result) and #112 (ads status doc).
+- backend #51 (de-identification) and #57 (Dependabot); mobile #48 (Listen), #41 and #42 (Dependabot).
+- **Owner:** merge cache-version PRs one at a time. This PR uses 210.
 
 ## Automation that actually exists
 
@@ -53,8 +54,15 @@ Last verified run: 2026-11-05, daily run at 04:23 UTC.
    - **Mobile:** npm audit found 13 advisories (3 high) in Expo tooling. A lockfile-only update leaves 5 moderate (mobile #52).
    - **Secret scan (5 Nov):** a full-history scan of all three repos found no credentials. `scripts/security/secret_scan.py` now runs in Backend CI (backend #56).
    - Still to do: a nightly axe scan.
-5b. **Staff two-step sign-in requirement:** built, off by default (`CAREWISE_STAFF_TWO_FACTOR_REQUIRED`, backend #56). Next: a website banner when `/auth/me` reports `staff_two_factor_needed`.
+5b. **Staff two-step sign-in requirement:** built, off by default (`CAREWISE_STAFF_TWO_FACTOR_REQUIRED`, backend #56). ~~Website banner~~ Built on 8 Nov: Account shows "Turn on two-step sign-in to use your clinic tools" when `/auth/me` reports `staff_two_factor_needed`, links to Two-step sign-in, and hides once it is on. Shows nothing until #56 is merged, deployed and the setting is on. Eval `staff-two-factor.mjs` (14 checks) runs in CI.
 5c. **Main red on 5 Nov:** #116 merged after #142 with the same cache version, 208. Frontend #143 bumps it to 209. **Owner:** merge cache-version PRs one at a time.
+
+## Run on 8 Nov (daily, 04:23 UTC)
+
+- Open PRs checked first: backend #56 and mobile #52 are green with no review comments; nothing to fix. The frontend branch had no unmerged work after #143, so it was restarted from main.
+- Built the staff two-step sign-in notice (task 5b). Before: the eval's "notice shows" check fails on main. After: all 14 checks pass.
+- Verified locally on this branch: smoke, claims audit, cache version (210), CSP meta and csp-check (with and without headers), run-eval (68 reports, 200 tests, 100% values and flags), safety cases (34), stress seeds 101 and 202, speech cases, and every eval in Frontend CI.
+- **Next task:** nightly axe accessibility scan in CI (task 6). After that: checkout price conversion with `Decimal` (billing, needs the owner's go-ahead before merging) and mobile sign-in.
 
 ## Found and fixed on 3 Nov
 
