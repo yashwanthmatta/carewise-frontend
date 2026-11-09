@@ -6803,9 +6803,21 @@ function renderNextSteps(view) {
 }
 
 // Questions from the result cards first, then the general ones, without repeats.
+// Questions that fit any report. They only fill the list when the report gives few questions of
+// its own, so each report's list is about its own results.
+const GENERAL_REPORT_QUESTIONS = [
+  "Which of my results outside the lab's range matter most, and do any need follow-up?",
+  "Which results matter most for me, and when should I repeat labs?",
+  "Should I see primary care, a dietitian, or a specialist based on these results?",
+];
+
 function reportQuestions(analysis, view, language = reportLanguage) {
   const general = translateReportAnalysis(analysis, language).questions || [];
-  return [...view.questions, ...general].filter((item, index, list) => item && list.indexOf(item) === index).slice(0, 6);
+  const all = [...view.questions, ...general].filter((item, index, list) => item && list.indexOf(item) === index);
+  const generic = new Set(GENERAL_REPORT_QUESTIONS.flatMap((item) => [item, translateReportText(item, language)]));
+  const own = all.filter((item) => !generic.has(item));
+  const fill = own.length >= 3 ? 1 : own.length ? 2 : 3;
+  return [...own.slice(0, 5), ...all.filter((item) => generic.has(item)).slice(0, fill)].slice(0, 6);
 }
 
 function renderPersonalPlanSection(analysis) {
@@ -7537,9 +7549,12 @@ function buildBackendReportDisplayAnalysis(response, reportText) {
       ...localAnalysis,
       id: response.id || localAnalysis.id,
       riskLevel: response.risk_level === "emergency" ? "urgent" : localAnalysis.riskLevel,
+      // The server's next steps are the same for every report: the report's own suggestions come
+      // first, and only an emergency step goes ahead of them.
       suggestions: [
-        ...(response.recommendations?.next_steps || []),
+        ...(response.risk_level === "emergency" ? response.recommendations?.next_steps || [] : []),
         ...localAnalysis.suggestions,
+        ...(response.recommendations?.next_steps || []),
       ].filter(Boolean).filter((item, index, list) => list.indexOf(item) === index).slice(0, 5),
     };
   }
