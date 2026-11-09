@@ -1,6 +1,6 @@
 # Development status (read this first on every run)
 
-Last verified run: 2026-11-08, daily run at 04:23 UTC.
+Last verified run: 2026-11-09, daily run at 04:23 UTC.
 
 ## Repository state
 
@@ -27,7 +27,7 @@ Last verified run: 2026-11-08, daily run at 04:23 UTC.
 | Read-only health check by Claude (no code changes, by the owner's rule) | Scheduled task "FollowThrough Health checks (read-only)" | Every 6 hours |
 
 **Missing:**
-- No dependency-vulnerability job and no nightly accessibility scan in CI yet.
+- Backend has a weekly pip-audit job (`dependency-audit.yml`). Nightly accessibility scan: `accessibility-scan.yml` (from 9 Nov, once merged).
 
 ## Blockers needing the owner
 
@@ -53,9 +53,15 @@ Last verified run: 2026-11-08, daily run at 04:23 UTC.
    - **Backend:** pip-audit found 7 advisories in pypdf 6.21.2, which reads uploaded PDFs. The minimum is now 6.21.4, and a weekly `dependency-audit.yml` job runs pip-audit. Both are in backend #55.
    - **Mobile:** npm audit found 13 advisories (3 high) in Expo tooling. A lockfile-only update leaves 5 moderate (mobile #52).
    - **Secret scan (5 Nov):** a full-history scan of all three repos found no credentials. `scripts/security/secret_scan.py` now runs in Backend CI (backend #56).
-   - Still to do: a nightly axe scan.
+   - ~~Nightly axe scan~~ Built on 9 Nov: `scripts/eval/a11y-scan.mjs` scans 21 screens and pages at phone and desktop size (axe-core 4.14.0, WCAG A/AA). It runs in Frontend CI on every PR and nightly in `accessibility-scan.yml`. The first scan found one serious issue, now fixed: the desktop "Need help?" button's accessible name did not contain its visible text (WCAG 2.5.3).
 5b. **Staff two-step sign-in requirement:** built, off by default (`CAREWISE_STAFF_TWO_FACTOR_REQUIRED`, backend #56). ~~Website banner~~ Built on 8 Nov: Account shows "Turn on two-step sign-in to use your clinic tools" when `/auth/me` reports `staff_two_factor_needed`, links to Two-step sign-in, and hides once it is on. Shows nothing until #56 is merged, deployed and the setting is on. Eval `staff-two-factor.mjs` (14 checks) runs in CI.
 5c. **Main red on 5 Nov:** #116 merged after #142 with the same cache version, 208. Frontend #143 bumps it to 209. **Owner:** merge cache-version PRs one at a time.
+
+## Run on 9 Nov (daily, 04:23 UTC)
+
+- Main was green after #147 (cache 211, fixing the #145/#146 collision) and the later #148 to #150. Backend #56 and mobile #52 unchanged and green.
+- Built the accessibility scan (task 6). Before: 6 serious findings (the help button, on every desktop app screen). After: 0 serious or critical, 0 moderate or minor, across 42 screen and size combinations.
+- **Next task:** checkout price conversion with `Decimal` (backend; billing, so the owner approves before merging). Then mobile sign-in.
 
 ## Run on 8 Nov (daily, 04:23 UTC)
 

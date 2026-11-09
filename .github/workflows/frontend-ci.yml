@@ -120,6 +120,11 @@ jobs:
       - name: Staff two-step sign-in notice (only when the server asks for it; goes away once on)
         run: node scripts/eval/staff-two-factor.mjs
 
+      - name: Accessibility scan (axe-core, WCAG A and AA; fails on serious or critical)
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1 axe-core@4.14.0
+          AXE_PATH=node_modules/axe-core/axe.min.js node scripts/eval/a11y-scan.mjs
+
       - name: Lab tracker saves (test date, no duplicates, nothing dropped after 60)
         run: node scripts/eval/lab-tracker-save.mjs
 
