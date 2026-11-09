@@ -108,6 +108,9 @@ jobs:
       - name: Continue with Google / Apple / Microsoft and Sign-in methods (mocked providers)
         run: node scripts/eval/provider-sign-in.mjs
 
+      - name: Staff two-step sign-in notice (only when the server asks for it; goes away once on)
+        run: node scripts/eval/staff-two-factor.mjs
+
       - name: Lab tracker saves (test date, no duplicates, nothing dropped after 60)
         run: node scripts/eval/lab-tracker-save.mjs
 
