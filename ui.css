@@ -795,3 +795,26 @@ body[data-auth="in"] details.when-in { display: block; }
   .lp-ins-panel { animation: none; }
   .lp-ins-card, .lp-ins-card:hover { transition: none; transform: none; }
 }
+
+/* ---------- Report results, editorial pass (2026-11-09) ----------
+   "All tests" grouped by body area with filters, and calmer result cards. Colours carry the
+   lab-range status only; the words always say it too. */
+.lab-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 16px; }
+.lab-filter { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border: 1px solid var(--ft-line); border-radius: var(--ft-radius-pill); background: var(--ft-surface); color: var(--ft-ink-2); font: inherit; font-size: var(--ft-text-sm); font-weight: 600; cursor: pointer; transition: background var(--ft-fast) var(--ft-ease), border-color var(--ft-fast) var(--ft-ease), color var(--ft-fast) var(--ft-ease); }
+.lab-filter span { min-width: 1.6em; padding: 1px 6px; border-radius: var(--ft-radius-pill); background: var(--ft-surface-2); color: var(--ft-ink-2); font-size: var(--ft-text-xs); text-align: center; font-variant-numeric: tabular-nums; }
+.lab-filter:hover { border-color: var(--ft-line-strong); color: var(--ft-ink); }
+.lab-filter[aria-pressed="true"] { border-color: var(--ft-brand); background: var(--ft-brand); color: var(--ft-on-brand); }
+.lab-filter[aria-pressed="true"] span { background: rgba(255, 255, 255, 0.2); color: var(--ft-on-brand); }
+.lab-filter:focus-visible { outline: none; box-shadow: var(--ft-focus); }
+.lab-panel-group[hidden], .lab-panel-row[hidden] { display: none !important; }
+.lab-panel-group-head { display: block !important; padding: 14px 14px 6px !important; background: var(--ft-ivory, #fbf9f4); }
+.lab-panel-group-head span { font-family: var(--ft-serif, Georgia, serif); font-size: var(--ft-text-md); font-weight: 600; color: var(--ft-ink); }
+.lab-panel-row span:nth-child(2) { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ft-ink); }
+
+.report-panel .result-card-item { padding: 20px 22px !important; border-radius: var(--ft-radius-lg) !important; transition: box-shadow var(--ft-base) var(--ft-ease); }
+.report-panel .result-card-item:hover { box-shadow: var(--ft-shadow-md); }
+.report-panel .result-card-item .result-card-value b { font-family: var(--ft-display); font-size: 1.9rem; line-height: 1.05; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.report-panel .result-card-item .result-card-range { font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) {
+  .lab-filter, .report-panel .result-card-item { transition: none; }
+}
