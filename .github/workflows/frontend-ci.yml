@@ -84,6 +84,9 @@ jobs:
       - name: Report questions are about the report's own results
         run: node scripts/eval/report-questions.mjs
 
+      - name: Homepage tabs, example results and phone layout
+        run: node scripts/eval/homepage.mjs
+
       - name: Help chat answers match the website
         run: node scripts/eval/help-answers.mjs
 

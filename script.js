@@ -11803,6 +11803,29 @@ function endTour() {
 }
 
 document.querySelector("#start-tour")?.addEventListener("click", startTour);
+// Homepage: example results by body area. Tabs follow the ARIA tabs pattern (arrows, Home, End).
+document.querySelectorAll("[data-lp-insights]").forEach((box) => {
+  const tabs = [...box.querySelectorAll('[role="tab"]')];
+  const select = (tab, focus) => {
+    tabs.forEach((other) => {
+      const on = other === tab;
+      other.setAttribute("aria-selected", String(on));
+      other.tabIndex = on ? 0 : -1;
+      document.getElementById(other.getAttribute("aria-controls")).hidden = !on;
+    });
+    if (focus) tab.focus();
+  };
+  tabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => select(tab, false));
+    tab.addEventListener("keydown", (event) => {
+      const next = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 }[event.key];
+      if (next === undefined) return;
+      event.preventDefault();
+      select(tabs[(next + tabs.length) % tabs.length], true);
+    });
+  });
+});
+
 document.querySelectorAll("[data-start-tour]").forEach((element) => element.addEventListener("click", (event) => {
   event.preventDefault();
   startTour();

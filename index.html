@@ -16,14 +16,14 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-212" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-213" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-212" />
-    <link rel="stylesheet" href="ui.css?v=carewise-product-212" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-213" />
+    <link rel="stylesheet" href="ui.css?v=carewise-product-213" />
   </head>
   <body>
     <main class="app-shell">
@@ -51,13 +51,13 @@
           <section class="lp-hero" aria-labelledby="app-title">
             <div class="hero-copy">
               <p class="lp-chip"><img src="assets/carewise-logo.svg" alt="" width="20" height="20" /> For you and the people you look after</p>
-              <h1 id="app-title">Your health reports, explained clearly.</h1>
-              <p class="lp-lede">Add a blood test or scan report. See what each result means in plain words, which ones to ask about first, and what to bring to your doctor.</p>
+              <h1 id="app-title">Your health reports, <em>finally understandable.</em></h1>
+              <p class="lp-lede">Turn complicated lab results into clear explanations, useful questions, and organized follow-ups.</p>
               <div class="hero-cta">
                 <label class="lp-drop" id="hero-drop" for="hero-report-file">
                   <input id="hero-report-file" type="file" accept=".pdf,image/*,.txt,text/plain" />
                   <span class="lp-drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span>
-                  <span class="lp-drop-text"><strong>Understand a report</strong><span>Choose a photo or PDF, or drop it here</span></span>
+                  <span class="lp-drop-text"><strong>Understand my report</strong><span>Choose a photo or PDF, or drop it here</span></span>
                 </label>
                 <a class="hero-sample" href="#try=raj-kidney-heart-uk/explain" data-try-sample>
                   <span class="hero-sample-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
@@ -97,7 +97,7 @@
                     <li><span>Hemoglobin</span><b>11.2</b><i class="lp-tag lp-tag-out">Below the lab's range</i></li>
                     <li><span>Potassium</span><b>4.9</b><i class="lp-tag lp-tag-ok">Within range</i></li>
                   </ul>
-                  <p class="lp-ask"><strong>Ask your doctor:</strong> Which results are far outside the range, and how soon should I be seen about them?</p>
+                  <p class="lp-ask"><strong>Ask your doctor:</strong> How are my kidneys working, and do I need a repeat test?</p>
                 </div>
               </article>
             </div>
@@ -108,18 +108,91 @@
             <a href="#how-it-works">How it works</a>
             <a href="#safety">Safety</a>
             <a href="#pricing">Pricing</a>
-            <a href="#early-access-title">For families</a>
+            <a href="#insights">Example results</a>
             <a href="#for-doctors">For doctors</a>
           </nav>
 
-          <section class="lp-strip" aria-label="What FollowThrough Health does">
-            <p class="lp-strip-label">Built for <b>families</b></p>
-            <ul>
-              <li><strong>PDFs and photos</strong><span>Snap the WhatsApp photo or drop the lab PDF.</span></li>
-              <li><strong>Your lab's own range</strong><span>Each result compared with the range your lab printed, when it prints one.</span></li>
-              <li><strong>What to do next</strong><span>Which results to bring up with your doctor, and a clear message if a level is one labs often treat as urgent.</span></li>
-              <li><strong>English and Español</strong><span>One tap to switch, doctor brief stays in English.</span></li>
-            </ul>
+          <section class="lp-insights" id="insights" aria-labelledby="lp-insights-title">
+            <div class="lp-insights-head">
+              <p class="lp-eyebrow">See it before you upload</p>
+              <h2 id="lp-insights-title">Every result in plain words, grouped by what it is about.</h2>
+              <p class="lp-insights-lede">Each result shows the exact number and unit, your lab's own range, what it means, and a question to bring to your doctor. Outside the range means "talk to your doctor about it", not "urgent".</p>
+            </div>
+            <div class="lp-insights-box" data-lp-insights>
+              <div class="lp-ins-tabs" role="tablist" aria-label="Example results by body area"><button type="button" role="tab" id="lp-ins-tab-kidneys" aria-controls="lp-ins-panel-kidneys" aria-selected="true" tabindex="0">Kidneys</button><button type="button" role="tab" id="lp-ins-tab-sugar" aria-controls="lp-ins-panel-sugar" aria-selected="false" tabindex="-1">Blood sugar</button><button type="button" role="tab" id="lp-ins-tab-thyroid" aria-controls="lp-ins-panel-thyroid" aria-selected="false" tabindex="-1">Thyroid</button><button type="button" role="tab" id="lp-ins-tab-blood" aria-controls="lp-ins-panel-blood" aria-selected="false" tabindex="-1">Blood count</button></div>
+                <div class="lp-ins-panel" role="tabpanel" id="lp-ins-panel-kidneys" aria-labelledby="lp-ins-tab-kidneys" tabindex="0">
+                  <article class="lp-ins-card">
+                    <header><h3>Creatinine</h3><i class="lp-tag lp-tag-far">Far above the lab's range</i></header>
+                    <p class="lp-ins-value"><b>2.3</b> <span>mg/dL</span></p>
+                    <p class="lp-ins-range">Lab's range: 0.6-1.3</p>
+                    <p class="lp-ins-meaning">Higher creatinine can mean the kidneys are filtering less well. Muscle mass, hydration and some medicines also affect it.</p>
+                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> How are my kidneys working, and do I need a repeat test?</p>
+                  </article>
+                  <article class="lp-ins-card">
+                    <header><h3>eGFR (kidney filtering)</h3><i class="lp-tag lp-tag-far">Far below the lab's range</i></header>
+                    <p class="lp-ins-value"><b>28</b> <span>mL/min/1.73m²</span></p>
+                    <p class="lp-ins-range">Lab's range: 60 or higher</p>
+                    <p class="lp-ins-meaning">A lower eGFR means the kidneys may be filtering less well. One result is not a diagnosis; doctors look at repeat tests.</p>
+                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> What does my eGFR mean for my kidneys, and when should it be checked again?</p>
+                  </article>
+                  <article class="lp-ins-card">
+                    <header><h3>Potassium</h3><i class="lp-tag lp-tag-ok">Within range</i></header>
+                    <p class="lp-ins-value"><b>4.9</b> <span>mmol/L</span></p>
+                    <p class="lp-ins-range">Lab's range: 3.5-5.1</p>
+                    <p class="lp-ins-meaning">A mineral important for heart rhythm and muscles.</p>
+                    
+                  </article>
+                </div>
+                <div class="lp-ins-panel" role="tabpanel" id="lp-ins-panel-sugar" aria-labelledby="lp-ins-tab-sugar" tabindex="0" hidden>
+                  <article class="lp-ins-card">
+                    <header><h3>A1C (average blood sugar)</h3><i class="lp-tag lp-tag-out">High — prediabetes range</i></header>
+                    <p class="lp-ins-value"><b>6.1</b> <span>%</span></p>
+                    <p class="lp-ins-range">Lab's range: 4.0-5.6</p>
+                    <p class="lp-ins-meaning">A higher A1C means your blood sugar has been running high. 5.7% to 6.4% is called the prediabetes range; 6.5% or higher is the diabetes range, which a doctor confirms with repeat testing.</p>
+                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> What does my A1C mean for me, and when should I test it again?</p>
+                  </article>
+                  <article class="lp-ins-card">
+                    <header><h3>Glucose (blood sugar)</h3><i class="lp-tag lp-tag-out">Above the lab's range</i></header>
+                    <p class="lp-ins-value"><b>118</b> <span>mg/dL</span></p>
+                    <p class="lp-ins-range">Lab's range: 70-99</p>
+                    <p class="lp-ins-meaning">Blood sugar depends on whether you had eaten. Your report doesn't say if this was a fasting test, so this result alone doesn't show prediabetes.</p>
+                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> Was this a fasting test, and how does my glucose fit with my A1C?</p>
+                  </article>
+                </div>
+                <div class="lp-ins-panel" role="tabpanel" id="lp-ins-panel-thyroid" aria-labelledby="lp-ins-tab-thyroid" tabindex="0" hidden>
+                  <article class="lp-ins-card">
+                    <header><h3>TSH (thyroid)</h3><i class="lp-tag lp-tag-out">Above the lab's range</i></header>
+                    <p class="lp-ins-value"><b>6.8</b> <span>mIU/L</span></p>
+                    <p class="lp-ins-range">Lab's range: 0.4-4.0</p>
+                    <p class="lp-ins-meaning">A high TSH can mean the thyroid is underactive (working too slowly).</p>
+                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> What do my TSH and free T4 mean together?</p>
+                  </article>
+                  <article class="lp-ins-card">
+                    <header><h3>Free T4 (thyroid)</h3><i class="lp-tag lp-tag-ok">Within range</i></header>
+                    <p class="lp-ins-value"><b>1.1</b> <span>ng/dL</span></p>
+                    <p class="lp-ins-range">Lab's range: 0.8-1.8</p>
+                    <p class="lp-ins-meaning">The main thyroid hormone in your blood.</p>
+                    
+                  </article>
+                </div>
+                <div class="lp-ins-panel" role="tabpanel" id="lp-ins-panel-blood" aria-labelledby="lp-ins-tab-blood" tabindex="0" hidden>
+                  <article class="lp-ins-card">
+                    <header><h3>Hemoglobin</h3><i class="lp-tag lp-tag-out">Below the lab's range</i></header>
+                    <p class="lp-ins-value"><b>11.2</b> <span>g/dL</span></p>
+                    <p class="lp-ins-range">Lab's range: 12.0-15.5</p>
+                    <p class="lp-ins-meaning">Low hemoglobin is called anemia. It can cause tiredness and has many causes, such as low iron.</p>
+                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> Do I have anemia, and what could be causing it?</p>
+                  </article>
+                  <article class="lp-ins-card">
+                    <header><h3>Ferritin</h3><i class="lp-tag lp-tag-far">Far below the lab's range</i></header>
+                    <p class="lp-ins-value"><b>9</b> <span>ng/mL</span></p>
+                    <p class="lp-ins-range">Lab's range: 15-150</p>
+                    <p class="lp-ins-meaning">Low ferritin means your iron stores are low, a common cause of tiredness and anemia.</p>
+                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> Why might my iron be low, and do I need iron?</p>
+                  </article>
+                </div>
+              <p class="lp-ins-note">Example report with made-up numbers. Explanations are the same ones FollowThrough Health shows for a real report.</p>
+            </div>
           </section>
 
           <section class="lp-problems" aria-labelledby="lp-problems-title">
@@ -159,15 +232,9 @@
             </div>
           </section>
 
-          <section class="lp-sentence" aria-label="Watch the demo">
-            <p><span>From a photo</span>
-              <button class="lp-pill-video" type="button" data-start-tour><span class="lp-pill-play" aria-hidden="true"></span><span class="lp-pill-label">Watch the 1-minute demo</span></button>
-              <span>to your doctor</span></p>
-          </section>
-
           <section class="lp-dark" id="how-it-works" aria-labelledby="lp-how-title">
             <p class="lp-eyebrow lp-eyebrow-light lp-center">How it works</p>
-            <h2 id="lp-how-title" class="lp-center">Four steps. About a minute.</h2>
+            <h2 id="lp-how-title" class="lp-center">Three steps. About a minute.</h2>
             <div class="lp-flows">
               <article class="lp-flow lp-flow-1">
                 <p class="lp-step">Step 01</p>
@@ -179,25 +246,17 @@
               </article>
               <article class="lp-flow lp-flow-2">
                 <p class="lp-step">Step 02</p>
-                <h3>Every result, against your lab's range</h3>
-                <p>Kidney, liver, thyroid, blood count, sugar and more: each compared with the range printed on your report.</p>
-                <a href="#how-it-works" data-start-tour>See it in the demo <span aria-hidden="true">→</span></a>
+                <h3>Understand every result</h3>
+                <p>Each result is compared with the range printed on your report and explained in plain words. A level labs often treat as urgent gets a contact-your-doctor-today message.</p>
+                <a href="#insights">See example results <span aria-hidden="true">→</span></a>
                 <div class="lp-window"><header><span></span><span></span><span></span><b>FollowThrough Health</b><em>/ All tests on your report</em></header>
                   <div class="lp-window-body"><div class="lp-pills"><span class="lp-dot-ok">9 within</span><span class="lp-dot-out">2 outside</span><span class="lp-dot-far">1 far outside</span></div>
                   <table class="lp-table"><tr><th>Test</th><th>Result</th><th>Status</th></tr><tr><td>TSH (thyroid)</td><td>9.8</td><td><i class="lp-tag lp-tag-far">Far above</i></td></tr><tr><td>Vitamin B12</td><td>150</td><td><i class="lp-tag lp-tag-out">Below</i></td></tr><tr><td>Sodium</td><td>139</td><td><i class="lp-tag lp-tag-ok">Within</i></td></tr></table></div></div>
               </article>
-              <article class="lp-flow lp-flow-3">
-                <p class="lp-step">Step 03</p>
-                <h3>Know what needs attention</h3>
-                <p>Results outside the lab's range are listed to talk about with your doctor. Levels labs often treat as urgent get a contact-your-doctor-today message. These safety rules are waiting for clinician review, and the app can still be wrong, so always check with your doctor.</p>
-                <a href="#safety">How we keep it safe <span aria-hidden="true">→</span></a>
-                <div class="lp-window"><header><span></span><span></span><span></span><b>FollowThrough Health</b><em>/ Result</em></header>
-                  <div class="lp-window-body"><div class="lp-alert"><strong>Possible danger level</strong><span>Glucose 45 mg/dL; lab range 70-99. Labs often treat this level as urgent. Contact your doctor today, or seek emergency care if you feel very unwell.</span></div></div></div>
-              </article>
               <article class="lp-flow lp-flow-4">
-                <p class="lp-step">Step 04</p>
-                <h3>Walk in ready</h3>
-                <p>Questions from your own numbers and a one-page doctor brief. Switch the explanation to Spanish in one tap.</p>
+                <p class="lp-step">Step 03</p>
+                <h3>Follow through with your doctor</h3>
+                <p>Questions from your own numbers, a one-page doctor brief, a private link to share it, and a reminder for the next test.</p>
                 <a href="#report-title">Make a doctor brief <span aria-hidden="true">→</span></a>
                 <div class="lp-window"><header><span></span><span></span><span></span><b>FollowThrough Health</b><em>/ Doctor brief</em></header>
                   <div class="lp-window-body"><p class="lp-w-title">Lab summary for clinician review: Mum</p><ol class="lp-brief"><li>Is my TSH high enough to need treatment or a repeat test?</li><li>Should my B12 be rechecked?</li><li>When should I repeat these labs?</li></ol></div></div>
@@ -222,6 +281,17 @@
               <div><h3>FollowThrough Health never</h3><ul><li>Diagnoses</li><li>Names medicines or doses</li><li>Reads scan images (only the radiologist's words)</li><li>Replaces your doctor</li></ul></div>
             </div>
             <p class="lp-fine">FollowThrough Health is not a diagnosis, prescription, emergency service, or replacement for licensed medical care. If you feel very unwell, call your local emergency number.</p>
+          </section>
+
+          <section class="lp-follow" aria-labelledby="lp-follow-title">
+            <p class="lp-eyebrow">Private by default</p>
+            <h2 id="lp-follow-title">Your report stays yours. Following up is one tap.</h2>
+            <div class="lp-follow-grid">
+              <article><h3>Read on your device</h3><p>Photos and PDFs are read on your phone or computer. Nothing is sent to us unless you choose to save or share.</p><a href="legal/privacy.html">Privacy policy <span aria-hidden="true">→</span></a></article>
+              <article><h3>Check the numbers</h3><p>When a photo is hard to read, you are asked to compare the number with your report before anything is explained.</p><a href="safety.html">Safety and trust <span aria-hidden="true">→</span></a></article>
+              <article><h3>Share with your doctor</h3><p>Send a one-page brief through a private link that you can turn off at any time.</p><a href="#report-title">Make a doctor brief <span aria-hidden="true">→</span></a></article>
+              <article><h3>Remember the next step</h3><p>Add the next test date to your calendar and keep every report in one record, by family member.</p><a href="#record-title">Open the record <span aria-hidden="true">→</span></a></article>
+            </div>
           </section>
 
           <section class="lp-doctors" id="for-doctors" aria-labelledby="lp-doctors-title">
@@ -2267,13 +2337,13 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-212"></script>
-    <script src="help.js?v=carewise-product-212"></script>
-    <script src="doctor-share.js?v=carewise-product-212"></script>
-    <script src="docbridge.js?v=carewise-product-212"></script>
-    <script src="reminders.js?v=carewise-product-212"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-212"></script>
-    <script src="twofactor.js?v=carewise-product-212"></script>
-    <script src="account-ui.js?v=carewise-product-212"></script>
+    <script src="script.js?v=carewise-product-213"></script>
+    <script src="help.js?v=carewise-product-213"></script>
+    <script src="doctor-share.js?v=carewise-product-213"></script>
+    <script src="docbridge.js?v=carewise-product-213"></script>
+    <script src="reminders.js?v=carewise-product-213"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-213"></script>
+    <script src="twofactor.js?v=carewise-product-213"></script>
+    <script src="account-ui.js?v=carewise-product-213"></script>
   </body>
 </html>

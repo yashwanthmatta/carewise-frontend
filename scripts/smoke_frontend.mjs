@@ -59,7 +59,7 @@ async function main() {
     throw new Error(`Cache version mismatch: index has ${htmlVersion}, service worker has ${swVersion}`);
   }
 
-  assertIncludes("index.html", html, "Your health reports, explained clearly.");
+  assertIncludes("index.html", html, "Your health reports, <em>finally understandable.</em>");
   // The design layer and the sign-in card script load on the page and are cached for offline use.
   for (const asset of ["ui.css", "account-ui.js"]) {
     assertIncludes("index.html", html, `${asset}?v=${htmlVersion}`);
