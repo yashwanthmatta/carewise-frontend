@@ -81,6 +81,9 @@ jobs:
       - name: Photo ranges that lost their decimal point
         run: node scripts/eval/ocr-range-decimals.mjs
 
+      - name: Report questions are about the report's own results
+        run: node scripts/eval/report-questions.mjs
+
       - name: Help chat answers match the website
         run: node scripts/eval/help-answers.mjs
 
