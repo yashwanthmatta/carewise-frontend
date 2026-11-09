@@ -4805,7 +4805,8 @@ function checkOcrNumbers(rawText) {
     }
     // Value: the first whole number after the test name.
     const nameEnd = a1c ? line.search(/a1c/i) + 3 : 0;
-    const valueMatch = fixed.slice(nameEnd).match(/(^|[^\d.])(\d+)(?![\d.,])/);
+    // Not the decimals of a result with a decimal comma ("4,79" is not a 79).
+    const valueMatch = fixed.slice(nameEnd).match(/(^|[^\d.,])(\d+)(?![\d.,])/);
     if (valueMatch) {
       const token = valueMatch[2];
       const value = Number(token);
@@ -4837,7 +4838,8 @@ function checkOcrNumbers(rawText) {
       const columnAt = line.indexOf(column, at);
       at = columnAt + column.length;
       const check = checkOcrColumn(column);
-      if (!check || checks.some((other) => other.line === index && other.key === check.key)) continue;
+      // A merged range ("2.5-7.0" read as "257.0") is still asked about after the result itself was fixed.
+      if (!check || checks.some((other) => other.line === index && other.key === check.key && (other.kind === "ask" || !check.merged))) continue;
       checks.push({ line: index, at: columnAt, ...check, kind: "ask" });
     }
   });
@@ -4847,8 +4849,12 @@ function checkOcrNumbers(rawText) {
 // One test's result and range, as read from a photo: a question to ask, or null.
 function checkOcrColumn(line) {
   const row = readLabPanel(line)[0] || ruleLineRow(line);
-  if (!row || !row.rangeText || row.generalRange) return null;
+  if (!row) return null;
   const name = TEST_GUIDE[row.key]?.name || labTestInfo(row.key)?.name || row.name;
+  if (!row.rangeText || row.generalRange) {
+    const merged = ocrMergedRangeCheck(line, row);
+    return merged ? { key: row.key, name, ...merged, merged: true } : null;
+  }
   const rangeCheck = ocrRangeDecimalCheck(line, row) || ocrScaledPairCheck(line, row);
   if (rangeCheck) return { key: row.key, name, ...rangeCheck };
   const token0 = String(row.valueText);
@@ -4925,17 +4931,23 @@ function ocrRangeDecimalCheck(line, row) {
   const number = (text) => Number(String(text).replace(",", "."));
   const hasPoint = (text) => /[.,]/.test(text);
   const pointIn = (text, mark) => (text.length > 1 ? `${text.slice(0, -1)}${mark}${text.slice(-1)}` : `0${mark}${text}`);
-  const mark = [lowText, highText, valueText].find(hasPoint)?.match(/[.,]/)[0] || ".";
+  // The reader turns "4,79" into 4.79, so take the decimal mark from the line itself.
+  const mark = [lowText, highText].find(hasPoint)?.match(/[.,]/)[0] || (/\d,\d/.test(line) && !/\d\.\d/.test(line) ? "," : ".");
   let low = lowText;
   let high = highText;
   if (hasPoint(lowText) !== hasPoint(highText)) {
     // One side kept its point and the other lost it.
     if (!hasPoint(highText) && highText.length >= 2) high = pointIn(highText, mark);
     else if (!hasPoint(lowText) && lowText.length >= 2) low = pointIn(lowText, mark);
-  } else if (!hasPoint(lowText) && hasPoint(valueText) && highText.length >= 2) {
-    // The result kept its point but the whole range lost it.
-    low = pointIn(lowText, mark);
-    high = pointIn(highText, mark);
+  } else if (!hasPoint(lowText) && hasPoint(valueText)) {
+    // The result kept its point but the whole range lost it. Labs print a range with as many
+    // decimals as the result: "4.14-5.80" for an RBC of 5.97, read as "414-580".
+    const places = valueText.split(/[.,]/)[1].length;
+    const shift = (text) => (text.length > places ? `${text.slice(0, -places)}${mark}${text.slice(-places)}` : text);
+    if (places <= 2 && lowText.length > places && highText.length > places) {
+      low = shift(lowText);
+      high = shift(highText);
+    }
   }
   if (low === lowText && high === highText) return null;
   if (!(number(low) < number(high))) return null;
@@ -4959,6 +4971,59 @@ function ocrRangeDecimalCheck(line, row) {
   const shownValue = newValueText === valueText ? read.slice(0, valueText.length) : newValueText;
   const other = `${shownValue}${read.slice(valueText.length, rangeAt - valueAt)}${low}${joiner}${high}`;
   return { read, value: read, other };
+}
+
+// A photo can lose the dash between the two ends of a range: "2.5-7.0" read as "257.0" or
+// "2570", "0.8-1.2" as "0.81.2", "10-35" as "1035". The result then has no range at all.
+// When only one way of splitting the number gives a range with the result's own number of
+// decimals that the result fits near, the person is asked to check the range against the report.
+function ocrMergedRangeCheck(line, row) {
+  const valueText = String(row.valueText ?? "");
+  if (!/^\d+(?:[.,]\d{1,2})?$/.test(valueText)) return null;
+  const valueAt = line.search(new RegExp(`(?<![\\d.,])${valueText.replace(/[.,]/g, "[.,]")}(?![\\d.,])`));
+  if (valueAt < 0) return null;
+  const restAt = valueAt + valueText.length;
+  // The last number after the result that is not part of a unit ("10^9/L", "1.73m2"), a date,
+  // or a number followed by its own unit (an earlier result printed beside this one).
+  const rest = line.slice(restAt);
+  const tokenMatch = [...rest.matchAll(/(?<![\d.,^\/])\d[\d.,]*\d(?![\d.,])/g)].filter((match) => {
+    const after = rest.slice(match.index + match[0].length);
+    if (/^[a-zµμ%^\/'"]/i.test(after)) return false;
+    const next = after.trim().split(/\s+/)[0] || "";
+    return !/[\/%^]|^(?:mg|g|ug|µg|ng|pg|u|iu|mmol|umol|µmol|fl|sec|s|mm|x10)\b/i.test(next);
+  }).pop();
+  if (!tokenMatch) return null;
+  const token = tokenMatch[0];
+  const digits = token.replace(/[.,]/g, "");
+  if (digits.length < 3 || digits.length > 8 || /[.,]{2}|[.,]$/.test(token)) return null;
+  const places = valueText.includes(".") || valueText.includes(",") ? valueText.split(/[.,]/)[1].length : 0;
+  // Where the token kept a decimal mark, counted in digits.
+  const marks = [];
+  let count = 0;
+  for (const char of token) {
+    if (/[.,]/.test(char)) marks.push(count);
+    else count += 1;
+  }
+  const mark = token.match(/[.,]/)?.[0] || (/\d,\d/.test(line) && !/\d\.\d/.test(line) ? "," : ".");
+  const side = (text) => {
+    if (text.length < places + 1) return null;
+    if (text.length > places + 1 && text.startsWith("0")) return null;
+    return places ? `${text.slice(0, -places)}${mark}${text.slice(-places)}` : text;
+  };
+  const value = Number(valueText.replace(",", "."));
+  const found = [];
+  for (let split = 1; split < digits.length; split += 1) {
+    const low = side(digits.slice(0, split));
+    const high = side(digits.slice(split));
+    if (!low || !high) continue;
+    const points = places ? [split - places, digits.length - places] : [];
+    if (!marks.every((at) => points.includes(at))) continue;
+    const [lowNumber, highNumber] = [low, high].map((text) => Number(text.replace(",", ".")));
+    if (!(lowNumber < highNumber) || value < lowNumber * 0.5 || value > highNumber * 2) continue;
+    found.push(`${low}-${high}`);
+  }
+  if (found.length !== 1) return null;
+  return { read: token, value: token, other: found[0] };
 }
 
 // The tests read by their own rules (cholesterol, triglycerides, A1C), as a row for one line.
@@ -6924,7 +6989,7 @@ function downloadLabReminder(dateText) {
 
 // Version of the interpretation rules and wording below. Change it whenever a rule, threshold or
 // explanation changes, so every output can be traced to the rules that produced it.
-const EXPLANATION_RULES_VERSION = "2026-10-20.7";
+const EXPLANATION_RULES_VERSION = "2026-10-20.8";
 
 // Plain-language guide per test: what it is, what a high or low result can mean, and a
 // question for the doctor. Educational wording only: no diagnosis, medicine names or doses.
