@@ -6553,27 +6553,87 @@ function renderResultMore(content, title, detail) {
         </details>`;
 }
 
+// Body areas used to group "All tests on your report". Only for finding results on screen:
+// a group never changes how a result is read, and the order inside a group is the report's.
+const TEST_AREAS = [
+  ["heart", "Heart and cholesterol", "Corazón y colesterol", ["ldl", "hdl", "nonhdl", "totalCholesterol", "triglycerides", "troponin"]],
+  ["sugar", "Blood sugar", "Azúcar en la sangre", ["glucose", "a1c", "urineglucose", "urineketones"]],
+  ["kidneys", "Kidneys", "Riñones", ["creatinine", "egfr", "bun", "uricacid", "urineprotein", "urineblood"]],
+  ["salts", "Salts and minerals", "Sales y minerales", ["sodium", "potassium", "chloride", "co2", "calcium", "magnesium", "phosphorus"]],
+  ["liver", "Liver", "Hígado", ["alt", "ast", "alp", "ggt", "bilirubin", "albumin", "protein", "globulin"]],
+  ["blood", "Blood count and clotting", "Hemograma y coagulación", ["wbc", "rbc", "hemoglobin", "hematocrit", "mcv", "mch", "mchc", "rdw", "platelets", "neutrophils", "lymphocytes", "monocytes", "eosinophils", "basophils", "inr", "pt"]],
+  ["iron", "Iron and vitamins", "Hierro y vitaminas", ["ferritin", "iron", "tibc", "b12", "folate", "vitaminD"]],
+  ["thyroid", "Thyroid", "Tiroides", ["tsh", "ft4", "ft3"]],
+  ["inflammation", "Inflammation", "Inflamación", ["crp", "esr"]],
+];
+const testAreaOf = (key) => TEST_AREAS.find((area) => area[3].includes(key))?.[0] || "other";
+
 function renderLabPanelSection(analysis, view = buildReportView(analysis, reportLanguage)) {
   if (!view.tests.length) return "";
-  const t = LAB_PANEL_TEXT[reportLanguage === "es" ? "es" : "en"];
-  return `
-        <section class="lab-panel">
-          <h4>${escapeHtml(t.title)}</h4>
-          <p class="lab-panel-note">${escapeHtml(view.text.allTestsNote)}</p>
-          <div class="lab-panel-table" role="table" aria-label="${escapeHtml(t.title)}">
-            <div class="lab-panel-row lab-panel-head" role="row">
-              <span role="columnheader">${escapeHtml(t.test)}</span><span role="columnheader">${escapeHtml(t.result)}</span><span role="columnheader">${escapeHtml(t.range)}</span><span role="columnheader">${escapeHtml(t.status)}</span>
-            </div>
-            ${view.tests.map((item) => `
-            <div class="lab-panel-row lab-status-${escapeHtml(item.status)}" role="row">
+  const es = reportLanguage === "es";
+  const t = LAB_PANEL_TEXT[es ? "es" : "en"];
+  const areas = [...TEST_AREAS.map(([id, en, esName]) => [id, es ? esName : en]), ["other", es ? "Otros" : "Other tests"]]
+    .map(([id, name]) => ({ id, name, items: view.tests.filter((item) => testAreaOf(item.key) === id) }))
+    .filter((area) => area.items.length);
+  // A short report reads best as one list; filters and groups start at 6 results in 2 or more areas.
+  const grouped = view.tests.length >= 6 && areas.length >= 2;
+  const isOutside = (item) => OUTSIDE_STATUSES.has(item.status);
+  const outside = view.tests.filter(isOutside).length;
+  const row = (item) => `
+            <div class="lab-panel-row lab-status-${escapeHtml(item.status)}" role="row" data-test-area="${testAreaOf(item.key)}" data-test-outside="${isOutside(item)}">
               <span role="cell"><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.what)}</small></span>
               <span role="cell">${escapeHtml(item.value)}${item.unitHint ? `<small>${escapeHtml(item.unitHint)}</small>` : ""}</span>
               <span role="cell">${escapeHtml(item.range || t.noRange)}</span>
               <span role="cell"><em>${escapeHtml(item.label)}</em></span>
-            </div>`).join("")}
+            </div>`;
+  const chip = (filter, name, count, on = false) => `<button type="button" class="lab-filter" data-test-filter="${filter}" aria-pressed="${on}">${escapeHtml(name)} <span>${count}</span></button>`;
+  return `
+        <section class="lab-panel${grouped ? " lab-panel-grouped" : ""}">
+          <h4>${escapeHtml(t.title)}</h4>
+          <p class="lab-panel-note">${escapeHtml(view.text.allTestsNote)}</p>
+          ${grouped ? `<div class="lab-filters" role="group" aria-label="${es ? "Mostrar" : "Show"}">
+            ${chip("all", es ? "Todos" : "All", view.tests.length, true)}
+            ${outside ? chip("outside", es ? "Fuera del rango del laboratorio" : "Outside the lab's range", outside) : ""}
+            ${areas.map((area) => chip(area.id, area.name, area.items.length)).join("")}
+          </div>
+          <p class="visually-hidden" role="status" data-test-filter-status></p>` : ""}
+          <div class="lab-panel-table" role="table" aria-label="${escapeHtml(t.title)}">
+            <div class="lab-panel-row lab-panel-head" role="row">
+              <span role="columnheader">${escapeHtml(t.test)}</span><span role="columnheader">${escapeHtml(t.result)}</span><span role="columnheader">${escapeHtml(t.range)}</span><span role="columnheader">${escapeHtml(t.status)}</span>
+            </div>
+            ${grouped
+              ? areas.map((area) => `
+            <div class="lab-panel-group" role="rowgroup" data-test-group="${area.id}">
+              <div class="lab-panel-row lab-panel-group-head" role="row"><span role="rowheader">${escapeHtml(area.name)}</span></div>${area.items.map(row).join("")}
+            </div>`).join("")
+              : view.tests.map(row).join("")}
           </div>
         </section>`;
 }
+
+// Filters on "All tests on your report": show every result, only those outside the lab's range,
+// or one body area. Nothing is removed from the report, only hidden from view.
+function filterLabPanel(button) {
+  const panel = button.closest(".lab-panel");
+  if (!panel) return;
+  const filter = button.dataset.testFilter;
+  panel.querySelectorAll("[data-test-filter]").forEach((other) => other.setAttribute("aria-pressed", String(other === button)));
+  let shown = 0;
+  panel.querySelectorAll(".lab-panel-row[data-test-area]").forEach((row) => {
+    const show = filter === "all" || (filter === "outside" ? row.dataset.testOutside === "true" : row.dataset.testArea === filter);
+    row.hidden = !show;
+    if (show) shown += 1;
+  });
+  panel.querySelectorAll("[data-test-group]").forEach((group) => {
+    group.hidden = !group.querySelector(".lab-panel-row[data-test-area]:not([hidden])");
+  });
+  const status = panel.querySelector("[data-test-filter-status]");
+  if (status) status.textContent = reportLanguage === "es" ? `Mostrando ${shown} resultados` : `Showing ${shown} result${shown === 1 ? "" : "s"}`;
+}
+document.addEventListener("click", (event) => {
+  const button = event.target.closest?.("[data-test-filter]");
+  if (button) filterLabPanel(button);
+});
 
 // Summary first: what matters, in plain words, before any numbers.
 function renderReportSummary(view, nextStep = "") {

@@ -87,6 +87,9 @@ jobs:
       - name: Homepage tabs, example results and phone layout
         run: node scripts/eval/homepage.mjs
 
+      - name: Results grouped by body area, with filters
+        run: node scripts/eval/results-groups.mjs
+
       - name: Help chat answers match the website
         run: node scripts/eval/help-answers.mjs
 

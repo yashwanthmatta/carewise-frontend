@@ -38,8 +38,8 @@ that their site is known for, applied in our own way.
 
 | # | Screen | State | PR |
 |---|---|---|---|
-| 1 | Homepage | **Done, in review**: new headline and lede, "Understand my report", serif headings, "See it before you upload" example results by body area (tabs), three steps instead of four, "Private by default" privacy and follow-up section, kidney-specific question in the hero preview. The duplicate demo strip and feature strip were removed. | this PR |
-| 2 | Report results | Next. Group cards by body area with a filter, keep the "check this number" and source evidence features. | — |
+| 1 | Homepage | **Done, merged**: new headline and lede, "Understand my report", serif headings, "See it before you upload" example results by body area (tabs), three steps instead of four, "Private by default" privacy and follow-up section, kidney-specific question in the hero preview. The duplicate demo strip and feature strip were removed. | #149 |
+| 2 | Report results | **Done, in review**: "All tests on your report" grouped by body area (kidneys, heart and cholesterol, blood count…) with filters: All, Outside the lab's range, and each area. Reports with fewer than 6 results stay one plain list. Result cards: larger numbers, calmer cards. "Check these numbers", the line from the report, "See it on the report page" and every value, range and label are unchanged. Groups only arrange results on screen; they never change how a result is read. | this PR |
 | 3 | Dashboard (signed-in home) | Not started. No health score will be added. | — |
 | 4 | Trends | Not started. | — |
 | 5 | Sign in, upload, processing, record, doctor brief, reminders, chat, account, plans, DocBridge | Not started in this redesign. Sign in, upload, processing and source evidence were redone in the earlier redesign (`docs/ui-ux-redesign-progress.md`). | — |
@@ -54,6 +54,15 @@ Screenshots in `docs/function-health-inspired-redesign/` (desktop 1280 px and ph
 - `before-desk-hero.png` → `after-desk-hero.png`, `before-phone-hero.png` → `after-phone-hero.png`
 - `before-desk-how.png` → `after-desk-how.png` (four steps → three)
 - `after-desk-insights.png`, `after-phone-insights.png` (new section)
+- Results: `before-*-all-tests.png` → `after-*-all-tests.png`, `before-*-result-cards.png` → `after-*-result-cards.png`
+
+## Testing (results screen)
+
+| Check | Result |
+|---|---|
+| `scripts/eval/results-groups.mjs` (new, in CI): every result shown with its exact value, range and label; groups; "Outside the lab's range", area and "All" filters; pressed state; screen-reader count; short report stays one list; no sideways scroll; no script errors | passes at desktop and phone |
+| axe-core 4.10.2 on the whole results area | no violations, desktop and phone |
+| Reduced motion | filter and card transitions off |
 
 ## Testing (homepage)
 
