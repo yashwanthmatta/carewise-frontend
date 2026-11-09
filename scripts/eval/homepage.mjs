@@ -37,6 +37,8 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   check(/How are my kidneys working/.test(await page.innerText(".lp-mock-hero")), `${size}: hero preview shows a kidney question`);
   check((await page.$$("#how-it-works .lp-flow")).length === 3, `${size}: three steps`);
   if (process.env.AXE_PATH) {
+    // Let the tab panel's fade-in finish: a scan mid-fade sees half-transparent text.
+    await page.waitForTimeout(500);
     await page.addScriptTag({ content: fs.readFileSync(process.env.AXE_PATH, "utf8") });
     const violations = await page.evaluate(async () => (await axe.run({ include: [["#insights"], ["#how-it-works"], [".lp-follow"], [".lp-hero"]] })).violations.map((v) => `${v.id} (${v.nodes.length})`));
     check(!violations.length, `${size}: axe ${violations.length ? violations.join(", ") : "no violations"}`);

@@ -5421,6 +5421,77 @@ function saveReportHistory(report) {
   localStorage.setItem("carewiseReports", JSON.stringify(reports.slice(0, 20)));
   renderReportHistory();
   renderDashboardStats();
+  renderHomeDashboard();
+}
+
+// Home for someone who has saved reports: the latest report, its doctor questions, recent reports,
+// tracked results and upcoming reminders, all from what is already saved on this device.
+// No score: the only count is the lab-range count the report itself shows.
+function renderHomeDashboard() {
+  const box = document.querySelector("#dashboard");
+  if (!box) return;
+  let reports = [];
+  try { reports = getReportHistory(); } catch { reports = []; }
+  if (!reports.length) {
+    box.hidden = true;
+    box.innerHTML = "";
+    return;
+  }
+  const es = reportLanguage === "es";
+  const when = (value) => {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString(es ? "es" : undefined, { day: "numeric", month: "short", year: "numeric" });
+  };
+  const latest = reports[0];
+  const person = normalizeReportPerson(latest.person);
+  const forWhom = person === "Me" ? "" : es ? ` · ${person}` : ` · for ${person}`;
+  const questions = (latest.questions || []).filter(Boolean).slice(0, 3);
+  const trends = getLabTrends();
+  const tracked = [...new Map(trends.map((item) => [item.test, item])).values()];
+  const today = new Date().toISOString().slice(0, 10);
+  const upcoming = getReminders().filter((item) => item.startDate >= today).sort((a, b) => a.startDate.localeCompare(b.startDate)).slice(0, 2);
+  const link = (href, text) => `<a class="ft-dash-link" href="${href}">${escapeHtml(text)} <span aria-hidden="true">→</span></a>`;
+  box.innerHTML = `
+            <div class="ft-dash-head">
+              <div>
+                <p class="lp-eyebrow">${es ? "Su resumen" : "Your summary"}</p>
+                <h2 id="ft-dash-title">${es ? "Bienvenido de nuevo" : "Welcome back"}</h2>
+                <p class="ft-dash-lede">${es ? "Lo más reciente primero. Todo se guarda en este dispositivo." : "The latest first. Everything here is saved on this device."}</p>
+              </div>
+              <div class="ft-dash-actions">
+                <a class="lp-btn lp-btn-dark" href="#report-title">${es ? "Entender un informe nuevo" : "Understand a new report"}</a>
+                <a class="lp-btn lp-btn-light" href="#saved-title">${es ? "Ver todos los informes" : "See all reports"}</a>
+              </div>
+            </div>
+            <div class="ft-dash-grid">
+              <article class="ft-dash-card ft-dash-latest">
+                <h3>${es ? "Último informe" : "Latest report"}</h3>
+                <p class="ft-dash-meta">${escapeHtml(when(latest.createdAt || latest.updatedAt))}${escapeHtml(forWhom)}</p>
+                <p class="ft-dash-big">${escapeHtml(latest.fileName || (es ? "Informe" : "Report"))}</p>
+                ${latest.message ? `<p>${escapeHtml(latest.message)}</p>` : ""}
+                ${link("#saved-title", es ? "Abrir en el historial" : "Open in History")}
+              </article>
+              <article class="ft-dash-card">
+                <h3>${es ? "Preguntas para su médico" : "Questions for your doctor"}</h3>
+                ${questions.length ? `<ol class="ft-dash-questions">${questions.map((q) => `<li>${escapeHtml(q)}</li>`).join("")}</ol>` : `<p>${es ? "Explique un informe para ver preguntas sobre sus resultados." : "Explain a report to see questions about your results."}</p>`}
+                ${link("#saved-title", es ? "Preparar la visita" : "Prepare for the visit")}
+              </article>
+              <article class="ft-dash-card">
+                <h3>${es ? "Resultados en seguimiento" : "Results you are tracking"}</h3>
+                ${tracked.length ? `<ul class="ft-dash-list">${tracked.slice(0, 4).map((item) => `<li><span>${escapeHtml(item.test)}</span><b>${escapeHtml(`${item.value} ${item.unit || ""}`.trim())}</b><small>${escapeHtml(when(item.date))}</small></li>`).join("")}</ul>` : `<p>${es ? "Guarde los resultados de un informe para verlos con el tiempo." : "Save the results from a report to see them over time."}</p>`}
+                ${link("#saved-title", es ? "Ver tendencias" : "See trends")}
+              </article>
+              <article class="ft-dash-card">
+                <h3>${es ? "Próximos recordatorios" : "Coming up"}</h3>
+                ${upcoming.length ? `<ul class="ft-dash-list">${upcoming.map((item) => `<li><span>${escapeHtml(item.type || (es ? "Recordatorio" : "Reminder"))}</span><small>${escapeHtml(when(`${item.startDate}T12:00:00`))}</small></li>`).join("")}</ul>` : `<p>${es ? "No hay recordatorios próximos." : "No reminders coming up."}</p>`}
+                ${link("#record-title", es ? "Recordatorios" : "Reminders")}
+              </article>
+              ${reports.length > 1 ? `<article class="ft-dash-card ft-dash-recent">
+                <h3>${es ? "Informes recientes" : "Recent reports"}</h3>
+                <ul class="ft-dash-list">${reports.slice(1, 4).map((report) => `<li><span>${escapeHtml(report.fileName || (es ? "Informe" : "Report"))}</span><small>${escapeHtml(when(report.createdAt || report.updatedAt))}${normalizeReportPerson(report.person) === "Me" ? "" : ` · ${escapeHtml(normalizeReportPerson(report.person))}`}</small></li>`).join("")}</ul>
+              </article>` : ""}
+            </div>`;
+  box.hidden = false;
 }
 
 // Caregiver mode: each report records who it is for ("Me" by default).
@@ -8130,7 +8201,7 @@ function runLocalReportAnalysis() {
     score: analysis.score,
     message: `${outsideRangeText(analysis) || "Report text reviewed"}. ${analysis.findings[0]?.label || ""}`.trim(),
     nextSteps: analysis.questions.slice(0, 3),
-    questions: analysis.questions,
+    questions: reportQuestions(analysis, buildReportView(analysis, "en"), "en"),
     labValues: analysis.labValues,
     createdAt: new Date().toISOString(),
   });
@@ -11864,6 +11935,16 @@ function endTour() {
 
 document.querySelector("#start-tour")?.addEventListener("click", startTour);
 // Homepage: example results by body area. Tabs follow the ARIA tabs pattern (arrows, Home, End).
+try { renderHomeDashboard(); } catch { /* the dashboard is optional */ }
+// The dashboard is drawn after the page's links are set up, so its links open their section here.
+document.querySelector("#dashboard")?.addEventListener("click", (event) => {
+  const link = event.target.closest?.('a[href^="#"]');
+  if (!link || typeof window.showCareWiseSection !== "function") return;
+  event.preventDefault();
+  history.pushState(null, "", link.getAttribute("href"));
+  window.showCareWiseSection(link.getAttribute("href").slice(1));
+});
+
 document.querySelectorAll("[data-lp-insights]").forEach((box) => {
   const tabs = [...box.querySelectorAll('[role="tab"]')];
   const select = (tab, focus) => {

@@ -16,14 +16,14 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-214" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-215" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-214" />
-    <link rel="stylesheet" href="ui.css?v=carewise-product-214" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-215" />
+    <link rel="stylesheet" href="ui.css?v=carewise-product-215" />
   </head>
   <body>
     <main class="app-shell">
@@ -48,6 +48,8 @@
           </div>
         </header>
         <div class="landing" id="landing">
+          <section class="ft-dash" id="dashboard" aria-labelledby="ft-dash-title" hidden></section>
+
           <section class="lp-hero" aria-labelledby="app-title">
             <div class="hero-copy">
               <p class="lp-chip"><img src="assets/carewise-logo.svg" alt="" width="20" height="20" /> For you and the people you look after</p>
@@ -338,9 +340,65 @@
             </div>
           </section>
 
-          <footer class="lp-footer">
-            <div><strong>FollowThrough Health</strong><span>Educational health report explainer. Not a diagnosis and not medical advice.</span></div>
-            <nav aria-label="Legal"><a href="demo.html">Try the demo</a><a href="safety.html">Safety and trust</a><a href="faq.html">FAQ</a><a href="about.html">About</a><a href="support.html">Support</a><a href="#for-doctors">For doctors</a><a href="glossary.html">Lab test glossary</a><a href="legal/security.html">Security</a><a href="legal/privacy.html">Privacy</a><a href="legal/terms.html">Terms</a><a href="legal/disclaimer.html">Disclaimer</a><a href="legal/data-deletion.html">Delete my data</a><a href="legal/app-store-disclosures.html">App privacy details</a><a href="accessibility.html">Accessibility</a></nav>
+          <footer class="lp-footer ft-footer">
+            <div class="ft-footer-card">
+              <p class="ft-footer-brand"><img src="assets/carewise-logo.svg" alt="" width="44" height="44" /><span>FollowThrough Health</span></p>
+              <div class="ft-footer-grid">
+                <nav class="ft-footer-cols" aria-label="Footer">
+                  <div>
+                    <h2>Company</h2>
+                    <ul>
+                      <li><a href="about.html">About</a></li>
+                      <li><a href="support.html">Contact</a></li>
+                      <li><a href="legal/security.html">Security and privacy</a></li>
+                      <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h2>Explore</h2>
+                    <ul>
+                      <li><a href="#how-it-works">How it works</a></li>
+                      <li><a href="demo.html">Sample report</a></li>
+                      <li><a href="glossary.html">Lab test glossary</a></li>
+                      <li><a href="#pricing">Pricing</a></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h2>For healthcare professionals</h2>
+                    <ul>
+                      <li><a href="#for-doctors">DocBridge</a></li>
+                      <li><a href="#docbridge-title" data-db-demo>Clinician demo</a></li>
+                      <li><a href="#docbridge-title">Clinic inquiries</a></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h2>Legal and account</h2>
+                    <ul>
+                      <li><a href="legal/privacy.html">Privacy Policy</a></li>
+                      <li><a href="legal/terms.html">Terms</a></li>
+                      <li><a href="legal/data-deletion.html">Data deletion</a></li>
+                      <li><a href="#your-data">Your data controls</a></li>
+                    </ul>
+                  </div>
+                </nav>
+                <div class="ft-footer-cta">
+                  <p class="ft-footer-headline">Your parent's next report, <em>explained in a minute.</em></p>
+                  <p>Free to start. Read on your device. Built for the people who look after someone.</p>
+                  <div class="ft-footer-actions">
+                    <a class="lp-btn lp-btn-dark" href="#report-title">Understand my report</a>
+                    <a class="lp-btn lp-btn-light" href="#early-access-title">Join early access</a>
+                  </div>
+                  <p class="ft-footer-apps">Mobile apps for iPhone and Android are in development.</p>
+                  <nav class="ft-footer-legal" aria-label="Legal">
+                    <a href="legal/disclaimer.html">Disclaimer</a>
+                    <a href="legal/app-store-disclosures.html">App privacy details</a>
+                    <a href="accessibility.html">Accessibility</a>
+                    <a href="safety.html">Safety and trust</a>
+                  </nav>
+                </div>
+              </div>
+            </div>
+            <p class="ft-footer-fine">FollowThrough Health is an educational health report explainer. It is not a diagnosis, prescription, emergency service, or replacement for licensed medical care. If you feel very unwell, call your local emergency number.</p>
           </footer>
         </div>
 
@@ -2337,13 +2395,13 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-214"></script>
-    <script src="help.js?v=carewise-product-214"></script>
-    <script src="doctor-share.js?v=carewise-product-214"></script>
-    <script src="docbridge.js?v=carewise-product-214"></script>
-    <script src="reminders.js?v=carewise-product-214"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-214"></script>
-    <script src="twofactor.js?v=carewise-product-214"></script>
-    <script src="account-ui.js?v=carewise-product-214"></script>
+    <script src="script.js?v=carewise-product-215"></script>
+    <script src="help.js?v=carewise-product-215"></script>
+    <script src="doctor-share.js?v=carewise-product-215"></script>
+    <script src="docbridge.js?v=carewise-product-215"></script>
+    <script src="reminders.js?v=carewise-product-215"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-215"></script>
+    <script src="twofactor.js?v=carewise-product-215"></script>
+    <script src="account-ui.js?v=carewise-product-215"></script>
   </body>
 </html>

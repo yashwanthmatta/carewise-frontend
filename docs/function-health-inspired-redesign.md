@@ -39,8 +39,9 @@ that their site is known for, applied in our own way.
 | # | Screen | State | PR |
 |---|---|---|---|
 | 1 | Homepage | **Done, merged**: new headline and lede, "Understand my report", serif headings, "See it before you upload" example results by body area (tabs), three steps instead of four, "Private by default" privacy and follow-up section, kidney-specific question in the hero preview. The duplicate demo strip and feature strip were removed. | #149 |
-| 2 | Report results | **Done, in review**: "All tests on your report" grouped by body area (kidneys, heart and cholesterol, blood count…) with filters: All, Outside the lab's range, and each area. Reports with fewer than 6 results stay one plain list. Result cards: larger numbers, calmer cards. "Check these numbers", the line from the report, "See it on the report page" and every value, range and label are unchanged. Groups only arrange results on screen; they never change how a result is read. | this PR |
-| 3 | Dashboard (signed-in home) | Not started. No health score will be added. | — |
+| 2 | Report results | **Done, merged**: "All tests on your report" grouped by body area (kidneys, heart and cholesterol, blood count…) with filters: All, Outside the lab's range, and each area. Reports with fewer than 6 results stay one plain list. Result cards: larger numbers, calmer cards. "Check these numbers", the line from the report, "See it on the report page" and every value, range and label are unchanged. Groups only arrange results on screen; they never change how a result is read. | #150 |
+| 3 | Dashboard (home for people with saved reports) | **Done, in review**: "Welcome back" above the homepage with the latest report and its lab-range count, its own doctor questions, tracked results with value, unit and date, upcoming reminders (by type, never the private title) and recent reports by family member. Shown only when reports are saved; no score. Saved reports now keep the report's own doctor questions. | this PR |
+| 3b | Footer | **Done, in review**: one ivory card with the brand, Company / Explore / For healthcare professionals / Legal and account columns, a closing call to action, "Mobile apps for iPhone and Android are in development", and the safety line. No newsletter box (no opt-in service), no social icons or store badges (no real accounts or listings), no "Updates" page (none exists). | this PR |
 | 4 | Trends | Not started. | — |
 | 5 | Sign in, upload, processing, record, doctor brief, reminders, chat, account, plans, DocBridge | Not started in this redesign. Sign in, upload, processing and source evidence were redone in the earlier redesign (`docs/ui-ux-redesign-progress.md`). | — |
 | 6 | Phone app | Not started. | — |
@@ -54,6 +55,7 @@ Screenshots in `docs/function-health-inspired-redesign/` (desktop 1280 px and ph
 - `before-desk-hero.png` → `after-desk-hero.png`, `before-phone-hero.png` → `after-phone-hero.png`
 - `before-desk-how.png` → `after-desk-how.png` (four steps → three)
 - `after-desk-insights.png`, `after-phone-insights.png` (new section)
+- Dashboard and footer: `after-*-dashboard.png`, `after-*-footer.png`
 - Results: `before-*-all-tests.png` → `after-*-all-tests.png`, `before-*-result-cards.png` → `after-*-result-cards.png`
 
 ## Testing (results screen)
