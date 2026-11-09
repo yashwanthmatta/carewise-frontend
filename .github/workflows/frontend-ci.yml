@@ -90,6 +90,15 @@ jobs:
       - name: Results grouped by body area, with filters
         run: node scripts/eval/results-groups.mjs
 
+      - name: Home dashboard for people with saved reports
+        run: node scripts/eval/home-dashboard.mjs
+
+      - name: AI Health Guide states, safety answers and chat connection
+        run: node scripts/eval/ai-guide.mjs
+
+      - name: Animated report demo, FAQ and comparison
+        run: node scripts/eval/landing-premium.mjs
+
       - name: Help chat answers match the website
         run: node scripts/eval/help-answers.mjs
 

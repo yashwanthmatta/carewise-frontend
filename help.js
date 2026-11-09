@@ -263,9 +263,25 @@
     return lines.join("\n");
   }
 
+  // "Are you a real doctor?" and "Do I have diabetes?" get a fixed, honest answer, online or not.
+  const IDENTITY_QUESTION = /\b(are|r) (you|u) (a |an )?(real |actual |human |licensed )?(doctor|physician|nurse|human|person|md)\b|\bis (this|the (ai )?(health )?guide) (a )?(real )?(doctor|physician|human)\b|eres (un |una )?(médico|medico|doctor|doctora|humano|persona)/i;
+  const DIAGNOSIS_QUESTION = /\b(diagnose|diagnosis)\b|\bdo i have\b|\bam i (sick|diabetic|anemic|dying)\b|\bwhat (disease|condition|illness) do i have\b|diagn[oó]stic|¿?tengo (diabetes|anemia|cáncer|cancer)/i;
+  function identityAnswer(es) {
+    return es
+      ? "No. Soy la Guía de Salud con IA de FollowThrough Health: una herramienta de educación, no un médico ni una persona. Explico términos y resultados en palabras sencillas y le ayudo a preparar preguntas para su médico, que es quien interpreta sus resultados."
+      : "No. I'm FollowThrough Health's AI Health Guide: an education tool, not a doctor or a person. I explain terms and results in plain words and help you prepare questions for your doctor, who is the one who interprets your results.";
+  }
+  function diagnosisAnswer(es) {
+    return es
+      ? "No puedo diagnosticar. Solo su médico puede decir qué significan sus resultados para su salud, con su historial y un examen. Puedo explicar qué mide cada prueba y ayudarle a preparar preguntas, por ejemplo: \"¿Mis resultados indican algo que debamos revisar o repetir?\""
+      : "I can't diagnose. Only your doctor can say what your results mean for your health, using your history and an exam. I can explain what each test measures and help you prepare questions, for example: \"Do my results point to anything we should check or repeat?\"";
+  }
+
   function builtInAnswer(question) {
     const es = lang() === "es";
     const clean = question.trim();
+    if (IDENTITY_QUESTION.test(clean)) return { reply: identityAnswer(es) };
+    if (DIAGNOSIS_QUESTION.test(clean)) return { reply: diagnosisAnswer(es) };
     if (MEDICINE_QUESTION.test(clean)) return { reply: medicineAnswer(es) };
     // "How do I lower my LDL?" is about food and movement, so check that first.
     if (LIFESTYLE_QUESTION.test(clean)) return { reply: lifestyleAnswer(clean, es) };
@@ -348,6 +364,33 @@
     }
   }
 
+  // The reply to one question: emergency words first, then fixed answers for "are you a doctor"
+  // and diagnosis questions, then the online helper, with built-in answers when it is not there.
+  async function replyFor(clean, history, shareReport = false) {
+    const es = lang() === "es";
+    if (EMERGENCY_PATTERN.test(clean)) return { reply: text().emergency, urgent: true, source: "safety" };
+    if (IDENTITY_QUESTION.test(clean)) return { reply: identityAnswer(es), source: "built-in" };
+    if (DIAGNOSIS_QUESTION.test(clean)) return { reply: diagnosisAnswer(es), source: "built-in" };
+    try {
+      // Without the online helper, answer straight away from built-in knowledge.
+      if (backendFeatures && backendFeatures.help_assistant === false) throw new Error("Backend returned 503");
+      const response = await apiPost("/assistant/chat", {
+        messages: history.slice(-12),
+        report_summary: shareReport && typeof latestReportSummaryPack === "string" ? latestReportSummaryPack.slice(0, 4000) : "",
+        language: lang(),
+        source: "web",
+      }, { skipAuth: true });
+      if (!response || !response.reply) throw new Error("No reply");
+      return { reply: response.reply, source: "online" };
+    } catch (error) {
+      const answer = builtInAnswer(clean);
+      return { reply: answer.reply, showTopics: Boolean(answer.showTopics), source: "built-in" };
+    }
+  }
+  // Used by the AI Health Guide on the homepage, so both share one set of safety rules.
+  window.careWiseGuideReply = (question, history = [], shareReport = false) => replyFor(String(question || "").trim().slice(0, 1000), history, shareReport);
+  window.careWiseHasReport = () => typeof latestReportSummaryPack === "string" && Boolean(latestReportSummaryPack);
+
   async function ask(question) {
     const clean = question.trim().slice(0, 1000);
     if (!clean || waiting) return;
@@ -365,23 +408,7 @@
     waiting = true;
     sendButton.disabled = true;
     const pending = addBubble("assistant", text().thinking, "help-chat-pending");
-    let reply = "";
-    let showTopics = false;
-    try {
-      // Without the online helper, answer straight away from built-in knowledge.
-      if (backendFeatures && backendFeatures.help_assistant === false) throw new Error("Backend returned 503");
-      const response = await apiPost("/assistant/chat", {
-        messages: conversation.slice(-12),
-        report_summary: shareBox.checked && typeof latestReportSummaryPack === "string" ? latestReportSummaryPack.slice(0, 4000) : "",
-        language: lang(),
-        source: "web",
-      }, { skipAuth: true });
-      reply = response.reply;
-    } catch (error) {
-      const answer = builtInAnswer(clean);
-      reply = answer.reply;
-      showTopics = Boolean(answer.showTopics);
-    }
+    const { reply, showTopics } = await replyFor(clean, conversation, shareBox.checked);
     pending.remove();
     addBubble("assistant", reply);
     conversation.push({ role: "assistant", content: reply });

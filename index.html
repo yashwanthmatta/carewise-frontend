@@ -16,14 +16,14 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-215" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-216" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-215" />
-    <link rel="stylesheet" href="ui.css?v=carewise-product-215" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-216" />
+    <link rel="stylesheet" href="ui.css?v=carewise-product-216" />
   </head>
   <body>
     <main class="app-shell">
@@ -54,7 +54,7 @@
             <div class="hero-copy">
               <p class="lp-chip"><img src="assets/carewise-logo.svg" alt="" width="20" height="20" /> For you and the people you look after</p>
               <h1 id="app-title">Your health reports, <em>finally understandable.</em></h1>
-              <p class="lp-lede">Turn complicated lab results into clear explanations, useful questions, and organized follow-ups.</p>
+              <p class="lp-lede">Meet your AI-powered health explanation companion. Understand your lab results, explore trends, and prepare for better conversations with your doctor.</p>
               <div class="hero-cta">
                 <label class="lp-drop" id="hero-drop" for="hero-report-file">
                   <input id="hero-report-file" type="file" accept=".pdf,image/*,.txt,text/plain" />
@@ -113,6 +113,74 @@
             <a href="#insights">Example results</a>
             <a href="#for-doctors">For doctors</a>
           </nav>
+
+          <section class="story" id="report-story" aria-labelledby="story-title" data-story>
+            <div class="story-head">
+              <p class="lp-eyebrow">Watch it work</p>
+              <h2 id="story-title">From a confusing line <em class="ft-serif-accent">to a clear next step.</em></h2>
+              <p class="story-lede">A sample report, explained the way FollowThrough Health explains yours. Made-up numbers; the explanation and question are the app's own words.</p>
+            </div>
+            <div class="story-stage">
+              <ol class="story-steps" aria-label="Steps">
+                <li><button type="button" data-story-step="1" aria-current="step">The report</button></li>
+                <li><button type="button" data-story-step="2">Find the result</button></li>
+                <li><button type="button" data-story-step="3">Exact numbers</button></li>
+                <li><button type="button" data-story-step="4">Plain words</button></li>
+                <li><button type="button" data-story-step="5">For your doctor</button></li>
+                <li><button type="button" data-story-step="6">Over time</button></li>
+              </ol>
+              <div class="story-canvas" data-step="1">
+                <article class="story-paper" aria-label="Sample lab report" tabindex="0">
+                  <header><b>Sample Laboratory</b><span>Collected 9 Nov 2026 · Synthetic report</span></header>
+                  <table>
+                    <thead><tr><th>Test</th><th>Result</th><th>Flag</th><th>Units</th><th>Reference</th></tr></thead>
+                    <tbody>
+                      <tr><td>Sodium</td><td>139</td><td></td><td>mmol/L</td><td>135-145</td></tr>
+                      <tr><td>Potassium</td><td>4.9</td><td></td><td>mmol/L</td><td>3.5-5.1</td></tr>
+                      <tr class="story-hit"><td>Creatinine</td><td>2.3</td><td>H</td><td>mg/dL</td><td>0.6-1.3</td></tr>
+                      <tr><td>Glucose</td><td>92</td><td></td><td>mg/dL</td><td>70-99</td></tr>
+                      <tr><td>ALT</td><td>22</td><td></td><td>U/L</td><td>7-56</td></tr>
+                    </tbody>
+                  </table>
+                </article>
+                <div class="story-cards">
+                  <article class="story-card story-card-3">
+                    <p class="story-kicker">Exact numbers</p>
+                    <header><h3>Creatinine</h3><i class="lp-tag lp-tag-far">Far above the lab's range</i></header>
+                    <p class="story-value"><b>2.3</b> mg/dL</p>
+                    <p class="story-range">Lab's range: 0.6-1.3</p>
+                  </article>
+                  <article class="story-card story-card-4">
+                    <p class="story-kicker">In plain words</p>
+                    <p>Higher creatinine can mean the kidneys are filtering less well. Muscle mass, hydration and some medicines also affect it.</p>
+                  </article>
+                  <article class="story-card story-card-5">
+                    <p class="story-kicker">Ask your doctor</p>
+                    <p class="story-ask">“How are my kidneys working, and do I need a repeat test?”</p>
+                  </article>
+                  <article class="story-card story-card-6">
+                    <p class="story-kicker">Over time · example with made-up numbers</p>
+                    <svg class="story-chart" viewBox="0 0 320 150" role="img" aria-labelledby="story-chart-title">
+                      <title id="story-chart-title">Creatinine on three dates: 1.4 mg/dL in March 2026, 1.9 in July 2026, 2.3 in November 2026. The lab's range is 0.6 to 1.3.</title>
+                      <rect x="40" y="83.4" width="260" height="22.4" class="story-band"/>
+                      <text x="296" y="99.8" text-anchor="end" class="story-band-label">Lab's range 0.6-1.3</text>
+                      <line x1="40" y1="125" x2="300" y2="125" class="story-axis"/><text x="36" y="129" text-anchor="end" class="story-tick">0</text><text x="36" y="65" text-anchor="end" class="story-tick">2.0</text><line x1="40" y1="61" x2="300" y2="61" class="story-grid"/>
+                      <polyline class="story-line" points="60,80.2 170,64.2 280,51.4"/>
+                      <g class="story-points">
+                        <circle cx="60" cy="80.2" r="5"/><circle cx="170" cy="64.2" r="5"/><circle cx="280" cy="51.4" r="5"/>
+                      </g>
+                      <g class="story-labels"><text x="60" y="70.2">1.4</text><text x="170" y="54.2">1.9</text><text x="280" y="41.4">2.3</text></g>
+                      <g class="story-dates"><text x="60" y="143">Mar 2026</text><text x="170" y="143">Jul 2026</text><text x="280" y="143">Nov 2026</text></g>
+                    </svg>
+                  </article>
+                </div>
+              </div>
+              <div class="story-controls">
+                <button type="button" class="story-play" data-story-play aria-pressed="true">Pause</button>
+                <a class="lp-btn lp-btn-dark" href="#report-title">Understand my report</a>
+              </div>
+            </div>
+          </section>
 
           <section class="lp-insights" id="insights" aria-labelledby="lp-insights-title">
             <div class="lp-insights-head">
@@ -197,6 +265,74 @@
             </div>
           </section>
 
+          <section class="guide" id="guide" aria-labelledby="guide-title">
+            <div class="guide-copy">
+              <p class="lp-eyebrow">New</p>
+              <h2 id="guide-title">Meet your <em class="ft-serif-accent">AI Health Guide</em></h2>
+              <p class="guide-lede">Ask what a test or a medical word means, get a plain-language explanation, and leave with better questions for your doctor.</p>
+              <p class="guide-label"><strong>AI Health Guide</strong> — Educational information, not medical diagnosis.</p>
+            </div>
+            <div class="guide-stage">
+              <div class="guide-avatar is-idle" data-guide-avatar>
+                <svg class="guide-figure" viewBox="0 0 320 360" role="img" aria-labelledby="guide-figure-title">
+                  <title id="guide-figure-title">The AI Health Guide: an illustrated health educator in a white coat</title>
+                  <defs>
+                    <radialGradient id="g-glow" cx="50%" cy="42%" r="55%"><stop offset="0" stop-color="#FFFDF8"/><stop offset="0.6" stop-color="#F6E6DC"/><stop offset="1" stop-color="#F3EDE2" stop-opacity="0"/></radialGradient>
+                    <radialGradient id="g-skin" cx="42%" cy="35%" r="70%"><stop offset="0" stop-color="#D9A383"/><stop offset="0.7" stop-color="#C08566"/><stop offset="1" stop-color="#A86F52"/></radialGradient>
+                    <linearGradient id="g-coat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E9E2D6"/></linearGradient>
+                    <linearGradient id="g-scrub" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B8A80"/><stop offset="1" stop-color="#0B5C55"/></linearGradient>
+                    <linearGradient id="g-hair" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3B2F2A"/><stop offset="1" stop-color="#211A17"/></linearGradient>
+                  </defs>
+                  <circle class="guide-halo" cx="160" cy="160" r="150" fill="url(#g-glow)"/>
+                  <circle class="guide-ring" cx="160" cy="150" r="128" fill="none" stroke="#0F766E" stroke-width="2" opacity="0"/>
+                  <g class="guide-body">
+                    <path d="M58 360c4-62 40-96 102-100 62 4 98 38 102 100z" fill="url(#g-coat)"/>
+                    <path d="M128 262l32 50 32-50c-10-4-21-6-32-6s-22 2-32 6z" fill="url(#g-scrub)"/>
+                    <path d="M118 266l42 64-30 30H96zM202 266l-42 64 30 30h34z" fill="#F7F3EC" stroke="#E2D8C8" stroke-width="1.5"/>
+                    <rect x="200" y="300" width="34" height="20" rx="6" fill="#0F766E"/><text x="217" y="314.5" text-anchor="middle" font-family="DM Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">AI</text>
+                    <path d="M145 236h30v28c-5 6-25 6-30 0z" fill="#B57B5D"/>
+                    <g class="guide-head">
+                      <path d="M98 156c0-56 28-92 62-92s62 36 62 92v46c0 14-9 22-22 24-6-20-10-46-12-74H132c-2 28-6 54-12 74-13-2-22-10-22-24z" fill="url(#g-hair)"/>
+                      <ellipse cx="160" cy="160" rx="52" ry="62" fill="url(#g-skin)"/>
+                      
+                      <path d="M106 146c2-42 28-64 56-64 30 0 50 22 52 58-10-14-26-24-44-28-4 10-14 18-30 22-14 4-26 6-34 12z" fill="url(#g-hair)"/>
+                      <g class="guide-brows" fill="none" stroke="#3B2F2A" stroke-width="4" stroke-linecap="round"><path d="M128 140q12-7 24 0"/><path d="M168 140q12-7 24 0"/></g>
+                      <g class="guide-eyes">
+                        <g class="guide-eye"><ellipse cx="140" cy="157" rx="7" ry="8" fill="#FFFFFF"/><circle class="guide-pupil" cx="140" cy="158" r="4.5" fill="#2A211D"/><circle cx="141.5" cy="156" r="1.4" fill="#FFFFFF"/></g>
+                        <g class="guide-eye"><ellipse cx="180" cy="157" rx="7" ry="8" fill="#FFFFFF"/><circle class="guide-pupil" cx="180" cy="158" r="4.5" fill="#2A211D"/><circle cx="181.5" cy="156" r="1.4" fill="#FFFFFF"/></g>
+                        <g class="guide-lids" fill="#C08566"><rect class="guide-lid" x="131" y="147" width="18" height="19" rx="5"/><rect class="guide-lid" x="171" y="147" width="18" height="19" rx="5"/></g>
+                      </g>
+                      <path d="M157 166q3 12 -2 16" fill="none" stroke="#A86F52" stroke-width="2.5" stroke-linecap="round"/>
+                      <ellipse cx="128" cy="180" rx="9" ry="5" fill="#D98C77" opacity="0.35"/><ellipse cx="192" cy="180" rx="9" ry="5" fill="#D98C77" opacity="0.35"/>
+                      <path class="guide-smile" d="M146 194q14 12 28 0" fill="none" stroke="#7A3E2C" stroke-width="3.5" stroke-linecap="round"/>
+                      <ellipse class="guide-mouth" cx="160" cy="198" rx="9" ry="6" fill="#7A3E2C"/>
+                    </g>
+                  </g>
+                  <g class="guide-dots" fill="#B85C38" opacity="0"><circle cx="232" cy="92" r="5"/><circle cx="248" cy="80" r="5"/><circle cx="264" cy="68" r="5"/></g>
+                </svg>
+                <p class="guide-state" data-guide-state role="status">Ready for your question</p>
+              </div>
+              <div class="guide-chat" data-guide>
+                <div class="guide-log" data-guide-log aria-live="polite" aria-label="Conversation with the AI Health Guide">
+                  <div class="guide-msg guide-msg-guide"><p>Hello. I'm an AI education guide, not a doctor. Ask me what a lab test means, or how to prepare for your next visit.</p></div>
+                </div>
+                <div class="guide-chips" data-guide-chips>
+                  <button type="button" data-guide-ask>What does eGFR mean?</button>
+                  <button type="button" data-guide-ask>Explain A1C in plain words</button>
+                  <button type="button" data-guide-ask>What should I ask my doctor about high cholesterol?</button>
+                  <button type="button" data-guide-ask>Is the AI Health Guide a real doctor?</button>
+                </div>
+                <form class="guide-form" data-guide-form>
+                  <label class="visually-hidden" for="guide-input">Ask the AI Health Guide</label>
+                  <input id="guide-input" type="text" maxlength="1000" autocomplete="off" placeholder="Ask about a test or a medical word" />
+                  <button class="lp-btn lp-btn-dark" type="submit">Ask</button>
+                </form>
+                <label class="guide-share" data-guide-share hidden><input type="checkbox" /> Include my latest report in the question</label>
+                <p class="guide-fine">Answers come from FollowThrough Health's built-in explanations, or from our AI provider, Anthropic, when it is available; your question is not saved by our servers. "Listen" uses your device's own voice. In an emergency, call your local emergency number.</p>
+              </div>
+            </div>
+          </section>
+
           <section class="lp-problems" aria-labelledby="lp-problems-title">
             <div class="lp-problems-copy">
               <p class="lp-eyebrow">The moment we fix</p>
@@ -275,6 +411,18 @@
             </div>
           </section>
 
+          <section class="cmp" id="compare" aria-labelledby="cmp-title">
+            <p class="lp-eyebrow">Why it helps</p>
+            <h2 id="cmp-title">FollowThrough Health vs. <em class="ft-serif-accent">reading a lab report alone</em></h2>
+            <div class="cmp-wrap">
+              <table class="cmp-table">
+                <thead><tr><th scope="col"><span class="visually-hidden">Feature</span></th><th scope="col" class="cmp-us">FollowThrough Health</th><th scope="col">Reading it alone</th></tr></thead>
+                <tbody><tr><th scope="row">Plain-language explanation of each result</th><td><span class="cmp-yes" aria-hidden="true"></span>Every result, in everyday words</td><td>Medical terms and abbreviations</td></tr><tr><th scope="row">Your lab's own range</th><td><span class="cmp-yes" aria-hidden="true"></span>Each result compared with it, in words</td><td>You compare each number yourself</td></tr><tr><th scope="row">The line from your report</th><td><span class="cmp-yes" aria-hidden="true"></span>Shown with each result, to check the reading</td><td>—</td></tr><tr><th scope="row">Questions for your doctor</th><td><span class="cmp-yes" aria-hidden="true"></span>Written from your own results</td><td>You write your own</td></tr><tr><th scope="row">Saved report history</th><td><span class="cmp-yes" aria-hidden="true"></span>By family member, on your device or account</td><td>Papers and files to keep track of</td></tr><tr><th scope="row">Follow-up reminders</th><td><span class="cmp-yes" aria-hidden="true"></span>Next-test date to your calendar, and reminders</td><td>—</td></tr><tr><th scope="row">Phone and computer</th><td><span class="cmp-yes" aria-hidden="true"></span>In any browser; apps in development</td><td>Wherever the file is</td></tr></tbody>
+              </table>
+            </div>
+            <p class="cmp-note">Your doctor is always the one who interprets your results. FollowThrough Health helps you understand and prepare.</p>
+          </section>
+
           <section class="lp-safety" id="safety" aria-labelledby="lp-safety-title">
             <p class="lp-eyebrow">Safe by design</p>
             <h2 id="lp-safety-title">Education that sends you to your doctor, never around them.</h2>
@@ -330,6 +478,49 @@
               <article class="lp-price-pop"><h3>Family</h3><p class="lp-price">$12<small>/mo</small></p><ul><li>Everything in Plus</li><li>Profiles for up to 5 family members in one account</li><li>Sharing with siblings and caregivers: coming later</li></ul><a class="lp-btn lp-btn-light" href="#account-title" data-choose-plan="premium">Choose Family</a></article>
             </div>
             <p class="lp-fine">Plus and Family renew automatically every month at the price shown until you cancel. Billed through Stripe. Cancel any time from Profile.</p>
+          </section>
+
+          <section class="faq" id="faq" aria-labelledby="faq-title">
+            <h2 id="faq-title">Questions, <em class="ft-serif-accent">answered.</em></h2>
+            <div class="faq-list" data-faq>
+              <div class="faq-item">
+                <h3><button type="button" aria-expanded="false" aria-controls="faq-a-1" id="faq-q-1">What is FollowThrough Health?<span class="faq-icon" aria-hidden="true"></span></button></h3>
+                <div class="faq-answer" id="faq-a-1" role="region" aria-labelledby="faq-q-1"><div><p>An educational tool that explains blood test and scan reports in plain words, shows which results to talk to your doctor about, and helps you prepare for the visit. It was built for families looking after a parent. It does not diagnose and does not replace your doctor.</p></div></div>
+              </div>
+              <div class="faq-item">
+                <h3><button type="button" aria-expanded="false" aria-controls="faq-a-2" id="faq-q-2">How does it explain my lab results?<span class="faq-icon" aria-hidden="true"></span></button></h3>
+                <div class="faq-answer" id="faq-a-2" role="region" aria-labelledby="faq-q-2"><div><p>Each result is compared with the range printed by your lab and explained in plain words, with a question you can ask your doctor. Results outside the lab's range are listed to talk about; a level labs often treat as urgent gets a contact-your-doctor-today message. These explanations follow fixed rules that are still waiting for review by clinicians, so always check with your doctor.</p></div></div>
+              </div>
+              <div class="faq-item">
+                <h3><button type="button" aria-expanded="false" aria-controls="faq-a-3" id="faq-q-3">Can I upload a PDF or a photo?<span class="faq-icon" aria-hidden="true"></span></button></h3>
+                <div class="faq-answer" id="faq-a-3" role="region" aria-labelledby="faq-q-3"><div><p>Yes. You can add a PDF, a photo, a scanned PDF, or type the numbers. They are read on your phone or computer. When a number in a photo is hard to read, you are asked to compare it with your report before it is explained.</p></div></div>
+              </div>
+              <div class="faq-item">
+                <h3><button type="button" aria-expanded="false" aria-controls="faq-a-4" id="faq-q-4">Is the AI Health Guide a real doctor?<span class="faq-icon" aria-hidden="true"></span></button></h3>
+                <div class="faq-answer" id="faq-a-4" role="region" aria-labelledby="faq-q-4"><div><p>No. The AI Health Guide is an education tool, not a doctor or a person. It explains words and results and helps you prepare questions. It cannot diagnose, does not suggest medicines or doses, and tells you to call your local emergency number if you describe an emergency.</p></div></div>
+              </div>
+              <div class="faq-item">
+                <h3><button type="button" aria-expanded="false" aria-controls="faq-a-5" id="faq-q-5">Can I share questions with my doctor?<span class="faq-icon" aria-hidden="true"></span></button></h3>
+                <div class="faq-answer" id="faq-a-5" role="region" aria-labelledby="faq-q-5"><div><p>Yes. Every report gets a one-page doctor brief with your questions, to print or share. If you sign in, "Share with my doctor" creates a private link that you can turn off at any time.</p></div></div>
+              </div>
+              <div class="faq-item">
+                <h3><button type="button" aria-expanded="false" aria-controls="faq-a-6" id="faq-q-6">Is my health information private?<span class="faq-icon" aria-hidden="true"></span></button></h3>
+                <div class="faq-answer" id="faq-a-6" role="region" aria-labelledby="faq-q-6"><div><p>Reports are read on your device and nothing is sent to us when you explain one. Your report is only stored on our servers if you sign in and choose to save it, and you can delete it any time. Questions to the help chat or AI Health Guide go to our AI provider, Anthropic, to write the answer; our servers do not save them. We never sell your data or use it for ads.</p></div></div>
+              </div>
+              <div class="faq-item">
+                <h3><button type="button" aria-expanded="false" aria-controls="faq-a-7" id="faq-q-7">Is FollowThrough free?<span class="faq-icon" aria-hidden="true"></span></button></h3>
+                <div class="faq-answer" id="faq-a-7" role="region" aria-labelledby="faq-q-7"><div><p>Explaining reports, the doctor brief and the health record saved on your device are free. Plus ($7 a month) and Family ($12 a month) add a personal plan, reminders and trends; Family covers up to 5 family members.</p></div></div>
+              </div>
+              <div class="faq-item">
+                <h3><button type="button" aria-expanded="false" aria-controls="faq-a-8" id="faq-q-8">How do reminders work?<span class="faq-icon" aria-hidden="true"></span></button></h3>
+                <div class="faq-answer" id="faq-a-8" role="region" aria-labelledby="faq-q-8"><div><p>You can add the date of your next test to your phone's calendar from a result, keep check-in and follow-up reminders in your record, and, with an account, set medicine-time reminders with a "Taken" button and a calendar file. Reminder text on your lock screen never shows medicine names. Phone-call reminders are built but not turned on yet.</p></div></div>
+              </div>
+              <div class="faq-item">
+                <h3><button type="button" aria-expanded="false" aria-controls="faq-a-9" id="faq-q-9">Can I use it on my phone?<span class="faq-icon" aria-hidden="true"></span></button></h3>
+                <div class="faq-answer" id="faq-a-9" role="region" aria-labelledby="faq-q-9"><div><p>Yes. FollowThrough Health works in your phone's browser and can be added to your home screen. Mobile apps for iPhone and Android are in development.</p></div></div>
+              </div>
+            </div>
+            <p class="faq-more">More in the <a href="faq.html">full FAQ</a> and <a href="safety.html">Safety and trust</a>.</p>
           </section>
 
           <section class="lp-final" aria-labelledby="lp-final-title">
@@ -2395,13 +2586,15 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-215"></script>
-    <script src="help.js?v=carewise-product-215"></script>
-    <script src="doctor-share.js?v=carewise-product-215"></script>
-    <script src="docbridge.js?v=carewise-product-215"></script>
-    <script src="reminders.js?v=carewise-product-215"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-215"></script>
-    <script src="twofactor.js?v=carewise-product-215"></script>
-    <script src="account-ui.js?v=carewise-product-215"></script>
+    <script src="script.js?v=carewise-product-216"></script>
+    <script src="help.js?v=carewise-product-216"></script>
+    <script src="guide.js?v=carewise-product-216"></script>
+    <script src="story.js?v=carewise-product-216"></script>
+    <script src="doctor-share.js?v=carewise-product-216"></script>
+    <script src="docbridge.js?v=carewise-product-216"></script>
+    <script src="reminders.js?v=carewise-product-216"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-216"></script>
+    <script src="twofactor.js?v=carewise-product-216"></script>
+    <script src="account-ui.js?v=carewise-product-216"></script>
   </body>
 </html>
