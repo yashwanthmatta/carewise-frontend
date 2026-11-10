@@ -216,12 +216,32 @@ In these shots, the header partly covering the Record title is the sticky header
 
 Tests after this pass (cache version 221): all 34 CI commands pass, including the accessibility scan with axe, and so do CSP with and without headers and the smoke test.
 
-## 13. Pending
+## 13. App screens, pass 7: DocBridge, plus Sign-in and the AI guide (10 Nov 2026)
 
-- **App screens**: Results is done (section 9). Upload (section 10) and original-report evidence plus doctor brief (section 11) are done. History, Record and Reminders (section 12) are done too. Still to do: Sign-in, Account, AI Guide screen and DocBridge.
-  - They already pick up the new palette, type and terracotta buttons through the shared styles.
-  - They have not been redesigned or checked screen by screen yet.
-- **Screenshots**: before/after shots of the DocBridge, pricing and trust sections at 1024/768 have not been captured for this document.
+These changes are styling only. Prices, wording and the evaluation-mode notice are unchanged.
+
+- **DocBridge**:
+  - The yellow evaluation-mode notice is now a cream panel; its text is unchanged.
+  - The pricing cards have serif titles and thin lines.
+  - The teal-outlined "Try it in 60 seconds" box is a cream panel.
+  - "Try the doctor demo", "Go to sign in" and "Join the waitlist" are compact pills instead of full-width bars.
+- **Sign-in and Account (signed out)**: already in the new palette from the shared button and token changes. It was checked by screenshot at 390 in the Results pass, and nothing further was changed.
+  - **Not checked**: the signed-in Account view. It needs a live backend session, and this pass did not mock one.
+- **AI Health Guide**: the homepage guide was restyled in the rebuild (section 3). The help chat ("Need help?") already uses the ink and cream palette and was left as it is.
+
+| | Before | After |
+|---|---|---|
+| DocBridge 1440 | ![](function-redesign/docbridge-before-1440.png) | ![](function-redesign/docbridge-after-1440.png) |
+| DocBridge 390 | | ![](function-redesign/docbridge-after-390.png) |
+
+Tests after this pass (cache version 222): all 34 CI commands pass (including the accessibility scan with axe), CSP passes with and without headers, and the smoke test passes.
+
+## 14. Pending
+
+- **App screens**: Results is done (section 9). Upload (section 10) and original-report evidence plus doctor brief (section 11) are done. History, Record and Reminders (section 12) are done too. DocBridge, Sign-in and the AI guide are covered in section 13. Still to do: the signed-in Account view, which needs a mocked session to render.
+  - The signed-in Account view gets the shared palette, type and buttons, but it has not been rendered or checked.
+  - Other secondary tools (meal planner, symptom timeline, care calendar and similar) also pick up the shared styles, but have not been checked screen by screen.
+- **Screenshots**: before/after shots of the homepage DocBridge, pricing and trust sections at 1024/768 have not been captured for this document.
 - **Reference screenshots**: the three the brief mentions never arrived. If they are re-sent, the comparison, FAQ and footer will be checked against them.
 - **Accessibility scan**: investigate the one unreproduced axe failure if it shows up in the nightly scan.
 - **Header at 320px**: the button shows only "Understand". The full label is kept as its accessible name.

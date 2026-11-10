@@ -463,6 +463,16 @@ body { background: var(--fh-paper) !important; color: var(--fh-ink); }
 .app-shell .reminders-panel #rm-add { width: auto !important; align-self: start; flex: 0 0 auto; padding: 12px 26px !important; }
 .app-shell .reminders-panel .rm-note { background: var(--fh-cream) !important; border-color: var(--fh-line) !important; color: var(--fh-ink-2); }
 
+/* ---------- App: DocBridge (pass 7) ----------
+   Styling only: prices, wording and the evaluation-mode notice are unchanged. */
+.app-shell .docbridge-panel .db-pilot-note { background: var(--fh-cream) !important; border-color: var(--fh-line) !important; color: var(--fh-ink-2); }
+.app-shell .docbridge-panel .db-pricing div { border-color: var(--fh-line) !important; background: var(--fh-white) !important; box-shadow: none !important; }
+.app-shell .docbridge-panel .db-pricing strong { font-family: var(--fh-serif) !important; font-weight: 400 !important; font-size: 1.2rem; color: var(--fh-ink); }
+.app-shell .docbridge-panel .db-pricing span { color: var(--fh-ink-3); }
+.app-shell .docbridge-panel .db-demo-offer { border: 1px solid var(--fh-line) !important; background: var(--fh-cream) !important; border-radius: var(--fh-radius) !important; padding: 22px 24px !important; }
+.app-shell .docbridge-panel :is(#db-demo-start, #db-signin > .secondary-button, .db-waitlist button) { justify-self: start; display: inline-flex; align-items: center; justify-content: center; width: auto !important; min-width: 0; padding-left: 26px !important; padding-right: 26px !important; }
+.app-shell .docbridge-panel .db-waitlist { border-top-color: var(--fh-line) !important; }
+
 /* ---------- Motion ---------- */
 @keyframes fh-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes fh-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }
