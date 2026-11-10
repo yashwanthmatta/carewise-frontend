@@ -60,7 +60,7 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   check((await page.$$("#faq .faq-item")).length === 9, `${size}: nine questions`);
   // Comparison
   const cmp = await page.innerText("#compare");
-  check(/FollowThrough Health vs\./.test(cmp) && (await page.$$("#compare tbody tr")).length === 7 && !/\$|\d+\+/.test(cmp), `${size}: comparison has 7 rows, no prices or counts`);
+  check(/FollowThrough Health/.test(cmp) && /Reading the report alone/.test(cmp) && (await page.$$("#compare tbody tr")).length === 7 && !/\$|\d+\+/.test(cmp), `${size}: comparison has 7 rows, no prices or counts`);
   check(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), `${size}: no sideways scroll`);
   check(!errors.length, `${size}: no script errors ${errors.join("; ")}`);
   if (process.env.AXE_PATH) {
@@ -79,7 +79,7 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   await page.goto(base, { waitUntil: "load" });
   await page.$eval("#report-story", (el) => el.scrollIntoView());
   await page.waitForTimeout(3000);
-  const state = await page.evaluate(() => ({ step: document.querySelector(".story-canvas").dataset.step, opacity: getComputedStyle(document.querySelector(".story-card-6")).opacity, hero: getComputedStyle(document.querySelector(".lp-mock-hero .lp-ask")).animationName }));
+  const state = await page.evaluate(() => ({ step: document.querySelector(".story-canvas").dataset.step, opacity: getComputedStyle(document.querySelector(".story-card-6")).opacity, hero: getComputedStyle(document.querySelector(".fh-preview-rows li")).animationName }));
   check(state.step === "6" && state.opacity === "1", "reduced motion: everything shown at once, nothing plays");
   check(state.hero === "none", "reduced motion: hero preview does not animate");
   await context.close();

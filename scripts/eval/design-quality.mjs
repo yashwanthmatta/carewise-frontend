@@ -51,12 +51,12 @@ for (const width of [1440, 1024, 768, 390, 320]) {
     check(!overlap, "320px: the header button does not cover the brand name");
   }
   if (width === 1440) {
-    const rows = await page.$$eval(".lp-mock-hero .lp-rows li b", (items) => items.map((b) => b.textContent.trim()));
+    const rows = await page.$$eval(".fh-preview-rows li b", (items) => items.map((b) => b.textContent.trim()));
     check(rows.length === 4 && rows.every((text) => /^\d[\d.]* \S+/.test(text)), `hero preview shows value and unit (${rows.join(" | ")})`);
-    const looping = await page.evaluate(() => document.querySelector(".lp-hero .lp-stage")?.getAnimations().filter((a) => a.effect?.getTiming().iterations === Infinity).length ?? 0);
-    check(looping === 0, "hero stage has no looping animation");
-    check(!(await page.$(".ft-footer .ft-footer-headline")), "footer does not repeat the closing call to action");
-    check(await page.$(".lp-hero .lp-float") === null, "no decorative floating labels over the preview");
+    const looping = await page.evaluate(() => document.querySelector(".fh-hero")?.getAnimations({ subtree: true }).filter((a) => a.effect?.getTiming().iterations === Infinity).length ?? 0);
+    check(looping === 0, "hero has no looping animation");
+    check(!/explained in a minute/.test(await page.innerText("footer")), "footer does not repeat the closing call to action");
+    check(await page.$(".fh-hero .lp-float, .fh-hero .fh-float") === null, "no decorative floating labels over the preview");
   }
   if (width === 1440 || width === 390) {
     // A control scrolled into view must not end up under the sticky header or the floating buttons.

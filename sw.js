@@ -5,6 +5,7 @@ const STATIC_ASSETS = [
   "/demo.html",
   "/styles.css?v=carewise-product-218",
   "/ui.css?v=carewise-product-218",
+  "/site.css?v=carewise-product-218",
   "/script.js?v=carewise-product-218",
   "/help.js?v=carewise-product-218",
   "/guide.js?v=carewise-product-218",

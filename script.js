@@ -5454,13 +5454,13 @@ function renderHomeDashboard() {
   box.innerHTML = `
             <div class="ft-dash-head">
               <div>
-                <p class="lp-eyebrow">${es ? "Su resumen" : "Your summary"}</p>
+                <p class="fh-eyebrow">${es ? "Su resumen" : "Your summary"}</p>
                 <h2 id="ft-dash-title">${es ? "Bienvenido de nuevo" : "Welcome back"}</h2>
                 <p class="ft-dash-lede">${es ? "Lo más reciente primero. Todo se guarda en este dispositivo." : "The latest first. Everything here is saved on this device."}</p>
               </div>
               <div class="ft-dash-actions">
-                <a class="lp-btn lp-btn-dark" href="#report-title">${es ? "Entender un informe nuevo" : "Understand a new report"}</a>
-                <a class="lp-btn lp-btn-light" href="#saved-title">${es ? "Ver todos los informes" : "See all reports"}</a>
+                <a class="fh-btn fh-btn-primary" href="#report-title">${es ? "Entender un informe nuevo" : "Understand a new report"}</a>
+                <a class="fh-btn fh-btn-outline" href="#saved-title">${es ? "Ver todos los informes" : "See all reports"}</a>
               </div>
             </div>
             <div class="ft-dash-grid">
