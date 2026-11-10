@@ -259,7 +259,7 @@ Tests after this pass (cache version 223): all 34 CI commands pass (including th
 ## 15. Pending
 
 - **App screens**: Results is done (section 9). Upload (section 10) and original-report evidence plus doctor brief (section 11) are done. History, Record and Reminders (section 12) are done too. DocBridge, Sign-in and the AI guide are covered in section 13. The signed-in Account view is covered in section 14.
-  - Other secondary tools (meal planner, symptom timeline, care calendar and similar) also pick up the shared styles, but have not been checked screen by screen.
+  - The secondary tools (meal planner, symptom timeline, 4-week calendar, goals, visit brief, check-in, medication organizer) were audited on 10 Nov 2026 at 1440 and 390. None of them render: `styles.css` line 3882 hides `.meal-planner-panel`, `.symptom-panel`, `.goals-panel` and the rest, on main as well as on this branch. Users cannot reach them, so there is nothing to restyle. If any of them is turned back on, it will need its own styling pass.
 - **Screenshots**: before/after shots of the homepage DocBridge, pricing and trust sections at 1024/768 have not been captured for this document.
 - **Reference screenshots**: the three the brief mentions never arrived. If they are re-sent, the comparison, FAQ and footer will be checked against them.
 - **Accessibility scan**: investigate the one unreproduced axe failure if it shows up in the nightly scan.
