@@ -417,6 +417,21 @@ body { background: var(--fh-paper) !important; color: var(--fh-ink); }
 .app-shell #report-results .safety-note { background: var(--fh-cream) !important; border: 1px solid var(--fh-line) !important; color: var(--fh-ink-2); }
 .app-shell #report-results .safety-note span { color: var(--fh-ink-2); }
 
+/* ---------- App: upload (pass 4) ----------
+   Styling only: the same controls, words and order. */
+.app-shell .report-panel .eyebrow { font-family: var(--fh-mono); font-size: 0.72rem !important; font-weight: 400 !important; letter-spacing: 0.06em; color: var(--fh-accent) !important; }
+.app-shell .report-panel .whose-chip { border-color: var(--fh-line) !important; background: var(--fh-white) !important; color: var(--fh-ink) !important; font-weight: 500 !important; }
+.app-shell .report-panel .whose-chip.is-active { background: var(--fh-ink) !important; border-color: var(--fh-ink) !important; color: #fff !important; }
+.app-shell .report-panel .composer-drop { background: var(--fh-white) !important; border: 1.5px dashed #CDBFA9 !important; box-shadow: none !important; }
+.app-shell .report-panel .composer-drop:hover, .app-shell .report-panel .composer-drop.is-over { background: var(--fh-accent-soft) !important; border-color: var(--fh-terracotta) !important; }
+.app-shell .report-panel .composer-drop strong { font-family: var(--fh-serif) !important; font-weight: 400 !important; font-size: 1.45rem; line-height: 1.2; letter-spacing: -0.005em; color: var(--fh-ink); }
+.app-shell .report-panel .composer-drop small { color: var(--fh-ink-3); }
+.app-shell .report-panel .composer-drop-icon { background-color: var(--fh-accent) !important; color: #fff !important; box-shadow: none !important; }
+.app-shell .report-panel .hero-sample-icon { background: var(--fh-cream) !important; color: var(--fh-accent) !important; }
+.app-shell .report-panel .hero-sample-icon :is(svg, path) { color: var(--fh-accent) !important; fill: currentColor; }
+.app-shell .report-panel .data-use summary { color: var(--fh-accent) !important; }
+.app-shell .report-panel :is(textarea, input[type="text"], input:not([type])) { background: var(--fh-white) !important; border-color: var(--fh-line) !important; }
+
 /* ---------- Motion ---------- */
 @keyframes fh-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes fh-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }

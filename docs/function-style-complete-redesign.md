@@ -149,9 +149,25 @@ On the 390px shots, the tab bar in the middle of the image is a full-page captur
 
 Tests after this pass: all 34 CI commands pass (cache version 219), CSP passes with and without headers, and the smoke test passes.
 
-## 10. Pending
+## 10. App screens, pass 4: Upload (10 Nov 2026)
 
-- **App screens**: Results is done (section 9). Still to do: Upload (next; it still has a mint drop zone and teal chips), original-report evidence, Doctor brief, History/Trends, Reminders, Sign-in, Account, AI Guide screen and DocBridge.
+Styling only: the same controls, words and order.
+
+- The mint drop area is now a warm white panel with a fine dashed line. It turns soft terracotta on hover or drag. Its title is in the serif, and its camera icon sits on terracotta.
+- The selected "Whose report?" chip was teal; it is now ink. Other chips are white with thin lines.
+- The eyebrow is mono terracotta, and "What happens to my data?" uses the accent colour.
+
+| Upload 1440 | Upload 390 |
+|---|---|
+| ![](function-redesign/upload-after-1440.png) | ![](function-redesign/upload-after-390.png) |
+
+No "before" shot of this screen was kept in the repository. In the render taken just before this pass, the drop area was mint with a teal camera tile, and the selected chip was teal.
+
+Tests: all 34 CI commands, CSP with and without headers, the smoke test and the accessibility scan (0 serious or critical) pass.
+
+## 11. Pending
+
+- **App screens**: Results is done (section 9). Upload is done (section 10). Still to do: original-report evidence, Doctor brief, History/Trends, Reminders, Sign-in, Account, AI Guide screen and DocBridge.
   - They already pick up the new palette, type and terracotta buttons through the shared styles.
   - They have not been redesigned or checked screen by screen yet.
 - **Screenshots**: before/after shots of the DocBridge, pricing and trust sections at 1024/768 have not been captured for this document.
