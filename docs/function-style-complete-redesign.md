@@ -193,9 +193,32 @@ Tests after this pass (cache version 220):
 - All CI eval commands pass, including results-groups with axe, CSP with and without headers, and the smoke test.
 - The accessibility scan finds 0 serious or critical issues.
 
-## 12. Pending
+## 12. App screens, pass 6: History and trends, Record, Reminders (10 Nov 2026)
 
-- **App screens**: Results is done (section 9). Upload (section 10) and original-report evidence plus doctor brief (section 11) are done. Still to do: History/Trends, Reminders, Sign-in, Account, AI Guide screen and DocBridge.
+These changes are styling only. Trend values, dates and ranges are unchanged, and the history-trends eval (32 checks) still passes.
+
+- **Section labels** ("Report history", "Reminders" and others) are now mono terracotta across the app, instead of teal sans.
+- **History**:
+  - Report titles are in the serif instead of bold teal, and "Open this report" uses the accent colour.
+  - "Results over time" is a serif heading, and the trend cards use thin lines.
+- **Record**: the summary card titles are in the serif instead of teal.
+- **Reminders**:
+  - "Add a reminder" is a compact pill; before, it stretched across the full width.
+  - The yellow sign-in note is now a cream panel.
+
+| | Before | After |
+|---|---|---|
+| History 1440 | ![](function-redesign/hist-before-1440.png) | ![](function-redesign/hist-after-1440.png) |
+| Record and reminders 1440 | ![](function-redesign/rem-before-1440.png) | ![](function-redesign/rem-after-1440.png) |
+| Record and reminders 390 | | ![](function-redesign/rem-after-390.png) |
+
+In these shots, the header partly covering the Record title is the sticky header captured when the page jumps to Reminders.
+
+Tests after this pass (cache version 221): all 34 CI commands pass, including the accessibility scan with axe, and so do CSP with and without headers and the smoke test.
+
+## 13. Pending
+
+- **App screens**: Results is done (section 9). Upload (section 10) and original-report evidence plus doctor brief (section 11) are done. History, Record and Reminders (section 12) are done too. Still to do: Sign-in, Account, AI Guide screen and DocBridge.
   - They already pick up the new palette, type and terracotta buttons through the shared styles.
   - They have not been redesigned or checked screen by screen yet.
 - **Screenshots**: before/after shots of the DocBridge, pricing and trust sections at 1024/768 have not been captured for this document.
