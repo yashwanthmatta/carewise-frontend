@@ -15,7 +15,7 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   await page.route(/fonts\.|jsdelivr|onrender/, (route) => route.abort());
   await page.goto(base, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => document.querySelector("[data-lp-insights]") && typeof buildReportView === "function");
-  check(/finally understandable/.test(await page.innerText("h1")), `${size}: headline`);
+  check(/Understand your health reports\.\s*Know what to ask next\./.test(await page.innerText("h1")), `${size}: headline`);
   check(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), `${size}: no sideways scroll`);
   const visible = () => page.evaluate(() => JSON.stringify([...document.querySelectorAll(".lp-ins-panel")].filter((p) => !p.hidden).map((p) => p.id)));
   check(await visible() === '["lp-ins-panel-kidneys"]', `${size}: kidneys shown first, one panel at a time`);
@@ -38,7 +38,7 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   check((await page.$$("#how-it-works .lp-flow")).length === 3, `${size}: three steps`);
   // Footer: brand, the four link columns, the call to action, legal links and the safety line.
   const footer = await page.innerText("footer.ft-footer");
-  check(/FollowThrough Health/.test(footer) && /Company/.test(footer) && /Explore/.test(footer) && /For healthcare professionals/.test(footer) && /Legal and account/.test(footer) && /Understand my report/.test(footer), `${size}: footer brand, columns and call to action`);
+  check(/FollowThrough Health/.test(footer) && /Company/.test(footer) && /Explore/.test(footer) && /For healthcare professionals/.test(footer) && /Legal and account/.test(footer) && !/explained in a minute/.test(footer), `${size}: footer brand and columns, without repeating the closing call to action`);
   check(/Mobile apps for iPhone and Android are in development/.test(footer), `${size}: footer says the apps are in development (no store badges)`);
   check(await page.$$eval("footer.ft-footer a", (links) => ["legal/privacy.html", "legal/terms.html", "legal/data-deletion.html", "#your-data"].every((href) => links.some((a) => a.getAttribute("href") === href))), `${size}: footer legal and data-control links`);
   check(/not a diagnosis, prescription, emergency service/.test(footer), `${size}: footer safety line`);

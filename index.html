@@ -16,14 +16,14 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-216" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-217" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-216" />
-    <link rel="stylesheet" href="ui.css?v=carewise-product-216" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-217" />
+    <link rel="stylesheet" href="ui.css?v=carewise-product-217" />
   </head>
   <body>
     <main class="app-shell">
@@ -53,8 +53,8 @@
           <section class="lp-hero" aria-labelledby="app-title">
             <div class="hero-copy">
               <p class="lp-chip"><img src="assets/carewise-logo.svg" alt="" width="20" height="20" /> For you and the people you look after</p>
-              <h1 id="app-title">Your health reports, <em>finally understandable.</em></h1>
-              <p class="lp-lede">Meet your AI-powered health explanation companion. Understand your lab results, explore trends, and prepare for better conversations with your doctor.</p>
+              <h1 id="app-title">Understand your health reports. <em>Know what to ask next.</em></h1>
+              <p class="lp-lede">Clear explanations for your lab results, organized health information, and better questions for your next doctor's visit.</p>
               <div class="hero-cta">
                 <label class="lp-drop" id="hero-drop" for="hero-report-file">
                   <input id="hero-report-file" type="file" accept=".pdf,image/*,.txt,text/plain" />
@@ -63,7 +63,7 @@
                 </label>
                 <a class="hero-sample" href="#try=raj-kidney-heart-uk/explain" data-try-sample>
                   <span class="hero-sample-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
-                  <span class="hero-sample-text"><strong>Try a sample report</strong><span>No upload, no account</span></span>
+                  <span class="hero-sample-text"><strong>Try a sample</strong><span>No upload, no account</span></span>
                 </a>
               </div>
               <ul class="hero-trust" aria-label="How FollowThrough Health handles your report">
@@ -86,18 +86,15 @@
             </div>
 
             <div class="lp-stage" aria-label="Example: a parent's kidney report explained by FollowThrough Health">
-              <div class="lp-stage-glow" aria-hidden="true"></div>
-              <div class="lp-float lp-float-a" aria-hidden="true">Read on this phone · nothing uploaded</div>
-              <div class="lp-float lp-float-b" aria-hidden="true">English · Español</div>
               <article class="lp-mock lp-mock-hero">
                 <header class="lp-mock-bar"><span></span><span></span><span></span><b>Dad's kidney panel</b></header>
                 <div class="lp-mock-body">
                   <div class="lp-score"><strong>3</strong><small>of 4 results outside the lab's range</small><em>Talk to your doctor about these</em></div>
                   <ul class="lp-rows">
-                    <li><span>eGFR (kidney filtering)</span><b>28</b><i class="lp-tag lp-tag-far">Far below the lab's range</i></li>
-                    <li><span>Creatinine</span><b>2.3</b><i class="lp-tag lp-tag-far">Far above the lab's range</i></li>
-                    <li><span>Hemoglobin</span><b>11.2</b><i class="lp-tag lp-tag-out">Below the lab's range</i></li>
-                    <li><span>Potassium</span><b>4.9</b><i class="lp-tag lp-tag-ok">Within range</i></li>
+                    <li><span>eGFR (kidney filtering)</span><b>28 <small>mL/min/1.73m²</small></b><i class="lp-tag lp-tag-far">Far below the lab's range</i></li>
+                    <li><span>Creatinine</span><b>2.3 <small>mg/dL</small></b><i class="lp-tag lp-tag-far">Far above the lab's range</i></li>
+                    <li><span>Hemoglobin</span><b>11.2 <small>g/dL</small></b><i class="lp-tag lp-tag-out">Below the lab's range</i></li>
+                    <li><span>Potassium</span><b>4.9 <small>mmol/L</small></b><i class="lp-tag lp-tag-ok">Within range</i></li>
                   </ul>
                   <p class="lp-ask"><strong>Ask your doctor:</strong> How are my kidneys working, and do I need a repeat test?</p>
                 </div>
@@ -573,12 +570,6 @@
                   </div>
                 </nav>
                 <div class="ft-footer-cta">
-                  <p class="ft-footer-headline">Your parent's next report, <em>explained in a minute.</em></p>
-                  <p>Free to start. Read on your device. Built for the people who look after someone.</p>
-                  <div class="ft-footer-actions">
-                    <a class="lp-btn lp-btn-dark" href="#report-title">Understand my report</a>
-                    <a class="lp-btn lp-btn-light" href="#early-access-title">Join early access</a>
-                  </div>
                   <p class="ft-footer-apps">Mobile apps for iPhone and Android are in development.</p>
                   <nav class="ft-footer-legal" aria-label="Legal">
                     <a href="legal/disclaimer.html">Disclaimer</a>
@@ -2586,15 +2577,15 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-216"></script>
-    <script src="help.js?v=carewise-product-216"></script>
-    <script src="guide.js?v=carewise-product-216"></script>
-    <script src="story.js?v=carewise-product-216"></script>
-    <script src="doctor-share.js?v=carewise-product-216"></script>
-    <script src="docbridge.js?v=carewise-product-216"></script>
-    <script src="reminders.js?v=carewise-product-216"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-216"></script>
-    <script src="twofactor.js?v=carewise-product-216"></script>
-    <script src="account-ui.js?v=carewise-product-216"></script>
+    <script src="script.js?v=carewise-product-217"></script>
+    <script src="help.js?v=carewise-product-217"></script>
+    <script src="guide.js?v=carewise-product-217"></script>
+    <script src="story.js?v=carewise-product-217"></script>
+    <script src="doctor-share.js?v=carewise-product-217"></script>
+    <script src="docbridge.js?v=carewise-product-217"></script>
+    <script src="reminders.js?v=carewise-product-217"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-217"></script>
+    <script src="twofactor.js?v=carewise-product-217"></script>
+    <script src="account-ui.js?v=carewise-product-217"></script>
   </body>
 </html>

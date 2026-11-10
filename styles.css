@@ -6109,7 +6109,7 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .lp-strip span { color: var(--lp-ink-soft); font-size: 0.92rem; line-height: 1.45; }
 
 /* Problems and results */
-.lp-problems { display: grid; grid-template-columns: 1fr 1.05fr; gap: 40px; align-items: stretch; padding: 96px 0 40px; border-left: 1px solid var(--lp-line); border-right: 1px solid var(--lp-line); padding-inline: 32px; }
+.lp-problems { display: grid; grid-template-columns: 1fr 1.05fr; gap: 40px; align-items: stretch; padding: 96px 0 40px; padding-inline: 32px; }
 .lp-problems h2 { max-width: 12ch; margin-bottom: 40px !important; }
 .lp-acc { list-style: none; margin: 0; padding: 0; }
 .lp-acc li { position: relative; padding: 18px 0 20px; border-top: 1px solid var(--lp-line); }
@@ -6183,7 +6183,7 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .lp-step { color: rgba(255, 255, 255, 0.55); font-size: 0.85rem !important; letter-spacing: 0.12em; text-transform: uppercase; }
 .lp-flow > p:not(.lp-step) { max-width: 46ch; color: rgba(255, 255, 255, 0.78); line-height: 1.55; }
 .lp-flow > a, .lp-cards a { align-self: flex-start; color: #fff; font-weight: 600 !important; text-decoration: none; border-bottom: 1px solid rgba(255, 255, 255, 0.45); padding-bottom: 2px; }
-.lp-cards a { color: var(--lp-amber); border-color: rgba(227, 163, 90, 0.5); }
+.lp-cards a { color: #FAF6EE; border-color: rgba(250, 246, 238, 0.45); }
 .lp-window { margin-top: auto; transform: translateY(14px); border-radius: 16px 16px 0 0; background: #fff; color: var(--lp-ink); box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3); overflow: hidden; }
 .lp-window header b { margin-left: 10px; color: var(--lp-teal); font-family: var(--lp-display); font-size: 1rem; }
 .lp-window header em { font-style: normal; color: var(--lp-ink-soft); font-size: 0.9rem; }
@@ -6207,10 +6207,10 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .lp-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; margin-top: 22px; }
 .lp-cards article { display: flex; flex-direction: column; gap: 12px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 22px; background: rgba(255, 255, 255, 0.03); }
 .lp-cards p { color: rgba(255, 255, 255, 0.72); line-height: 1.55; }
-.lp-cards .lp-card-accent { border-color: rgba(227, 163, 90, 0.45); }
+.lp-cards .lp-card-accent { border-color: rgba(250, 246, 238, 0.28); }
 
 /* Safety and pricing */
-.lp-safety, .lp-pricing { padding: 96px 32px; border-left: 1px solid var(--lp-line); border-right: 1px solid var(--lp-line); }
+.lp-safety, .lp-pricing { padding: 96px 32px; }
 .lp-safety h2, .lp-pricing h2 { max-width: 20ch; margin-bottom: 40px !important; }
 .lp-safety-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
 .lp-safety-grid > div { padding: 28px; border: 1px solid var(--lp-line); border-radius: 22px; background: rgba(255, 255, 255, 0.55); }
@@ -6744,7 +6744,7 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .lp-result-link { margin-top: 22px; }
 
 /* For doctors */
-.lp-doctors { display: grid; grid-template-columns: 1fr 1.1fr; gap: 48px; align-items: center; padding: 64px 32px 96px; border: 1px solid var(--lp-line); border-top: 0; }
+.lp-doctors { display: grid; grid-template-columns: 1fr 1.1fr; gap: 48px; align-items: center; padding: 64px 32px 96px; }
 .lp-doctors h2 { max-width: 15ch; }
 .lp-doctors-lede { margin-top: 18px !important; max-width: 46ch; color: var(--lp-ink-soft); font-size: 1.08rem; line-height: 1.6; }
 .lp-doctors-list { list-style: none; margin: 26px 0 0; padding: 0; display: grid; gap: 14px; }
