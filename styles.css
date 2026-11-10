@@ -6073,6 +6073,7 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
     radial-gradient(70% 80% at 60% 100%, rgba(15, 118, 110, 0.55), transparent 65%),
     linear-gradient(160deg, #dfe9e4, #c9ddd6);
 }
+.lp-stage-glow { position: absolute; inset: auto 10% -30% 10%; height: 60%; background: radial-gradient(closest-side, rgba(255, 255, 255, 0.65), transparent); filter: blur(10px); }
 .lp-mock { position: relative; width: min(560px, 100%); border-radius: 22px; background: #fff; box-shadow: 0 30px 80px rgba(11, 40, 37, 0.25), 0 2px 0 rgba(255, 255, 255, 0.6) inset; text-align: left; overflow: hidden; }
 .lp-mock-bar, .lp-window header { display: flex; align-items: center; gap: 6px; padding: 12px 16px; background: #f3f1ed; border-bottom: 1px solid #ebe6de; }
 .lp-mock-bar span, .lp-window header span { width: 10px; height: 10px; border-radius: 50%; background: #d6d0c6; }
@@ -6092,6 +6093,10 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .lp-tag-out { background: #fdf3dc; color: #854d0e; }
 .lp-tag-ok { background: #e3f4ef; color: #0f5f58; }
 .lp-ask { margin-top: 14px !important; padding: 12px 14px; border-radius: 14px; background: #f4f8f6; font-size: 0.92rem; line-height: 1.45; color: var(--lp-ink); }
+.lp-float { position: absolute; z-index: 2; padding: 9px 16px; border-radius: 999px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); box-shadow: 0 10px 24px rgba(11, 40, 37, 0.14); font-size: 0.88rem; font-weight: 600; color: var(--lp-ink); }
+.lp-float-a { top: 18%; left: 7%; animation: lpFloat 7s ease-in-out infinite; }
+.lp-float-b { bottom: 18%; right: 7%; animation: lpFloat 8s ease-in-out infinite reverse; }
+@keyframes lpFloat { 50% { transform: translateY(-10px); } }
 
 /* Honest strip in ruled cells */
 .lp-strip { display: grid; grid-template-columns: 1.1fr 3fr; margin-top: 56px; border: 1px solid var(--lp-line); }
@@ -6104,6 +6109,8 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .lp-strip span { color: var(--lp-ink-soft); font-size: 0.92rem; line-height: 1.45; }
 
 /* Problems and results */
+.lp-problems { display: grid; grid-template-columns: 1fr 1.05fr; gap: 40px; align-items: stretch; padding: 96px 0 40px; border-left: 1px solid var(--lp-line); border-right: 1px solid var(--lp-line); padding-inline: 32px; }
+.lp-problems h2 { max-width: 12ch; margin-bottom: 40px !important; }
 .lp-acc { list-style: none; margin: 0; padding: 0; }
 .lp-acc li { position: relative; padding: 18px 0 20px; border-top: 1px solid var(--lp-line); }
 .lp-acc button { display: block; width: 100%; padding: 0; border: 0; background: none; text-align: left; font-family: var(--lp-display); font-size: 1.32rem; font-weight: 500; letter-spacing: -0.015em; color: var(--lp-ink-soft); cursor: pointer; }
@@ -6176,7 +6183,7 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .lp-step { color: rgba(255, 255, 255, 0.55); font-size: 0.85rem !important; letter-spacing: 0.12em; text-transform: uppercase; }
 .lp-flow > p:not(.lp-step) { max-width: 46ch; color: rgba(255, 255, 255, 0.78); line-height: 1.55; }
 .lp-flow > a, .lp-cards a { align-self: flex-start; color: #fff; font-weight: 600 !important; text-decoration: none; border-bottom: 1px solid rgba(255, 255, 255, 0.45); padding-bottom: 2px; }
-.lp-cards a { color: #FAF6EE; border-color: rgba(250, 246, 238, 0.45); }
+.lp-cards a { color: var(--lp-amber); border-color: rgba(227, 163, 90, 0.5); }
 .lp-window { margin-top: auto; transform: translateY(14px); border-radius: 16px 16px 0 0; background: #fff; color: var(--lp-ink); box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3); overflow: hidden; }
 .lp-window header b { margin-left: 10px; color: var(--lp-teal); font-family: var(--lp-display); font-size: 1rem; }
 .lp-window header em { font-style: normal; color: var(--lp-ink-soft); font-size: 0.9rem; }
@@ -6200,17 +6207,16 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .lp-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; margin-top: 22px; }
 .lp-cards article { display: flex; flex-direction: column; gap: 12px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 22px; background: rgba(255, 255, 255, 0.03); }
 .lp-cards p { color: rgba(255, 255, 255, 0.72); line-height: 1.55; }
-.lp-cards .lp-card-accent { border-color: rgba(250, 246, 238, 0.28); }
+.lp-cards .lp-card-accent { border-color: rgba(227, 163, 90, 0.45); }
 
 /* Safety and pricing */
-.lp-safety, .lp-pricing { padding: 96px 32px; }
+.lp-safety, .lp-pricing { padding: 96px 32px; border-left: 1px solid var(--lp-line); border-right: 1px solid var(--lp-line); }
 .lp-safety h2, .lp-pricing h2 { max-width: 20ch; margin-bottom: 40px !important; }
-.lp-safety-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
-.lp-safety-links { margin: 18px 0 0; font-size: 0.95rem; }
+.lp-safety-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
 .lp-safety-grid > div { padding: 28px; border: 1px solid var(--lp-line); border-radius: 22px; background: rgba(255, 255, 255, 0.55); }
 .lp-safety-grid h3 { margin-bottom: 14px !important; }
 .lp-safety-grid > div:first-child h3 { color: var(--lp-teal) !important; }
-.lp-safety-grid > div:nth-child(2) h3 { color: var(--lp-red) !important; }
+.lp-safety-grid > div:last-child h3 { color: var(--lp-red) !important; }
 .lp-safety-grid ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; line-height: 1.5; }
 .lp-pricing { border-top: 1px solid var(--lp-line); }
 .lp-price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
@@ -6231,6 +6237,7 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .lp-footer a { color: var(--lp-ink-soft); }
 
 @media (prefers-reduced-motion: reduce) {
+  .lp-float-a, .lp-float-b { animation: none; }
   .nav-cta, .lp-btn { transition: none; }
 }
 
@@ -6242,6 +6249,7 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
   .lp-strip ul { grid-template-columns: repeat(2, 1fr); }
   .lp-strip li:nth-child(2) { border-right: 0; }
   .lp-strip li:nth-child(-n + 2) { border-bottom: 1px solid var(--lp-line); }
+  .lp-problems { grid-template-columns: 1fr; padding-top: 64px; }
   .lp-result { margin-right: 0; border-radius: 36px; min-height: 340px; }
   .lp-flows, .lp-cards, .lp-price-grid { grid-template-columns: 1fr; }
   .lp-safety-grid { grid-template-columns: 1fr; }
@@ -6272,10 +6280,12 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
   .lp-hero h1 { font-size: clamp(2.3rem, 11vw, 3.2rem); }
   .lp-actions { flex-direction: column; align-items: stretch; }
   .lp-stage { min-height: 0; margin-top: 32px; padding: 64px 12px 28px; border-radius: 32px; }
+  .lp-float-a { top: 14px; left: 12px; }
+  .lp-float-b { display: none; }
   .lp-strip ul { grid-template-columns: 1fr; }
   .lp-strip li { border-right: 0 !important; border-bottom: 1px solid var(--lp-line); }
   .lp-strip li:last-child { border-bottom: 0; }
-  .lp-safety, .lp-pricing { padding-inline: 18px; }
+  .lp-problems, .lp-safety, .lp-pricing { padding-inline: 18px; }
   .lp-acc button { font-size: 1.12rem; }
   .lp-sentence { padding: 56px 16px; }
   .lp-sentence p { flex-direction: column; gap: 16px; }
@@ -6287,6 +6297,7 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 
 /* Design pass 2: fixes from the visual review */
 .lp-hero h1 { max-width: 17.5ch; }
+.lp-float-a { top: 46%; left: 4%; max-width: 190px; text-align: left; line-height: 1.35; }
 .site-nav .install-button { min-height: 40px; padding: 0 16px; border: 1px solid var(--lp-line); border-radius: 999px; background: #fff; color: var(--lp-ink); font-weight: 600; box-shadow: none; }
 .lp-strip-label { display: block; align-self: center; line-height: 1.5; }
 .landing .lp-result-big { color: #fff !important; }
@@ -6301,6 +6312,7 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .lp-result { border-radius: 32px; }
 .landing h2.lp-center { text-align: center; margin-inline: auto; }
 @media (max-width: 980px) { .lp-result { border-radius: 28px; } }
+@media (max-width: 720px) { .lp-float-a { top: 14px; left: 12px; max-width: none; } }
 .install-button[hidden] { display: none !important; }
 .lp-strip-label b { margin: 0; font-weight: 700 !important; }
 
@@ -6732,7 +6744,7 @@ body[data-active-workspace="home-title"] .quick-nav.patient-nav { position: stat
 .lp-result-link { margin-top: 22px; }
 
 /* For doctors */
-.lp-doctors { display: grid; grid-template-columns: 1fr 1.1fr; gap: 48px; align-items: center; padding: 64px 32px 96px; }
+.lp-doctors { display: grid; grid-template-columns: 1fr 1.1fr; gap: 48px; align-items: center; padding: 64px 32px 96px; border: 1px solid var(--lp-line); border-top: 0; }
 .lp-doctors h2 { max-width: 15ch; }
 .lp-doctors-lede { margin-top: 18px !important; max-width: 46ch; color: var(--lp-ink-soft); font-size: 1.08rem; line-height: 1.6; }
 .lp-doctors-list { list-style: none; margin: 26px 0 0; padding: 0; display: grid; gap: 14px; }
