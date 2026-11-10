@@ -214,6 +214,9 @@ body[data-auth="in"] .when-in { display: inline; }
 @media (max-width: 1080px) {
   .site-nav .brand-text { display: none; }
 }
+/* Scrolling to a section or control keeps it clear of the sticky header and the floating help button / tab bar. */
+html { scroll-padding-top: 96px; scroll-padding-bottom: 88px; }
+@media (max-width: 720px) { html { scroll-padding-top: 88px; scroll-padding-bottom: 140px; } }
 @media (max-width: 360px) {
   .site-nav .brand-text strong { font-size: 0.92rem; letter-spacing: -0.01em; }
   .site-nav .nav-cta { padding: 0 12px; }

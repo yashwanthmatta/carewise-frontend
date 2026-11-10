@@ -58,6 +58,22 @@ for (const width of [1440, 1024, 768, 390, 320]) {
     check(!(await page.$(".ft-footer .ft-footer-headline")), "footer does not repeat the closing call to action");
     check(await page.$(".lp-hero .lp-float") === null, "no decorative floating labels over the preview");
   }
+  if (width === 1440 || width === 390) {
+    // A control scrolled into view must not end up under the sticky header or the floating buttons.
+    const clear = await page.evaluate(async () => {
+      const button = document.querySelector('[data-guide-form] button[type="submit"]');
+      if (!button) return "missing";
+      for (const block of ["start", "end"]) {
+        button.scrollIntoView({ block, behavior: "instant" });
+        await new Promise((r) => setTimeout(r, 50));
+        const box = button.getBoundingClientRect();
+        const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+        if (!button.contains(hit)) return `${block}: covered by ${hit?.className || hit?.tagName}`;
+      }
+      return "ok";
+    });
+    check(clear === "ok", `${width}px: AI Health Guide's Ask button is not covered after scrolling to it (${clear})`);
+  }
   check(!errors.length, `${width}px home: no script errors ${errors.join("; ")}`);
   await context.close();
 }
