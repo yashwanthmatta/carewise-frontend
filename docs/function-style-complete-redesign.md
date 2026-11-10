@@ -165,9 +165,37 @@ No "before" shot of this screen was kept in the repository. In the render taken 
 
 Tests: all 34 CI commands, CSP with and without headers, the smoke test and the accessibility scan (0 serious or critical) pass.
 
-## 11. Pending
+## 11. App screens, pass 5: Original-report evidence and doctor brief (10 Nov 2026)
 
-- **App screens**: Results is done (section 9). Upload is done (section 10). Still to do: original-report evidence, Doctor brief, History/Trends, Reminders, Sign-in, Account, AI Guide screen and DocBridge.
+These changes are styling only. The values, statuses, wording, rules version and the safety banner are unchanged.
+
+- **All tests on your report**:
+  - The teal header row is now cream with ink text. It was first lighter, and axe flagged it at 4.41:1, so it was darkened to pass.
+  - Test names are ink instead of teal, and the result and range columns are in mono so the numbers line up.
+  - The active filter chip is ink instead of teal. "In range" keeps its teal; the other statuses keep terracotta.
+- **The line in your report**: the label is in the accent colour. The quoted line is unchanged.
+- **Doctor brief** (the page that prints or saves as PDF):
+  - Headings use the serif instead of teal sans, with a thin terracotta rule under the title.
+  - The table has a cream header and hairline rows, and the button is a terracotta pill.
+  - The "verify against the original report" banner stays at the top, in soft terracotta.
+  - It loads no web fonts, so printing doesn't depend on the network.
+
+| | Before | After |
+|---|---|---|
+| Doctor brief | ![](function-redesign/brief-before.png) | ![](function-redesign/brief-after.png) |
+| All tests 1440 | ![](function-redesign/evidence-before-1440.png) | ![](function-redesign/evidence-after-1440.png) |
+| All tests 390 | | ![](function-redesign/evidence-after-390.png) |
+| The line in your report | | ![](function-redesign/evidence-line-after-1440.png) |
+
+In the evidence shots, the header sitting across the table is the sticky header captured during scrolling.
+
+Tests after this pass (cache version 220):
+- All CI eval commands pass, including results-groups with axe, CSP with and without headers, and the smoke test.
+- The accessibility scan finds 0 serious or critical issues.
+
+## 12. Pending
+
+- **App screens**: Results is done (section 9). Upload (section 10) and original-report evidence plus doctor brief (section 11) are done. Still to do: History/Trends, Reminders, Sign-in, Account, AI Guide screen and DocBridge.
   - They already pick up the new palette, type and terracotta buttons through the shared styles.
   - They have not been redesigned or checked screen by screen yet.
 - **Screenshots**: before/after shots of the DocBridge, pricing and trust sections at 1024/768 have not been captured for this document.

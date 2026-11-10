@@ -432,6 +432,19 @@ body { background: var(--fh-paper) !important; color: var(--fh-ink); }
 .app-shell .report-panel .data-use summary { color: var(--fh-accent) !important; }
 .app-shell .report-panel :is(textarea, input[type="text"], input:not([type])) { background: var(--fh-white) !important; border-color: var(--fh-line) !important; }
 
+/* ---------- App: original-report evidence (pass 5) ----------
+   "All tests on your report" and "The line in your report". Styling only; values as read. */
+.app-shell #report-results .lab-panel-head { background: var(--fh-cream) !important; color: var(--fh-ink-2) !important; font-family: var(--fh-mono); font-size: 0.74rem !important; letter-spacing: 0.04em; }
+.app-shell #report-results .lab-panel-head > span { color: var(--fh-ink-2) !important; }
+.app-shell #report-results .lab-panel-row strong { color: var(--fh-ink) !important; font-weight: 500 !important; }
+.app-shell #report-results .lab-panel-row > span:nth-child(2) { font-family: var(--fh-mono); font-size: 0.86rem; color: var(--fh-ink); }
+.app-shell #report-results .lab-panel-row > span:nth-child(3) { font-family: var(--fh-mono); font-size: 0.82rem; color: var(--fh-ink-3); }
+.app-shell #report-results .lab-panel-row em { font-style: normal; font-weight: 500 !important; }
+.app-shell #report-results .lab-filter { border-color: var(--fh-line) !important; background: var(--fh-white) !important; color: var(--fh-ink) !important; }
+.app-shell #report-results .lab-filter[aria-pressed="true"] { background: var(--fh-ink) !important; border-color: var(--fh-ink) !important; color: #fff !important; }
+.app-shell #report-results .lab-filter[aria-pressed="true"] span { background: rgba(255, 255, 255, 0.18) !important; color: #fff !important; }
+.app-shell #report-results .result-card-source-title { color: var(--fh-accent) !important; }
+
 /* ---------- Motion ---------- */
 @keyframes fh-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes fh-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }

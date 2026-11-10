@@ -7848,16 +7848,18 @@ function buildDoctorBriefHtml(analysis, person = "Me") {
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FollowThrough Health doctor brief</title>
 <style>
-  body { font-family: Arial, sans-serif; color: #14302c; max-width: 760px; margin: 32px auto; padding: 0 20px; line-height: 1.45; }
-  header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 3px solid #0f766e; padding-bottom: 8px; }
-  h1 { font-size: 22px; margin: 0; } h2 { font-size: 16px; margin: 22px 0 6px; color: #0f766e; }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; } td, th { border: 1px solid #d5e5e1; padding: 6px 8px; text-align: left; }
-  th { background: #e6f1ee; } ul, ol { margin: 0; padding-left: 20px; font-size: 14px; }
-  .note { margin-top: 24px; font-size: 12px; color: #3e5450; border-top: 1px solid #d5e5e1; padding-top: 8px; }
-  .notes-box { border: 1px solid #d5e5e1; min-height: 70px; margin-top: 6px; }
-  .verify { margin: 0 0 12px; padding: 8px 10px; border: 2px solid #b45309; border-radius: 6px; background: #fff7ed; font-weight: bold; font-size: 14px; }
-  .source { font-size: 13px; color: #3e5450; margin: 8px 0 0; }
-  button { margin-top: 16px; padding: 8px 16px; background: #0f766e; color: #fff; border: 0; border-radius: 6px; font-size: 14px; cursor: pointer; }
+  body { font-family: "Helvetica Neue", Arial, sans-serif; color: #292929; background: #fffdf8; max-width: 760px; margin: 32px auto; padding: 0 20px; line-height: 1.5; }
+  header { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; border-bottom: 1px solid #b85c38; padding-bottom: 10px; }
+  h1 { font-family: "Newsreader", Georgia, "Times New Roman", serif; font-weight: 400; font-size: 26px; line-height: 1.15; margin: 0; }
+  h2 { font-family: "Newsreader", Georgia, "Times New Roman", serif; font-weight: 400; font-size: 19px; margin: 26px 0 8px; color: #292929; }
+  header span { font-size: 13px; color: #66625c; white-space: nowrap; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; } td, th { border-bottom: 1px solid #e6ddce; padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: #f3ede2; font-weight: 600; font-size: 13px; color: #4a4743; } ul, ol { margin: 0; padding-left: 20px; font-size: 14px; } li { margin: 3px 0; }
+  .note { margin-top: 26px; font-size: 12px; color: #4a4743; border-top: 1px solid #e6ddce; padding-top: 10px; }
+  .notes-box { border: 1px solid #e6ddce; border-radius: 6px; min-height: 80px; margin-top: 6px; }
+  .verify { margin: 0 0 16px; padding: 10px 12px; border: 1.5px solid #a14e2e; border-radius: 8px; background: #f4e4d8; font-weight: bold; font-size: 14px; }
+  .source { font-size: 13px; color: #4a4743; margin: 10px 0 0; }
+  button { margin-top: 18px; padding: 10px 20px; background: #a14e2e; color: #fff; border: 0; border-radius: 999px; font-size: 14px; font-weight: 600; cursor: pointer; }
   @media print { button { display: none; } body { margin: 0 auto; } }
 </style></head><body>
 <p class="verify">Patient-generated educational summary. Verify against the original laboratory report.</p>
