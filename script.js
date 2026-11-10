@@ -6866,6 +6866,19 @@ function sourceLineFor(card) {
   return matches.length === 1 ? matches[0].trim().slice(0, 200) : "";
 }
 
+// "148 mg/dL" → "148 <span>mg/dL</span>": same text, unit set smaller so the number reads first.
+function resultValueHtml(card) {
+  const value = String(card.value || "");
+  const unit = String(card.unit || "");
+  if (unit && value.endsWith(` ${unit}`)) {
+    return `${escapeHtml(value.slice(0, -unit.length - 1))} <span class="result-card-unit">${escapeHtml(unit)}</span>`;
+  }
+  // Values checked against a general goal carry the unit in the text ("148 mg/dL"): split for display only.
+  const match = /^([<>≤≥]?\s?\d[\d.,]*) (\S.*)$/.exec(value);
+  if (match) return `${escapeHtml(match[1])} <span class="result-card-unit">${escapeHtml(match[2])}</span>`;
+  return escapeHtml(value);
+}
+
 function renderResultCard(card, text) {
   const line = sourceLineFor(card);
   const es = reportLanguage === "es";
@@ -6873,7 +6886,7 @@ function renderResultCard(card, text) {
   return `
           <article class="result-card-item result-card-${escapeHtml(card.tone)}">
             <header><strong>${escapeHtml(card.name)}</strong><em>${escapeHtml(card.label)}</em></header>
-            <p class="result-card-value"><b>${escapeHtml(card.value)}</b>${card.unitHint ? `<small>${escapeHtml(card.unitHint)}</small>` : ""}</p>
+            <p class="result-card-value"><b>${resultValueHtml(card)}</b>${card.unitHint ? `<small>${escapeHtml(card.unitHint)}</small>` : ""}</p>
             ${card.rangeLabel ? `<p class="result-card-range">${escapeHtml(card.rangeLabel)}: ${escapeHtml(card.range || text.noRangePrinted)}</p>` : ""}
             ${card.note ? `<p class="result-card-range">${escapeHtml(card.note)}</p>` : ""}
             ${card.meaning ? `<h5 class="visually-hidden">${escapeHtml(text.whatMeans)}</h5><p class="result-card-meaning">${escapeHtml(card.meaning)}</p>` : ""}
@@ -11943,28 +11956,6 @@ document.querySelector("#dashboard")?.addEventListener("click", (event) => {
   event.preventDefault();
   history.pushState(null, "", link.getAttribute("href"));
   window.showCareWiseSection(link.getAttribute("href").slice(1));
-});
-
-document.querySelectorAll("[data-lp-insights]").forEach((box) => {
-  const tabs = [...box.querySelectorAll('[role="tab"]')];
-  const select = (tab, focus) => {
-    tabs.forEach((other) => {
-      const on = other === tab;
-      other.setAttribute("aria-selected", String(on));
-      other.tabIndex = on ? 0 : -1;
-      document.getElementById(other.getAttribute("aria-controls")).hidden = !on;
-    });
-    if (focus) tab.focus();
-  };
-  tabs.forEach((tab, index) => {
-    tab.addEventListener("click", () => select(tab, false));
-    tab.addEventListener("keydown", (event) => {
-      const next = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 }[event.key];
-      if (next === undefined) return;
-      event.preventDefault();
-      select(tabs[(next + tabs.length) % tabs.length], true);
-    });
-  });
 });
 
 document.querySelectorAll("[data-start-tour]").forEach((element) => element.addEventListener("click", (event) => {

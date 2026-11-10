@@ -1,8 +1,9 @@
-// AI Health Guide on the homepage: an illustrated, animated education guide that answers through
-// the same pipeline as the help chat (help.js: emergency words, fixed "not a doctor" and
-// "can't diagnose" answers, the online helper, built-in answers when it is not there).
-// States shown by the avatar: idle, listening (typing), thinking (waiting), speaking (answer
-// appearing or being read aloud), then back to idle. Reduced motion: no movement, same states in words.
+// AI Health Guide on the homepage: an education guide, drawn as an abstract symbol (not a person),
+// that answers through the same pipeline as the help chat (help.js: emergency words, fixed
+// "not a doctor" and "can't diagnose" answers, the online helper, built-in answers when it is not there).
+// States: idle (still), listening (typing), thinking (waiting), speaking (answer appearing),
+// reading (read aloud), error (could not answer) and offline (no connection: built-in answers).
+// Motion only while a state is active; reduced motion: no movement, same states in words.
 (() => {
   const box = document.querySelector("[data-guide]");
   const avatar = document.querySelector("[data-guide-avatar]");
@@ -25,6 +26,8 @@
     thinking: "Thinking",
     speaking: "Answering",
     reading: "Reading the answer aloud",
+    error: "Couldn't answer just now. Try again in a minute.",
+    offline: "Offline: using built-in explanations",
   };
   function setState(name) {
     avatar.className = `guide-avatar is-${name}`;
@@ -110,11 +113,14 @@
     setState("thinking");
     const pending = addMessage("guide", '<p class="guide-typing" aria-label="Thinking"><span></span><span></span><span></span></p>', "guide-pending");
     let answer;
+    let failed = false;
+    const offline = navigator.onLine === false;
     try {
       answer = typeof window.careWiseGuideReply === "function"
         ? await window.careWiseGuideReply(clean, history, Boolean(share?.querySelector("input")?.checked))
         : { reply: "The guide could not load. Please refresh the page and try again.", source: "built-in" };
     } catch {
+      failed = true;
       answer = { reply: "The guide could not answer just now. Please try again in a minute.", source: "built-in" };
     }
     pending.remove();
@@ -141,7 +147,7 @@
     });
     busy = false;
     submit.disabled = false;
-    setState("idle");
+    setState(failed ? "error" : offline ? "offline" : "idle");
   }
 
   form.addEventListener("submit", (event) => {
@@ -152,6 +158,8 @@
     const chip = event.target.closest("[data-guide-ask]");
     if (chip) ask(chip.textContent);
   });
+  window.addEventListener("offline", () => { if (!busy) setState("offline"); });
+  window.addEventListener("online", () => { if (!busy) setState("idle"); });
   input.addEventListener("focus", () => { if (!busy) setState("listening"); });
   input.addEventListener("input", () => { if (!busy) setState(input.value ? "listening" : "idle"); });
   input.addEventListener("blur", () => { if (!busy && !input.value) setState("idle"); });
@@ -162,5 +170,5 @@
   document.addEventListener("visibilitychange", refreshShare);
   window.addEventListener("hashchange", refreshShare);
   window.careWiseGuideAsk = ask;
-  setState("idle");
+  setState(navigator.onLine === false ? "offline" : "idle");
 })();

@@ -129,6 +129,9 @@ jobs:
       - name: Staff two-step sign-in notice (only when the server asks for it; goes away once on)
         run: node scripts/eval/staff-two-factor.mjs
 
+      - name: Design quality gates (no sideways scroll at 5 widths, exact values with units, even result grid)
+        run: node scripts/eval/design-quality.mjs
+
       - name: Accessibility scan (axe-core, WCAG A and AA; fails on serious or critical)
         run: |
           npm install --no-save --no-package-lock playwright@1.56.1 axe-core@4.14.0
