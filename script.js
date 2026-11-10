@@ -5567,17 +5567,115 @@ function renderReportHistory() {
     reportHistoryList.innerHTML = `<article><div><strong>No reports for ${escapeHtml(personFilter)} yet</strong></div></article>`;
   } else if (reportHistoryList) {
     reportHistoryList.innerHTML = reports.slice(0, 4).map((report) => `
-      <article>
-        <div>
-          <strong>${escapeHtml(report.fileName || "Untitled report")}</strong>
-          <span>${escapeHtml(`For ${normalizeReportPerson(report.person)} · `)}${escapeHtml(new Date(report.createdAt || report.updatedAt || Date.now()).toLocaleDateString())}</span>
+      <article class="history-item">
+        <div class="history-item-head">
+          <strong>${escapeHtml(historyTitle(report))}</strong>
+          <span>${escapeHtml(`For ${normalizeReportPerson(report.person)} · ${historyDateText(report)}`)}</span>
         </div>
         <p>${escapeHtml(report.message || "Saved report. Run or load analysis to see a plain-English explanation.")}</p>
         ${report.questions?.length ? `<p><strong>Doctor question:</strong> ${escapeHtml(report.questions[0])}</p>` : ""}
-        <button class="secondary-button compact" type="button" data-report-action="open-history" data-report-id="${escapeHtml(report.id)}">Open result</button>
+        <button class="history-open" type="button" data-report-action="open-history" data-report-id="${escapeHtml(report.id)}">Open this report <span aria-hidden="true">→</span></button>
       </article>
     `).join("");
   }
+  renderHistoryTrends(allReports, personFilter);
+}
+
+// History titles: the name the person typed, else the test date printed on the report.
+function formatTestDate(iso) {
+  const date = new Date(`${iso}T00:00:00Z`);
+  return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
+function shortTestDate(iso) {
+  const date = new Date(`${iso}T00:00:00Z`);
+  return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString(undefined, { month: "short", year: "numeric", timeZone: "UTC" });
+}
+function historyTitle(report) {
+  const name = String(report.fileName || "").trim();
+  if (name && name !== "Local report analysis") return name;
+  return report.testDate ? `Report from ${formatTestDate(report.testDate)}` : "Saved report";
+}
+function historyDateText(report) {
+  if (report.testDate) return `test date ${formatTestDate(report.testDate)}`;
+  return `saved ${new Date(report.createdAt || report.updatedAt || Date.now()).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}`;
+}
+
+// "Results over time": only values from the person's saved reports, exactly as each report showed
+// them. Nothing is calculated, scored or filled in. A value with < or > is listed but not drawn.
+function splitResultValue(text) {
+  const match = /^([<>≤≥]?)\s?(\d[\d,]*(?:\.\d+)?) ?(.*)$/.exec(String(text || "").trim());
+  if (!match) return null;
+  return { comparator: match[1], number: Number(match[2].replace(/,/g, "")), unit: match[3].trim() };
+}
+
+function historyTrendGroups(reports) {
+  const dated = reports
+    .filter((report) => Array.isArray(report.results) && report.results.length)
+    .map((report) => ({ report, when: report.testDate || String(report.createdAt || "").slice(0, 10), known: Boolean(report.testDate) }))
+    .sort((a, b) => a.when.localeCompare(b.when));
+  const groups = new Map();
+  dated.forEach(({ report, when, known }) => {
+    report.results.forEach((result) => {
+      if (!result.key || !result.value) return;
+      const parts = splitResultValue(result.value);
+      if (!groups.has(result.key)) groups.set(result.key, { key: result.key, name: result.name, entries: [] });
+      groups.get(result.key).entries.push({ when, known, value: result.value, parts, range: result.range, rangeLabel: result.rangeLabel, label: result.label, status: result.status });
+    });
+  });
+  return { reportsWithResults: dated.length, groups: [...groups.values()].filter((group) => group.entries.length >= 2) };
+}
+
+function trendChartSvg(group) {
+  const points = group.entries.filter((entry) => entry.parts && !entry.parts.comparator);
+  const units = new Set(group.entries.map((entry) => entry.parts?.unit || ""));
+  if (points.length < 2 || units.size > 1) return "";
+  const width = 320, height = 112, padX = 22, top = 22, bottom = 28;
+  const values = points.map((entry) => entry.parts.number);
+  const min = Math.min(...values), max = Math.max(...values);
+  const spread = max - min || Math.abs(max) || 1;
+  const x = (index) => padX + (index * (width - padX * 2)) / (points.length - 1);
+  const y = (value) => top + (1 - (value - min) / spread) * (height - top - bottom);
+  const line = points.map((entry, index) => `${x(index).toFixed(1)},${y(entry.parts.number).toFixed(1)}`).join(" ");
+  const described = points.map((entry) => `${entry.value} on ${entry.known ? formatTestDate(entry.when) : `saved ${formatTestDate(entry.when)}`}`).join(", ");
+  return `<svg class="trend-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(`${group.name}: ${described}`)}">
+    <line x1="${padX}" x2="${width - padX}" y1="${height - bottom + 6}" y2="${height - bottom + 6}" class="trend-axis" />
+    <polyline points="${line}" class="trend-line" />
+    ${points.map((entry, index) => `<circle cx="${x(index).toFixed(1)}" cy="${y(entry.parts.number).toFixed(1)}" r="4.5" class="trend-dot trend-dot-${escapeHtml(entry.status || "none")}" /><text x="${x(index).toFixed(1)}" y="${(y(entry.parts.number) - 10).toFixed(1)}" text-anchor="middle" class="trend-value">${escapeHtml(String(entry.parts.number))}</text><text x="${x(index).toFixed(1)}" y="${height - 4}" text-anchor="${index === 0 ? "start" : index === points.length - 1 ? "end" : "middle"}" class="trend-date">${escapeHtml(shortTestDate(entry.when))}</text>`).join("")}
+  </svg>`;
+}
+
+function renderHistoryTrends(allReports, personFilter) {
+  const box = document.querySelector("#history-trends");
+  if (!box) return;
+  const people = [...new Set(allReports.map((report) => normalizeReportPerson(report.person)))];
+  const person = personFilter || (people.length === 1 ? people[0] : "");
+  if (!allReports.length) { box.hidden = true; box.innerHTML = ""; return; }
+  box.hidden = false;
+  const head = `<h4 class="history-trends-title">Results over time${person ? ` for ${escapeHtml(person)}` : ""}</h4>`;
+  if (!person) {
+    box.innerHTML = `${head}<p class="history-trends-note">Choose whose reports to compare in "Show reports for" above. Results are only compared within one person's reports.</p>`;
+    return;
+  }
+  const { reportsWithResults, groups } = historyTrendGroups(allReports.filter((report) => normalizeReportPerson(report.person) === person));
+  if (reportsWithResults < 2 || !groups.length) {
+    box.innerHTML = `${head}<p class="history-trends-note">${reportsWithResults < 2
+      ? `Explain at least two of ${escapeHtml(person)}'s reports to see how each result changed. Reports saved before this update don't include every result; explain them again to compare them.`
+      : "No test appears in more than one of these reports yet."}</p>`;
+    return;
+  }
+  box.innerHTML = `${head}
+    <p class="history-trends-note">From ${reportsWithResults} saved reports on this device, exactly as each report showed them. Dates are the test dates printed on each report, or the day it was saved when the report gave none. Your doctor interprets what a change means.</p>
+    <div class="trend-grid">${groups.map((group) => {
+      const units = new Set(group.entries.map((entry) => entry.parts?.unit || ""));
+      const chart = trendChartSvg(group);
+      return `<article class="trend-card">
+        <h5>${escapeHtml(group.name)}</h5>
+        ${chart || `<p class="history-trends-note">${units.size > 1 ? "The units differ between reports, so these are not drawn on one chart." : "Listed, not drawn: a value with < or > has no exact point."}</p>`}
+        <table class="trend-table"><thead><tr><th scope="col">Date</th><th scope="col">Result</th><th scope="col">Lab's range</th></tr></thead><tbody>
+          ${group.entries.map((entry) => `<tr><td>${escapeHtml(entry.known ? formatTestDate(entry.when) : `Saved ${formatTestDate(entry.when)}`)}</td><td><strong>${escapeHtml(entry.value)}</strong>${entry.label ? `<span class="trend-label trend-label-${escapeHtml(entry.status || "none")}">${escapeHtml(entry.label)}</span>` : ""}</td><td>${escapeHtml(entry.range || "Not printed")}</td></tr>`).join("")}
+        </tbody></table>
+      </article>`;
+    }).join("")}</div>`;
 }
 
 function openReportHistoryItem(reportId) {
@@ -8205,6 +8303,7 @@ function runLocalReportAnalysis() {
   }
   latestReportId = analysis.id;
   localStorage.setItem("carewiseLatestReportId", latestReportId);
+  const historyView = buildReportView(analysis, "en");
   saveReportHistory({
     id: analysis.id,
     person: latestReportPerson,
@@ -8214,8 +8313,12 @@ function runLocalReportAnalysis() {
     score: analysis.score,
     message: `${outsideRangeText(analysis) || "Report text reviewed"}. ${analysis.findings[0]?.label || ""}`.trim(),
     nextSteps: analysis.questions.slice(0, 3),
-    questions: reportQuestions(analysis, buildReportView(analysis, "en"), "en"),
+    questions: reportQuestions(analysis, historyView, "en"),
     labValues: analysis.labValues,
+    // Every result as shown (exact text, unit, lab range, label) and the test date printed on the
+    // report, so History can compare saved reports without re-reading or re-calculating anything.
+    results: historyView.tests.map((test) => ({ key: test.key, name: test.name, value: test.value, unit: test.unit, range: test.range, rangeLabel: test.rangeLabel, label: test.label, status: test.status })),
+    testDate: reportTestDate(getLocalReportText()),
     createdAt: new Date().toISOString(),
   });
   renderLocalReportAnalysis(analysis);

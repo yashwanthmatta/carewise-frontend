@@ -771,10 +771,6 @@ body {
 .v1-chart-grid article,
 .v1-chat-card,
 .saved-plan-row,
-.v1-history-list article {
-  border-color: #e2e8f0;
-  box-shadow: 0 12px 28px rgba(15, 118, 110, 0.06);
-}
 
 .v1-report-dashboard .health-score-card {
   border-color: #99f6e4;
@@ -1127,18 +1123,7 @@ body::before {
   line-height: 1.45;
 }
 
-.v1-history-list article {
-  position: relative;
-  overflow: hidden;
-}
 
-.v1-history-list article::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 5px;
-  background: linear-gradient(180deg, #0f766e, #38bdf8);
-}
 
 @media (max-width: 760px) {
   .privacy-assurance,
@@ -3880,11 +3865,11 @@ input[type="file"] {
 .v1-chart-grid article,
 .v1-history-list article {
   display: grid;
-  gap: 7px;
-  border: 1px solid #dbeafe;
-  border-radius: 8px;
-  padding: 15px;
-  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  gap: 6px;
+  border: 1px solid var(--ft-line);
+  border-radius: var(--ft-radius-md);
+  padding: 16px 18px;
+  background: var(--ft-surface);
 }
 
 .v1-report-dashboard .health-score-card {
@@ -4893,10 +4878,6 @@ body {
 .v1-chart-grid article,
 .v1-chat-card,
 .saved-plan-row,
-.v1-history-list article {
-  border-color: #e2e8f0;
-  box-shadow: 0 12px 28px rgba(15, 118, 110, 0.06);
-}
 
 .v1-report-dashboard .health-score-card {
   border-color: #99f6e4;

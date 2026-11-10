@@ -1080,3 +1080,29 @@ body[data-auth="in"] details.when-in { display: block; }
 .lp-final-note a { color: #FAF6EE; }
 .lp-safety-links a { color: var(--ft-brand); font-weight: 600; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 .guide-chips button { text-align: left; }
+
+/* History: report list and "Results over time" (saved values only) */
+.v1-history-list .history-item-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
+.v1-history-list .history-item-head span { color: var(--ft-ink-3); font-size: var(--ft-text-xs); text-transform: none; letter-spacing: 0; }
+.history-open { justify-self: start; min-height: 44px; padding: 0; border: 0; background: none; color: var(--ft-brand); font: inherit; font-size: var(--ft-text-sm); font-weight: 700; cursor: pointer; }
+.history-open:hover { text-decoration: underline; text-underline-offset: 3px; }
+.history-open:focus-visible { outline: none; box-shadow: var(--ft-focus); border-radius: 6px; }
+.history-trends { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--ft-line); }
+.history-trends-title { margin: 0; font-size: var(--ft-text-lg); color: var(--ft-ink); }
+.history-trends-note { margin: 6px 0 0; max-width: 62ch; color: var(--ft-ink-3); font-size: var(--ft-text-sm); line-height: 1.5; }
+.trend-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 14px; margin-top: 16px; }
+.trend-card { display: grid; align-content: start; gap: 8px; padding: 16px 18px; border: 1px solid var(--ft-line); border-radius: var(--ft-radius-md); background: var(--ft-surface); }
+.trend-card h5 { margin: 0; font-size: var(--ft-text-md); color: var(--ft-ink); text-transform: none; letter-spacing: 0; }
+.trend-chart { display: block; width: 100%; height: auto; }
+.trend-axis { stroke: var(--ft-line); stroke-width: 1; }
+.trend-line { fill: none; stroke: var(--ft-ink-3); stroke-width: 2; stroke-linejoin: round; }
+.trend-dot { fill: var(--ft-surface); stroke: var(--ft-brand); stroke-width: 2.5; }
+.trend-dot-above, .trend-dot-below, .trend-dot-critical, .trend-dot-outside { stroke: var(--ft-terracotta); }
+.trend-value { fill: var(--ft-ink); font-size: 12px; font-weight: 700; font-family: var(--ft-font); font-variant-numeric: tabular-nums; }
+.trend-date { fill: var(--ft-ink-3); font-size: 11px; font-family: var(--ft-font); }
+.trend-table { width: 100%; border-collapse: collapse; font-size: var(--ft-text-sm); font-variant-numeric: tabular-nums; }
+.trend-table th { padding: 6px 4px; text-align: left; color: var(--ft-ink-3); font-size: var(--ft-text-xs); font-weight: 600; border-bottom: 1px solid var(--ft-line); }
+.trend-table td { padding: 8px 4px; vertical-align: top; border-bottom: 1px solid var(--ft-line); color: var(--ft-ink-2); }
+.trend-table td strong { color: var(--ft-ink); }
+.trend-label { display: block; margin-top: 2px; color: var(--ft-ink-3); font-size: var(--ft-text-xs); }
+.trend-label-above, .trend-label-below, .trend-label-critical { color: var(--ft-attention-ink); }

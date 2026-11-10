@@ -129,6 +129,9 @@ jobs:
       - name: Staff two-step sign-in notice (only when the server asks for it; goes away once on)
         run: node scripts/eval/staff-two-factor.mjs
 
+      - name: History results over time (saved values only, exact text, one person at a time)
+        run: node scripts/eval/history-trends.mjs
+
       - name: Design quality gates (no sideways scroll at 5 widths, exact values with units, even result grid)
         run: node scripts/eval/design-quality.mjs
 
