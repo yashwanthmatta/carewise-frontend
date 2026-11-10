@@ -473,6 +473,14 @@ body { background: var(--fh-paper) !important; color: var(--fh-ink); }
 .app-shell .docbridge-panel :is(#db-demo-start, #db-signin > .secondary-button, .db-waitlist button) { justify-self: start; display: inline-flex; align-items: center; justify-content: center; width: auto !important; min-width: 0; padding-left: 26px !important; padding-right: 26px !important; }
 .app-shell .docbridge-panel .db-waitlist { border-top-color: var(--fh-line) !important; }
 
+/* ---------- App: account, signed in (pass 8) ----------
+   Styling only: plans, prices and wording are unchanged. "Verified" keeps teal ink as a positive state. */
+.app-shell #account-avatar { background: var(--fh-cream) !important; color: var(--fh-accent-dark) !important; border-color: var(--fh-line) !important; font-family: var(--fh-serif); font-weight: 400 !important; }
+.app-shell #auth-badge.sync-badge.online { background: var(--fh-white) !important; border-color: var(--fh-line) !important; color: var(--fh-teal, #0F766E) !important; }
+.app-shell .billing-card { box-shadow: none !important; border-color: var(--fh-line) !important; background: var(--fh-white) !important; }
+.app-shell .yd-note a { color: var(--fh-accent) !important; }
+.app-shell .billing-card.billing-card-current { background: var(--fh-cream) !important; border: 1.5px solid var(--fh-ink) !important; }
+
 /* ---------- Motion ---------- */
 @keyframes fh-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes fh-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }

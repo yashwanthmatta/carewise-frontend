@@ -236,10 +236,29 @@ These changes are styling only. Prices, wording and the evaluation-mode notice a
 
 Tests after this pass (cache version 222): all 34 CI commands pass (including the accessibility scan with axe), CSP passes with and without headers, and the smoke test passes.
 
-## 14. Pending
+## 14. App screens, pass 8: Account, signed in (10 Nov 2026)
 
-- **App screens**: Results is done (section 9). Upload (section 10) and original-report evidence plus doctor brief (section 11) are done. History, Record and Reminders (section 12) are done too. DocBridge, Sign-in and the AI guide are covered in section 13. Still to do: the signed-in Account view, which needs a mocked session to render.
-  - The signed-in Account view gets the shared palette, type and buttons, but it has not been rendered or checked.
+Rendered with a mocked session: synthetic email `sample.user@example.com` and a mocked `/auth/me`, the same approach as `scripts/eval/staff-two-factor.mjs`. No real account was used.
+
+These changes are styling only. Plans, prices and wording are unchanged.
+
+- The avatar circle was mint; it is now cream with a serif initial.
+- The "Verified" badge was a mint pill; it is now white with a thin line. The text keeps its teal, as a positive state.
+- The current-plan card had a teal border and mint fill; it is now cream with an ink border. Other plan cards use thin lines.
+- The "How deletion works" link was browser-default blue; it now uses the accent colour.
+
+| | Before | After |
+|---|---|---|
+| Account 1440 | ![](function-redesign/account-before-1440.png) | ![](function-redesign/account-after-1440.png) |
+| Account 390 | | ![](function-redesign/account-after-390.png) |
+
+In these shots, "We couldn't check your account right now" appears because the mock answers only `/auth/me`. That is expected, not a bug.
+
+Tests after this pass (cache version 223): all 34 CI commands pass (including the accessibility scan with axe), CSP passes with and without headers, and the smoke test passes.
+
+## 15. Pending
+
+- **App screens**: Results is done (section 9). Upload (section 10) and original-report evidence plus doctor brief (section 11) are done. History, Record and Reminders (section 12) are done too. DocBridge, Sign-in and the AI guide are covered in section 13. The signed-in Account view is covered in section 14.
   - Other secondary tools (meal planner, symptom timeline, care calendar and similar) also pick up the shared styles, but have not been checked screen by screen.
 - **Screenshots**: before/after shots of the homepage DocBridge, pricing and trust sections at 1024/768 have not been captured for this document.
 - **Reference screenshots**: the three the brief mentions never arrived. If they are re-sent, the comparison, FAQ and footer will be checked against them.
