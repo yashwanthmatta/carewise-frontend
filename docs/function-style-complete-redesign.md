@@ -128,11 +128,32 @@ Fonts are larger because the design uses a light display serif plus a mono face.
 
 Homepage height grew at 1440 (9,903 → 10,751px) because the health-information and how-it-works sections were added. It shrank on phones (320px: 18,144 → 17,049px).
 
-## 9. Pending
+## 9. App screens, pass 3: Results (10 Nov 2026)
 
-- **App screens**: Results (highest priority), Upload, original-report evidence, Doctor brief, History/Trends, Reminders, Sign-in, Account, AI Guide screen and DocBridge.
-  - They already pick up the new palette and type through the token remap.
-  - They have not been redesigned or checked screen by screen yet. This is the next pass.
+Styling only, in `site.css`, scoped to `#report-results`. No value, word, order or rule changed. The design-quality eval still checks that every card shows the analysis's exact value text and that Listen reads the unit.
+
+What changed, from the audit of the rendered screen:
+
+1. **Typography.** Headings were bold sans; they are now the light serif used on the homepage. Values were heavy sans; they are now large light serif with a smaller sans unit, and the lab's range is in mono.
+2. **Cards.** The thick orange left stripes and shadows are gone, replaced by thin warm lines. Status chips keep their exact words, on a soft terracotta background.
+3. **Palette.** The mint "Questions for your doctor" panel and the blue-grey safety note now use cream panels. App primary buttons everywhere are terracotta pills, so Results no longer mixes teal and terracotta buttons. Links in Results and the active tab use the accent colour. Primary buttons wrap cleanly on phones.
+
+| | Before | After |
+|---|---|---|
+| Results 1440 (top) | ![](function-redesign/results-before-1440-0.png) | ![](function-redesign/results-after-1440-0.png) |
+| Results 1440 (questions, steps, save) | ![](function-redesign/results-before-1440-1.png) | ![](function-redesign/results-after-1440-1.png) |
+| Results 390 (top) | ![](function-redesign/results-before-390-0.png) | ![](function-redesign/results-after-390-0.png) |
+| Results 390 (questions) | | ![](function-redesign/results-after-390-1.png) |
+
+On the 390px shots, the tab bar in the middle of the image is a full-page capture effect: it is fixed to the bottom of the screen.
+
+Tests after this pass: all 34 CI commands pass (cache version 219), CSP passes with and without headers, and the smoke test passes.
+
+## 10. Pending
+
+- **App screens**: Results is done (section 9). Still to do: Upload (next; it still has a mint drop zone and teal chips), original-report evidence, Doctor brief, History/Trends, Reminders, Sign-in, Account, AI Guide screen and DocBridge.
+  - They already pick up the new palette, type and terracotta buttons through the shared styles.
+  - They have not been redesigned or checked screen by screen yet.
 - **Screenshots**: before/after shots of the DocBridge, pricing and trust sections at 1024/768 have not been captured for this document.
 - **Reference screenshots**: the three the brief mentions never arrived. If they are re-sent, the comparison, FAQ and footer will be checked against them.
 - **Accessibility scan**: investigate the one unreproduced axe failure if it shows up in the nightly scan.

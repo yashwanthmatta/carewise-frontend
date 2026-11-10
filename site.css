@@ -382,6 +382,41 @@ body { background: var(--fh-paper) !important; color: var(--fh-ink); }
 .fh-hero .fh-data-use { max-width: none; margin: 18px 0 0; }
 .fh-hero .fh-data-use summary { justify-content: flex-start !important; width: auto !important; text-align: left; color: var(--fh-accent); }
 
+/* ---------- App: report results (pass 3) ----------
+   Same language as the homepage: light serif headings and values, thin lines instead of coloured
+   stripes, one terracotta primary button, warm panels. Styling only: every value, word and order
+   stays as the analysis produced it. */
+.app-shell .primary-button, .app-shell .workspace .primary-button { background: var(--fh-accent) !important; color: #fff !important; box-shadow: none !important; border-radius: 999px !important; font-weight: 600 !important; }
+.app-shell .primary-button:hover, .app-shell .workspace .primary-button:hover { background: var(--fh-accent-dark) !important; transform: none; }
+.app-shell .site-nav .quick-nav.patient-nav a.active { background: var(--fh-white) !important; color: var(--fh-accent-dark) !important; box-shadow: 0 0 0 1px var(--fh-line) !important; }
+.app-shell .primary-button { min-height: 48px; height: auto !important; padding: 12px 24px !important; line-height: 1.25 !important; }
+.app-shell .secondary-button { border-color: var(--fh-line) !important; box-shadow: none !important; }
+.app-shell #report-results .result-hero .section-heading-action > strong { font-family: var(--fh-serif) !important; font-weight: 300 !important; font-size: clamp(2rem, 3.4vw, 2.8rem) !important; line-height: 1.05 !important; letter-spacing: -0.01em; color: var(--fh-ink); }
+.app-shell #report-results .result-hero > div > span { font-family: var(--fh-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fh-accent); }
+.app-shell #report-results :is(.result-cards, .result-doctor, .next-steps, .result-source, .result-save) :is(h4, .section-heading-action > strong, .section-heading-action > h4) { font-family: var(--fh-serif) !important; font-weight: 400 !important; font-size: clamp(1.45rem, 2.2vw, 1.85rem) !important; letter-spacing: -0.005em !important; color: var(--fh-ink); }
+.app-shell #report-results .report-summary { border: 1px solid var(--fh-line) !important; border-left-width: 1px !important; box-shadow: none !important; background: var(--fh-white) !important; }
+.app-shell #report-results .report-summary-eyebrow { font-family: var(--fh-mono); font-size: 0.72rem; letter-spacing: 0.06em; color: var(--fh-accent); }
+.app-shell #report-results .summary-meter span { background: var(--fh-line); }
+.app-shell #report-results .summary-meter span.is-out { background: var(--fh-terracotta); }
+.app-shell #report-results .result-card-item { border: 1px solid var(--fh-line) !important; border-left-width: 1px !important; box-shadow: none !important; background: var(--fh-white) !important; padding: 20px 22px !important; }
+.app-shell #report-results .result-card-item header strong { font-weight: 500 !important; font-size: 1.05rem; }
+.app-shell #report-results .result-card-item header em { font-style: normal; font-weight: 500 !important; font-size: 0.8rem; padding: 3px 10px; background: var(--fh-accent-soft); color: var(--fh-accent-dark); }
+.app-shell #report-results .result-card-value { margin-top: 10px !important; }
+.app-shell #report-results .result-card-value b { font-family: var(--fh-serif) !important; font-weight: 300 !important; font-size: 2.6rem; line-height: 1; letter-spacing: -0.01em; color: var(--fh-ink); }
+.app-shell #report-results .result-card-unit { font-family: "DM Sans", system-ui, sans-serif; font-size: 0.9rem; color: var(--fh-ink-3); margin-left: 2px; }
+.app-shell #report-results .result-card-range { font-family: var(--fh-mono); font-size: 0.76rem; letter-spacing: 0; color: var(--fh-ink-3); margin-top: 6px !important; }
+.app-shell #report-results .result-card-more > summary, .app-shell #report-results .feedback-early-access, .app-shell #report-results .next-steps-more > summary, .app-shell #report-results .next-steps-more summary, .app-shell #report-results .next-steps a, .app-shell #report-results .next-steps-more summary span { color: var(--fh-accent) !important; }
+.app-shell #report-results .result-card-source-line { background: var(--fh-cream) !important; font-family: var(--fh-mono); }
+.app-shell #report-results .result-doctor { background: var(--fh-cream) !important; border: 1px solid var(--fh-line) !important; box-shadow: none !important; }
+.app-shell #report-results .result-doctor-hint { color: var(--fh-ink-3) !important; }
+.app-shell #report-results .result-doctor-questions li { color: var(--fh-ink); }
+.app-shell #report-results .result-doctor-questions li::marker, .app-shell #report-results .next-steps-list li::marker { font-family: var(--fh-mono); color: var(--fh-accent); }
+.app-shell #report-results :is(.result-source, .result-save, .feedback-box) { box-shadow: none !important; }
+.app-shell #report-results .next-steps-list strong { font-weight: 500 !important; }
+.app-shell #report-results .result-more > summary :is(strong, b, h4, h5), .app-shell #report-results .result-more > summary { font-weight: 500 !important; }
+.app-shell #report-results .safety-note { background: var(--fh-cream) !important; border: 1px solid var(--fh-line) !important; color: var(--fh-ink-2); }
+.app-shell #report-results .safety-note span { color: var(--fh-ink-2); }
+
 /* ---------- Motion ---------- */
 @keyframes fh-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes fh-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }
