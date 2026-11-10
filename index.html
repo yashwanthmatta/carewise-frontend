@@ -44,7 +44,7 @@
             <span id="network-status" class="network-pill">Checking network</span>
             <button id="install-app" class="install-button" type="button" hidden>Install</button>
             <a class="nav-signin" href="#account-title"><span class="when-out">Sign in</span><span class="when-in">Account</span></a>
-            <a class="nav-cta" href="#report-title" aria-label="Explain a report">Explain<span class="cta-long">&nbsp;a report</span></a>
+            <a class="nav-cta" href="#report-title" aria-label="Understand my report">Understand<span class="cta-long">&nbsp;my report</span></a>
           </div>
         </header>
         <div class="landing" id="landing">
@@ -102,20 +102,12 @@
             </div>
           </section>
 
-          <nav class="lp-jump" aria-label="About FollowThrough Health">
-            <button id="start-tour" class="lp-jump-button" type="button">1-minute demo</button>
-            <a href="#how-it-works">How it works</a>
-            <a href="#safety">Safety</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#insights">Example results</a>
-            <a href="#for-doctors">For doctors</a>
-          </nav>
-
           <section class="story" id="report-story" aria-labelledby="story-title" data-story>
             <div class="story-head">
               <p class="lp-eyebrow">Watch it work</p>
               <h2 id="story-title">From a confusing line <em class="ft-serif-accent">to a clear next step.</em></h2>
               <p class="story-lede">A sample report, explained the way FollowThrough Health explains yours. Made-up numbers; the explanation and question are the app's own words.</p>
+              <button id="start-tour" class="lp-jump-button" type="button">Take the 1-minute tour</button>
             </div>
             <div class="story-stage">
               <ol class="story-steps" aria-label="Steps">
@@ -179,89 +171,6 @@
             </div>
           </section>
 
-          <section class="lp-insights" id="insights" aria-labelledby="lp-insights-title">
-            <div class="lp-insights-head">
-              <p class="lp-eyebrow">See it before you upload</p>
-              <h2 id="lp-insights-title">Every result in plain words, grouped by what it is about.</h2>
-              <p class="lp-insights-lede">Each result shows the exact number and unit, your lab's own range, what it means, and a question to bring to your doctor. Outside the range means "talk to your doctor about it", not "urgent".</p>
-            </div>
-            <div class="lp-insights-box" data-lp-insights>
-              <div class="lp-ins-tabs" role="tablist" aria-label="Example results by body area"><button type="button" role="tab" id="lp-ins-tab-kidneys" aria-controls="lp-ins-panel-kidneys" aria-selected="true" tabindex="0">Kidneys</button><button type="button" role="tab" id="lp-ins-tab-sugar" aria-controls="lp-ins-panel-sugar" aria-selected="false" tabindex="-1">Blood sugar</button><button type="button" role="tab" id="lp-ins-tab-thyroid" aria-controls="lp-ins-panel-thyroid" aria-selected="false" tabindex="-1">Thyroid</button><button type="button" role="tab" id="lp-ins-tab-blood" aria-controls="lp-ins-panel-blood" aria-selected="false" tabindex="-1">Blood count</button></div>
-                <div class="lp-ins-panel" role="tabpanel" id="lp-ins-panel-kidneys" aria-labelledby="lp-ins-tab-kidneys" tabindex="0">
-                  <article class="lp-ins-card">
-                    <header><h3>Creatinine</h3><i class="lp-tag lp-tag-far">Far above the lab's range</i></header>
-                    <p class="lp-ins-value"><b>2.3</b> <span>mg/dL</span></p>
-                    <p class="lp-ins-range">Lab's range: 0.6-1.3</p>
-                    <p class="lp-ins-meaning">Higher creatinine can mean the kidneys are filtering less well. Muscle mass, hydration and some medicines also affect it.</p>
-                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> How are my kidneys working, and do I need a repeat test?</p>
-                  </article>
-                  <article class="lp-ins-card">
-                    <header><h3>eGFR (kidney filtering)</h3><i class="lp-tag lp-tag-far">Far below the lab's range</i></header>
-                    <p class="lp-ins-value"><b>28</b> <span>mL/min/1.73m²</span></p>
-                    <p class="lp-ins-range">Lab's range: 60 or higher</p>
-                    <p class="lp-ins-meaning">A lower eGFR means the kidneys may be filtering less well. One result is not a diagnosis; doctors look at repeat tests.</p>
-                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> What does my eGFR mean for my kidneys, and when should it be checked again?</p>
-                  </article>
-                  <article class="lp-ins-card">
-                    <header><h3>Potassium</h3><i class="lp-tag lp-tag-ok">Within range</i></header>
-                    <p class="lp-ins-value"><b>4.9</b> <span>mmol/L</span></p>
-                    <p class="lp-ins-range">Lab's range: 3.5-5.1</p>
-                    <p class="lp-ins-meaning">A mineral important for heart rhythm and muscles.</p>
-                    
-                  </article>
-                </div>
-                <div class="lp-ins-panel" role="tabpanel" id="lp-ins-panel-sugar" aria-labelledby="lp-ins-tab-sugar" tabindex="0" hidden>
-                  <article class="lp-ins-card">
-                    <header><h3>A1C (average blood sugar)</h3><i class="lp-tag lp-tag-out">High — prediabetes range</i></header>
-                    <p class="lp-ins-value"><b>6.1</b> <span>%</span></p>
-                    <p class="lp-ins-range">Lab's range: 4.0-5.6</p>
-                    <p class="lp-ins-meaning">A higher A1C means your blood sugar has been running high. 5.7% to 6.4% is called the prediabetes range; 6.5% or higher is the diabetes range, which a doctor confirms with repeat testing.</p>
-                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> What does my A1C mean for me, and when should I test it again?</p>
-                  </article>
-                  <article class="lp-ins-card">
-                    <header><h3>Glucose (blood sugar)</h3><i class="lp-tag lp-tag-out">Above the lab's range</i></header>
-                    <p class="lp-ins-value"><b>118</b> <span>mg/dL</span></p>
-                    <p class="lp-ins-range">Lab's range: 70-99</p>
-                    <p class="lp-ins-meaning">Blood sugar depends on whether you had eaten. Your report doesn't say if this was a fasting test, so this result alone doesn't show prediabetes.</p>
-                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> Was this a fasting test, and how does my glucose fit with my A1C?</p>
-                  </article>
-                </div>
-                <div class="lp-ins-panel" role="tabpanel" id="lp-ins-panel-thyroid" aria-labelledby="lp-ins-tab-thyroid" tabindex="0" hidden>
-                  <article class="lp-ins-card">
-                    <header><h3>TSH (thyroid)</h3><i class="lp-tag lp-tag-out">Above the lab's range</i></header>
-                    <p class="lp-ins-value"><b>6.8</b> <span>mIU/L</span></p>
-                    <p class="lp-ins-range">Lab's range: 0.4-4.0</p>
-                    <p class="lp-ins-meaning">A high TSH can mean the thyroid is underactive (working too slowly).</p>
-                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> What do my TSH and free T4 mean together?</p>
-                  </article>
-                  <article class="lp-ins-card">
-                    <header><h3>Free T4 (thyroid)</h3><i class="lp-tag lp-tag-ok">Within range</i></header>
-                    <p class="lp-ins-value"><b>1.1</b> <span>ng/dL</span></p>
-                    <p class="lp-ins-range">Lab's range: 0.8-1.8</p>
-                    <p class="lp-ins-meaning">The main thyroid hormone in your blood.</p>
-                    
-                  </article>
-                </div>
-                <div class="lp-ins-panel" role="tabpanel" id="lp-ins-panel-blood" aria-labelledby="lp-ins-tab-blood" tabindex="0" hidden>
-                  <article class="lp-ins-card">
-                    <header><h3>Hemoglobin</h3><i class="lp-tag lp-tag-out">Below the lab's range</i></header>
-                    <p class="lp-ins-value"><b>11.2</b> <span>g/dL</span></p>
-                    <p class="lp-ins-range">Lab's range: 12.0-15.5</p>
-                    <p class="lp-ins-meaning">Low hemoglobin is called anemia. It can cause tiredness and has many causes, such as low iron.</p>
-                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> Do I have anemia, and what could be causing it?</p>
-                  </article>
-                  <article class="lp-ins-card">
-                    <header><h3>Ferritin</h3><i class="lp-tag lp-tag-far">Far below the lab's range</i></header>
-                    <p class="lp-ins-value"><b>9</b> <span>ng/mL</span></p>
-                    <p class="lp-ins-range">Lab's range: 15-150</p>
-                    <p class="lp-ins-meaning">Low ferritin means your iron stores are low, a common cause of tiredness and anemia.</p>
-                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> Why might my iron be low, and do I need iron?</p>
-                  </article>
-                </div>
-              <p class="lp-ins-note">Example report with made-up numbers. Explanations are the same ones FollowThrough Health shows for a real report.</p>
-            </div>
-          </section>
-
           <section class="guide" id="guide" aria-labelledby="guide-title">
             <div class="guide-copy">
               <p class="lp-eyebrow">New</p>
@@ -271,41 +180,26 @@
             </div>
             <div class="guide-stage">
               <div class="guide-avatar is-idle" data-guide-avatar>
-                <svg class="guide-figure" viewBox="0 0 320 360" role="img" aria-labelledby="guide-figure-title">
-                  <title id="guide-figure-title">The AI Health Guide: an illustrated health educator in a white coat</title>
+                <svg class="guide-figure" viewBox="0 0 320 320" role="img" aria-labelledby="guide-figure-title">
+                  <title id="guide-figure-title">The AI Health Guide: an abstract symbol of light and orbits, not a person</title>
                   <defs>
-                    <radialGradient id="g-glow" cx="50%" cy="42%" r="55%"><stop offset="0" stop-color="#FFFDF8"/><stop offset="0.6" stop-color="#F6E6DC"/><stop offset="1" stop-color="#F3EDE2" stop-opacity="0"/></radialGradient>
-                    <radialGradient id="g-skin" cx="42%" cy="35%" r="70%"><stop offset="0" stop-color="#D9A383"/><stop offset="0.7" stop-color="#C08566"/><stop offset="1" stop-color="#A86F52"/></radialGradient>
-                    <linearGradient id="g-coat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E9E2D6"/></linearGradient>
-                    <linearGradient id="g-scrub" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B8A80"/><stop offset="1" stop-color="#0B5C55"/></linearGradient>
-                    <linearGradient id="g-hair" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3B2F2A"/><stop offset="1" stop-color="#211A17"/></linearGradient>
+                    <radialGradient id="g-halo" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFFDF8"/><stop offset="0.55" stop-color="#F3EDE2"/><stop offset="1" stop-color="#F3EDE2" stop-opacity="0"/></radialGradient>
+                    <radialGradient id="g-core" cx="38%" cy="32%" r="72%"><stop offset="0" stop-color="#5FB8AE"/><stop offset="0.45" stop-color="#14857B"/><stop offset="1" stop-color="#0B4F49"/></radialGradient>
+                    <radialGradient id="g-light" cx="36%" cy="30%" r="40%"><stop offset="0" stop-color="#FFFDF8" stop-opacity="0.85"/><stop offset="1" stop-color="#FFFDF8" stop-opacity="0"/></radialGradient>
                   </defs>
-                  <circle class="guide-halo" cx="160" cy="160" r="150" fill="url(#g-glow)"/>
-                  <circle class="guide-ring" cx="160" cy="150" r="128" fill="none" stroke="#0F766E" stroke-width="2" opacity="0"/>
-                  <g class="guide-body">
-                    <path d="M58 360c4-62 40-96 102-100 62 4 98 38 102 100z" fill="url(#g-coat)"/>
-                    <path d="M128 262l32 50 32-50c-10-4-21-6-32-6s-22 2-32 6z" fill="url(#g-scrub)"/>
-                    <path d="M118 266l42 64-30 30H96zM202 266l-42 64 30 30h34z" fill="#F7F3EC" stroke="#E2D8C8" stroke-width="1.5"/>
-                    <rect x="200" y="300" width="34" height="20" rx="6" fill="#0F766E"/><text x="217" y="314.5" text-anchor="middle" font-family="DM Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">AI</text>
-                    <path d="M145 236h30v28c-5 6-25 6-30 0z" fill="#B57B5D"/>
-                    <g class="guide-head">
-                      <path d="M98 156c0-56 28-92 62-92s62 36 62 92v46c0 14-9 22-22 24-6-20-10-46-12-74H132c-2 28-6 54-12 74-13-2-22-10-22-24z" fill="url(#g-hair)"/>
-                      <ellipse cx="160" cy="160" rx="52" ry="62" fill="url(#g-skin)"/>
-                      
-                      <path d="M106 146c2-42 28-64 56-64 30 0 50 22 52 58-10-14-26-24-44-28-4 10-14 18-30 22-14 4-26 6-34 12z" fill="url(#g-hair)"/>
-                      <g class="guide-brows" fill="none" stroke="#3B2F2A" stroke-width="4" stroke-linecap="round"><path d="M128 140q12-7 24 0"/><path d="M168 140q12-7 24 0"/></g>
-                      <g class="guide-eyes">
-                        <g class="guide-eye"><ellipse cx="140" cy="157" rx="7" ry="8" fill="#FFFFFF"/><circle class="guide-pupil" cx="140" cy="158" r="4.5" fill="#2A211D"/><circle cx="141.5" cy="156" r="1.4" fill="#FFFFFF"/></g>
-                        <g class="guide-eye"><ellipse cx="180" cy="157" rx="7" ry="8" fill="#FFFFFF"/><circle class="guide-pupil" cx="180" cy="158" r="4.5" fill="#2A211D"/><circle cx="181.5" cy="156" r="1.4" fill="#FFFFFF"/></g>
-                        <g class="guide-lids" fill="#C08566"><rect class="guide-lid" x="131" y="147" width="18" height="19" rx="5"/><rect class="guide-lid" x="171" y="147" width="18" height="19" rx="5"/></g>
-                      </g>
-                      <path d="M157 166q3 12 -2 16" fill="none" stroke="#A86F52" stroke-width="2.5" stroke-linecap="round"/>
-                      <ellipse cx="128" cy="180" rx="9" ry="5" fill="#D98C77" opacity="0.35"/><ellipse cx="192" cy="180" rx="9" ry="5" fill="#D98C77" opacity="0.35"/>
-                      <path class="guide-smile" d="M146 194q14 12 28 0" fill="none" stroke="#7A3E2C" stroke-width="3.5" stroke-linecap="round"/>
-                      <ellipse class="guide-mouth" cx="160" cy="198" rx="9" ry="6" fill="#7A3E2C"/>
-                    </g>
+                  <circle class="guide-halo" cx="160" cy="160" r="156" fill="url(#g-halo)"/>
+                  <g class="guide-rings" fill="none" stroke="#0F766E" stroke-linecap="round">
+                    <circle class="guide-ring guide-ring-3" cx="160" cy="160" r="138" stroke-width="1" stroke-dasharray="2 7"/>
+                    <circle class="guide-ring guide-ring-2" cx="160" cy="160" r="112" stroke-width="1.2"/>
+                    <circle class="guide-ring guide-ring-1" cx="160" cy="160" r="88" stroke-width="1.5"/>
                   </g>
-                  <g class="guide-dots" fill="#B85C38" opacity="0"><circle cx="232" cy="92" r="5"/><circle cx="248" cy="80" r="5"/><circle cx="264" cy="68" r="5"/></g>
+                  <circle class="guide-ripple" cx="160" cy="160" r="66" fill="none" stroke="#0F766E" stroke-width="2"/>
+                  <g class="guide-body">
+                    <circle class="guide-core" cx="160" cy="160" r="62" fill="url(#g-core)"/>
+                    <circle cx="160" cy="160" r="62" fill="url(#g-light)"/>
+                    <path class="guide-glyph" d="M160 138c2 14 7 19 22 22-15 3-20 8-22 22-2-14-7-19-22-22 15-3 20-8 22-22z" fill="#FFFDF8" opacity="0.92"/>
+                  </g>
+                  <g class="guide-orbit"><circle class="guide-spark" cx="160" cy="48" r="6" fill="#B85C38"/></g>
                 </svg>
                 <p class="guide-state" data-guide-state role="status">Ready for your question</p>
               </div>
@@ -330,43 +224,6 @@
             </div>
           </section>
 
-          <section class="lp-problems" aria-labelledby="lp-problems-title">
-            <div class="lp-problems-copy">
-              <p class="lp-eyebrow">The moment we fix</p>
-              <h2 id="lp-problems-title">A report lands at 9 pm. Now what?</h2>
-              <ol class="lp-acc" data-lp-acc>
-                <li class="is-active"><button type="button" aria-expanded="true">"I can't read it."</button><p>Abbreviations and ranges written for clinicians. FollowThrough Health explains every line in plain words.</p><span class="lp-acc-bar" aria-hidden="true"></span></li>
-                <li><button type="button" aria-expanded="false">"Should I call the doctor tonight?"</button><p>Each result is checked against the lab's own range. Results outside it are ones to talk to your doctor about; how far outside does not decide urgency. A level labs often treat as urgent, or emergency symptoms written in the report, gets a contact-your-doctor-today or emergency-care message.</p><span class="lp-acc-bar" aria-hidden="true"></span></li>
-                <li><button type="button" aria-expanded="false">"I forgot what to ask."</button><p>Questions written from your numbers, and a short one-page brief for your doctor.</p><span class="lp-acc-bar" aria-hidden="true"></span></li>
-              </ol>
-            </div>
-            <div class="lp-result" aria-live="polite" data-lp-card data-index="0">
-              <p class="lp-eyebrow lp-eyebrow-light">With FollowThrough Health</p>
-              <p class="lp-result-big" data-lp-result>Plain words</p>
-              <p class="lp-result-sub" data-lp-result-sub>Every result, in language your family uses.</p>
-              <div class="lp-ba" aria-hidden="true">
-                <div class="lp-ba-panel" data-panel="0">
-                  <p class="lp-ba-label">What the lab printed</p>
-                  <p class="lp-ba-raw">eGFR <b>28</b> mL/min/1.73m² <span>L</span> <em>(&gt;60)</em></p>
-                  <p class="lp-ba-label">What you read</p>
-                  <p class="lp-ba-plain">Kidney filtering is far below the lab's range. One to talk to your doctor about.</p>
-                </div>
-                <div class="lp-ba-panel" data-panel="1">
-                  <p class="lp-ba-label">What the lab printed</p>
-                  <p class="lp-ba-raw">Glucose <b>45</b> mg/dL <span>LL</span> <em>(70-99)</em></p>
-                  <p class="lp-ba-label">What you read</p>
-                  <p class="lp-ba-plain lp-ba-urgent">Possible danger level. Contact your doctor today, or seek emergency care if you feel very unwell.</p>
-                </div>
-                <div class="lp-ba-panel" data-panel="2">
-                  <p class="lp-ba-label">Questions for the visit</p>
-                  <ol class="lp-ba-q"><li>Which results are far outside the range?</li><li>How soon should I be seen about them?</li><li>When should these labs be repeated?</li></ol>
-                  <p class="lp-ba-plain">Plus a one-page doctor brief to print or share.</p>
-                </div>
-              </div>
-              <a class="lp-result-link" href="demo.html">Try it yourself with a sample report <span aria-hidden="true">→</span></a>
-            </div>
-          </section>
-
           <section class="lp-dark" id="how-it-works" aria-labelledby="lp-how-title">
             <p class="lp-eyebrow lp-eyebrow-light lp-center">How it works</p>
             <h2 id="lp-how-title" class="lp-center">Three steps. About a minute.</h2>
@@ -383,7 +240,7 @@
                 <p class="lp-step">Step 02</p>
                 <h3>Understand every result</h3>
                 <p>Each result is compared with the range printed on your report and explained in plain words. A level labs often treat as urgent gets a contact-your-doctor-today message.</p>
-                <a href="#insights">See example results <span aria-hidden="true">→</span></a>
+                <a href="#report-story">See an example <span aria-hidden="true">→</span></a>
                 <div class="lp-window"><header><span></span><span></span><span></span><b>FollowThrough Health</b><em>/ All tests on your report</em></header>
                   <div class="lp-window-body"><div class="lp-pills"><span class="lp-dot-ok">9 within</span><span class="lp-dot-out">2 outside</span><span class="lp-dot-far">1 far outside</span></div>
                   <table class="lp-table"><tr><th>Test</th><th>Result</th><th>Status</th></tr><tr><td>TSH (thyroid)</td><td>9.8</td><td><i class="lp-tag lp-tag-far">Far above</i></td></tr><tr><td>Vitamin B12</td><td>150</td><td><i class="lp-tag lp-tag-out">Below</i></td></tr><tr><td>Sodium</td><td>139</td><td><i class="lp-tag lp-tag-ok">Within</i></td></tr></table></div></div>
@@ -399,11 +256,9 @@
             </div>
 
             <div class="lp-cards">
-              <article><h3>A health record for the whole family</h3><p>Conditions, medicines and what didn't suit each person, kept in one timeline on your device.</p><a href="#record-title">Open the record <span aria-hidden="true">→</span></a></article>
+              <article><h3>A record for the whole family</h3><p>Conditions, medicines and what didn't suit each person in one timeline on your device. Mum's, Dad's and your own reports stay apart.</p><a href="#record-title">Open the record <span aria-hidden="true">→</span></a></article>
               <article><h3>Your next 3 steps</h3><p>Three practical steps from your own results, with more ideas one tap away. Each says why ("your LDL is 148") and where the advice comes from.</p><a href="#how-it-works" data-start-tour>See a plan <span aria-hidden="true">→</span></a></article>
               <article><h3>CT, MRI and X-ray reports</h3><p>The radiologist's words in plain language. FollowThrough Health never reads the images and never judges findings.</p><a href="#report-title">Explain a scan report <span aria-hidden="true">→</span></a></article>
-              <article><h3>Caregiver mode</h3><p>Keep Mum's, Dad's and your own reports apart, and filter history by person.</p><a href="#saved-title">See report history <span aria-hidden="true">→</span></a></article>
-              <article><h3>Private by design</h3><p>Reports are read in your browser. An account is optional; you only need one to see your reports on more than one device.</p><a href="legal/privacy.html">Read the privacy policy <span aria-hidden="true">→</span></a></article>
               <article class="lp-card-accent"><h3>Works on your phone</h3><p>Add FollowThrough Health to your home screen, or use the FollowThrough Health app. Same explanations, same safety rules.</p><a href="#report-title">Start on this phone <span aria-hidden="true">→</span></a></article>
             </div>
           </section>
@@ -421,24 +276,15 @@
           </section>
 
           <section class="lp-safety" id="safety" aria-labelledby="lp-safety-title">
-            <p class="lp-eyebrow">Safe by design</p>
+            <p class="lp-eyebrow">Safe and private by design</p>
             <h2 id="lp-safety-title">Education that sends you to your doctor, never around them.</h2>
             <div class="lp-safety-grid">
               <div><h3>FollowThrough Health does</h3><ul><li>Compare each result with the lab's own range</li><li>Say "contact your doctor today" for dangerous levels</li><li>Ask you to check numbers read from a photo</li><li>Label general guides honestly when no range is printed</li></ul></div>
               <div><h3>FollowThrough Health never</h3><ul><li>Diagnoses</li><li>Names medicines or doses</li><li>Reads scan images (only the radiologist's words)</li><li>Replaces your doctor</li></ul></div>
+              <div><h3>Your data</h3><ul><li>Reports are read on your device; nothing is sent unless you save or share</li><li>Doctor links are private and can be turned off</li><li>See, download or delete what is kept, any time</li><li>Help chat questions are not saved by our servers</li></ul></div>
             </div>
+            <p class="lp-safety-links"><a href="legal/privacy.html">Privacy policy</a> · <a href="safety.html">Safety and trust</a> · <a href="#your-data">Your data</a></p>
             <p class="lp-fine">FollowThrough Health is not a diagnosis, prescription, emergency service, or replacement for licensed medical care. If you feel very unwell, call your local emergency number.</p>
-          </section>
-
-          <section class="lp-follow" aria-labelledby="lp-follow-title">
-            <p class="lp-eyebrow">Private by default</p>
-            <h2 id="lp-follow-title">Your report stays yours. Following up is one tap.</h2>
-            <div class="lp-follow-grid">
-              <article><h3>Read on your device</h3><p>Photos and PDFs are read on your phone or computer. Nothing is sent to us unless you choose to save or share.</p><a href="legal/privacy.html">Privacy policy <span aria-hidden="true">→</span></a></article>
-              <article><h3>Check the numbers</h3><p>When a photo is hard to read, you are asked to compare the number with your report before anything is explained.</p><a href="safety.html">Safety and trust <span aria-hidden="true">→</span></a></article>
-              <article><h3>Share with your doctor</h3><p>Send a one-page brief through a private link that you can turn off at any time.</p><a href="#report-title">Make a doctor brief <span aria-hidden="true">→</span></a></article>
-              <article><h3>Remember the next step</h3><p>Add the next test date to your calendar and keep every report in one record, by family member.</p><a href="#record-title">Open the record <span aria-hidden="true">→</span></a></article>
-            </div>
           </section>
 
           <section class="lp-doctors" id="for-doctors" aria-labelledby="lp-doctors-title">
@@ -523,9 +369,10 @@
           <section class="lp-final" aria-labelledby="lp-final-title">
             <h2 id="lp-final-title">Your parent's next report, explained in a minute.</h2>
             <div class="lp-actions">
-              <a class="lp-btn lp-btn-white" href="#report-title">Explain a report, free</a>
-              <a class="lp-btn lp-btn-ghost" href="#early-access-title">Join early access</a>
+              <a class="lp-btn lp-btn-white" href="#report-title">Understand my report</a>
+              <a class="lp-btn lp-btn-ghost" href="#try=raj-kidney-heart-uk/explain" data-try-sample>Try a sample</a>
             </div>
+            <p class="lp-final-note">Waiting for the iPhone and Android apps? <a href="#early-access-title">Join early access</a></p>
           </section>
 
           <footer class="lp-footer ft-footer">

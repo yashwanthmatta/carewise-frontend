@@ -59,8 +59,8 @@ Three redesigns sit on top of each other. Different sections still use different
 | D11 | Demo table, 390 px | Reference column cut off (table scrolled sideways) | Fixed at 390 px; at 320 px it still scrolls inside its card |
 | D12 | Tablet, 768 px | Tab nav 8 px wider than its box | Open |
 | D13 | Results | Accent bars are thick orange, with pill labels in two vocabularies ("High" vs "Far above the lab's range") | Bar reduced to 3 px. Labels unchanged: they come from the clinical rules and are not changed for design |
-| D14 | Homepage | Duplicate sections and 8 CTA labels | Open: needs the owner's approval of the section plan below |
-| D15 | AI Health Guide | Cartoon physician illustration | Open: direction proposal below |
+| D14 | Homepage | Duplicate sections and 8 CTA labels | Fixed in pass 2 (owner approved 10 Nov) |
+| D15 | AI Health Guide | Cartoon physician illustration, with three looping animations even when idle | Fixed in pass 2: abstract companion (owner chose direction B) |
 
 ## Design direction
 
@@ -74,7 +74,7 @@ Rules this pass started applying, to carry through the rest:
 - **No decoration over content:** floating labels and looping backgrounds are removed. Motion is kept only where it explains something (the 6-step demo) and is turned off under reduced motion.
 - **Footers navigate; they do not sell again.**
 
-### Proposed homepage order (needs the owner's go-ahead before removing sections)
+### Homepage order (approved by the owner on 10 Nov; built in pass 2)
 
 | Keep, in this order | Purpose |
 |---|---|
@@ -111,7 +111,7 @@ Expected effect: roughly 40% shorter. This changes another agent's recent work (
 
   It is built with SVG and CSS, needs no new libraries, costs nothing and is light on phones. It cannot be mistaken for a doctor, which fits "AI Health Guide, not a doctor".
 
-Current recommendation: **B**. It is cheaper, more honest about what the guide is, and maintainable. Prototypes of both will be compared with screenshots before choosing.
+**The owner chose B on 10 Nov.** It is built in pass 2 (below). Direction A was not prototyped: it needs a commissioned or licensed asset and a budget.
 
 ## Changes in this pass (PR from `claude/carewise-api-project-jmxg7f`)
 
@@ -151,30 +151,94 @@ Current recommendation: **B**. It is cheaper, more honest about what the guide i
   - smoke, CSP and the cache version check
 - **Not measured yet:** performance (Lighthouse or Web Vitals). This is planned for the review sprint.
 
+## Pass 2 (10 Nov): homepage story and AI Health Guide
+
+### Homepage, as approved
+- **Removed:**
+  - the in-page tab row under the hero, which repeated the header
+  - "Every result in plain words" (`#insights`), which repeated the demo
+  - "A report lands at 9 pm"
+  - "Private by default"
+- **Moved:** the 1-minute tour button now sits in the demo's intro ("Take the 1-minute tour"), and the tour still starts.
+- **Safe and private by design** has three columns: does, never, and **your data**. The data column lists only protections the product has: read on device, doctor links you can turn off, see, download or delete your data, help questions not saved. It links to the privacy policy, safety page and Your data.
+- **Feature cards:** 6 → 4. "Private by design" was removed, and "Family record" and "Caregiver mode" were merged.
+- **One main action label, "Understand my report",** in the header, hero, demo and closing band. **One sample label, "Try a sample".** Early access stays as a text link in the closing band.
+- **Dead code removed:**
+  - the tab script for the removed section
+  - 53 CSS rules for removed sections and decorations
+- **Header at 320 px:** the longer label needed tighter type below 340 px. The gate caught the overlap.
+- **Measured length:** desktop 12,029 → 9,909 px (**−18%**); phone 20,156 → 16,204 px (**−20%**). This is less than the 40% estimate: the comparison table, DocBridge and the How it works mock-ups remain. Shortening those further is a candidate for the next pass.
+
+### AI Health Guide: abstract companion
+- **The figure:** a deep-teal core with soft ivory light, three fine orbit rings and one terracotta spark. No face and no coat. Its accessible name says it is "an abstract symbol … not a person".
+- **States (also written in words under the figure):**
+  - **Ready:** still. **Nothing animates while idle.** The old figure ran three looping animations all the time.
+  - **Listening:** the rings brighten.
+  - **Thinking:** the core breathes and the spark orbits.
+  - **Answering:** a ripple moves outward.
+  - **Reading aloud:** a slow pulse.
+  - **Error** (new): muted and still. Shown when an answer fails; the text says "Couldn't answer just now".
+  - **Offline** (new): muted and still. Shown when the browser is offline; the text says "Offline: using built-in explanations", which is true, because answers then come from the built-in explanations.
+- **Reduced motion:** no movement in any state.
+- **Chat:** the chip that wraps to two lines is now left-aligned like the others.
+- **Self-critique applied:** the first version had an ECG line in the core. That is a clinical cliché that implies monitoring, so it was replaced with a soft spark.
+
+| | Before | After |
+|---|---|---|
+| AI Health Guide, 1440 px | ![](premium-design-review/before-guide-1440.png) | ![](premium-design-review/after-guide-1440.png) |
+
+### Not yet done for the guide
+- **Explaining a report** (brief section 6): when the guide explains a result, highlight that result's card and show its exact value, unit, source line and doctor question. The guide's answers come from help.js and the server. This needs a design for linking an answer to a card, with tests that it never invents a source line.
+- **Microphone input:** not started. It is a separate capability that needs permission handling and a provider review.
+
+### Pass 2 verification
+- **homepage.mjs** (45 checks), rewritten for the approved structure:
+  - the sections appear in order, and the removed sections are gone
+  - one label for each action, and the tour still starts
+  - the trust section has three columns, links to the policies and makes no unsupported claims
+  - the demo's explanation equals the app's own
+  - axe is clean on the homepage sections
+- **ai-guide.mjs**, with new checks:
+  - the figure is not a person
+  - nothing animates while idle; there is motion while thinking or answering
+  - error and offline are still, and going offline is said in words
+  - nothing moves with reduced motion, even while thinking
+- **design-quality.mjs:** 33 checks. It now also checks that the guide's Ask button is not covered after scrolling to it, which was the CI failure on this PR's first push.
+- **All Frontend CI evals pass locally:** report accuracy (68 reports, 100%), the 34 safety cases, the stress test, smoke, CSP and cache checks.
+- **Accessibility:** the axe scan finds 0 issues across 42 screen and size combinations.
+
 ## Status by screen
 
 | Screen | Status | Notes |
 |---|---|---|
 | Hero | VISUALLY VERIFIED | 1440 and 320 px screenshots; gates pass. Not yet FUNCTIONALLY VERIFIED on a real phone |
 | Navigation | IN PROGRESS | 320 px fixed; 768 px tab nav overflow (D12) open |
-| Report demonstration | IN PROGRESS | Table fits 390 px; 320 px scrolls inside its card |
-| AI Health Guide | NOT STARTED | Directions above; prototype next |
+| Report demonstration | IN PROGRESS | Table fits 390 px; 320 px scrolls inside its card. Tour button moved here |
+| AI Health Guide | VISUALLY VERIFIED | Abstract companion and states built; report-explaining link to cards not started |
 | Upload | NOT STARTED | Inspected; no changes yet |
 | Results | VISUALLY VERIFIED | Grid, number and unit, alignment. Further: grouping header, summary meter review |
 | Health history | NOT STARTED | Needs signed-in inspection |
 | Trends | NOT STARTED | Must use saved values only |
 | Reminders | NOT STARTED | |
 | Doctor brief | NOT STARTED | |
-| How it works / feature cards | IN PROGRESS | Links fixed; merge proposal pending approval |
+| How it works / feature cards | VISUALLY VERIFIED | 4 cards; links fixed |
 | FAQ | NOT STARTED | Inspected: accordions acceptable; styling to align |
 | Pricing | IN PROGRESS | Side lines removed; prices unchanged (not to be changed) |
 | Footer | VISUALLY VERIFIED | Duplicate CTA removed |
 | Sign-in and account | NOT STARTED | |
 | DocBridge section | IN PROGRESS | Frame fixed |
 | Mobile app (React Native) | NOT STARTED | Sprint 5 |
+| Trust and privacy | VISUALLY VERIFIED | Does / never / your data |
 
 ## Open asks for the owner
 
-1. Approve the homepage section plan above (removes four duplicate sections, one CTA label).
-2. AI Health Guide: confirm direction B (abstract, no cost) for prototyping. Or approve a budget for a commissioned 3D character (direction A).
-3. Real-phone check of the hero and results after merge.
+1. ~~Approve the homepage section plan~~: approved and built (pass 2).
+2. ~~AI Health Guide direction~~: B chosen and built (pass 2).
+3. Real-phone check of the hero, results and guide after merge.
+
+## Next pass
+1. Signed-in screens with a mocked account: History, Trends (saved values only), Reminders, Account.
+2. Results: summary meter review, grouping headers, doctor brief layout.
+3. AI Health Guide: link explanations to the matching result card (value, unit, source line, doctor question).
+4. Consolidate the stylesheets: replace the remaining overrides with tokens, section by section, measured by the table at the top.
+5. Performance baseline (Lighthouse or Web Vitals) before and after.
