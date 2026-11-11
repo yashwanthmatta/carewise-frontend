@@ -1,7 +1,7 @@
 // Visual quality gates from the design review (docs/premium-design-quality-review.md).
 // Rendered checks, synthetic data only:
 // - no page-level sideways scroll on Home and on a report's results at 1440, 1024, 768, 390 and 320 px
-// - at 320 px the header's main button does not cover the brand name
+// - at 320 px the header's main button (hidden on phones) does not cover or clip the brand name
 // - the hero preview shows each value with its unit
 // - the hero stage has no looping animation (no constant CPU use)
 // - results: 4 cards to look at sit 2 per row on a wide screen (no lone card), the shown value text
@@ -43,10 +43,11 @@ for (const width of [1440, 1024, 768, 390, 320]) {
     const overlap = await page.evaluate(() => {
       const brand = document.querySelector(".site-nav .brand-text strong")?.getBoundingClientRect();
       const cta = document.querySelector(".site-nav .nav-cta")?.getBoundingClientRect();
-      if (!brand || !cta || !brand.width) return false;
+      if (!brand || !brand.width) return false;
       const text = document.querySelector(".site-nav .brand-text strong");
       const clipped = text.scrollWidth > text.clientWidth + 1;
-      return brand.right > cta.left - 4 || clipped;
+      const ctaShown = cta && cta.width > 0;
+      return clipped || (ctaShown && brand.right > cta.left - 4);
     });
     check(!overlap, "320px: the header button does not cover the brand name");
   }

@@ -104,6 +104,17 @@ body { background: var(--fh-paper) !important; color: var(--fh-ink); }
   .site-nav .topbar-actions { flex-wrap: nowrap; }
 }
 
+/* Phones: the header keeps the brand only. The "Understand my report" button would be cut to
+   "Understand"; the same action is the hero's first button and the Upload tab in the bottom bar. */
+@media (max-width: 720px) {
+  .site-nav .nav-cta { display: none !important; }
+}
+
+/* Tablets: a wider side margin than phones (16px felt cramped at 768-1024). */
+@media (min-width: 721px) and (max-width: 1279px) {
+  main.app-shell { padding-left: 32px !important; padding-right: 32px !important; }
+}
+
 /* ---------- Sections ---------- */
 .fh-section { padding: var(--fh-section) 0 0; }
 .fh-final { padding-bottom: var(--fh-section); }

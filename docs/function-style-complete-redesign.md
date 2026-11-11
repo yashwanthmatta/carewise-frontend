@@ -256,12 +256,33 @@ In these shots, "We couldn't check your account right now" appears because the m
 
 Tests after this pass (cache version 223): all 34 CI commands pass (including the accessibility scan with axe), CSP passes with and without headers, and the smoke test passes.
 
-## 15. Pending
+## 15. Polish pass: phone header, tablet margins, tablet shots (11 Nov 2026)
+
+- **Phone header:** on phones the header button showed only "Understand", because the full label did not fit. At 720px and below, the header now shows just the brand. "Understand my report" is still the hero's first button, directly below, and is also the Upload tab in the bottom bar. The design-quality eval now checks that the brand name is never clipped, and that it is never covered when the button is shown.
+- **Tablet margins:** at 721–1279px the side margin grows from 16px to 32px. At 1024px the content used to sit 16px from the edge, next to 120px at 1440.
+- **Tablet screenshots** (after only; nothing was captured at these widths before the rebuild):
+
+| | 1024 | 768 |
+|---|---|---|
+| DocBridge (for doctors) | ![](function-redesign/after-doctors-1024.png) | ![](function-redesign/after-doctors-768.png) |
+| Trust | ![](function-redesign/after-trust-1024.png) | ![](function-redesign/after-trust-768.png) |
+| Pricing | ![](function-redesign/after-pricing-1024.png) | ![](function-redesign/after-pricing-768.png) |
+
+| Header 320 before | Header 320 after |
+|---|---|
+| ![](function-redesign/header-before-320.png) | ![](function-redesign/header-after-320.png) |
+
+The hero screenshots at every width (section 4, "after") were captured again with these changes. Where the sticky header crosses a section shot, it is a capture effect.
+
+**Found but not changed:** the DocBridge demo video is a real screen recording of the old teal design. Re-recording it needs the clinician demo running end to end, so it is listed under Pending.
+
+Tests after this pass (cache version 224): all 34 CI commands pass (including the accessibility scan with axe), CSP passes with and without headers, and the smoke test passes.
+
+## 16. Pending
 
 - **App screens**: Results is done (section 9). Upload (section 10) and original-report evidence plus doctor brief (section 11) are done. History, Record and Reminders (section 12) are done too. DocBridge, Sign-in and the AI guide are covered in section 13. The signed-in Account view is covered in section 14.
   - The secondary tools (meal planner, symptom timeline, 4-week calendar, goals, visit brief, check-in, medication organizer) were audited on 10 Nov 2026 at 1440 and 390. None of them render: `styles.css` line 3882 hides `.meal-planner-panel`, `.symptom-panel`, `.goals-panel` and the rest, on main as well as on this branch. Users cannot reach them, so there is nothing to restyle. If any of them is turned back on, it will need its own styling pass.
-- **Screenshots**: before/after shots of the homepage DocBridge, pricing and trust sections at 1024/768 have not been captured for this document.
+- **DocBridge demo video:** it still shows the old teal interface and needs a new recording of the doctor demo in the new design.
 - **Reference screenshots**: the three the brief mentions never arrived. If they are re-sent, the comparison, FAQ and footer will be checked against them.
 - **Accessibility scan**: investigate the one unreproduced axe failure if it shows up in the nightly scan.
-- **Header at 320px**: the button shows only "Understand". The full label is kept as its accessible name.
 - **Not done here**: real-device testing, deploying and merging. Those are the owner's.
