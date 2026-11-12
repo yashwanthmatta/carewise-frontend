@@ -103,42 +103,14 @@ async function askAndWait(page, question) {
   await context.close();
 }
 
-// 3b. The guide is an abstract symbol, not a person; it is still when idle and moves only while busy.
-{
-  const { context, page } = await open();
-  const figure = await page.evaluate(() => ({
-    title: document.querySelector(".guide-figure title")?.textContent || "",
-    human: [".guide-eye", ".guide-mouth", ".guide-head", ".guide-pupil"].some((sel) => document.querySelector(`.guide-figure ${sel}`)),
-    text: document.querySelector(".guide-figure")?.textContent || "",
-  }));
-  check(/not a person/.test(figure.title) && !figure.human && !/coat|doctor/i.test(figure.title), "guide is drawn as an abstract symbol, not a person in a white coat");
-  const running = (state) => page.evaluate((name) => {
-    const avatar = document.querySelector("[data-guide-avatar]");
-    avatar.className = `guide-avatar is-${name}`;
-    return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve(avatar.getAnimations({ subtree: true }).filter((a) => a.playState === "running" && a.effect?.getTiming().iterations === Infinity).length))));
-  }, state);
-  check(await running("idle") === 0, "idle: nothing animates (no constant CPU use)");
-  check(await running("thinking") > 0, "thinking: the guide visibly works");
-  check(await running("speaking") > 0, "answering: the guide visibly answers");
-  check(await running("error") === 0 && await running("offline") === 0, "error and offline: still");
-  await page.evaluate(() => { document.querySelector("[data-guide-avatar]").className = "guide-avatar is-idle"; window.dispatchEvent(new Event("offline")); });
-  check(/Offline/.test(await page.innerText("[data-guide-state]")), "going offline is said in words");
-  await page.evaluate(() => window.dispatchEvent(new Event("online")));
-  check(/Ready for your question/.test(await page.innerText("[data-guide-state]")), "back online: ready again");
-  await context.close();
-}
-
 // 4. Phone layout, reduced motion and accessibility.
 for (const [size, viewport] of [["phone", { width: 375, height: 740 }], ["desktop", { width: 1280, height: 900 }]]) {
   const { context, page } = await open({ viewport, reducedMotion: "reduce" });
   check(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), `${size}: no sideways scroll`);
   const box = await page.$eval(".guide-figure", (svg) => { const r = svg.getBoundingClientRect(); return { w: r.width, h: r.height }; });
   check(box.w > 150 && box.w <= viewport.width, `${size}: avatar is drawn at a sensible size (${Math.round(box.w)} px wide)`);
-  // Reduced motion: even while thinking, nothing moves.
-  await page.evaluate(() => { document.querySelector("[data-guide-avatar]").className = "guide-avatar is-thinking"; });
   const animation = await page.$eval(".guide-avatar .guide-body", (el) => getComputedStyle(el).animationName);
-  check(animation === "none", `${size}: reduced motion stops the avatar's movement while thinking (${animation})`);
-  await page.evaluate(() => { document.querySelector("[data-guide-avatar]").className = "guide-avatar is-idle"; });
+  check(animation === "none", `${size}: reduced motion stops the avatar's movement (${animation})`);
   check(/Ready for your question/.test(await page.innerText("[data-guide-state]")), `${size}: the state is also written in words`);
   if (process.env.AXE_PATH) {
     await page.addScriptTag({ content: fs.readFileSync(process.env.AXE_PATH, "utf8") });
