@@ -15,7 +15,7 @@ jobs:
   speech:
     # Pinned: Playwright 1.56.1 cannot install a browser on Ubuntu 26.04 (ubuntu-latest since 29 Oct 2026).
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 35
     env:
       SITE: https://followthroughhealth.com/
     steps:
@@ -27,7 +27,14 @@ jobs:
       - name: Install browser
         run: |
           npm install --no-save --no-package-lock playwright@1.56.1
-          npx playwright install --with-deps chromium
+          # Retried: on 11 Nov 2026 the runner could not resolve the Ubuntu package mirror for ~10
+          # minutes and the nightly scan failed before scanning anything.
+          for attempt in 1 2 3; do
+            npx playwright install --with-deps chromium && break
+            [ "$attempt" = 3 ] && exit 1
+            echo "Browser install failed (attempt $attempt of 3); retrying in 30 seconds"
+            sleep 30
+          done
 
       - name: Read-aloud cases on main
         run: |
