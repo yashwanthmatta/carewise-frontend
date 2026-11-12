@@ -492,6 +492,19 @@ body { background: var(--fh-paper) !important; color: var(--fh-ink); }
 .app-shell .yd-note a { color: var(--fh-accent) !important; }
 .app-shell .billing-card.billing-card-current { background: var(--fh-cream) !important; border: 1.5px solid var(--fh-ink) !important; }
 
+/* ---------- App: DocBridge clinician workspace (pass 9) ----------
+   Styling only: what the clinician reads, edits and approves is unchanged. Rows outside the lab's
+   range keep a tint (now warm) so they still stand out. */
+.app-shell .docbridge-panel .db-demo-banner { background: var(--fh-cream) !important; border: 1px solid var(--fh-line) !important; color: var(--fh-ink-2); }
+.app-shell .docbridge-panel .db-pane { border: 1px solid var(--fh-line) !important; border-radius: var(--fh-radius) !important; background: var(--fh-white) !important; box-shadow: none !important; }
+.app-shell .docbridge-panel .db-original-pane { background: var(--fh-cream) !important; border-style: dashed !important; border-color: #CDBFA9 !important; }
+.app-shell .docbridge-panel .db-pane h4 { font-family: var(--fh-serif) !important; font-weight: 400 !important; font-size: 1.2rem; color: var(--fh-ink); }
+.app-shell .docbridge-panel .db-table th, .app-shell .docbridge-panel #db-batch th { background: var(--fh-cream) !important; color: var(--fh-ink-2) !important; font-weight: 500 !important; }
+.app-shell .docbridge-panel .db-table td:nth-child(2), .app-shell .docbridge-panel .db-table td:nth-child(3) { font-family: var(--fh-mono); font-size: 0.86rem; }
+.app-shell .docbridge-panel .db-table tr.db-flag td { background: var(--fh-accent-soft) !important; }
+.app-shell .docbridge-panel .text-button { color: var(--fh-accent) !important; border-color: var(--fh-line) !important; }
+.app-shell .docbridge-panel :is(.db-stat, .db-stats > div) { border-color: var(--fh-line) !important; background: var(--fh-white) !important; box-shadow: none !important; }
+
 /* ---------- Motion ---------- */
 @keyframes fh-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @keyframes fh-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }

@@ -278,11 +278,36 @@ The hero screenshots at every width (section 4, "after") were captured again wit
 
 Tests after this pass (cache version 224): all 34 CI commands pass (including the accessibility scan with axe), CSP passes with and without headers, and the smoke test passes.
 
-## 16. Pending
+## 16. DocBridge workspace, patient page, info pages, and a new demo video (12 Nov 2026)
+
+All of this is styling only. What the clinician reads, edits and approves, and what the patient sees, are unchanged.
+
+- **Clinician workspace** (the doctor demo):
+  - The yellow demo banner is now cream.
+  - Teal 2px borders became thin warm lines, and pane titles are in the serif.
+  - The lab table has a cream header and mono numbers. Rows outside the lab's range keep a tint, now soft terracotta, so they still stand out.
+- **Patient page** (`packet.html`) and the **info pages** (About, FAQ, Safety, Support, Accessibility, Demo, Share), all styled by `share.css`:
+  - warm paper background and serif headings
+  - mono terracotta labels
+  - terracotta print and call-to-action buttons, and accent links instead of browser-default blue
+
+  These pages load no web fonts, so headings use Georgia. Nothing changed in the network or security policy.
+- **Homepage demo video:** re-recorded in the new design. It is 32 seconds long, made with a made-up clinic and sample labs, and has five numbered captions.
+  - The recording is a real run of the demo: a lab arrives, the draft appears, the clinician edits it in their own words, the clinician approves, and the patient page opens.
+  - It is made by `scripts/record-docbridge-demo.mjs`, so it can be recorded again after future changes.
+  - The patient link in the recording shows followthroughhealth.com, because the local build was served under that name during recording.
+  - MP4 1.47 MB and WebM 1.52 MB, close to the old 1.39 and 1.84 MB.
+
+| Clinician workspace | Patient page | About page |
+|---|---|---|
+| ![](function-redesign/docbridge-workspace-after.png) | ![](function-redesign/patient-page-after.png) | ![](function-redesign/info-about-after.png) |
+
+Tests (cache version 225): all 34 CI commands pass (including the accessibility scan and the visit-settings demo eval), CSP passes with and without headers, and the smoke test passes.
+
+## 17. Pending
 
 - **App screens**: Results is done (section 9). Upload (section 10) and original-report evidence plus doctor brief (section 11) are done. History, Record and Reminders (section 12) are done too. DocBridge, Sign-in and the AI guide are covered in section 13. The signed-in Account view is covered in section 14.
   - The secondary tools (meal planner, symptom timeline, 4-week calendar, goals, visit brief, check-in, medication organizer) were audited on 10 Nov 2026 at 1440 and 390. None of them render: `styles.css` line 3882 hides `.meal-planner-panel`, `.symptom-panel`, `.goals-panel` and the rest, on main as well as on this branch. Users cannot reach them, so there is nothing to restyle. If any of them is turned back on, it will need its own styling pass.
-- **DocBridge demo video:** it still shows the old teal interface and needs a new recording of the doctor demo in the new design.
 - **Reference screenshots**: the three the brief mentions never arrived. If they are re-sent, the comparison, FAQ and footer will be checked against them.
 - **Accessibility scan**: investigate the one unreproduced axe failure if it shows up in the nightly scan.
 - **Not done here**: real-device testing, deploying and merging. Those are the owner's.
