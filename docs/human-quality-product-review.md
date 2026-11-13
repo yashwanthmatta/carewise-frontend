@@ -51,7 +51,7 @@ Ranked by how much each one makes the product feel unfinished or generic, or con
 | 6 | **Pricing note sent users to a screen that does not exist**: "Cancel any time from Profile". The site has no Profile screen; it is Account. | `index.html:305` | VERIFIED: now says Account. Prices and billing wording are otherwise unchanged |
 | 7 | **"Who else handles your data" looked empty.** It is a collapsed section, but its arrow had been styled away, so it read as a heading over nothing. This is the list of service providers that handle data, the most important privacy disclosure on the page. | `before-account-1440.png` | VERIFIED: a visible chevron that turns when opened |
 | 8 | **Small headings on Account and Your data were inconsistent**: heavy sans with tight letter spacing. The same level on Record uses the serif. | `before-account-1440.png` | VERIFIED: serif at the same size everywhere |
-| 9 | **The homepage is 10,751 px long** (12 sections), with the same "Understand my report / Try a sample report" pair repeated four times. | Full-page screenshot | CONFIRMED, not yet changed. Cutting sections means removing content, so the owner should agree first. See the proposal below |
+| 9 | **The homepage is 10,751 px long** (12 sections), with the same "Understand my report / Try a sample report" pair repeated four times. | Full-page screenshot | IMPLEMENTED (owner approved the mock-up on 13 Nov): rebuilt, now 6,364 px at 1440. See "Homepage rebuild" below |
 | 10 | **Duplicate empty-state text.** Upload showed "Add a photo or PDF…" and also "No report analysis yet." History shows "Add values from your reports…" and also "No lab values saved yet…". | `before-report-1440.png`, `saved-1440.png` | Upload: VERIFIED (the second line is removed). History: CONFIRMED, next pass |
 
 **Also seen, not yet fixed:**
@@ -70,18 +70,54 @@ None of these is a change to production. Each needs the owner.
 | **Rows saved before 2 Nov 2026 may still be plaintext.** Encryption on write shipped with migration 0023 (merged 2 Nov). The one-time backfill of older rows needs owner approval and a backup, and no record shows it was run. | Backend `docs/security-hardening/implementation-status.md` row 2: "production backfill" listed as remaining | REQUIRES HUMAN REVIEW: the owner runs the count-only report (`PYTHONPATH=. python scripts/security/encrypt_fields.py`, no `--apply`; it prints counts, never values), then takes a backup and runs the backfill if any `plaintext` count is above 0 |
 | **The privacy policy says reminder "times … stored encrypted".** They are not (see above). | `legal/privacy.html` line 30 | REQUIRES HUMAN REVIEW: legal-page wording waits for counsel (repo rule in `scripts/claims_audit.mjs`). Proposed text: "If you set medicine reminders: who they are for and the reminder name, stored encrypted; the times, days and time zone, stored without encryption so the reminders can be sent on schedule; and whether each time was marked as taken." |
 
-## Proposal for problem 9 (owner decision)
+## Homepage rebuild, 13 Nov (after the owner said it still looked AI-made)
 
-Shorten the homepage from 12 sections to 7:
-1. Hero
-2. "Watch it work"
-3. Tests covered
-4. What the report alone doesn't tell you
-5. Doctors
-6. Pricing
-7. FAQ
+**Why the craft pass wasn't enough.** It fixed details, but the page kept the structure every generated landing page has:
+- a mono eyebrow over a centred serif headline;
+- three rounded cards with fake mini-interfaces;
+- an animated demo;
+- a glowing "AI" section;
+- a checkmark comparison table with a coloured "us" column;
+- three pricing cards;
+- a closing CTA band repeating the hero's buttons.
 
-The "Three steps" cards would merge into the hero sub-copy, and the does/never-does lists would move to the Safety page, which already says the same. The repeated CTA pairs would be cut to two: the hero and the final band. No claims change.
+**What was rebuilt.** The owner approved a mock-up (sent as screenshots) before any code changed.
+- **Hero.** A real-looking lab report on paper, with handwritten notes beside it. The notes are the app's own words for those numbers. `homepage.mjs` checks this, and also checks that each pen circle sits on its own value: the marks are placed from the table cells, not by hand.
+- **Parts.** Each part has a small margin label, with hairline rules between parts. There are no card grids, no comparison table, no animated demo and no closing CTA band.
+- **Writing.** Plain sentences ("Let's read them together"). A short "Why this exists" letter stays unsigned until the owner sends their own name and words; nothing personal was invented.
+- **Buttons.** One style: ink with a small radius, and terracotta for links. The app's main buttons and the header now match.
+- **AI Health Guide.** A small mark beside the chat, labelled "an AI, not a doctor".
+- **Pricing.** A typeset table, with the same prices and the same plan buttons.
+
+**Unchanged:**
+- the upload input;
+- the sample report;
+- the tour;
+- the guide chat;
+- the FAQ (9 questions, keyboard accessible);
+- the DocBridge recording;
+- the plan buttons;
+- the data-use details;
+- every claim.
+
+**Length.** 10,751 px down to 6,364 px at 1440 px wide. No sideways scroll at 1440, 1024, 768, 390 or 320 px.
+
+**Tests changed with the design:**
+- **`homepage.mjs`:**
+  - checks the new section order and that the removed sections are gone;
+  - the hero notes must equal the app's label, range and question;
+  - each pen circle must sit on its value;
+  - the hero must have no animation.
+- **`landing-premium.mjs`:**
+  - the story and comparison checks were removed along with those sections;
+  - it now checks the pricing rows, that the FAQ prices match the table, and the plan buttons.
+- **`design-quality.mjs`:** the hero report must show value, unit and range.
+- **Smoke test:** the new headline.
+
+**Screenshots:**
+- `before-rebuild-home-1440.png`
+- `rebuild-home-1440.png`
+- `rebuild-home-390.png`
 
 ## Changes in this pass
 
