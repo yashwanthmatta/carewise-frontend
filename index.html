@@ -16,14 +16,15 @@
     <meta name="theme-color" content="#0f766e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="FollowThrough Health" />
-    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-216" />
+    <link rel="manifest" href="manifest.webmanifest?v=carewise-product-225" />
     <link rel="apple-touch-icon" href="assets/carewise-app-icon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&family=Domine:wght@600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:opsz,wght@9..40,400..700&family=Newsreader:ital,wght@0,300;0,400;1,300&display=swap" />
     <link rel="preload" href="assets/fonts/inter-tight-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="styles.css?v=carewise-product-216" />
-    <link rel="stylesheet" href="ui.css?v=carewise-product-216" />
+    <link rel="stylesheet" href="styles.css?v=carewise-product-225" />
+    <link rel="stylesheet" href="ui.css?v=carewise-product-225" />
+    <link rel="stylesheet" href="site.css?v=carewise-product-225" />
   </head>
   <body>
     <main class="app-shell">
@@ -33,6 +34,12 @@
             <img class="brand-logo" src="assets/carewise-logo.svg" alt="" width="34" height="34" />
             <span class="brand-text"><strong>FollowThrough Health</strong></span>
           </a>
+          <nav class="fh-site-links" aria-label="About FollowThrough Health">
+            <a href="#how-it-works">How it works</a>
+            <a href="#explore-reports">Explore reports</a>
+            <a href="#guide">AI Health Guide</a>
+            <a href="#for-doctors">For doctors</a>
+          </nav>
           <nav class="quick-nav patient-nav" aria-label="FollowThrough Health patient flow">
             <a href="#app-title">Home</a>
             <a href="#report-title">Upload</a>
@@ -44,34 +51,26 @@
             <span id="network-status" class="network-pill">Checking network</span>
             <button id="install-app" class="install-button" type="button" hidden>Install</button>
             <a class="nav-signin" href="#account-title"><span class="when-out">Sign in</span><span class="when-in">Account</span></a>
-            <a class="nav-cta" href="#report-title" aria-label="Explain a report">Explain<span class="cta-long">&nbsp;a report</span></a>
+            <a class="nav-cta" href="#report-title" aria-label="Understand my report">Understand<span class="cta-long">&nbsp;my report</span></a>
           </div>
         </header>
         <div class="landing" id="landing">
           <section class="ft-dash" id="dashboard" aria-labelledby="ft-dash-title" hidden></section>
 
-          <section class="lp-hero" aria-labelledby="app-title">
-            <div class="hero-copy">
-              <p class="lp-chip"><img src="assets/carewise-logo.svg" alt="" width="20" height="20" /> For you and the people you look after</p>
-              <h1 id="app-title">Your health reports, <em>finally understandable.</em></h1>
-              <p class="lp-lede">Meet your AI-powered health explanation companion. Understand your lab results, explore trends, and prepare for better conversations with your doctor.</p>
-              <div class="hero-cta">
-                <label class="lp-drop" id="hero-drop" for="hero-report-file">
+          <section class="fh-hero" aria-labelledby="app-title">
+            <div class="fh-hero-copy">
+              <p class="fh-eyebrow">For you and the people you look after</p>
+              <h1 id="app-title" class="fh-display">Your health reports, <em>finally explained.</em></h1>
+              <p class="fh-lede">Understand your lab reports in plain language, explore your health history, and prepare questions for your doctor.</p>
+              <div class="fh-actions">
+                <label class="fh-btn fh-btn-primary fh-drop" id="hero-drop" for="hero-report-file">
                   <input id="hero-report-file" type="file" accept=".pdf,image/*,.txt,text/plain" />
-                  <span class="lp-drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span>
-                  <span class="lp-drop-text"><strong>Understand my report</strong><span>Choose a photo or PDF, or drop it here</span></span>
+                  <span>Understand my report</span>
                 </label>
-                <a class="hero-sample" href="#try=raj-kidney-heart-uk/explain" data-try-sample>
-                  <span class="hero-sample-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
-                  <span class="hero-sample-text"><strong>Try a sample report</strong><span>No upload, no account</span></span>
-                </a>
+                <a class="fh-btn fh-btn-outline" href="#try=raj-kidney-heart-uk/explain" data-try-sample>Try a sample report</a>
               </div>
-              <ul class="hero-trust" aria-label="How FollowThrough Health handles your report">
-                <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/></svg>Read on your device. Nothing is uploaded.</li>
-                <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4 10-10"/></svg>Free, no account needed</li>
-                <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4z"/></svg>English and Español</li>
-              </ul>
-              <details class="data-use">
+              <p class="fh-hero-note">Choose a photo or PDF, or drop it here. Read on your device; nothing is uploaded.</p>
+              <details class="data-use fh-data-use">
                 <summary>What happens to my data?</summary>
                 <ul>
                   <li><strong>Explaining a report:</strong> the PDF, photo or numbers are read on this phone or computer. Nothing is sent to us.</li>
@@ -82,43 +81,33 @@
                 </ul>
                 <p><a href="/legal/privacy.html">Privacy policy</a> · <a href="/safety.html">Safety and trust</a></p>
               </details>
-              <p class="hero-disclaimer">For education only. FollowThrough Health does not diagnose or give medical advice; your doctor interprets your results.</p>
             </div>
-
-            <div class="lp-stage" aria-label="Example: a parent's kidney report explained by FollowThrough Health">
-              <div class="lp-stage-glow" aria-hidden="true"></div>
-              <div class="lp-float lp-float-a" aria-hidden="true">Read on this phone · nothing uploaded</div>
-              <div class="lp-float lp-float-b" aria-hidden="true">English · Español</div>
-              <article class="lp-mock lp-mock-hero">
-                <header class="lp-mock-bar"><span></span><span></span><span></span><b>Dad's kidney panel</b></header>
-                <div class="lp-mock-body">
-                  <div class="lp-score"><strong>3</strong><small>of 4 results outside the lab's range</small><em>Talk to your doctor about these</em></div>
-                  <ul class="lp-rows">
-                    <li><span>eGFR (kidney filtering)</span><b>28</b><i class="lp-tag lp-tag-far">Far below the lab's range</i></li>
-                    <li><span>Creatinine</span><b>2.3</b><i class="lp-tag lp-tag-far">Far above the lab's range</i></li>
-                    <li><span>Hemoglobin</span><b>11.2</b><i class="lp-tag lp-tag-out">Below the lab's range</i></li>
-                    <li><span>Potassium</span><b>4.9</b><i class="lp-tag lp-tag-ok">Within range</i></li>
-                  </ul>
-                  <p class="lp-ask"><strong>Ask your doctor:</strong> How are my kidneys working, and do I need a repeat test?</p>
-                </div>
-              </article>
-            </div>
+            <figure class="fh-preview" aria-label="Example: a parent's kidney report explained by FollowThrough Health">
+              <div class="fh-preview-card">
+                <header class="fh-preview-head"><span class="fh-mono">Sample report · made-up numbers</span><b>Dad's kidney panel</b></header>
+                <p class="fh-preview-summary"><strong>3</strong> of 4 results outside the lab's range <span>Talk to your doctor about these</span></p>
+                <ul class="fh-preview-rows">
+                  <li><span class="fh-preview-name">eGFR (kidney filtering)</span><b>28 <small>mL/min/1.73m²</small></b><i class="fh-tag fh-tag-out">Far below the lab's range</i><span class="fh-mono">Lab's range ≥60</span></li>
+                  <li><span class="fh-preview-name">Creatinine</span><b>2.3 <small>mg/dL</small></b><i class="fh-tag fh-tag-out">Far above the lab's range</i><span class="fh-mono">Lab's range 0.6–1.3</span></li>
+                  <li><span class="fh-preview-name">Hemoglobin</span><b>11.2 <small>g/dL</small></b><i class="fh-tag fh-tag-out">Below the lab's range</i><span class="fh-mono">Lab's range 12.0–15.5</span></li>
+                  <li><span class="fh-preview-name">Potassium</span><b>4.9 <small>mmol/L</small></b><i class="fh-tag fh-tag-in">Within range</i><span class="fh-mono">Lab's range 3.5–5.1</span></li>
+                </ul>
+                <p class="fh-preview-ask"><span class="fh-mono">Ask your doctor</span>How are my kidneys working, and do I need a repeat test?</p>
+              </div>
+            </figure>
+            <ul class="fh-facts" aria-label="How FollowThrough Health handles your report">
+              <li><b>On your device</b><span>Reports are read here, not uploaded</span></li>
+              <li><b>Free to start</b><span>No account needed to explain a report</span></li>
+              <li><b>English &amp; Español</b><span>Explanations in both languages</span></li>
+            </ul>
           </section>
 
-          <nav class="lp-jump" aria-label="About FollowThrough Health">
-            <button id="start-tour" class="lp-jump-button" type="button">1-minute demo</button>
-            <a href="#how-it-works">How it works</a>
-            <a href="#safety">Safety</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#insights">Example results</a>
-            <a href="#for-doctors">For doctors</a>
-          </nav>
-
-          <section class="story" id="report-story" aria-labelledby="story-title" data-story>
+          <section class="story fh-section" id="report-story" aria-labelledby="story-title" data-story>
             <div class="story-head">
-              <p class="lp-eyebrow">Watch it work</p>
-              <h2 id="story-title">From a confusing line <em class="ft-serif-accent">to a clear next step.</em></h2>
+              <p class="fh-eyebrow">Watch it work</p>
+              <h2 id="story-title" class="fh-h2">From a confusing line <em>to a clear next step</em></h2>
               <p class="story-lede">A sample report, explained the way FollowThrough Health explains yours. Made-up numbers; the explanation and question are the app's own words.</p>
+              <button id="start-tour" class="fh-link-button" type="button">Take the 1-minute tour <span aria-hidden="true">→</span></button>
             </div>
             <div class="story-stage">
               <ol class="story-steps" aria-label="Steps">
@@ -146,7 +135,7 @@
                 <div class="story-cards">
                   <article class="story-card story-card-3">
                     <p class="story-kicker">Exact numbers</p>
-                    <header><h3>Creatinine</h3><i class="lp-tag lp-tag-far">Far above the lab's range</i></header>
+                    <header><h3>Creatinine</h3> <i class="fh-tag fh-tag-out">Far above the lab's range</i></header>
                     <p class="story-value"><b>2.3</b> mg/dL</p>
                     <p class="story-range">Lab's range: 0.6-1.3</p>
                   </article>
@@ -177,138 +166,40 @@
               </div>
               <div class="story-controls">
                 <button type="button" class="story-play" data-story-play aria-pressed="true">Pause</button>
-                <a class="lp-btn lp-btn-dark" href="#report-title">Understand my report</a>
+                <a class="fh-btn fh-btn-primary" href="#report-title">Understand my report</a>
               </div>
             </div>
           </section>
 
-          <section class="lp-insights" id="insights" aria-labelledby="lp-insights-title">
-            <div class="lp-insights-head">
-              <p class="lp-eyebrow">See it before you upload</p>
-              <h2 id="lp-insights-title">Every result in plain words, grouped by what it is about.</h2>
-              <p class="lp-insights-lede">Each result shows the exact number and unit, your lab's own range, what it means, and a question to bring to your doctor. Outside the range means "talk to your doctor about it", not "urgent".</p>
-            </div>
-            <div class="lp-insights-box" data-lp-insights>
-              <div class="lp-ins-tabs" role="tablist" aria-label="Example results by body area"><button type="button" role="tab" id="lp-ins-tab-kidneys" aria-controls="lp-ins-panel-kidneys" aria-selected="true" tabindex="0">Kidneys</button><button type="button" role="tab" id="lp-ins-tab-sugar" aria-controls="lp-ins-panel-sugar" aria-selected="false" tabindex="-1">Blood sugar</button><button type="button" role="tab" id="lp-ins-tab-thyroid" aria-controls="lp-ins-panel-thyroid" aria-selected="false" tabindex="-1">Thyroid</button><button type="button" role="tab" id="lp-ins-tab-blood" aria-controls="lp-ins-panel-blood" aria-selected="false" tabindex="-1">Blood count</button></div>
-                <div class="lp-ins-panel" role="tabpanel" id="lp-ins-panel-kidneys" aria-labelledby="lp-ins-tab-kidneys" tabindex="0">
-                  <article class="lp-ins-card">
-                    <header><h3>Creatinine</h3><i class="lp-tag lp-tag-far">Far above the lab's range</i></header>
-                    <p class="lp-ins-value"><b>2.3</b> <span>mg/dL</span></p>
-                    <p class="lp-ins-range">Lab's range: 0.6-1.3</p>
-                    <p class="lp-ins-meaning">Higher creatinine can mean the kidneys are filtering less well. Muscle mass, hydration and some medicines also affect it.</p>
-                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> How are my kidneys working, and do I need a repeat test?</p>
-                  </article>
-                  <article class="lp-ins-card">
-                    <header><h3>eGFR (kidney filtering)</h3><i class="lp-tag lp-tag-far">Far below the lab's range</i></header>
-                    <p class="lp-ins-value"><b>28</b> <span>mL/min/1.73m²</span></p>
-                    <p class="lp-ins-range">Lab's range: 60 or higher</p>
-                    <p class="lp-ins-meaning">A lower eGFR means the kidneys may be filtering less well. One result is not a diagnosis; doctors look at repeat tests.</p>
-                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> What does my eGFR mean for my kidneys, and when should it be checked again?</p>
-                  </article>
-                  <article class="lp-ins-card">
-                    <header><h3>Potassium</h3><i class="lp-tag lp-tag-ok">Within range</i></header>
-                    <p class="lp-ins-value"><b>4.9</b> <span>mmol/L</span></p>
-                    <p class="lp-ins-range">Lab's range: 3.5-5.1</p>
-                    <p class="lp-ins-meaning">A mineral important for heart rhythm and muscles.</p>
-                    
-                  </article>
-                </div>
-                <div class="lp-ins-panel" role="tabpanel" id="lp-ins-panel-sugar" aria-labelledby="lp-ins-tab-sugar" tabindex="0" hidden>
-                  <article class="lp-ins-card">
-                    <header><h3>A1C (average blood sugar)</h3><i class="lp-tag lp-tag-out">High — prediabetes range</i></header>
-                    <p class="lp-ins-value"><b>6.1</b> <span>%</span></p>
-                    <p class="lp-ins-range">Lab's range: 4.0-5.6</p>
-                    <p class="lp-ins-meaning">A higher A1C means your blood sugar has been running high. 5.7% to 6.4% is called the prediabetes range; 6.5% or higher is the diabetes range, which a doctor confirms with repeat testing.</p>
-                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> What does my A1C mean for me, and when should I test it again?</p>
-                  </article>
-                  <article class="lp-ins-card">
-                    <header><h3>Glucose (blood sugar)</h3><i class="lp-tag lp-tag-out">Above the lab's range</i></header>
-                    <p class="lp-ins-value"><b>118</b> <span>mg/dL</span></p>
-                    <p class="lp-ins-range">Lab's range: 70-99</p>
-                    <p class="lp-ins-meaning">Blood sugar depends on whether you had eaten. Your report doesn't say if this was a fasting test, so this result alone doesn't show prediabetes.</p>
-                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> Was this a fasting test, and how does my glucose fit with my A1C?</p>
-                  </article>
-                </div>
-                <div class="lp-ins-panel" role="tabpanel" id="lp-ins-panel-thyroid" aria-labelledby="lp-ins-tab-thyroid" tabindex="0" hidden>
-                  <article class="lp-ins-card">
-                    <header><h3>TSH (thyroid)</h3><i class="lp-tag lp-tag-out">Above the lab's range</i></header>
-                    <p class="lp-ins-value"><b>6.8</b> <span>mIU/L</span></p>
-                    <p class="lp-ins-range">Lab's range: 0.4-4.0</p>
-                    <p class="lp-ins-meaning">A high TSH can mean the thyroid is underactive (working too slowly).</p>
-                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> What do my TSH and free T4 mean together?</p>
-                  </article>
-                  <article class="lp-ins-card">
-                    <header><h3>Free T4 (thyroid)</h3><i class="lp-tag lp-tag-ok">Within range</i></header>
-                    <p class="lp-ins-value"><b>1.1</b> <span>ng/dL</span></p>
-                    <p class="lp-ins-range">Lab's range: 0.8-1.8</p>
-                    <p class="lp-ins-meaning">The main thyroid hormone in your blood.</p>
-                    
-                  </article>
-                </div>
-                <div class="lp-ins-panel" role="tabpanel" id="lp-ins-panel-blood" aria-labelledby="lp-ins-tab-blood" tabindex="0" hidden>
-                  <article class="lp-ins-card">
-                    <header><h3>Hemoglobin</h3><i class="lp-tag lp-tag-out">Below the lab's range</i></header>
-                    <p class="lp-ins-value"><b>11.2</b> <span>g/dL</span></p>
-                    <p class="lp-ins-range">Lab's range: 12.0-15.5</p>
-                    <p class="lp-ins-meaning">Low hemoglobin is called anemia. It can cause tiredness and has many causes, such as low iron.</p>
-                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> Do I have anemia, and what could be causing it?</p>
-                  </article>
-                  <article class="lp-ins-card">
-                    <header><h3>Ferritin</h3><i class="lp-tag lp-tag-far">Far below the lab's range</i></header>
-                    <p class="lp-ins-value"><b>9</b> <span>ng/mL</span></p>
-                    <p class="lp-ins-range">Lab's range: 15-150</p>
-                    <p class="lp-ins-meaning">Low ferritin means your iron stores are low, a common cause of tiredness and anemia.</p>
-                    <p class="lp-ins-ask"><strong>Ask your doctor:</strong> Why might my iron be low, and do I need iron?</p>
-                  </article>
-                </div>
-              <p class="lp-ins-note">Example report with made-up numbers. Explanations are the same ones FollowThrough Health shows for a real report.</p>
-            </div>
-          </section>
-
-          <section class="guide" id="guide" aria-labelledby="guide-title">
+          <section class="guide fh-section" id="guide" aria-labelledby="guide-title">
             <div class="guide-copy">
-              <p class="lp-eyebrow">New</p>
-              <h2 id="guide-title">Meet your <em class="ft-serif-accent">AI Health Guide</em></h2>
+              <p class="fh-eyebrow">AI Health Guide · education, not diagnosis</p>
+              <h2 id="guide-title" class="fh-h2">Meet your <em>AI Health Guide</em></h2>
               <p class="guide-lede">Ask what a test or a medical word means, get a plain-language explanation, and leave with better questions for your doctor.</p>
               <p class="guide-label"><strong>AI Health Guide</strong> — Educational information, not medical diagnosis.</p>
             </div>
             <div class="guide-stage">
               <div class="guide-avatar is-idle" data-guide-avatar>
-                <svg class="guide-figure" viewBox="0 0 320 360" role="img" aria-labelledby="guide-figure-title">
-                  <title id="guide-figure-title">The AI Health Guide: an illustrated health educator in a white coat</title>
+                <svg class="guide-figure" viewBox="0 0 320 320" role="img" aria-labelledby="guide-figure-title">
+                  <title id="guide-figure-title">The AI Health Guide: an abstract symbol of light and orbits, not a person</title>
                   <defs>
-                    <radialGradient id="g-glow" cx="50%" cy="42%" r="55%"><stop offset="0" stop-color="#FFFDF8"/><stop offset="0.6" stop-color="#F6E6DC"/><stop offset="1" stop-color="#F3EDE2" stop-opacity="0"/></radialGradient>
-                    <radialGradient id="g-skin" cx="42%" cy="35%" r="70%"><stop offset="0" stop-color="#D9A383"/><stop offset="0.7" stop-color="#C08566"/><stop offset="1" stop-color="#A86F52"/></radialGradient>
-                    <linearGradient id="g-coat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E9E2D6"/></linearGradient>
-                    <linearGradient id="g-scrub" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B8A80"/><stop offset="1" stop-color="#0B5C55"/></linearGradient>
-                    <linearGradient id="g-hair" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3B2F2A"/><stop offset="1" stop-color="#211A17"/></linearGradient>
+                    <radialGradient id="g-halo" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFFDF8"/><stop offset="0.55" stop-color="#F3EDE2"/><stop offset="1" stop-color="#F3EDE2" stop-opacity="0"/></radialGradient>
+                    <radialGradient id="g-core" cx="38%" cy="32%" r="72%"><stop offset="0" stop-color="#5FB8AE"/><stop offset="0.45" stop-color="#14857B"/><stop offset="1" stop-color="#0B4F49"/></radialGradient>
+                    <radialGradient id="g-light" cx="36%" cy="30%" r="40%"><stop offset="0" stop-color="#FFFDF8" stop-opacity="0.85"/><stop offset="1" stop-color="#FFFDF8" stop-opacity="0"/></radialGradient>
                   </defs>
-                  <circle class="guide-halo" cx="160" cy="160" r="150" fill="url(#g-glow)"/>
-                  <circle class="guide-ring" cx="160" cy="150" r="128" fill="none" stroke="#0F766E" stroke-width="2" opacity="0"/>
-                  <g class="guide-body">
-                    <path d="M58 360c4-62 40-96 102-100 62 4 98 38 102 100z" fill="url(#g-coat)"/>
-                    <path d="M128 262l32 50 32-50c-10-4-21-6-32-6s-22 2-32 6z" fill="url(#g-scrub)"/>
-                    <path d="M118 266l42 64-30 30H96zM202 266l-42 64 30 30h34z" fill="#F7F3EC" stroke="#E2D8C8" stroke-width="1.5"/>
-                    <rect x="200" y="300" width="34" height="20" rx="6" fill="#0F766E"/><text x="217" y="314.5" text-anchor="middle" font-family="DM Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">AI</text>
-                    <path d="M145 236h30v28c-5 6-25 6-30 0z" fill="#B57B5D"/>
-                    <g class="guide-head">
-                      <path d="M98 156c0-56 28-92 62-92s62 36 62 92v46c0 14-9 22-22 24-6-20-10-46-12-74H132c-2 28-6 54-12 74-13-2-22-10-22-24z" fill="url(#g-hair)"/>
-                      <ellipse cx="160" cy="160" rx="52" ry="62" fill="url(#g-skin)"/>
-                      
-                      <path d="M106 146c2-42 28-64 56-64 30 0 50 22 52 58-10-14-26-24-44-28-4 10-14 18-30 22-14 4-26 6-34 12z" fill="url(#g-hair)"/>
-                      <g class="guide-brows" fill="none" stroke="#3B2F2A" stroke-width="4" stroke-linecap="round"><path d="M128 140q12-7 24 0"/><path d="M168 140q12-7 24 0"/></g>
-                      <g class="guide-eyes">
-                        <g class="guide-eye"><ellipse cx="140" cy="157" rx="7" ry="8" fill="#FFFFFF"/><circle class="guide-pupil" cx="140" cy="158" r="4.5" fill="#2A211D"/><circle cx="141.5" cy="156" r="1.4" fill="#FFFFFF"/></g>
-                        <g class="guide-eye"><ellipse cx="180" cy="157" rx="7" ry="8" fill="#FFFFFF"/><circle class="guide-pupil" cx="180" cy="158" r="4.5" fill="#2A211D"/><circle cx="181.5" cy="156" r="1.4" fill="#FFFFFF"/></g>
-                        <g class="guide-lids" fill="#C08566"><rect class="guide-lid" x="131" y="147" width="18" height="19" rx="5"/><rect class="guide-lid" x="171" y="147" width="18" height="19" rx="5"/></g>
-                      </g>
-                      <path d="M157 166q3 12 -2 16" fill="none" stroke="#A86F52" stroke-width="2.5" stroke-linecap="round"/>
-                      <ellipse cx="128" cy="180" rx="9" ry="5" fill="#D98C77" opacity="0.35"/><ellipse cx="192" cy="180" rx="9" ry="5" fill="#D98C77" opacity="0.35"/>
-                      <path class="guide-smile" d="M146 194q14 12 28 0" fill="none" stroke="#7A3E2C" stroke-width="3.5" stroke-linecap="round"/>
-                      <ellipse class="guide-mouth" cx="160" cy="198" rx="9" ry="6" fill="#7A3E2C"/>
-                    </g>
+                  <circle class="guide-halo" cx="160" cy="160" r="156" fill="url(#g-halo)"/>
+                  <g class="guide-rings" fill="none" stroke="#0F766E" stroke-linecap="round">
+                    <circle class="guide-ring guide-ring-3" cx="160" cy="160" r="138" stroke-width="1" stroke-dasharray="2 7"/>
+                    <circle class="guide-ring guide-ring-2" cx="160" cy="160" r="112" stroke-width="1.2"/>
+                    <circle class="guide-ring guide-ring-1" cx="160" cy="160" r="88" stroke-width="1.5"/>
                   </g>
-                  <g class="guide-dots" fill="#B85C38" opacity="0"><circle cx="232" cy="92" r="5"/><circle cx="248" cy="80" r="5"/><circle cx="264" cy="68" r="5"/></g>
+                  <circle class="guide-ripple" cx="160" cy="160" r="66" fill="none" stroke="#0F766E" stroke-width="2"/>
+                  <g class="guide-body">
+                    <circle class="guide-core" cx="160" cy="160" r="62" fill="url(#g-core)"/>
+                    <circle cx="160" cy="160" r="62" fill="url(#g-light)"/>
+                    <path class="guide-glyph" d="M160 138c2 14 7 19 22 22-15 3-20 8-22 22-2-14-7-19-22-22 15-3 20-8 22-22z" fill="#FFFDF8" opacity="0.92"/>
+                  </g>
+                  <g class="guide-orbit"><circle class="guide-spark" cx="160" cy="48" r="6" fill="#B85C38"/></g>
                 </svg>
                 <p class="guide-state" data-guide-state role="status">Ready for your question</p>
               </div>
@@ -325,7 +216,7 @@
                 <form class="guide-form" data-guide-form>
                   <label class="visually-hidden" for="guide-input">Ask the AI Health Guide</label>
                   <input id="guide-input" type="text" maxlength="1000" autocomplete="off" placeholder="Ask about a test or a medical word" />
-                  <button class="lp-btn lp-btn-dark" type="submit">Ask</button>
+                  <button class="fh-btn fh-btn-primary" type="submit">Ask</button>
                 </form>
                 <label class="guide-share" data-guide-share hidden><input type="checkbox" /> Include my latest report in the question</label>
                 <p class="guide-fine">Answers come from FollowThrough Health's built-in explanations, or from our AI provider, Anthropic, when it is available; your question is not saved by our servers. "Listen" uses your device's own voice. In an emergency, call your local emergency number.</p>
@@ -333,155 +224,89 @@
             </div>
           </section>
 
-          <section class="lp-problems" aria-labelledby="lp-problems-title">
-            <div class="lp-problems-copy">
-              <p class="lp-eyebrow">The moment we fix</p>
-              <h2 id="lp-problems-title">A report lands at 9 pm. Now what?</h2>
-              <ol class="lp-acc" data-lp-acc>
-                <li class="is-active"><button type="button" aria-expanded="true">"I can't read it."</button><p>Abbreviations and ranges written for clinicians. FollowThrough Health explains every line in plain words.</p><span class="lp-acc-bar" aria-hidden="true"></span></li>
-                <li><button type="button" aria-expanded="false">"Should I call the doctor tonight?"</button><p>Each result is checked against the lab's own range. Results outside it are ones to talk to your doctor about; how far outside does not decide urgency. A level labs often treat as urgent, or emergency symptoms written in the report, gets a contact-your-doctor-today or emergency-care message.</p><span class="lp-acc-bar" aria-hidden="true"></span></li>
-                <li><button type="button" aria-expanded="false">"I forgot what to ask."</button><p>Questions written from your numbers, and a short one-page brief for your doctor.</p><span class="lp-acc-bar" aria-hidden="true"></span></li>
-              </ol>
-            </div>
-            <div class="lp-result" aria-live="polite" data-lp-card data-index="0">
-              <p class="lp-eyebrow lp-eyebrow-light">With FollowThrough Health</p>
-              <p class="lp-result-big" data-lp-result>Plain words</p>
-              <p class="lp-result-sub" data-lp-result-sub>Every result, in language your family uses.</p>
-              <div class="lp-ba" aria-hidden="true">
-                <div class="lp-ba-panel" data-panel="0">
-                  <p class="lp-ba-label">What the lab printed</p>
-                  <p class="lp-ba-raw">eGFR <b>28</b> mL/min/1.73m² <span>L</span> <em>(&gt;60)</em></p>
-                  <p class="lp-ba-label">What you read</p>
-                  <p class="lp-ba-plain">Kidney filtering is far below the lab's range. One to talk to your doctor about.</p>
-                </div>
-                <div class="lp-ba-panel" data-panel="1">
-                  <p class="lp-ba-label">What the lab printed</p>
-                  <p class="lp-ba-raw">Glucose <b>45</b> mg/dL <span>LL</span> <em>(70-99)</em></p>
-                  <p class="lp-ba-label">What you read</p>
-                  <p class="lp-ba-plain lp-ba-urgent">Possible danger level. Contact your doctor today, or seek emergency care if you feel very unwell.</p>
-                </div>
-                <div class="lp-ba-panel" data-panel="2">
-                  <p class="lp-ba-label">Questions for the visit</p>
-                  <ol class="lp-ba-q"><li>Which results are far outside the range?</li><li>How soon should I be seen about them?</li><li>When should these labs be repeated?</li></ol>
-                  <p class="lp-ba-plain">Plus a one-page doctor brief to print or share.</p>
-                </div>
-              </div>
-              <a class="lp-result-link" href="demo.html">Try it yourself with a sample report <span aria-hidden="true">→</span></a>
-            </div>
+          <section class="fh-section fh-info" id="explore-reports" aria-labelledby="fh-info-title">
+            <h2 id="fh-info-title" class="fh-h2 fh-center">Every test on your report, <em>in plain words</em></h2>
+            <p class="fh-sub fh-center">More than 60 common lab tests, explained against the range your own lab printed. Some of them:</p>
+            <div class="fh-areas"><article class="fh-area"><h3>Kidneys</h3><ul><li>Creatinine</li><li>eGFR (kidney filtering)</li><li>BUN (urea nitrogen)</li><li>Potassium</li><li>Sodium</li></ul></article><article class="fh-area"><h3>Heart &amp; cholesterol</h3><ul><li>LDL cholesterol</li><li>HDL cholesterol</li><li>Triglycerides</li><li>Total cholesterol</li><li>Non-HDL cholesterol</li></ul></article><article class="fh-area"><h3>Blood sugar</h3><ul><li>A1C (HbA1c)</li><li>Glucose (blood sugar)</li><li>Urine glucose</li><li>Urine ketones</li></ul></article><article class="fh-area"><h3>Thyroid</h3><ul><li>TSH (thyroid)</li><li>Free T4 (thyroid)</li><li>Free T3 (thyroid)</li></ul></article><article class="fh-area"><h3>Blood count</h3><ul><li>Hemoglobin</li><li>White blood cells</li><li>Platelets</li><li>MCV (red cell size)</li><li>Ferritin</li></ul></article><article class="fh-area fh-area-more"><p class="fh-more">+ More</p><p>Liver, iron, vitamins, inflammation, urine and scan reports. CT, MRI and X-ray reports are explained from the radiologist's words.</p><a class="fh-btn fh-btn-outline" href="glossary.html">Lab test glossary</a></article></div>
           </section>
 
-          <section class="lp-dark" id="how-it-works" aria-labelledby="lp-how-title">
-            <p class="lp-eyebrow lp-eyebrow-light lp-center">How it works</p>
-            <h2 id="lp-how-title" class="lp-center">Three steps. About a minute.</h2>
-            <div class="lp-flows">
-              <article class="lp-flow lp-flow-1">
-                <p class="lp-step">Step 01</p>
-                <h3>Add the report</h3>
-                <p>Take a photo, drop a PDF or type the numbers. Photos and PDFs are read on your device; nothing is uploaded.</p>
-                <a href="#report-title">Add a report <span aria-hidden="true">→</span></a>
-                <div class="lp-window"><header><span></span><span></span><span></span><b>FollowThrough Health</b><em>/ Upload</em></header>
-                  <div class="lp-window-body"><p class="lp-w-title">Reading your photo</p><p class="lp-w-sub">On this device · nothing uploaded</p><div class="lp-progress"><i></i></div><p class="lp-w-check">Hemoglobin: read as 108. FollowThrough Health used 10.8; please check.</p></div></div>
-              </article>
-              <article class="lp-flow lp-flow-2">
-                <p class="lp-step">Step 02</p>
-                <h3>Understand every result</h3>
-                <p>Each result is compared with the range printed on your report and explained in plain words. A level labs often treat as urgent gets a contact-your-doctor-today message.</p>
-                <a href="#insights">See example results <span aria-hidden="true">→</span></a>
-                <div class="lp-window"><header><span></span><span></span><span></span><b>FollowThrough Health</b><em>/ All tests on your report</em></header>
-                  <div class="lp-window-body"><div class="lp-pills"><span class="lp-dot-ok">9 within</span><span class="lp-dot-out">2 outside</span><span class="lp-dot-far">1 far outside</span></div>
-                  <table class="lp-table"><tr><th>Test</th><th>Result</th><th>Status</th></tr><tr><td>TSH (thyroid)</td><td>9.8</td><td><i class="lp-tag lp-tag-far">Far above</i></td></tr><tr><td>Vitamin B12</td><td>150</td><td><i class="lp-tag lp-tag-out">Below</i></td></tr><tr><td>Sodium</td><td>139</td><td><i class="lp-tag lp-tag-ok">Within</i></td></tr></table></div></div>
-              </article>
-              <article class="lp-flow lp-flow-4">
-                <p class="lp-step">Step 03</p>
-                <h3>Follow through with your doctor</h3>
-                <p>Questions from your own numbers, a one-page doctor brief, a private link to share it, and a reminder for the next test.</p>
-                <a href="#report-title">Make a doctor brief <span aria-hidden="true">→</span></a>
-                <div class="lp-window"><header><span></span><span></span><span></span><b>FollowThrough Health</b><em>/ Doctor brief</em></header>
-                  <div class="lp-window-body"><p class="lp-w-title">Lab summary for clinician review: Mum</p><ol class="lp-brief"><li>Is my TSH high enough to need treatment or a repeat test?</li><li>Should my B12 be rechecked?</li><li>When should I repeat these labs?</li></ol></div></div>
-              </article>
-            </div>
-
-            <div class="lp-cards">
-              <article><h3>A health record for the whole family</h3><p>Conditions, medicines and what didn't suit each person, kept in one timeline on your device.</p><a href="#record-title">Open the record <span aria-hidden="true">→</span></a></article>
-              <article><h3>Your next 3 steps</h3><p>Three practical steps from your own results, with more ideas one tap away. Each says why ("your LDL is 148") and where the advice comes from.</p><a href="#how-it-works" data-start-tour>See a plan <span aria-hidden="true">→</span></a></article>
-              <article><h3>CT, MRI and X-ray reports</h3><p>The radiologist's words in plain language. FollowThrough Health never reads the images and never judges findings.</p><a href="#report-title">Explain a scan report <span aria-hidden="true">→</span></a></article>
-              <article><h3>Caregiver mode</h3><p>Keep Mum's, Dad's and your own reports apart, and filter history by person.</p><a href="#saved-title">See report history <span aria-hidden="true">→</span></a></article>
-              <article><h3>Private by design</h3><p>Reports are read in your browser. An account is optional; you only need one to see your reports on more than one device.</p><a href="legal/privacy.html">Read the privacy policy <span aria-hidden="true">→</span></a></article>
-              <article class="lp-card-accent"><h3>Works on your phone</h3><p>Add FollowThrough Health to your home screen, or use the FollowThrough Health app. Same explanations, same safety rules.</p><a href="#report-title">Start on this phone <span aria-hidden="true">→</span></a></article>
-            </div>
+          <section class="fh-section fh-how" id="how-it-works" aria-labelledby="fh-how-title">
+            <h2 id="fh-how-title" class="fh-h2 fh-center">Three steps to <em>your next conversation</em></h2>
+            <ol class="fh-steps">
+              <li class="fh-step">
+                <p class="fh-step-num">01</p><h3>Upload a report</h3><p>A photo, a PDF, or the numbers typed in. Read on your device; when a photo is hard to read, you are asked to check the number.</p>
+                <div class="fh-step-visual" aria-hidden="true"><span class="fh-mono">Reading your photo</span><i class="fh-bar"><i style="width:68%"></i></i><span class="fh-mono">Hemoglobin: read as 108 · check 10.8?</span></div>
+              </li>
+              <li class="fh-step">
+                <p class="fh-step-num">02</p><h3>Understand your results</h3><p>Each result is compared with your lab's own range and explained in plain words, with the line from your report beside it.</p>
+                <div class="fh-step-visual" aria-hidden="true"><span class="fh-mono">Above range</span><span class="fh-mono">Within range</span><span class="fh-mono">Below range</span></div>
+              </li>
+              <li class="fh-step">
+                <p class="fh-step-num">03</p><h3>Prepare for your next conversation</h3><p>Questions from your own numbers, a one-page doctor brief, a private link to share it, and the next test date for your calendar.</p>
+                <div class="fh-step-visual" aria-hidden="true"><span class="fh-mono">Doctor brief · questions</span><span class="fh-line"></span><span class="fh-line"></span><span class="fh-line fh-line-short"></span></div>
+              </li>
+            </ol>
+            <div class="fh-actions fh-center"><a class="fh-btn fh-btn-primary" href="#report-title">Understand my report</a><a class="fh-btn fh-btn-outline" href="#try=raj-kidney-heart-uk/explain" data-try-sample>Try a sample report</a></div>
           </section>
 
-          <section class="cmp" id="compare" aria-labelledby="cmp-title">
-            <p class="lp-eyebrow">Why it helps</p>
-            <h2 id="cmp-title">FollowThrough Health vs. <em class="ft-serif-accent">reading a lab report alone</em></h2>
-            <div class="cmp-wrap">
-              <table class="cmp-table">
-                <thead><tr><th scope="col"><span class="visually-hidden">Feature</span></th><th scope="col" class="cmp-us">FollowThrough Health</th><th scope="col">Reading it alone</th></tr></thead>
-                <tbody><tr><th scope="row">Plain-language explanation of each result</th><td><span class="cmp-yes" aria-hidden="true"></span>Every result, in everyday words</td><td>Medical terms and abbreviations</td></tr><tr><th scope="row">Your lab's own range</th><td><span class="cmp-yes" aria-hidden="true"></span>Each result compared with it, in words</td><td>You compare each number yourself</td></tr><tr><th scope="row">The line from your report</th><td><span class="cmp-yes" aria-hidden="true"></span>Shown with each result, to check the reading</td><td>—</td></tr><tr><th scope="row">Questions for your doctor</th><td><span class="cmp-yes" aria-hidden="true"></span>Written from your own results</td><td>You write your own</td></tr><tr><th scope="row">Saved report history</th><td><span class="cmp-yes" aria-hidden="true"></span>By family member, on your device or account</td><td>Papers and files to keep track of</td></tr><tr><th scope="row">Follow-up reminders</th><td><span class="cmp-yes" aria-hidden="true"></span>Next-test date to your calendar, and reminders</td><td>—</td></tr><tr><th scope="row">Phone and computer</th><td><span class="cmp-yes" aria-hidden="true"></span>In any browser; apps in development</td><td>Wherever the file is</td></tr></tbody>
+          <section class="fh-section fh-compare" id="compare" aria-labelledby="cmp-title">
+            <h2 id="cmp-title" class="fh-h2 fh-center"><em>Not just</em> a page of numbers</h2>
+            <div class="fh-cmp">
+              <table class="fh-cmp-table">
+                <thead><tr><th scope="col"><span class="visually-hidden">What you get</span></th><th scope="col" class="fh-cmp-us fh-cmp-brand"><img src="assets/carewise-logo.svg" alt="" width="22" height="22" />FollowThrough Health</th><th scope="col">Reading the report alone</th></tr></thead>
+                <tbody><tr><th scope="row">Each result explained in plain words</th><td class="fh-cmp-us"><span class="fh-cmp-yes" role="img" aria-label="Yes"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 10.5l3 3 6-7"/></svg></span></td><td class="fh-cmp-text">Medical terms and abbreviations</td></tr><tr><th scope="row">Compared with your lab's own range</th><td class="fh-cmp-us"><span class="fh-cmp-yes" role="img" aria-label="Yes"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 10.5l3 3 6-7"/></svg></span></td><td class="fh-cmp-text">You compare each number yourself</td></tr><tr><th scope="row">The line from your report shown beside it</th><td class="fh-cmp-us"><span class="fh-cmp-yes" role="img" aria-label="Yes"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 10.5l3 3 6-7"/></svg></span></td><td><span class="fh-cmp-no" role="img" aria-label="No"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 7l6 6M13 7l-6 6"/></svg></span></td></tr><tr><th scope="row">Questions for your doctor from your own results</th><td class="fh-cmp-us"><span class="fh-cmp-yes" role="img" aria-label="Yes"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 10.5l3 3 6-7"/></svg></span></td><td class="fh-cmp-text">You write your own</td></tr><tr><th scope="row">Results over time, by family member</th><td class="fh-cmp-us"><span class="fh-cmp-yes" role="img" aria-label="Yes"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 10.5l3 3 6-7"/></svg></span></td><td class="fh-cmp-text">Papers and files to keep track of</td></tr><tr><th scope="row">Next-test date to your calendar</th><td class="fh-cmp-us"><span class="fh-cmp-yes" role="img" aria-label="Yes"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 10.5l3 3 6-7"/></svg></span></td><td><span class="fh-cmp-no" role="img" aria-label="No"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 7l6 6M13 7l-6 6"/></svg></span></td></tr><tr><th scope="row">Read on your device, nothing uploaded</th><td class="fh-cmp-us"><span class="fh-cmp-yes" role="img" aria-label="Yes"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 10.5l3 3 6-7"/></svg></span></td><td class="fh-cmp-text">Depends where the file is</td></tr></tbody>
               </table>
             </div>
-            <p class="cmp-note">Your doctor is always the one who interprets your results. FollowThrough Health helps you understand and prepare.</p>
+            <p class="fh-fine fh-center">Your doctor is always the one who interprets your results. FollowThrough Health helps you understand and prepare.</p>
           </section>
 
-          <section class="lp-safety" id="safety" aria-labelledby="lp-safety-title">
-            <p class="lp-eyebrow">Safe by design</p>
-            <h2 id="lp-safety-title">Education that sends you to your doctor, never around them.</h2>
-            <div class="lp-safety-grid">
-              <div><h3>FollowThrough Health does</h3><ul><li>Compare each result with the lab's own range</li><li>Say "contact your doctor today" for dangerous levels</li><li>Ask you to check numbers read from a photo</li><li>Label general guides honestly when no range is printed</li></ul></div>
-              <div><h3>FollowThrough Health never</h3><ul><li>Diagnoses</li><li>Names medicines or doses</li><li>Reads scan images (only the radiologist's words)</li><li>Replaces your doctor</li></ul></div>
-            </div>
-            <p class="lp-fine">FollowThrough Health is not a diagnosis, prescription, emergency service, or replacement for licensed medical care. If you feel very unwell, call your local emergency number.</p>
-          </section>
-
-          <section class="lp-follow" aria-labelledby="lp-follow-title">
-            <p class="lp-eyebrow">Private by default</p>
-            <h2 id="lp-follow-title">Your report stays yours. Following up is one tap.</h2>
-            <div class="lp-follow-grid">
-              <article><h3>Read on your device</h3><p>Photos and PDFs are read on your phone or computer. Nothing is sent to us unless you choose to save or share.</p><a href="legal/privacy.html">Privacy policy <span aria-hidden="true">→</span></a></article>
-              <article><h3>Check the numbers</h3><p>When a photo is hard to read, you are asked to compare the number with your report before anything is explained.</p><a href="safety.html">Safety and trust <span aria-hidden="true">→</span></a></article>
-              <article><h3>Share with your doctor</h3><p>Send a one-page brief through a private link that you can turn off at any time.</p><a href="#report-title">Make a doctor brief <span aria-hidden="true">→</span></a></article>
-              <article><h3>Remember the next step</h3><p>Add the next test date to your calendar and keep every report in one record, by family member.</p><a href="#record-title">Open the record <span aria-hidden="true">→</span></a></article>
-            </div>
-          </section>
-
-          <section class="lp-doctors" id="for-doctors" aria-labelledby="lp-doctors-title">
-            <div class="lp-doctors-copy">
-              <p class="lp-eyebrow">For clinics · DocBridge pilot</p>
-              <h2 id="lp-doctors-title">Lab results explained to patients, approved by you.</h2>
-              <p class="lp-doctors-lede">DocBridge drafts a plain-language explanation of each lab. You edit it, approve it, and your patient gets a private link. Nothing reaches a patient without a clinician's approval.</p>
-              <ul class="lp-doctors-list">
+          <section class="fh-section fh-doctors" id="for-doctors" aria-labelledby="lp-doctors-title">
+            <div class="fh-doctors-copy">
+              <p class="fh-eyebrow">For clinics · DocBridge pilot</p>
+              <h2 id="lp-doctors-title" class="fh-h2">Lab results explained to patients, <em>approved by you</em></h2>
+              <p class="fh-sub">DocBridge drafts a plain-language explanation of each lab. You edit it, approve it, and your patient gets a private link. Nothing reaches a patient without a clinician's approval.</p>
+              <ul class="fh-checks">
                 <li><b>Draft in seconds.</b> Upload or forward a lab PDF; the draft is ready to review.</li>
                 <li><b>You stay in charge.</b> The automatic draft sits beside your version; change any word, then approve.</li>
                 <li><b>Send in one tap.</b> Email, WhatsApp or text the private link from your own phone or inbox; turn it off any time.</li>
               </ul>
-              <div class="lp-actions lp-actions-left">
-                <a class="lp-btn lp-btn-dark" id="doctor-demo" href="#docbridge-title" data-db-demo>Try the 60-second demo</a>
-                <a class="lp-btn lp-btn-light" href="#docbridge-title">Join the doctor pilot</a>
+              <div class="fh-actions">
+                <a class="fh-btn fh-btn-primary" id="doctor-demo" href="#docbridge-title" data-db-demo>Try the 60-second demo</a>
+                <a class="fh-btn fh-btn-outline" href="#docbridge-title">Join the doctor pilot</a>
               </div>
-              <p class="lp-fine">Evaluation with synthetic sample labs only. Not for real patient data yet.</p>
+              <p class="fh-fine">Evaluation with synthetic sample labs only. Not for real patient data yet.</p>
             </div>
-            <figure class="lp-doctors-visual lp-doctors-video">
+            <figure class="fh-doctors-video">
               <video controls muted playsinline preload="none" poster="assets/video/doctor-demo-poster.jpg" aria-label="Screen recording of the DocBridge review: draft, edit, approve, and what the patient sees">
                 <source src="assets/video/doctor-demo.mp4" type="video/mp4" />
                 <source src="assets/video/doctor-demo.webm" type="video/webm" />
               </video>
-              <figcaption>Real screen recording, 36 seconds. Made-up clinic and sample labs.</figcaption>
+              <figcaption>Real screen recording, 32 seconds. Made-up clinic and sample labs.</figcaption>
             </figure>
           </section>
 
-          <section class="lp-pricing" id="pricing" aria-labelledby="lp-pricing-title">
-            <p class="lp-eyebrow">Pricing</p>
-            <h2 id="lp-pricing-title">Free to start. Families pay for the whole family.</h2>
-            <div class="lp-price-grid">
-              <article><h3>Free</h3><p class="lp-price">$0</p><ul><li>Explain common lab and scan reports</li><li>One-page doctor brief</li><li>Long-term health record, saved on your device</li></ul><a class="lp-btn lp-btn-dark" href="#report-title">Start free</a></article>
-              <article><h3>Plus</h3><p class="lp-price">$7<small>/mo</small></p><ul><li>Personal plan from your results</li><li>Reminders</li><li>Trends over the years</li></ul><a class="lp-btn lp-btn-light" href="#account-title" data-choose-plan="plus">Choose Plus</a></article>
-              <article class="lp-price-pop"><h3>Family</h3><p class="lp-price">$12<small>/mo</small></p><ul><li>Everything in Plus</li><li>Profiles for up to 5 family members in one account</li><li>Sharing with siblings and caregivers: coming later</li></ul><a class="lp-btn lp-btn-light" href="#account-title" data-choose-plan="premium">Choose Family</a></article>
+          <section class="fh-section fh-trust" id="safety" aria-labelledby="lp-safety-title">
+            <h2 id="lp-safety-title" class="fh-h2 fh-center">Education that sends you to your doctor, <em>never around them</em></h2>
+            <div class="fh-trust-grid">
+              <div><h3>FollowThrough Health does</h3><ul><li>Compare each result with the lab's own range</li><li>Say "contact your doctor today" for dangerous levels</li><li>Ask you to check numbers read from a photo</li><li>Label general guides honestly when no range is printed</li></ul></div>
+              <div><h3>FollowThrough Health never</h3><ul><li>Diagnoses</li><li>Names medicines or doses</li><li>Reads scan images (only the radiologist's words)</li><li>Replaces your doctor</li></ul></div>
+              <div><h3>Your data</h3><ul><li>Reports are read on your device; nothing is sent unless you save or share</li><li>Doctor links are private and can be turned off</li><li>See, download or delete what is kept, any time</li><li>Help chat questions are not saved by our servers</li></ul></div>
             </div>
-            <p class="lp-fine">Plus and Family renew automatically every month at the price shown until you cancel. Billed through Stripe. Cancel any time from Profile.</p>
+            <p class="fh-links fh-center"><a href="legal/privacy.html">Privacy policy</a><a href="safety.html">Safety and trust</a><a href="#your-data">Your data</a></p>
           </section>
 
-          <section class="faq" id="faq" aria-labelledby="faq-title">
-            <h2 id="faq-title">Questions, <em class="ft-serif-accent">answered.</em></h2>
+          <section class="fh-section fh-pricing" id="pricing" aria-labelledby="lp-pricing-title">
+            <h2 id="lp-pricing-title" class="fh-h2 fh-center">Free to start. <em>Families</em> pay for the whole family.</h2>
+            <div class="fh-price-grid">
+              <article><h3>Free</h3><p class="fh-price">$0</p><ul><li>Explain common lab and scan reports</li><li>One-page doctor brief</li><li>Long-term health record, saved on your device</li></ul><a class="fh-btn fh-btn-primary" href="#report-title">Start free</a></article>
+              <article><h3>Plus</h3><p class="fh-price">$7<small>/mo</small></p><ul><li>Personal plan from your results</li><li>Reminders</li><li>Trends over the years</li></ul><a class="fh-btn fh-btn-outline" href="#account-title" data-choose-plan="plus">Choose Plus</a></article>
+              <article><h3>Family</h3><p class="fh-price">$12<small>/mo</small></p><ul><li>Everything in Plus</li><li>Profiles for up to 5 family members in one account</li><li>Sharing with siblings and caregivers: coming later</li></ul><a class="fh-btn fh-btn-outline" href="#account-title" data-choose-plan="family">Choose Family</a></article>
+            </div>
+            <p class="fh-fine fh-center">Plus and Family renew automatically every month at the price shown until you cancel. Billed through Stripe. Cancel any time from Profile.</p>
+          </section>
+
+          <section class="faq fh-section" id="faq" aria-labelledby="faq-title">
+            <h2 id="faq-title" class="fh-h2">Frequently asked <em>questions</em></h2>
             <div class="faq-list" data-faq>
               <div class="faq-item">
                 <h3><button type="button" aria-expanded="false" aria-controls="faq-a-1" id="faq-q-1">What is FollowThrough Health?<span class="faq-icon" aria-hidden="true"></span></button></h3>
@@ -523,73 +348,35 @@
             <p class="faq-more">More in the <a href="faq.html">full FAQ</a> and <a href="safety.html">Safety and trust</a>.</p>
           </section>
 
-          <section class="lp-final" aria-labelledby="lp-final-title">
-            <h2 id="lp-final-title">Your parent's next report, explained in a minute.</h2>
-            <div class="lp-actions">
-              <a class="lp-btn lp-btn-white" href="#report-title">Explain a report, free</a>
-              <a class="lp-btn lp-btn-ghost" href="#early-access-title">Join early access</a>
+          <section class="fh-section fh-final" aria-labelledby="lp-final-title">
+            <h2 id="lp-final-title" class="fh-h2 fh-center">Your next report, <em>explained.</em></h2>
+            <p class="fh-sub fh-center">Free to start. Read on your device. Built for the people who look after someone.</p>
+            <div class="fh-actions fh-center">
+              <a class="fh-btn fh-btn-primary" href="#report-title">Understand my report</a>
+              <a class="fh-btn fh-btn-outline" href="#try=raj-kidney-heart-uk/explain" data-try-sample>Try a sample report</a>
             </div>
+            <p class="fh-fine fh-center">Waiting for the iPhone and Android apps? <a href="#early-access-title">Join early access</a></p>
           </section>
 
-          <footer class="lp-footer ft-footer">
-            <div class="ft-footer-card">
-              <p class="ft-footer-brand"><img src="assets/carewise-logo.svg" alt="" width="44" height="44" /><span>FollowThrough Health</span></p>
-              <div class="ft-footer-grid">
-                <nav class="ft-footer-cols" aria-label="Footer">
-                  <div>
-                    <h2>Company</h2>
-                    <ul>
-                      <li><a href="about.html">About</a></li>
-                      <li><a href="support.html">Contact</a></li>
-                      <li><a href="legal/security.html">Security and privacy</a></li>
-                      <li><a href="faq.html">FAQ</a></li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h2>Explore</h2>
-                    <ul>
-                      <li><a href="#how-it-works">How it works</a></li>
-                      <li><a href="demo.html">Sample report</a></li>
-                      <li><a href="glossary.html">Lab test glossary</a></li>
-                      <li><a href="#pricing">Pricing</a></li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h2>For healthcare professionals</h2>
-                    <ul>
-                      <li><a href="#for-doctors">DocBridge</a></li>
-                      <li><a href="#docbridge-title" data-db-demo>Clinician demo</a></li>
-                      <li><a href="#docbridge-title">Clinic inquiries</a></li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h2>Legal and account</h2>
-                    <ul>
-                      <li><a href="legal/privacy.html">Privacy Policy</a></li>
-                      <li><a href="legal/terms.html">Terms</a></li>
-                      <li><a href="legal/data-deletion.html">Data deletion</a></li>
-                      <li><a href="#your-data">Your data controls</a></li>
-                    </ul>
-                  </div>
+          <footer class="fh-footer ft-footer">
+            <div class="fh-footer-card">
+              <p class="fh-footer-brand"><img src="assets/carewise-logo.svg" alt="" width="40" height="40" /><span>FollowThrough Health</span></p>
+              <div class="fh-footer-grid">
+                <nav class="fh-footer-cols ft-footer-cols" aria-label="Footer">
+                  <div><h2>Company</h2><ul><li><a href="about.html">About</a></li><li><a href="support.html">Contact</a></li><li><a href="legal/security.html">Security and privacy</a></li><li><a href="faq.html">FAQ</a></li><li><a href="accessibility.html">Accessibility</a></li></ul></div>
+                  <div><h2>Explore</h2><ul><li><a href="#how-it-works">How it works</a></li><li><a href="demo.html">Sample report</a></li><li><a href="glossary.html">Lab test glossary</a></li><li><a href="#guide">AI Health Guide</a></li><li><a href="#pricing">Pricing</a></li></ul></div>
+                  <div><h2>For clinicians</h2><ul><li><a href="#for-doctors">DocBridge</a></li><li><a href="#docbridge-title" data-db-demo>Clinician demo</a></li><li><a href="#docbridge-title">Clinic inquiries</a></li></ul></div>
                 </nav>
-                <div class="ft-footer-cta">
-                  <p class="ft-footer-headline">Your parent's next report, <em>explained in a minute.</em></p>
-                  <p>Free to start. Read on your device. Built for the people who look after someone.</p>
-                  <div class="ft-footer-actions">
-                    <a class="lp-btn lp-btn-dark" href="#report-title">Understand my report</a>
-                    <a class="lp-btn lp-btn-light" href="#early-access-title">Join early access</a>
-                  </div>
-                  <p class="ft-footer-apps">Mobile apps for iPhone and Android are in development.</p>
-                  <nav class="ft-footer-legal" aria-label="Legal">
-                    <a href="legal/disclaimer.html">Disclaimer</a>
-                    <a href="legal/app-store-disclosures.html">App privacy details</a>
-                    <a href="accessibility.html">Accessibility</a>
-                    <a href="safety.html">Safety and trust</a>
+                <div class="fh-footer-aside">
+                  <p class="fh-footer-line">Understand today's report. <em>Follow through on the next one.</em></p>
+                  <p class="fh-footer-apps">Mobile apps for iPhone and Android are in development.</p>
+                  <nav class="fh-footer-legal" aria-label="Legal and account">
+                    <a href="legal/privacy.html">Privacy Policy</a><a href="legal/terms.html">Terms</a><a href="legal/disclaimer.html">Disclaimer</a><a href="legal/data-deletion.html">Data deletion</a><a href="#your-data">Your data controls</a><a href="legal/app-store-disclosures.html">App privacy details</a><a href="safety.html">Safety and trust</a>
                   </nav>
                 </div>
               </div>
             </div>
-            <p class="ft-footer-fine">FollowThrough Health is an educational health report explainer. It is not a diagnosis, prescription, emergency service, or replacement for licensed medical care. If you feel very unwell, call your local emergency number.</p>
+            <p class="fh-footer-fine ft-footer-fine">FollowThrough Health is an educational health report explainer. It is not a diagnosis, prescription, emergency service, or replacement for licensed medical care. If you feel very unwell, call your local emergency number.</p>
           </footer>
         </div>
 
@@ -1613,6 +1400,7 @@
             <select id="history-person-filter"><option value="">Everyone</option></select>
           </label>
           <div class="v1-history-list" aria-label="Report history"></div>
+          <section id="history-trends" class="history-trends" aria-label="Results over time" hidden></section>
           <div id="saved-plans" class="saved-plans-list"></div>
         </section>
 
@@ -2586,15 +2374,15 @@
         <p class="help-chat-fine" id="help-chat-fine">General help, not medical advice. In an emergency call 911.</p>
       </section>
     </div>
-    <script src="script.js?v=carewise-product-216"></script>
-    <script src="help.js?v=carewise-product-216"></script>
-    <script src="guide.js?v=carewise-product-216"></script>
-    <script src="story.js?v=carewise-product-216"></script>
-    <script src="doctor-share.js?v=carewise-product-216"></script>
-    <script src="docbridge.js?v=carewise-product-216"></script>
-    <script src="reminders.js?v=carewise-product-216"></script>
-    <script src="vendor/qrcode.js?v=carewise-product-216"></script>
-    <script src="twofactor.js?v=carewise-product-216"></script>
-    <script src="account-ui.js?v=carewise-product-216"></script>
+    <script src="script.js?v=carewise-product-225"></script>
+    <script src="help.js?v=carewise-product-225"></script>
+    <script src="guide.js?v=carewise-product-225"></script>
+    <script src="story.js?v=carewise-product-225"></script>
+    <script src="doctor-share.js?v=carewise-product-225"></script>
+    <script src="docbridge.js?v=carewise-product-225"></script>
+    <script src="reminders.js?v=carewise-product-225"></script>
+    <script src="vendor/qrcode.js?v=carewise-product-225"></script>
+    <script src="twofactor.js?v=carewise-product-225"></script>
+    <script src="account-ui.js?v=carewise-product-225"></script>
   </body>
 </html>

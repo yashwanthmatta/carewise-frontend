@@ -1,16 +1,16 @@
-:root { --ink: #111314; --paper: #f7f4ef; --line: #e2dcd2; --teal: #0f766e; --muted: #5b6064; }
+:root { --ink: #292929; --paper: #FAF6EE; --line: #E6DDCE; --teal: #0f766e; --muted: #5f5b55; --accent: #A14E2E; --cream: #F3EDE2; --white: #FFFDF8; --serif: "Newsreader", Georgia, "Times New Roman", serif; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Inter Tight", system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.5; }
 .sv { max-width: 860px; margin: 0 auto; padding: 20px 16px 40px; }
 .sv-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .sv-brand { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); font-weight: 700; font-size: 1.1rem; text-decoration: none; }
-.sv-print { padding: 10px 16px; border: 0; border-radius: 999px; background: var(--ink); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.sv-print { padding: 10px 18px; border: 0; border-radius: 999px; background: var(--accent); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
 .sv-print[hidden] { display: none; }
-.sv-card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 20px; margin-bottom: 14px; }
-.sv-card h1 { margin: 4px 0 6px; font-size: clamp(1.5rem, 5vw, 2rem); letter-spacing: -0.02em; }
-.sv-card h2 { margin: 0 0 10px; font-size: 1.1rem; color: var(--teal); }
+.sv-card { background: var(--white); border: 1px solid var(--line); border-radius: 18px; padding: 20px; margin-bottom: 14px; }
+.sv-card h1 { margin: 4px 0 6px; font-family: var(--serif); font-weight: 400; font-size: clamp(1.7rem, 5vw, 2.3rem); letter-spacing: -0.01em; line-height: 1.12; }
+.sv-card h2 { margin: 0 0 10px; font-family: var(--serif); font-weight: 400; font-size: 1.3rem; color: var(--ink); }
 .sv-card h3 { margin: 0 0 6px; font-size: 0.95rem; }
-.sv-eyebrow { margin: 0; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+.sv-eyebrow { margin: 0; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.74rem; color: var(--accent); font-weight: 500; font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; }
 .sv-muted { color: var(--muted); }
 .sv-score { font-size: 1.1rem; margin: 10px 0 4px; } .sv-score strong { font-size: 2rem; }
 .sv-next { margin: 8px 0 0; padding: 10px 12px; border-radius: 12px; background: #eaf6f2; border: 1px solid #b6dccf; font-weight: 600; }
@@ -18,21 +18,21 @@ body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Int
 .sv-table { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
 th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { background: #f1f8f6; font-weight: 600; }
+th { background: var(--cream); font-weight: 600; }
 ul, ol { margin: 0; padding-left: 20px; } li { margin: 4px 0; }
 .sv-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .sv-foot { font-size: 0.82rem; color: var(--muted); margin-top: 18px; }
 @media (max-width: 640px) { .sv-grid { grid-template-columns: 1fr; } .sv-card { padding: 16px; } }
 .pv-qa-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
-.pv-qa-chip { padding: 8px 12px; border: 1px solid var(--teal); border-radius: 999px; background: #fff; color: var(--teal); font: inherit; font-size: 0.9rem; cursor: pointer; }
+.pv-qa-chip { padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--white); color: var(--accent); font: inherit; font-size: 0.9rem; cursor: pointer; }
 .pv-qa-form { display: flex; gap: 8px; }
 .pv-qa-form input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; font: inherit; }
-.pv-qa-form button { padding: 10px 16px; border: 0; border-radius: 12px; background: var(--ink); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.pv-qa-form button { padding: 10px 18px; border: 0; border-radius: 999px; background: var(--accent); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
 .pv-qa-form button:disabled { opacity: 0.6; }
 .pv-qa-item { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 10px; }
 .pv-qa-item p { margin: 4px 0; }
 .pv-qa-q { font-weight: 600; }
-.pv-qa-deflect { border-left: 3px solid var(--teal); padding-left: 10px; }
+.pv-qa-deflect { border-left: 3px solid var(--accent); padding-left: 10px; }
 .pv-qa-cite { font-size: 0.82rem; color: var(--muted); }
 .pv-qa-cite span { display: inline-block; margin: 2px 4px 2px 0; padding: 1px 8px; border-radius: 999px; background: #f1f8f6; }
 .pv-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
@@ -40,3 +40,7 @@ ul, ol { margin: 0; padding-left: 20px; } li { margin: 4px 0; }
 .pv-letter { font-size: 1.05rem; line-height: 1.6; }
 .pv-out td { background: #fff6f4; }
 .pv-flag { font-size: 0.8rem; color: #8a2b1d; }
+
+/* Editorial palette (Nov 2026): accent links and the info pages' call-to-action button. */
+.sv-card a:not([class]) { color: var(--accent); }
+.pg-cta { background: var(--accent) !important; color: #fff !important; }

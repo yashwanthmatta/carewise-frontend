@@ -5454,13 +5454,13 @@ function renderHomeDashboard() {
   box.innerHTML = `
             <div class="ft-dash-head">
               <div>
-                <p class="lp-eyebrow">${es ? "Su resumen" : "Your summary"}</p>
+                <p class="fh-eyebrow">${es ? "Su resumen" : "Your summary"}</p>
                 <h2 id="ft-dash-title">${es ? "Bienvenido de nuevo" : "Welcome back"}</h2>
                 <p class="ft-dash-lede">${es ? "Lo más reciente primero. Todo se guarda en este dispositivo." : "The latest first. Everything here is saved on this device."}</p>
               </div>
               <div class="ft-dash-actions">
-                <a class="lp-btn lp-btn-dark" href="#report-title">${es ? "Entender un informe nuevo" : "Understand a new report"}</a>
-                <a class="lp-btn lp-btn-light" href="#saved-title">${es ? "Ver todos los informes" : "See all reports"}</a>
+                <a class="fh-btn fh-btn-primary" href="#report-title">${es ? "Entender un informe nuevo" : "Understand a new report"}</a>
+                <a class="fh-btn fh-btn-outline" href="#saved-title">${es ? "Ver todos los informes" : "See all reports"}</a>
               </div>
             </div>
             <div class="ft-dash-grid">
@@ -5567,17 +5567,115 @@ function renderReportHistory() {
     reportHistoryList.innerHTML = `<article><div><strong>No reports for ${escapeHtml(personFilter)} yet</strong></div></article>`;
   } else if (reportHistoryList) {
     reportHistoryList.innerHTML = reports.slice(0, 4).map((report) => `
-      <article>
-        <div>
-          <strong>${escapeHtml(report.fileName || "Untitled report")}</strong>
-          <span>${escapeHtml(`For ${normalizeReportPerson(report.person)} · `)}${escapeHtml(new Date(report.createdAt || report.updatedAt || Date.now()).toLocaleDateString())}</span>
+      <article class="history-item">
+        <div class="history-item-head">
+          <strong>${escapeHtml(historyTitle(report))}</strong>
+          <span>${escapeHtml(`For ${normalizeReportPerson(report.person)} · ${historyDateText(report)}`)}</span>
         </div>
         <p>${escapeHtml(report.message || "Saved report. Run or load analysis to see a plain-English explanation.")}</p>
         ${report.questions?.length ? `<p><strong>Doctor question:</strong> ${escapeHtml(report.questions[0])}</p>` : ""}
-        <button class="secondary-button compact" type="button" data-report-action="open-history" data-report-id="${escapeHtml(report.id)}">Open result</button>
+        <button class="history-open" type="button" data-report-action="open-history" data-report-id="${escapeHtml(report.id)}">Open this report <span aria-hidden="true">→</span></button>
       </article>
     `).join("");
   }
+  renderHistoryTrends(allReports, personFilter);
+}
+
+// History titles: the name the person typed, else the test date printed on the report.
+function formatTestDate(iso) {
+  const date = new Date(`${iso}T00:00:00Z`);
+  return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
+function shortTestDate(iso) {
+  const date = new Date(`${iso}T00:00:00Z`);
+  return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString(undefined, { month: "short", year: "numeric", timeZone: "UTC" });
+}
+function historyTitle(report) {
+  const name = String(report.fileName || "").trim();
+  if (name && name !== "Local report analysis") return name;
+  return report.testDate ? `Report from ${formatTestDate(report.testDate)}` : "Saved report";
+}
+function historyDateText(report) {
+  if (report.testDate) return `test date ${formatTestDate(report.testDate)}`;
+  return `saved ${new Date(report.createdAt || report.updatedAt || Date.now()).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}`;
+}
+
+// "Results over time": only values from the person's saved reports, exactly as each report showed
+// them. Nothing is calculated, scored or filled in. A value with < or > is listed but not drawn.
+function splitResultValue(text) {
+  const match = /^([<>≤≥]?)\s?(\d[\d,]*(?:\.\d+)?) ?(.*)$/.exec(String(text || "").trim());
+  if (!match) return null;
+  return { comparator: match[1], number: Number(match[2].replace(/,/g, "")), unit: match[3].trim() };
+}
+
+function historyTrendGroups(reports) {
+  const dated = reports
+    .filter((report) => Array.isArray(report.results) && report.results.length)
+    .map((report) => ({ report, when: report.testDate || String(report.createdAt || "").slice(0, 10), known: Boolean(report.testDate) }))
+    .sort((a, b) => a.when.localeCompare(b.when));
+  const groups = new Map();
+  dated.forEach(({ report, when, known }) => {
+    report.results.forEach((result) => {
+      if (!result.key || !result.value) return;
+      const parts = splitResultValue(result.value);
+      if (!groups.has(result.key)) groups.set(result.key, { key: result.key, name: result.name, entries: [] });
+      groups.get(result.key).entries.push({ when, known, value: result.value, parts, range: result.range, rangeLabel: result.rangeLabel, label: result.label, status: result.status });
+    });
+  });
+  return { reportsWithResults: dated.length, groups: [...groups.values()].filter((group) => group.entries.length >= 2) };
+}
+
+function trendChartSvg(group) {
+  const points = group.entries.filter((entry) => entry.parts && !entry.parts.comparator);
+  const units = new Set(group.entries.map((entry) => entry.parts?.unit || ""));
+  if (points.length < 2 || units.size > 1) return "";
+  const width = 320, height = 112, padX = 22, top = 22, bottom = 28;
+  const values = points.map((entry) => entry.parts.number);
+  const min = Math.min(...values), max = Math.max(...values);
+  const spread = max - min || Math.abs(max) || 1;
+  const x = (index) => padX + (index * (width - padX * 2)) / (points.length - 1);
+  const y = (value) => top + (1 - (value - min) / spread) * (height - top - bottom);
+  const line = points.map((entry, index) => `${x(index).toFixed(1)},${y(entry.parts.number).toFixed(1)}`).join(" ");
+  const described = points.map((entry) => `${entry.value} on ${entry.known ? formatTestDate(entry.when) : `saved ${formatTestDate(entry.when)}`}`).join(", ");
+  return `<svg class="trend-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(`${group.name}: ${described}`)}">
+    <line x1="${padX}" x2="${width - padX}" y1="${height - bottom + 6}" y2="${height - bottom + 6}" class="trend-axis" />
+    <polyline points="${line}" class="trend-line" />
+    ${points.map((entry, index) => `<circle cx="${x(index).toFixed(1)}" cy="${y(entry.parts.number).toFixed(1)}" r="4.5" class="trend-dot trend-dot-${escapeHtml(entry.status || "none")}" /><text x="${x(index).toFixed(1)}" y="${(y(entry.parts.number) - 10).toFixed(1)}" text-anchor="middle" class="trend-value">${escapeHtml(String(entry.parts.number))}</text><text x="${x(index).toFixed(1)}" y="${height - 4}" text-anchor="${index === 0 ? "start" : index === points.length - 1 ? "end" : "middle"}" class="trend-date">${escapeHtml(shortTestDate(entry.when))}</text>`).join("")}
+  </svg>`;
+}
+
+function renderHistoryTrends(allReports, personFilter) {
+  const box = document.querySelector("#history-trends");
+  if (!box) return;
+  const people = [...new Set(allReports.map((report) => normalizeReportPerson(report.person)))];
+  const person = personFilter || (people.length === 1 ? people[0] : "");
+  if (!allReports.length) { box.hidden = true; box.innerHTML = ""; return; }
+  box.hidden = false;
+  const head = `<h4 class="history-trends-title">Results over time${person ? ` for ${escapeHtml(person)}` : ""}</h4>`;
+  if (!person) {
+    box.innerHTML = `${head}<p class="history-trends-note">Choose whose reports to compare in "Show reports for" above. Results are only compared within one person's reports.</p>`;
+    return;
+  }
+  const { reportsWithResults, groups } = historyTrendGroups(allReports.filter((report) => normalizeReportPerson(report.person) === person));
+  if (reportsWithResults < 2 || !groups.length) {
+    box.innerHTML = `${head}<p class="history-trends-note">${reportsWithResults < 2
+      ? `Explain at least two of ${escapeHtml(person)}'s reports to see how each result changed. Reports saved before this update don't include every result; explain them again to compare them.`
+      : "No test appears in more than one of these reports yet."}</p>`;
+    return;
+  }
+  box.innerHTML = `${head}
+    <p class="history-trends-note">From ${reportsWithResults} saved reports on this device, exactly as each report showed them. Dates are the test dates printed on each report, or the day it was saved when the report gave none. Your doctor interprets what a change means.</p>
+    <div class="trend-grid">${groups.map((group) => {
+      const units = new Set(group.entries.map((entry) => entry.parts?.unit || ""));
+      const chart = trendChartSvg(group);
+      return `<article class="trend-card">
+        <h5>${escapeHtml(group.name)}</h5>
+        ${chart || `<p class="history-trends-note">${units.size > 1 ? "The units differ between reports, so these are not drawn on one chart." : "Listed, not drawn: a value with < or > has no exact point."}</p>`}
+        <table class="trend-table"><thead><tr><th scope="col">Date</th><th scope="col">Result</th><th scope="col">Lab's range</th></tr></thead><tbody>
+          ${group.entries.map((entry) => `<tr><td>${escapeHtml(entry.known ? formatTestDate(entry.when) : `Saved ${formatTestDate(entry.when)}`)}</td><td><strong>${escapeHtml(entry.value)}</strong>${entry.label ? `<span class="trend-label trend-label-${escapeHtml(entry.status || "none")}">${escapeHtml(entry.label)}</span>` : ""}</td><td>${escapeHtml(entry.range || "Not printed")}</td></tr>`).join("")}
+        </tbody></table>
+      </article>`;
+    }).join("")}</div>`;
 }
 
 function openReportHistoryItem(reportId) {
@@ -6866,6 +6964,19 @@ function sourceLineFor(card) {
   return matches.length === 1 ? matches[0].trim().slice(0, 200) : "";
 }
 
+// "148 mg/dL" → "148 <span>mg/dL</span>": same text, unit set smaller so the number reads first.
+function resultValueHtml(card) {
+  const value = String(card.value || "");
+  const unit = String(card.unit || "");
+  if (unit && value.endsWith(` ${unit}`)) {
+    return `${escapeHtml(value.slice(0, -unit.length - 1))} <span class="result-card-unit">${escapeHtml(unit)}</span>`;
+  }
+  // Values checked against a general goal carry the unit in the text ("148 mg/dL"): split for display only.
+  const match = /^([<>≤≥]?\s?\d[\d.,]*) (\S.*)$/.exec(value);
+  if (match) return `${escapeHtml(match[1])} <span class="result-card-unit">${escapeHtml(match[2])}</span>`;
+  return escapeHtml(value);
+}
+
 function renderResultCard(card, text) {
   const line = sourceLineFor(card);
   const es = reportLanguage === "es";
@@ -6873,7 +6984,7 @@ function renderResultCard(card, text) {
   return `
           <article class="result-card-item result-card-${escapeHtml(card.tone)}">
             <header><strong>${escapeHtml(card.name)}</strong><em>${escapeHtml(card.label)}</em></header>
-            <p class="result-card-value"><b>${escapeHtml(card.value)}</b>${card.unitHint ? `<small>${escapeHtml(card.unitHint)}</small>` : ""}</p>
+            <p class="result-card-value"><b>${resultValueHtml(card)}</b>${card.unitHint ? `<small>${escapeHtml(card.unitHint)}</small>` : ""}</p>
             ${card.rangeLabel ? `<p class="result-card-range">${escapeHtml(card.rangeLabel)}: ${escapeHtml(card.range || text.noRangePrinted)}</p>` : ""}
             ${card.note ? `<p class="result-card-range">${escapeHtml(card.note)}</p>` : ""}
             ${card.meaning ? `<h5 class="visually-hidden">${escapeHtml(text.whatMeans)}</h5><p class="result-card-meaning">${escapeHtml(card.meaning)}</p>` : ""}
@@ -7737,16 +7848,18 @@ function buildDoctorBriefHtml(analysis, person = "Me") {
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FollowThrough Health doctor brief</title>
 <style>
-  body { font-family: Arial, sans-serif; color: #14302c; max-width: 760px; margin: 32px auto; padding: 0 20px; line-height: 1.45; }
-  header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 3px solid #0f766e; padding-bottom: 8px; }
-  h1 { font-size: 22px; margin: 0; } h2 { font-size: 16px; margin: 22px 0 6px; color: #0f766e; }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; } td, th { border: 1px solid #d5e5e1; padding: 6px 8px; text-align: left; }
-  th { background: #e6f1ee; } ul, ol { margin: 0; padding-left: 20px; font-size: 14px; }
-  .note { margin-top: 24px; font-size: 12px; color: #3e5450; border-top: 1px solid #d5e5e1; padding-top: 8px; }
-  .notes-box { border: 1px solid #d5e5e1; min-height: 70px; margin-top: 6px; }
-  .verify { margin: 0 0 12px; padding: 8px 10px; border: 2px solid #b45309; border-radius: 6px; background: #fff7ed; font-weight: bold; font-size: 14px; }
-  .source { font-size: 13px; color: #3e5450; margin: 8px 0 0; }
-  button { margin-top: 16px; padding: 8px 16px; background: #0f766e; color: #fff; border: 0; border-radius: 6px; font-size: 14px; cursor: pointer; }
+  body { font-family: "Helvetica Neue", Arial, sans-serif; color: #292929; background: #fffdf8; max-width: 760px; margin: 32px auto; padding: 0 20px; line-height: 1.5; }
+  header { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; border-bottom: 1px solid #b85c38; padding-bottom: 10px; }
+  h1 { font-family: "Newsreader", Georgia, "Times New Roman", serif; font-weight: 400; font-size: 26px; line-height: 1.15; margin: 0; }
+  h2 { font-family: "Newsreader", Georgia, "Times New Roman", serif; font-weight: 400; font-size: 19px; margin: 26px 0 8px; color: #292929; }
+  header span { font-size: 13px; color: #66625c; white-space: nowrap; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; } td, th { border-bottom: 1px solid #e6ddce; padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: #f3ede2; font-weight: 600; font-size: 13px; color: #4a4743; } ul, ol { margin: 0; padding-left: 20px; font-size: 14px; } li { margin: 3px 0; }
+  .note { margin-top: 26px; font-size: 12px; color: #4a4743; border-top: 1px solid #e6ddce; padding-top: 10px; }
+  .notes-box { border: 1px solid #e6ddce; border-radius: 6px; min-height: 80px; margin-top: 6px; }
+  .verify { margin: 0 0 16px; padding: 10px 12px; border: 1.5px solid #a14e2e; border-radius: 8px; background: #f4e4d8; font-weight: bold; font-size: 14px; }
+  .source { font-size: 13px; color: #4a4743; margin: 10px 0 0; }
+  button { margin-top: 18px; padding: 10px 20px; background: #a14e2e; color: #fff; border: 0; border-radius: 999px; font-size: 14px; font-weight: 600; cursor: pointer; }
   @media print { button { display: none; } body { margin: 0 auto; } }
 </style></head><body>
 <p class="verify">Patient-generated educational summary. Verify against the original laboratory report.</p>
@@ -8192,6 +8305,7 @@ function runLocalReportAnalysis() {
   }
   latestReportId = analysis.id;
   localStorage.setItem("carewiseLatestReportId", latestReportId);
+  const historyView = buildReportView(analysis, "en");
   saveReportHistory({
     id: analysis.id,
     person: latestReportPerson,
@@ -8201,8 +8315,12 @@ function runLocalReportAnalysis() {
     score: analysis.score,
     message: `${outsideRangeText(analysis) || "Report text reviewed"}. ${analysis.findings[0]?.label || ""}`.trim(),
     nextSteps: analysis.questions.slice(0, 3),
-    questions: reportQuestions(analysis, buildReportView(analysis, "en"), "en"),
+    questions: reportQuestions(analysis, historyView, "en"),
     labValues: analysis.labValues,
+    // Every result as shown (exact text, unit, lab range, label) and the test date printed on the
+    // report, so History can compare saved reports without re-reading or re-calculating anything.
+    results: historyView.tests.map((test) => ({ key: test.key, name: test.name, value: test.value, unit: test.unit, range: test.range, rangeLabel: test.rangeLabel, label: test.label, status: test.status })),
+    testDate: reportTestDate(getLocalReportText()),
     createdAt: new Date().toISOString(),
   });
   renderLocalReportAnalysis(analysis);
@@ -11943,28 +12061,6 @@ document.querySelector("#dashboard")?.addEventListener("click", (event) => {
   event.preventDefault();
   history.pushState(null, "", link.getAttribute("href"));
   window.showCareWiseSection(link.getAttribute("href").slice(1));
-});
-
-document.querySelectorAll("[data-lp-insights]").forEach((box) => {
-  const tabs = [...box.querySelectorAll('[role="tab"]')];
-  const select = (tab, focus) => {
-    tabs.forEach((other) => {
-      const on = other === tab;
-      other.setAttribute("aria-selected", String(on));
-      other.tabIndex = on ? 0 : -1;
-      document.getElementById(other.getAttribute("aria-controls")).hidden = !on;
-    });
-    if (focus) tab.focus();
-  };
-  tabs.forEach((tab, index) => {
-    tab.addEventListener("click", () => select(tab, false));
-    tab.addEventListener("keydown", (event) => {
-      const next = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 }[event.key];
-      if (next === undefined) return;
-      event.preventDefault();
-      select(tabs[(next + tabs.length) % tabs.length], true);
-    });
-  });
 });
 
 document.querySelectorAll("[data-start-tour]").forEach((element) => element.addEventListener("click", (event) => {

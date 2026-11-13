@@ -21,7 +21,7 @@ jobs:
   scan:
     # Pinned: Playwright 1.56.1 cannot install a browser on Ubuntu 26.04 (ubuntu-latest since 29 Oct 2026).
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -30,7 +30,14 @@ jobs:
       - name: Install a browser and axe-core
         run: |
           npm install --no-save --no-package-lock playwright@1.56.1 axe-core@4.14.0
-          npx playwright install --with-deps chromium
+          # Retried: on 11 Nov 2026 the runner could not resolve the Ubuntu package mirror for ~10
+          # minutes and the nightly scan failed before scanning anything.
+          for attempt in 1 2 3; do
+            npx playwright install --with-deps chromium && break
+            [ "$attempt" = 3 ] && exit 1
+            echo "Browser install failed (attempt $attempt of 3); retrying in 30 seconds"
+            sleep 30
+          done
       - name: Scan every screen and page
         run: |
           python3 -m http.server 4173 >/dev/null 2>&1 &

@@ -1,19 +1,19 @@
 # Development status (read this first on every run)
 
-Last verified run: 2026-11-09, daily run at 04:23 UTC.
+Last verified run: 2026-11-12, daily run at 04:23 UTC.
 
 ## Repository state
 
 | Repo | main | Working branch | Open PRs from this work |
 |---|---|---|---|
-| carewise-frontend | `a731ec3` (#143 merged) | `claude/carewise-api-project-jmxg7f` (restarted from main on 8 Nov) | New PR: staff two-step sign-in notice |
-| carewise-mobile-app | `2116924` | `claude/carewise-api-project-jmxg7f` | #52: Expo tooling advisories (lockfile only), green |
-| carewise-production-backend | `c653336` | `claude/carewise-api-project-jmxg7f` | #56: secret scan in CI, staff two-step sign-in requirement (off by default), green, needs owner review |
+| carewise-frontend | `b46ddc9` (#154 merged) | `claude/carewise-api-project-jmxg7f` | #156: Function-style redesign (homepage rebuild, every reachable app screen, DocBridge workspace, patient and info pages, new demo video) and History results over time. Green, mergeable, no review comments. Cache version 225. |
+| carewise-mobile-app | `69c49fb` (#53 merged) | `claude/carewise-api-project-jmxg7f` | #52: Expo tooling advisories (lockfile only). Green, mergeable. The provider sign-in work waits for #52 to merge. |
+| carewise-production-backend | `c653336` (#55 merged) | `claude/carewise-api-project-jmxg7f` | #56: secret scan in CI, staff two-step sign-in requirement (off by default), and from 11 Nov a checkout price test. Needs owner review. |
 
-**Other agents' open PRs:**
-- frontend #132 (Listen per result) and #112 (ads status doc).
-- backend #51 (de-identification) and #57 (Dependabot); mobile #48 (Listen), #41 and #42 (Dependabot).
-- **Owner:** merge cache-version PRs one at a time. This PR uses 210.
+**Other open PRs:**
+- frontend #155 (the owner's revert of #154) is now closed.
+- Agent and Dependabot PRs: frontend #132 and #112; backend #51 and #57; mobile #48, #41 and #42.
+- **Owner:** merge cache-version PRs one at a time. #156 uses 225.
 
 ## Automation that actually exists
 
@@ -44,7 +44,7 @@ Last verified run: 2026-11-09, daily run at 04:23 UTC.
 ## Next tasks, in order
 
 1. Keep #138, #55 and #51 green; resolve the #134 cache-version collision when it happens.
-2. **Backend, after #55 merges:** fix the checkout price conversion. `subscriptions.py` uses `int(plan["monthly_price_usd"]) * 100`, so $6.99 would be charged as $6.00. Use `Decimal` and round to cents, with a test. No price changes without the owner's approval.
+2. ~~**Backend, after #55 merges:** checkout price conversion~~ Checked on 11 Nov: today's prices are whole dollars ($0, $7, $12) and the API schema types them as `int`, so `int(price) * 100` charges exactly the listed price. No billing code was changed. A new test, `test_checkout_charges_exactly_the_listed_monthly_price` (backend #56, commit 161ad7b), fails if a non-whole price such as 6.99 is ever added; this was confirmed by setting 6.99 temporarily, which the test failed, and then restoring the file. **If prices ever need cents:** switch to `Decimal` with rounding to cents first. That needs owner approval, because it changes billing.
 3. ~~**Website:** a "Care team" screen (add, list and revoke clinicians) using the API from #55.~~ Built on 3 Nov in PR #140: Account → Care team (`#clinician-access`). It shows only when signed in, with a saved profile, and when the server has the API, so nothing appears until #55 is deployed. Eval `care-team.mjs` runs in CI. ~~Your Data page~~ built on 3 Nov (Account → Your data: device and account counts, downloads that leave out sign-in tokens, recorded activity only, clear this device, delete account). Eval `your-data.mjs` runs in CI.
 4. ~~Website: the page view for photos~~ Done on 2 Nov: "See it on your photo" (PR #138).
 5. **Backend:** staff two-step sign-in enforcement, staged behind a setting.
@@ -56,6 +56,30 @@ Last verified run: 2026-11-09, daily run at 04:23 UTC.
    - ~~Nightly axe scan~~ Built on 9 Nov: `scripts/eval/a11y-scan.mjs` scans 21 screens and pages at phone and desktop size (axe-core 4.14.0, WCAG A/AA). It runs in Frontend CI on every PR and nightly in `accessibility-scan.yml`. The first scan found one serious issue, now fixed: the desktop "Need help?" button's accessible name did not contain its visible text (WCAG 2.5.3).
 5b. **Staff two-step sign-in requirement:** built, off by default (`CAREWISE_STAFF_TWO_FACTOR_REQUIRED`, backend #56). ~~Website banner~~ Built on 8 Nov: Account shows "Turn on two-step sign-in to use your clinic tools" when `/auth/me` reports `staff_two_factor_needed`, links to Two-step sign-in, and hides once it is on. Shows nothing until #56 is merged, deployed and the setting is on. Eval `staff-two-factor.mjs` (14 checks) runs in CI.
 5c. **Main red on 5 Nov:** #116 merged after #142 with the same cache version, 208. Frontend #143 bumps it to 209. **Owner:** merge cache-version PRs one at a time.
+
+## Run on 12 Nov (daily, 04:23 UTC)
+- **Open PRs:** frontend #156, backend #56 and mobile #52 are green, with no conflicts and no review comments.
+- **Nightly accessibility scan, failed on 11 Nov:**
+  - **Cause:** the runner could not resolve the Ubuntu package mirror while installing the browser's font packages (`Temporary failure resolving 'azure.archive.ubuntu.com'`, for about 10 minutes). The scan step never ran.
+  - **The site was not at fault:** the same commit on main passed the night before and has passed every local run.
+  - **Fix (in #156):** the scheduled browser installs (accessibility scan, live browser check, Audio QA) now retry up to 3 times, 30 seconds apart, and their time limits were raised to fit. The loop was checked under `bash -e`: it succeeds on attempt 1, 2 or 3 and fails after three failures.
+  - Frontend CI is unchanged, because a person sees and re-runs it.
+- **Since 11 Nov (in #156):**
+  - phone header shows the brand only; tablet margins are wider
+  - the DocBridge clinician workspace, the patient page and the info pages are in the new design
+  - the homepage doctor demo video was re-recorded with `scripts/record-docbridge-demo.mjs`
+- **Unblocked work left:** none that doesn't need the owner. Waiting on merges of #52, #56 and #156, and on the owner items above.
+
+## Run on 11 Nov (daily, 04:23 UTC)
+- **Open PRs:** frontend #156, mobile #52 and backend #56 are all green with no merge conflicts and no review comments.
+- **Next task 2, price conversion:** checked; there is no bug at today's prices. A guard test was added to backend #56. Backend tests: 237 passed, and ruff and readiness pass.
+- **Since the 9 Nov run (in #156):** the Function-style homepage rebuild, and a styling-only pass on every reachable app screen:
+  - Results, Upload, the original-report evidence and the doctor brief
+  - History, Record, Reminders, DocBridge and the signed-in Account view
+
+  Values, wording, prices and clinical rules are unchanged; the evals check this. The write-up is `docs/function-style-complete-redesign.md`. The hidden legacy tools (meal planner and others) were audited and left alone.
+- **Read-only checks** on 10 to 11 Nov: all green every 6 hours. The nightly accessibility scan ran on 9 Nov and passed.
+- **Unblocked work left:** none that doesn't need the owner. The next code tasks wait on merges (#52 for mobile provider sign-in, #56 for staff two-step sign-in) or on owner assets (official provider button artwork).
 
 ## Run on 9 Nov (daily, 04:23 UTC)
 

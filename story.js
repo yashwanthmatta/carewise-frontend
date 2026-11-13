@@ -52,12 +52,14 @@
   };
   reduced.addEventListener?.("change", applyMotion);
   applyMotion();
-  // Only play while on screen, so it does not run (or use battery) out of view.
+  // Only play while on screen, so it does not run (or use battery) out of view. The demo panel is
+  // watched, not the whole section, and it starts once its top edge is clearly on screen (above the
+  // bottom 15%): on a phone the panel is taller than the screen, so a share of it is the wrong test.
   if ("IntersectionObserver" in window) {
     new IntersectionObserver((entries) => {
       visible = entries.some((entry) => entry.isIntersecting);
       start();
-    }, { threshold: 0.35 }).observe(root);
+    }, { threshold: 0, rootMargin: "0px 0px -15% 0px" }).observe(root.querySelector(".story-stage") || root);
   } else {
     visible = true;
     start();
