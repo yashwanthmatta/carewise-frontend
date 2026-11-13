@@ -52,8 +52,9 @@ for (const width of [1440, 1024, 768, 390, 320]) {
     check(!overlap, "320px: the header button does not cover the brand name");
   }
   if (width === 1440) {
-    const rows = await page.$$eval(".fh-preview-rows li b", (items) => items.map((b) => b.textContent.trim()));
-    check(rows.length === 4 && rows.every((text) => /^\d[\d.]* \S+/.test(text)), `hero preview shows value and unit (${rows.join(" | ")})`);
+    // The hero's sample report shows every result with its unit and the lab's range, like a real printout.
+    const rows = await page.$$eval(".fh-preview tbody tr", (trs) => trs.map((tr) => [...tr.cells].map((td) => td.textContent.trim())));
+    check(rows.length === 5 && rows.every((r) => /^\d[\d.]*$/.test(r[1]) && r[3] && /\d/.test(r[4])), `hero report shows value, unit and range (${rows.map((r) => `${r[0]} ${r[1]} ${r[3]}`).join(" | ")})`);
     const looping = await page.evaluate(() => document.querySelector(".fh-hero")?.getAnimations({ subtree: true }).filter((a) => a.effect?.getTiming().iterations === Infinity).length ?? 0);
     check(looping === 0, "hero has no looping animation");
     check(!/explained in a minute/.test(await page.innerText("footer")), "footer does not repeat the closing call to action");
