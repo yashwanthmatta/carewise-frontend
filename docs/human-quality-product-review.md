@@ -148,3 +148,30 @@ A person should confirm problems 1–8 look fixed at 1440 and 390 px before this
 ## Usability testing
 
 **Not run.** The task script is in `docs/usability-test-kit.md`. It needs five real participants, and no results exist.
+
+## "Welcome back" summary rebuilt (13 Nov, owner feedback: "i didnt like this")
+
+**What the owner saw.** People who come back with a saved report saw the old template:
+- four equal rounded cards in a large cream panel;
+- the file name ("raj-kidney-heart-uk.pdf") as the headline;
+- a run-on line ("7 of 10 results outside the lab's range. LDL cholesterol");
+- empty boxes for tracking and reminders that weren't set up;
+- uppercase labels;
+- terracotta pill buttons.
+
+**Now it is set like the homepage:**
+- a margin label;
+- one plain sentence about the latest report, saying whose it is, the file and date, and the lab-range count;
+- **To talk about:** each result outside the lab's range, with the exact value, unit, label and lab range saved with the report (nothing re-calculated);
+- the report's own questions for the doctor, beside the results;
+- tracking, reminders and earlier reports, each as one ruled line shown only when there is something in it;
+- one ink button.
+
+**Evidence:**
+- Screenshots: `before-dashboard.webp` (the owner's screenshot), `after-dashboard-1440.png` and `after-dashboard-390.png`.
+- No sideways scroll at 390 px. An overflow found during the work (459 px) was fixed.
+- `home-dashboard.mjs` now also checks four things:
+  - creatinine is listed with value, unit and range;
+  - a result within range is not listed;
+  - there is no card grid;
+  - the earlier checks still pass, including that a reminder's private title is never shown.

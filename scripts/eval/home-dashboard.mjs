@@ -1,6 +1,8 @@
 // Home dashboard (2026-11-09): someone with saved reports sees "Welcome back" above the homepage,
 // with the latest report, its own doctor questions, recent reports, tracked results and upcoming
 // reminders. A first visit shows no dashboard. No score is shown.
+// 13 Nov rebuild: set like a homepage part. The results to talk about are listed with the exact value,
+// unit and lab range saved with the report; empty sections are left out instead of shown as boxes.
 // Optional: AXE_PATH=/path/to/axe.min.js runs an accessibility scan of the dashboard.
 // Usage: serve the site on :4173, then node scripts/eval/home-dashboard.mjs
 import fs from "node:fs";
@@ -36,7 +38,11 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   check(/Welcome back/.test(text) && /Dad's kidney panel/.test(text), `${size}: dashboard shows the latest report`);
   check(/1 of 3 results outside the lab's range|2 of 3 results outside the lab's range/.test(text), `${size}: latest report shows its lab-range count`);
   check(/How are my kidneys working/.test(text), `${size}: doctor questions are the report's own`);
-  check(!/Which results matter most for me/.test(text.split("Results you are tracking")[0]), `${size}: no general question in the top three`);
+  check(!/Which results matter most for me/.test(text.split("Tracking")[0]), `${size}: no general question in the top three`);
+  const rows = await page.$$eval("#dashboard .ft-dash-results tbody tr", (trs) => trs.map((tr) => tr.innerText.replace(/\s+/g, " ")));
+  check(rows.some((r) => /Creatinine/.test(r) && /2\.3 mg\/dL/.test(r) && /0\.6-1\.3/.test(r)), `${size}: results to talk about show exact value, unit and lab range (${rows.join(" | ")})`);
+  check(!rows.some((r) => /Potassium/.test(r)), `${size}: a result within range is not listed to talk about`);
+  check(await page.$$eval("#dashboard .ft-dash-card", (els) => els.length) === 0, `${size}: no card grid`);
   check(/Creatinine/.test(text) && /2\.3 mg\/dL/.test(text), `${size}: tracked result with value and unit`);
   check(/Lab follow-up/.test(text) && !/Private note/.test(text), `${size}: upcoming reminder by type, not its private title`);
   check(!/score/i.test(text), `${size}: no health score`);
