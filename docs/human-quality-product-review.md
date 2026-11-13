@@ -95,7 +95,7 @@ Branch `claude/carewise-api-project-jmxg7f`; cache version 226.
 
 ## Test results
 
-- 34 frontend checks run locally (the same list as frontend CI), including the axe accessibility scan, CSP and design-quality: _see the PR for the final count_.
+- 34 frontend checks run locally (the same list as frontend CI), including the axe accessibility scan, CSP and design-quality: **34 of 34 passed** on 13 Nov.
 - Screenshots after the change: `docs/human-quality-review/after-*.png`, next to each `before-*.png`.
 
 ## Independent review
