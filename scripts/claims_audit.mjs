@@ -34,6 +34,9 @@ const RULES = [
   ["any-report", /Explain any (lab|report|scan)/i, "Absolute coverage claim; the reader supports a set list of tests", "marketing"],
   ["lifetime-record", /Lifetime health record/i, "Implies data kept forever", "marketing"],
   ["ai-draft", /\bAI draft\b/i, "DocBridge drafts are rule-based, not AI", "marketing"],
+  // Backend docs/security-hardening/inventory.md: only listed fields are app-encrypted; dates,
+  // risk level and reminder times/days stay plain so they can be sorted and scheduled.
+  ["blanket-encryption", /(health (details|information|data)|everything|all (your )?data)[^.]{0,60}(stored|kept|saved) encrypted/i, "Only some fields are encrypted; name what is (see backend inventory.md)", "marketing"],
   ["deidentified-pilot", /de-identified or (a )?samples?/i, "Clinic evaluation is synthetic-only (pilot-clinic-onboarding.md)", "marketing"],
 ];
 
