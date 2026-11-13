@@ -1,19 +1,19 @@
 # Development status (read this first on every run)
 
-Last verified run: 2026-11-12, daily run at 04:23 UTC.
+Last verified run: 2026-11-13, daily run at 04:23 UTC.
 
 ## Repository state
 
 | Repo | main | Working branch | Open PRs from this work |
 |---|---|---|---|
-| carewise-frontend | `b46ddc9` (#154 merged) | `claude/carewise-api-project-jmxg7f` | #156: Function-style redesign (homepage rebuild, every reachable app screen, DocBridge workspace, patient and info pages, new demo video) and History results over time. Green, mergeable, no review comments. Cache version 225. |
-| carewise-mobile-app | `69c49fb` (#53 merged) | `claude/carewise-api-project-jmxg7f` | #52: Expo tooling advisories (lockfile only). Green, mergeable. The provider sign-in work waits for #52 to merge. |
-| carewise-production-backend | `c653336` (#55 merged) | `claude/carewise-api-project-jmxg7f` | #56: secret scan in CI, staff two-step sign-in requirement (off by default), and from 11 Nov a checkout price test. Needs owner review. |
+| carewise-frontend | `3994f43` (#156 merged) | `claude/carewise-api-project-jmxg7f` | #158: craft pass from the 13 Nov audit (one accent colour, no empty demo boxes, help button clear of controls, flat AI Guide mark, "Profile" → "Account", visible privacy disclosure) and, from this run, the encryption-claim fix. Cache version 226. |
+| carewise-mobile-app | `69c49fb` (#53 merged) | `claude/carewise-api-project-jmxg7f` | #52: Expo tooling advisories (lockfile only). Green, mergeable. Provider sign-in and the mobile restyle wait for #52. |
+| carewise-production-backend | `b9b5f3c` (#58 merged, live on Render) | `claude/carewise-api-project-jmxg7f` (at main) | None. #56 and #58 merged. |
 
 **Other open PRs:**
 - frontend #155 (the owner's revert of #154) is now closed.
 - Agent and Dependabot PRs: frontend #132 and #112; backend #51 and #57; mobile #48, #41 and #42.
-- **Owner:** merge cache-version PRs one at a time. #156 uses 225.
+- **Owner:** merge cache-version PRs one at a time. #158 uses 226.
 
 ## Automation that actually exists
 
@@ -31,6 +31,9 @@ Last verified run: 2026-11-12, daily run at 04:23 UTC.
 
 ## Blockers needing the owner
 
+0. **Help chat AI key is rejected** (every `/assistant/chat` since 11 Nov returns 502 `AuthenticationError`). Create a new Anthropic key and replace it in Render → carewise-api → Environment.
+0a. **Encryption backfill:** rows saved before 2 Nov may still be plaintext. Run the count-only report (`PYTHONPATH=. python scripts/security/encrypt_fields.py`), then back up and backfill if needed (`docs/security-hardening/encryption-migration.md`).
+0b. **Privacy policy wording (counsel):** it says reminder times are stored encrypted; they are not. Proposed text is in `docs/human-quality-product-review.md`.
 1. **Render database** still allows `0.0.0.0/0`. Steps: `carewise-production-backend/docs/security-hardening/render-network-lockdown.md`.
 2. **Backend #55:** independent review, then approval for the production backfill (back up the database first).
 3. **Usability test with 5 people:** protocol and sheet in `docs/mobile-ux-testing.md`, status NOT RUN.
@@ -56,6 +59,25 @@ Last verified run: 2026-11-12, daily run at 04:23 UTC.
    - ~~Nightly axe scan~~ Built on 9 Nov: `scripts/eval/a11y-scan.mjs` scans 21 screens and pages at phone and desktop size (axe-core 4.14.0, WCAG A/AA). It runs in Frontend CI on every PR and nightly in `accessibility-scan.yml`. The first scan found one serious issue, now fixed: the desktop "Need help?" button's accessible name did not contain its visible text (WCAG 2.5.3).
 5b. **Staff two-step sign-in requirement:** built, off by default (`CAREWISE_STAFF_TWO_FACTOR_REQUIRED`, backend #56). ~~Website banner~~ Built on 8 Nov: Account shows "Turn on two-step sign-in to use your clinic tools" when `/auth/me` reports `staff_two_factor_needed`, links to Two-step sign-in, and hides once it is on. Shows nothing until #56 is merged, deployed and the setting is on. Eval `staff-two-factor.mjs` (14 checks) runs in CI.
 5c. **Main red on 5 Nov:** #116 merged after #142 with the same cache version, 208. Frontend #143 bumps it to 209. **Owner:** merge cache-version PRs one at a time.
+
+## Run on 13 Nov (daily, 04:23 UTC)
+
+- **Open PRs:** frontend #158 is green and mergeable with no review comments. Mobile #52 is unchanged. Backend #58 was merged and is live (deploy `b9b5f3c`). The backend branch was fast-forwarded to main.
+- **Task (privacy):** I checked the "stored encrypted" claim against the live backend code.
+  - Only the listed health columns are app-encrypted. Dates, risk level and reminder times, days and time zone are plain on purpose.
+  - The Your data card now says exactly that.
+  - A new claims-audit rule, `blanket-encryption`, fails on the old sentence and passes on the new one.
+  - The privacy policy has the same overstatement for reminder times. It goes to counsel, because legal pages wait for counsel; the proposed text is in the review doc.
+  - The production backfill is not recorded as run; that is an owner action.
+- **Also this session (13 Nov):**
+  - The audit and craft pass. Tracker: `docs/human-quality-product-review.md`.
+  - The help bot's clinician-style prompt (backend #58, merged).
+- **Next task:** the remaining audit items:
+  - History's duplicate empty-state lines.
+  - The hidden "sample 20-year history" reference on Record.
+  - The DocBridge video's first frame.
+
+  After that, the homepage shortening, once the owner agrees.
 
 ## Run on 12 Nov (daily, 04:23 UTC)
 - **Open PRs:** frontend #156, backend #56 and mobile #52 are green, with no conflicts and no review comments.
