@@ -5531,7 +5531,7 @@ function renderReportHistory() {
   const personFilterRow = document.querySelector("#history-person-filter")?.closest(".history-person-filter");
   if (personFilterRow) personFilterRow.hidden = !allReports.length;
   if (!allReports.length) {
-    if (!showingResult) reportResults.innerHTML = "<p>No report analysis yet.</p>";
+    if (!showingResult) reportResults.innerHTML = "";
     if (reportHistoryList) {
       reportHistoryList.innerHTML = `
         <article class="history-empty">

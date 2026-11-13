@@ -1,6 +1,6 @@
 /* FollowThrough Health: editorial design system (Nov 2026 rebuild).
    Loaded last. Light serif display type, warm ivory paper, terracotta for action and emphasis,
-   teal kept for the brand mark and links inside the app. Flat surfaces, fine borders, few shadows.
+   teal kept only for the brand mark and "within range" status. Flat surfaces, fine borders, few shadows.
    Homepage sections use their own fh-* classes; the old lp-* layers were removed, not overridden.
    Documented in docs/function-style-complete-redesign.md. */
 
@@ -37,6 +37,17 @@
   --ft-ivory: var(--fh-cream);
   --ft-serif: var(--fh-serif);
   --ft-shadow-md: 0 1px 2px rgba(41, 41, 41, 0.04), 0 10px 30px rgba(41, 41, 41, 0.05);
+
+  /* One action colour. The app's older layers drew links, focus rings, toggles and icons in teal
+     while buttons were terracotta, so two accents competed on every screen. Remapping the tokens
+     here fixes every use at once. Teal stays only in the brand mark and "within range" status. */
+  --ft-brand: var(--fh-accent);
+  --ft-brand-strong: var(--fh-accent-dark);
+  --ft-brand-soft: var(--fh-accent-soft);
+  --ft-surface-brand: var(--fh-cream);
+  --ft-on-brand: #FFFDF8;
+  --ft-focus: 0 0 0 3px rgba(161, 78, 46, 0.32);
+  --lp-teal: var(--fh-accent);
 }
 
 /* ---------- Type ---------- */
@@ -504,6 +515,35 @@ body { background: var(--fh-paper) !important; color: var(--fh-ink); }
 .app-shell .docbridge-panel .db-table tr.db-flag td { background: var(--fh-accent-soft) !important; }
 .app-shell .docbridge-panel .text-button { color: var(--fh-accent) !important; border-color: var(--fh-line) !important; }
 .app-shell .docbridge-panel :is(.db-stat, .db-stats > div) { border-color: var(--fh-line) !important; background: var(--fh-white) !important; box-shadow: none !important; }
+
+/* ---------- Pass 10: craft fixes from the 13 Nov audit (docs/human-quality-product-review.md) ---------- */
+/* Story: steps that have not played yet were drawn as empty bordered boxes, which read as broken
+   loading placeholders. They now take their space invisibly and appear when their step plays. */
+#report-story .story-card { opacity: 0; }
+#report-story .story-canvas[data-step="3"] .story-card-3, #report-story .story-canvas[data-step="4"] :is(.story-card-3, .story-card-4),
+#report-story .story-canvas[data-step="5"] :is(.story-card-3, .story-card-4, .story-card-5), #report-story .story-canvas[data-step="6"] .story-card,
+#report-story.story-static .story-card { opacity: 1; }
+
+/* Help button: the 160px "Need help?" pill sat on top of the Upload screen's "Explain report"
+   button and other right-aligned controls. A 52px round button keeps the same name for screen
+   readers (aria-label) and, on wide screens, sits in the page margin instead of over content. */
+.help-chat-launcher { min-height: 52px; width: 52px; padding: 0; justify-content: center; background: var(--fh-ink); box-shadow: 0 6px 18px rgba(41, 41, 41, 0.18); }
+.help-chat-launcher > span:first-child { width: auto; height: auto; background: none; color: var(--fh-white); font-family: var(--fh-serif); font-size: 1.45rem; font-weight: 400; }
+.help-chat-launcher-text { display: none; }
+.help-chat-launcher:hover { background: var(--fh-accent); }
+.help-chat-launcher:focus-visible { outline: 3px solid var(--fh-accent); outline-offset: 3px; }
+main.app-shell { padding-bottom: 96px; }
+
+/* Collapsed sections in "Your data" had their disclosure arrow removed, so "Who else handles
+   your data" looked like a heading over an empty section. Show a plain chevron that turns. */
+.yd-details > summary { list-style: none; gap: 10px; }
+.yd-details > summary::-webkit-details-marker { display: none; }
+.yd-details > summary::before { content: ""; flex: none; width: 7px; height: 7px; margin: 0 4px 0 2px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform 150ms var(--fh-ease); }
+.yd-details[open] > summary::before { transform: rotate(45deg); }
+
+/* Small headings on Account and "Your data" were heavy sans with tight tracking, while the
+   matching cards on Record use the serif. Use the serif everywhere for the same level. */
+.app-shell :is(.auth-aside h4, .your-data-panel h4) { font-family: var(--fh-serif) !important; font-weight: 400 !important; font-size: 1.25rem !important; letter-spacing: 0 !important; color: var(--fh-ink) !important; }
 
 /* ---------- Motion ---------- */
 @keyframes fh-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
