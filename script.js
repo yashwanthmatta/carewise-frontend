@@ -11682,7 +11682,7 @@ function renderHealthRecord(preferredPerson = "") {
     .filter((item) => !typeFilter || item.type === typeFilter)
     .sort((a, b) => String(b.start || "").localeCompare(String(a.start || "")));
   if (!shown.length) {
-    timeline.innerHTML = `<p class="record-empty">${items.length ? "Nothing of this type yet." : `No health history saved for ${escapeHtml(person)} yet. Add an entry above, or try the sample 20-year history.`}</p>`;
+    timeline.innerHTML = `<p class="record-empty">${items.length ? "Nothing of this type yet." : `No health history saved for ${escapeHtml(person)} yet. Add an entry above, or <button type="button" class="link-button" data-record-sample>add a made-up 20-year history</button> to see how it looks.`}</p>`;
     return;
   }
   const groups = new Map();
@@ -11823,6 +11823,11 @@ function buildHealthHistoryBriefSection(person) {
 
 document.querySelector("#record-form")?.addEventListener("submit", saveHealthRecordFromForm);
 document.querySelector("#record-sample")?.addEventListener("click", addSampleHealthHistory);
+// The empty timeline offers the sample too: the button in the form sits inside the closed
+// "Add to the record" section, so the text used to point at a button nobody could see.
+document.addEventListener("click", (event) => {
+  if (event.target.closest?.("[data-record-sample]")) addSampleHealthHistory();
+});
 document.querySelector("#record-export")?.addEventListener("click", exportHealthRecord);
 document.querySelector("#record-person-filter")?.addEventListener("change", () => renderHealthRecord());
 document.querySelector("#record-type-filter")?.addEventListener("change", () => renderHealthRecord());

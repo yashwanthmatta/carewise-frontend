@@ -1,4 +1,4 @@
-// History with nothing saved shows no "Clear" buttons and no person filter, offers the next step,
+// History with nothing saved shows one empty message (not two), no "Clear" buttons and no person filter, offers the next step,
 // and hides the account-only "Load my saved labs" while signed out. Once a report has been
 // explained, History lists it and "Clear history" comes back.
 // Usage: serve the site on :4173, then node scripts/eval/history-empty.mjs
@@ -21,6 +21,20 @@ ok(await page.isHidden("#clear-lab-trends"), "empty lab tracker has no Clear lab
 ok(await page.isHidden(".history-person-filter >> nth=0"), "empty History has no person filter");
 ok(await page.isHidden("#load-lab-trends"), "signed out, there is no account-only Load my saved labs");
 ok(await page.isVisible('.history-empty a[href="#report-title"]'), "empty History offers Explain a report");
+// The empty lab tracker says "nothing saved" once, not in two places.
+const labText = await page.innerText("#lab-trend-status").catch(() => "");
+ok(!/Add values from your reports/.test(labText), `empty lab tracker has one empty message, not two (status: "${labText}")`);
+
+// Record: the empty timeline offers the made-up history as a button you can see and press.
+await page.goto(`${base}#record-title`, { waitUntil: "load" });
+await page.waitForTimeout(500);
+ok(await page.isVisible(".record-empty [data-record-sample]"), "empty Record shows a visible button for the made-up 20-year history");
+await page.click(".record-empty [data-record-sample]");
+await page.waitForTimeout(400);
+ok(await page.locator(".record-empty").count() === 0 && await page.evaluate(() => getHealthRecord().some((item) => item.sample)), "pressing it adds the made-up history to the timeline");
+await page.evaluate(() => localStorage.removeItem("carewiseHealthRecord"));
+await page.goto(`${base}#saved-title`, { waitUntil: "load" });
+await page.waitForTimeout(300);
 
 await page.click('.history-empty a[href="#report-title"]');
 await page.waitForTimeout(500);

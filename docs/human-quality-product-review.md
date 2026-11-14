@@ -52,10 +52,10 @@ Ranked by how much each one makes the product feel unfinished or generic, or con
 | 7 | **"Who else handles your data" looked empty.** It is a collapsed section, but its arrow had been styled away, so it read as a heading over nothing. This is the list of service providers that handle data, the most important privacy disclosure on the page. | `before-account-1440.png` | VERIFIED: a visible chevron that turns when opened |
 | 8 | **Small headings on Account and Your data were inconsistent**: heavy sans with tight letter spacing. The same level on Record uses the serif. | `before-account-1440.png` | VERIFIED: serif at the same size everywhere |
 | 9 | **The homepage is 10,751 px long** (12 sections), with the same "Understand my report / Try a sample report" pair repeated four times. | Full-page screenshot | IMPLEMENTED (owner approved the mock-up on 13 Nov): rebuilt, now 6,364 px at 1440. See "Homepage rebuild" below |
-| 10 | **Duplicate empty-state text.** Upload showed "Add a photo or PDF…" and also "No report analysis yet." History shows "Add values from your reports…" and also "No lab values saved yet…". | `before-report-1440.png`, `saved-1440.png` | Upload: VERIFIED (the second line is removed). History: CONFIRMED, next pass |
+| 10 | **Duplicate empty-state text.** Upload showed "Add a photo or PDF…" and also "No report analysis yet." History shows "Add values from your reports…" and also "No lab values saved yet…". | `before-report-1440.png`, `saved-1440.png` | Upload: VERIFIED (the second line is removed). History: VERIFIED 14 Nov (the empty lab tracker keeps one message; `history-empty.mjs` fails on the old page and passes now) |
 
 **Also seen, not yet fixed:**
-- Record says "or try the sample 20-year history", but that button is hidden inside the closed "Add to the record" section. CONFIRMED.
+- Record said "or try the sample 20-year history", but that button is hidden inside the closed "Add to the record" section. VERIFIED 14 Nov: the empty timeline now has its own visible button. `history-empty.mjs` presses it and checks that the made-up history appears. That check failed on the old page and passes now. Screenshots: `before-record-empty-1440.png` and `after-record-empty-1440.png`.
 - The DocBridge demo video's first frame starts part-way through a scroll, so "Use a sample lab" is cut off at the top. CONFIRMED.
 
 ## Security and privacy findings carried in from production checks
