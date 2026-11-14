@@ -1,6 +1,6 @@
 # Development status (read this first on every run)
 
-Last verified run: 2026-11-13, daily run at 04:23 UTC.
+Last verified run: 2026-11-14, daily run at 04:23 UTC.
 
 ## Repository state
 
@@ -59,6 +59,15 @@ Last verified run: 2026-11-13, daily run at 04:23 UTC.
    - ~~Nightly axe scan~~ Built on 9 Nov: `scripts/eval/a11y-scan.mjs` scans 21 screens and pages at phone and desktop size (axe-core 4.14.0, WCAG A/AA). It runs in Frontend CI on every PR and nightly in `accessibility-scan.yml`. The first scan found one serious issue, now fixed: the desktop "Need help?" button's accessible name did not contain its visible text (WCAG 2.5.3).
 5b. **Staff two-step sign-in requirement:** built, off by default (`CAREWISE_STAFF_TWO_FACTOR_REQUIRED`, backend #56). ~~Website banner~~ Built on 8 Nov: Account shows "Turn on two-step sign-in to use your clinic tools" when `/auth/me` reports `staff_two_factor_needed`, links to Two-step sign-in, and hides once it is on. Shows nothing until #56 is merged, deployed and the setting is on. Eval `staff-two-factor.mjs` (14 checks) runs in CI.
 5c. **Main red on 5 Nov:** #116 merged after #142 with the same cache version, 208. Frontend #143 bumps it to 209. **Owner:** merge cache-version PRs one at a time.
+
+## Run on 14 Nov (daily, 04:23 UTC)
+
+- **Open PRs:** frontend #161 ("Welcome back" summary rebuild) is green and mergeable, with no comments. Mobile #52 is unchanged. Since the last run, #158 and #159 (the homepage rebuild) were merged and are live; post-merge CI and the Live Browser Check were green.
+- **Task:** two leftover audit items. Both fixes are added to #161, because it shares the branch.
+  - The empty lab tracker on History said "nothing saved" twice. It now says it once.
+  - The empty Record timeline pointed to a "sample 20-year history" button hidden in a closed section. It now has its own visible button.
+  - `history-empty.mjs` has new checks for both. They failed on the old page (2 failures) and pass now.
+- **Next task:** restyle the app screens (Upload, History, Record, Account) in the homepage's language: ruled sections instead of rounded panels and cards, and the same buttons. Most panels still use the older card style.
 
 ## Run on 13 Nov (daily, 04:23 UTC)
 

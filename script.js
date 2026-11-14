@@ -5450,46 +5450,41 @@ function renderHomeDashboard() {
   const tracked = [...new Map(trends.map((item) => [item.test, item])).values()];
   const today = new Date().toISOString().slice(0, 10);
   const upcoming = getReminders().filter((item) => item.startDate >= today).sort((a, b) => a.startDate.localeCompare(b.startDate)).slice(0, 2);
-  const link = (href, text) => `<a class="ft-dash-link" href="${href}">${escapeHtml(text)} <span aria-hidden="true">→</span></a>`;
+  // Set like the homepage: a margin label, a plain sentence about the latest report, then the results
+  // to talk about (exact value, unit and lab range as saved; nothing re-calculated) beside that
+  // report's own doctor questions. Tracking, reminders and older reports are one quiet line each, and
+  // only when there is something to show: no empty boxes.
+  const name = latest.fileName || (es ? "Informe" : "Report");
+  const date = when(latest.testDate ? `${latest.testDate}T12:00:00` : latest.createdAt || latest.updatedAt);
+  const countText = String(latest.message || "").split(/\.\s/)[0].replace(/\.$/, "");
+  const results = Array.isArray(latest.results) ? latest.results : [];
+  const toTalk = results.filter((item) => item && item.status && item.status !== "within" && item.status !== "unknown");
+  const shown = toTalk.slice(0, 5);
+  const resultRows = shown.map((item) => `<tr><th scope="row">${escapeHtml(item.name || "")}</th><td class="ft-dash-value">${escapeHtml(String(item.value || ""))}</td><td>${escapeHtml(item.label || "")}${item.range ? `<span class="ft-dash-range">${escapeHtml(item.rangeLabel || (es ? "Rango del laboratorio" : "Lab's range"))} ${escapeHtml(item.range)}</span>` : ""}</td></tr>`).join("");
+  const more = toTalk.length > shown.length ? `<p class="ft-dash-note">${es ? `Y ${toTalk.length - shown.length} más en el informe.` : `And ${toTalk.length - shown.length} more in the report.`}</p>` : "";
+  const whose = person === "Me" ? (es ? "Su último informe" : "Your latest report") : (es ? `Último informe, de ${escapeHtml(person)}` : `Latest report, for ${escapeHtml(person)}`);
+  const lines = [];
+  if (tracked.length) lines.push(`<li><span>${es ? "Seguimiento" : "Tracking"}</span>${tracked.slice(0, 3).map((item) => `${escapeHtml(item.test)} ${escapeHtml(`${item.value} ${item.unit || ""}`.trim())}${item.date ? ` <small>(${escapeHtml(when(item.date))})</small>` : ""}`).join(", ")} <a class="ed-link" href="#saved-title">${es ? "Ver tendencias" : "See trends"}</a></li>`);
+  if (upcoming.length) lines.push(`<li><span>${es ? "Próximo" : "Coming up"}</span>${upcoming.map((item) => `${escapeHtml(item.type || (es ? "Recordatorio" : "Reminder"))}, ${escapeHtml(when(`${item.startDate}T12:00:00`))}`).join("; ")} <a class="ed-link" href="#record-title">${es ? "Recordatorios" : "Reminders"}</a></li>`);
+  if (reports.length > 1) lines.push(`<li><span>${es ? "Anteriores" : "Earlier"}</span>${reports.slice(1, 4).map((report) => `${escapeHtml(report.fileName || (es ? "Informe" : "Report"))} <small>(${escapeHtml(when(report.createdAt || report.updatedAt))}${normalizeReportPerson(report.person) === "Me" ? "" : `, ${escapeHtml(normalizeReportPerson(report.person))}`})</small>`).join("; ")} <a class="ed-link" href="#saved-title">${es ? "Ver todos" : "See all"}</a></li>`);
   box.innerHTML = `
-            <div class="ft-dash-head">
-              <div>
-                <p class="fh-eyebrow">${es ? "Su resumen" : "Your summary"}</p>
-                <h2 id="ft-dash-title">${es ? "Bienvenido de nuevo" : "Welcome back"}</h2>
-                <p class="ft-dash-lede">${es ? "Lo más reciente primero. Todo se guarda en este dispositivo." : "The latest first. Everything here is saved on this device."}</p>
+            <p class="ed-label">${es ? "Su resumen" : "Your summary"}</p>
+            <div>
+              <h2 id="ft-dash-title" class="ed-h2">${es ? "Bienvenido de nuevo." : "Welcome back."}</h2>
+              <p class="ed-body">${whose}: <b class="ft-dash-name">${escapeHtml(name)}</b>${date ? `, ${escapeHtml(date)}` : ""}.${countText ? ` ${escapeHtml(countText)}.` : ""}</p>
+              <div class="ft-dash-cols">
+                <div>
+                  <h3>${es ? "Para hablar con su médico" : "To talk about"}</h3>
+                  ${resultRows ? `<table class="ft-dash-results"><caption class="visually-hidden">${es ? "Resultados fuera del rango del laboratorio" : "Results outside the lab's range"}</caption><tbody>${resultRows}</tbody></table>${more}` : `<p class="ft-dash-note">${es ? "Ningún resultado fuera del rango del laboratorio en este informe." : "No results outside the lab's range in this report."}</p>`}
+                </div>
+                <div>
+                  <h3>${es ? "Preguntas para su médico" : "Questions for your doctor"}</h3>
+                  ${questions.length ? `<ol class="ft-dash-questions">${questions.map((q) => `<li>${escapeHtml(q)}</li>`).join("")}</ol>` : `<p class="ft-dash-note">${es ? "Explique un informe para ver preguntas sobre sus resultados." : "Explain a report to see questions about your results."}</p>`}
+                  <a class="ed-link" href="#saved-title">${es ? "Preparar la visita" : "Prepare for the visit"}</a>
+                </div>
               </div>
-              <div class="ft-dash-actions">
-                <a class="fh-btn fh-btn-primary" href="#report-title">${es ? "Entender un informe nuevo" : "Understand a new report"}</a>
-                <a class="fh-btn fh-btn-outline" href="#saved-title">${es ? "Ver todos los informes" : "See all reports"}</a>
-              </div>
-            </div>
-            <div class="ft-dash-grid">
-              <article class="ft-dash-card ft-dash-latest">
-                <h3>${es ? "Último informe" : "Latest report"}</h3>
-                <p class="ft-dash-meta">${escapeHtml(when(latest.createdAt || latest.updatedAt))}${escapeHtml(forWhom)}</p>
-                <p class="ft-dash-big">${escapeHtml(latest.fileName || (es ? "Informe" : "Report"))}</p>
-                ${latest.message ? `<p>${escapeHtml(latest.message)}</p>` : ""}
-                ${link("#saved-title", es ? "Abrir en el historial" : "Open in History")}
-              </article>
-              <article class="ft-dash-card">
-                <h3>${es ? "Preguntas para su médico" : "Questions for your doctor"}</h3>
-                ${questions.length ? `<ol class="ft-dash-questions">${questions.map((q) => `<li>${escapeHtml(q)}</li>`).join("")}</ol>` : `<p>${es ? "Explique un informe para ver preguntas sobre sus resultados." : "Explain a report to see questions about your results."}</p>`}
-                ${link("#saved-title", es ? "Preparar la visita" : "Prepare for the visit")}
-              </article>
-              <article class="ft-dash-card">
-                <h3>${es ? "Resultados en seguimiento" : "Results you are tracking"}</h3>
-                ${tracked.length ? `<ul class="ft-dash-list">${tracked.slice(0, 4).map((item) => `<li><span>${escapeHtml(item.test)}</span><b>${escapeHtml(`${item.value} ${item.unit || ""}`.trim())}</b><small>${escapeHtml(when(item.date))}</small></li>`).join("")}</ul>` : `<p>${es ? "Guarde los resultados de un informe para verlos con el tiempo." : "Save the results from a report to see them over time."}</p>`}
-                ${link("#saved-title", es ? "Ver tendencias" : "See trends")}
-              </article>
-              <article class="ft-dash-card">
-                <h3>${es ? "Próximos recordatorios" : "Coming up"}</h3>
-                ${upcoming.length ? `<ul class="ft-dash-list">${upcoming.map((item) => `<li><span>${escapeHtml(item.type || (es ? "Recordatorio" : "Reminder"))}</span><small>${escapeHtml(when(`${item.startDate}T12:00:00`))}</small></li>`).join("")}</ul>` : `<p>${es ? "No hay recordatorios próximos." : "No reminders coming up."}</p>`}
-                ${link("#record-title", es ? "Recordatorios" : "Reminders")}
-              </article>
-              ${reports.length > 1 ? `<article class="ft-dash-card ft-dash-recent">
-                <h3>${es ? "Informes recientes" : "Recent reports"}</h3>
-                <ul class="ft-dash-list">${reports.slice(1, 4).map((report) => `<li><span>${escapeHtml(report.fileName || (es ? "Informe" : "Report"))}</span><small>${escapeHtml(when(report.createdAt || report.updatedAt))}${normalizeReportPerson(report.person) === "Me" ? "" : ` · ${escapeHtml(normalizeReportPerson(report.person))}`}</small></li>`).join("")}</ul>
-              </article>` : ""}
+              ${lines.length ? `<ul class="ft-dash-lines">${lines.join("")}</ul>` : ""}
+              <p class="ed-row"><a class="ed-btn" href="#report-title">${es ? "Entender un informe nuevo" : "Understand a new report"}</a><a class="ed-link" href="#saved-title">${es ? "Ver todos los informes" : "See all reports"}</a></p>
             </div>`;
   box.hidden = false;
 }
@@ -11687,7 +11682,7 @@ function renderHealthRecord(preferredPerson = "") {
     .filter((item) => !typeFilter || item.type === typeFilter)
     .sort((a, b) => String(b.start || "").localeCompare(String(a.start || "")));
   if (!shown.length) {
-    timeline.innerHTML = `<p class="record-empty">${items.length ? "Nothing of this type yet." : `No health history saved for ${escapeHtml(person)} yet. Add an entry above, or try the sample 20-year history.`}</p>`;
+    timeline.innerHTML = `<p class="record-empty">${items.length ? "Nothing of this type yet." : `No health history saved for ${escapeHtml(person)} yet. Add an entry above, or <button type="button" class="link-button" data-record-sample>add a made-up 20-year history</button> to see how it looks.`}</p>`;
     return;
   }
   const groups = new Map();
@@ -11828,6 +11823,11 @@ function buildHealthHistoryBriefSection(person) {
 
 document.querySelector("#record-form")?.addEventListener("submit", saveHealthRecordFromForm);
 document.querySelector("#record-sample")?.addEventListener("click", addSampleHealthHistory);
+// The empty timeline offers the sample too: the button in the form sits inside the closed
+// "Add to the record" section, so the text used to point at a button nobody could see.
+document.addEventListener("click", (event) => {
+  if (event.target.closest?.("[data-record-sample]")) addSampleHealthHistory();
+});
 document.querySelector("#record-export")?.addEventListener("click", exportHealthRecord);
 document.querySelector("#record-person-filter")?.addEventListener("change", () => renderHealthRecord());
 document.querySelector("#record-type-filter")?.addEventListener("change", () => renderHealthRecord());
