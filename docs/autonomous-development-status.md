@@ -1,6 +1,6 @@
 # Development status (read this first on every run)
 
-Last verified run: 2026-11-14, daily run at 04:23 UTC.
+Last verified run: 2026-11-15, daily run at 04:23 UTC.
 
 ## Repository state
 
@@ -59,6 +59,23 @@ Last verified run: 2026-11-14, daily run at 04:23 UTC.
    - ~~Nightly axe scan~~ Built on 9 Nov: `scripts/eval/a11y-scan.mjs` scans 21 screens and pages at phone and desktop size (axe-core 4.14.0, WCAG A/AA). It runs in Frontend CI on every PR and nightly in `accessibility-scan.yml`. The first scan found one serious issue, now fixed: the desktop "Need help?" button's accessible name did not contain its visible text (WCAG 2.5.3).
 5b. **Staff two-step sign-in requirement:** built, off by default (`CAREWISE_STAFF_TWO_FACTOR_REQUIRED`, backend #56). ~~Website banner~~ Built on 8 Nov: Account shows "Turn on two-step sign-in to use your clinic tools" when `/auth/me` reports `staff_two_factor_needed`, links to Two-step sign-in, and hides once it is on. Shows nothing until #56 is merged, deployed and the setting is on. Eval `staff-two-factor.mjs` (14 checks) runs in CI.
 5c. **Main red on 5 Nov:** #116 merged after #142 with the same cache version, 208. Frontend #143 bumps it to 209. **Owner:** merge cache-version PRs one at a time.
+
+## Run on 15 Nov (daily, 04:23 UTC)
+
+- **Open PRs:** none of ours. #161 was merged on 15 Nov at 01:24, and its post-merge Frontend CI and Live Browser Check are green. Mobile #52 is unchanged.
+- **Task (UX):** brought the app screens (Upload, History, Record, Account) into the homepage's style. This is CSS only:
+  - ruled sections instead of rounded panels with shadows;
+  - 6 px corners;
+  - small cards as ruled columns;
+  - notes with a left rule;
+  - "+ Add" as a link;
+  - tabs with an underline;
+  - the doubled header line removed.
+
+  Before/after screenshots are in `docs/human-quality-review/`.
+- **Next task:**
+  - The opened report itself: the results cards and the doctor brief. It is the screen people spend the most time on, and it was last restyled in pass 3.
+  - Then DocBridge's clinician workspace.
 
 ## Run on 14 Nov (daily, 04:23 UTC)
 
