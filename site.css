@@ -298,9 +298,31 @@ body { background: var(--fh-paper) !important; color: var(--fh-ink); }
 .fh-footer-legal a:hover { color: var(--fh-accent); text-decoration: underline; }
 .fh-footer-fine { margin: 28px 0 0; color: var(--fh-ink-3); font-size: 0.78rem; line-height: 1.55; }
 
-/* Returning visitors' dashboard */
-.ft-dash { background: var(--fh-cream) !important; border-color: var(--fh-line) !important; }
-.ft-dash .fh-actions, .ft-dash-actions { gap: 10px; }
+/* Returning visitors' summary: set like a homepage part (margin label, ruled, no card grid) */
+.app-shell .landing .ft-dash { display: grid; grid-template-columns: 190px minmax(0, 1fr); min-width: 0; gap: 16px 48px; margin: 0 !important; padding: clamp(40px, 5vw, 64px) 0 !important; border: 0 !important; border-bottom: 1px solid var(--fh-line) !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
+.app-shell .landing .ft-dash[hidden] { display: none; }
+.ft-dash .ed-h2 { margin-bottom: 12px !important; }
+.ft-dash-name { font-weight: 600; color: var(--fh-ink); }
+.ft-dash-cols { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 48px; margin-top: 28px; }
+.app-shell .landing .ft-dash-cols h3 { margin: 0 0 6px; padding-bottom: 8px; border-bottom: 2px solid var(--fh-ink); font: 600 0.95rem var(--ft-font) !important; color: var(--fh-ink); }
+.ft-dash-results { width: 100%; border-collapse: collapse; }
+.ft-dash-results :is(th, td) { padding: 12px 12px 12px 0; border-bottom: 1px solid var(--fh-line); text-align: left; vertical-align: baseline; color: var(--fh-ink-2); font-size: 0.95rem; line-height: 1.45; }
+.app-shell .landing .ft-dash-results th { font: 500 0.95rem var(--ft-font) !important; color: var(--fh-ink); }
+.ft-dash-results { table-layout: fixed; }
+.ft-dash-results th { width: 30%; }
+.ft-dash-results .ft-dash-value { width: 36%; font: 400 1.15rem/1.35 var(--fh-serif); color: var(--fh-ink); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.ft-dash-range { display: block; color: var(--fh-ink-3); font-size: 0.82rem; }
+.ft-dash-note { margin: 12px 0 0; color: var(--fh-ink-3); font-size: 0.92rem; }
+.ft-dash-questions { display: grid; gap: 10px; margin: 12px 0 8px; padding-left: 1.3em; color: var(--fh-ink); font: 400 1.08rem/1.5 var(--fh-serif); }
+.ft-dash-lines { margin: 28px 0 0; padding: 0; list-style: none; }
+.ft-dash-lines li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 10px 0; border-top: 1px solid var(--fh-line); color: var(--fh-ink-2); font-size: 0.95rem; }
+.ft-dash-lines li:last-child { border-bottom: 1px solid var(--fh-line); }
+.ft-dash-lines span { min-width: 90px; color: var(--fh-ink-3); font: 500 0.74rem var(--fh-mono); letter-spacing: 0.06em; text-transform: uppercase; }
+.ft-dash-lines small { color: var(--fh-ink-3); }
+.ft-dash-lines .ed-link { min-height: 32px; font-size: 0.92rem; }
+.ft-dash .ed-btn { text-decoration: none; }
+/* The install button in the header: a quiet text button, not a pill */
+.app-shell .site-nav .install-button { min-height: 40px; padding: 0 10px !important; border: 0 !important; border-radius: 6px !important; background: none !important; color: var(--fh-ink-2) !important; box-shadow: none !important; font-weight: 500 !important; text-decoration: underline; text-underline-offset: 4px; }
 
 /* ---------- App: report results (pass 3) ----------
    Same language as the homepage: light serif headings and values, thin lines instead of coloured
@@ -463,7 +485,13 @@ main.app-shell { padding-bottom: 96px; }
   .ed-sheet-wrap { max-width: 720px; }
 }
 @media (max-width: 860px) {
-  .ed-part { grid-template-columns: 1fr; gap: 8px; }
+  .ed-part, .app-shell .landing .ft-dash { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .ft-dash-cols { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .ft-dash-results, .ft-dash-results tbody, .ft-dash-results tr { display: block; }
+  .ft-dash-results tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 12px 0; border-bottom: 1px solid var(--fh-line); }
+  .ft-dash-results :is(th, td) { width: auto !important; padding: 0; border: 0; }
+  .ft-dash-results td:last-child { grid-column: 1 / -1; }
+  .ft-dash-results .ft-dash-value { text-align: right; }
   .ed-steps, .ed-cols, .ed-clinic, .fh-areas { grid-template-columns: 1fr; gap: 28px; }
   .fh-areas { gap: 0; }
   .fh-footer-grid { grid-template-columns: 1fr; }
