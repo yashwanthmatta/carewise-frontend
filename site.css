@@ -467,6 +467,45 @@ main.app-shell { padding-bottom: 96px; }
    matching cards on Record use the serif. Use the serif everywhere for the same level. */
 .app-shell :is(.auth-aside h4, .your-data-panel h4) { font-family: var(--fh-serif) !important; font-weight: 400 !important; font-size: 1.25rem !important; letter-spacing: 0 !important; color: var(--fh-ink) !important; }
 
+/* ---------- Pass 11 (15 Nov): app screens in the homepage's language ----------
+   Upload, History, Record and Account still looked like the old template: white rounded panels with
+   shadows, pill buttons and chips, filled boxes for small cards and notes, and big rounded "+ Add"
+   bars. Same rules as the homepage: ruled sections on the paper, a small radius, ink for the main
+   action, terracotta for links. Layout and behaviour are unchanged; this is presentation only. */
+.app-shell .workspace > .panel { border: 0 !important; border-top: 1px solid var(--fh-line) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding-left: 0 !important; padding-right: 0 !important; }
+.app-shell .workspace > .panel:first-of-type { border-top: 0 !important; }
+.app-shell :is(.secondary-button, .install-button, .rm-list button) { border-radius: 6px !important; background: transparent !important; border: 1px solid var(--fh-line-strong) !important; color: var(--fh-ink) !important; }
+.app-shell .secondary-button:hover { border-color: var(--fh-ink) !important; }
+.app-shell .primary-button, .app-shell .workspace .primary-button { border-radius: 6px !important; }
+.app-shell .report-panel .whose-chip { border-radius: 6px !important; }
+.app-shell .workspace :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) { border-radius: 6px !important; box-shadow: none !important; }
+.app-shell .report-panel :is(.composer-drop, .hero-sample, .composer-sample) { border-radius: 8px !important; box-shadow: none !important; }
+.app-shell .record-summary-card { border: 0 !important; border-top: 2px solid var(--fh-ink) !important; border-radius: 0 !important; background: transparent !important; padding-left: 0 !important; padding-right: 0 !important; }
+.app-shell .add-form > summary { min-height: 44px; padding: 8px 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; color: var(--fh-accent) !important; font-weight: 600; }
+.app-shell .add-form > summary:hover { text-decoration: underline; text-underline-offset: 5px; }
+.app-shell .add-form { border: 0 !important; border-radius: 0 !important; background: transparent !important; }
+.app-shell .add-form[open] { background: transparent !important; padding-bottom: 8px; }
+.app-shell .add-form > :is(form, .lab-trend-grid, .primary-action-row) { padding-left: 0 !important; padding-right: 0 !important; }
+.app-shell .add-form > summary::before { width: 22px !important; height: 22px !important; background: transparent !important; color: var(--fh-accent) !important; border: 1.5px solid currentColor; font-weight: 600 !important; }
+.app-shell .add-form[open] > summary::before { color: var(--fh-ink) !important; }
+/* The header already ends in a rule; on app screens the first section's top rule would double it. */
+body[data-active-workspace]:not([data-active-workspace="home-title"]) .topbar.site-nav { border-bottom-color: transparent !important; }
+/* Screen tabs: plain words with an underline for the current one, not a pill group. */
+.app-shell .site-nav .quick-nav.patient-nav { background: transparent !important; box-shadow: none !important; border: 0 !important; }
+.app-shell .site-nav .quick-nav.patient-nav a { border-radius: 0 !important; background: transparent !important; box-shadow: none !important; color: var(--fh-ink-2) !important; }
+.app-shell .site-nav .quick-nav.patient-nav a:hover { color: var(--fh-ink) !important; }
+.app-shell .site-nav .quick-nav.patient-nav a.active { color: var(--fh-ink) !important; box-shadow: inset 0 -2px 0 var(--fh-accent) !important; }
+@media (max-width: 720px) {
+  .app-shell .site-nav .quick-nav.patient-nav { background: rgba(250, 246, 238, 0.98) !important; border-top: 1px solid var(--fh-line) !important; border-radius: 0 !important; }
+  .app-shell .site-nav .quick-nav.patient-nav a.active { box-shadow: inset 0 2px 0 var(--fh-accent) !important; }
+}
+.app-shell .add-form[open] > summary { color: var(--fh-ink) !important; }
+.app-shell .auth-aside, .app-shell .yd-card, .app-shell .history-empty, .app-shell .workspace .v1-history-list > .history-empty { border: 0 !important; border-top: 1px solid var(--fh-line) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding-left: 0 !important; padding-right: 0 !important; }
+.app-shell .auth-benefits svg { background: transparent !important; border: 1px solid var(--fh-line-strong); border-radius: 6px !important; }
+.app-shell .reminders-panel .rm-note, .app-shell .billing-banner { border: 0 !important; border-left: 2px solid var(--fh-accent) !important; border-radius: 0 !important; background: transparent !important; padding: 4px 0 4px 14px !important; }
+.app-shell .auth-tabs, .app-shell .segmented { border-radius: 8px !important; }
+.app-shell .auth-tabs button, .app-shell .segmented button { border-radius: 6px !important; }
+
 /* ---------- Motion ----------
    The homepage has no entrance or looping animation. Only the guide's mark moves, and only while it
    is working on an answer. */

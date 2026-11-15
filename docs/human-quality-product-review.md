@@ -175,3 +175,30 @@ A person should confirm problems 1–8 look fixed at 1440 and 390 px before this
   - a result within range is not listed;
   - there is no card grid;
   - the earlier checks still pass, including that a reminder's private title is never shown.
+
+## App screens in the homepage's language (15 Nov)
+
+**Before.** Upload, History, Record and Account still had the old template:
+- white rounded panels with shadows;
+- pill buttons and chips;
+- filled boxes for small cards, notes and empty states;
+- big rounded "+ Add to the record" and "+ Add a lab value" bars;
+- a pill group for the screen tabs;
+- a doubled line under the header.
+
+**After** (CSS only, in `site.css`, "Pass 11"):
+- ruled sections on the paper;
+- 6 px corners on every button, chip and field;
+- small cards set as columns under a 2 px rule;
+- notes marked with a left rule instead of a filled box;
+- "+ Add" as a plain link with a hairline circle;
+- screen tabs as words with an accent underline for the current one.
+
+Wording, values, layout order and behaviour are unchanged.
+
+**Screenshots:**
+- `before-app-*-1440.png`
+- `after-app-*-1440.png`
+- `after-app-*-390.png`
+
+The screens are Upload (`report-title`), History (`saved-title`), Record (`record-title`) and Account (`account-title`).
