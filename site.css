@@ -527,6 +527,31 @@ body[data-active-workspace]:not([data-active-workspace="home-title"]) .topbar.si
 /* The three steps sit side by side in a grid, so each number goes inside its own column. */
 .app-shell #report-results .next-steps-list { list-style-position: inside !important; padding-left: 0 !important; }
 
+/* ---------- Pass 13 (16 Nov): DocBridge in the same language ----------
+   The clinician workspace still used boxes everywhere: rounded pricing cards, filled notices, six
+   white stat tiles (five fitted a row, so "Approved with no edits" sat alone on a second row), and
+   rounded white blocks for New lab, Inbox, Team and Settings. Now: the six numbers on one ruled row
+   (three per row on phones), ruled blocks, notices with a left rule, and no teal left on the file
+   picker. Presentation only; numbers, wording and prices are unchanged. */
+.app-shell .docbridge-panel :is(.db-pilot-note, .db-demo-banner) { border: 0 !important; border-left: 2px solid var(--fh-accent) !important; border-radius: 0 !important; background: transparent !important; padding: 6px 0 6px 14px !important; }
+.app-shell .docbridge-panel .db-demo-banner { margin-top: 24px !important; }
+.app-shell .docbridge-panel .db-pricing > div { border: 0 !important; border-top: 2px solid var(--fh-ink) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding: 12px 0 0 !important; }
+.app-shell .docbridge-panel .db-metrics { display: grid !important; grid-template-columns: repeat(6, minmax(0, 1fr)) !important; gap: 0 !important; border-top: 1px solid var(--fh-line-strong); border-bottom: 1px solid var(--fh-line-strong); }
+.app-shell .docbridge-panel .db-metrics > div { border: 0 !important; border-left: 1px solid var(--fh-line) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding: 14px 16px !important; }
+.app-shell .docbridge-panel .db-metrics > div:first-child { border-left: 0 !important; padding-left: 0 !important; }
+.app-shell .docbridge-panel .db-metrics strong { font-family: var(--fh-serif) !important; font-weight: 400 !important; font-size: 1.8rem !important; }
+.app-shell .docbridge-panel .db-block { border: 0 !important; border-top: 1px solid var(--fh-line-strong) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding-left: 0 !important; padding-right: 0 !important; }
+.app-shell .docbridge-panel .db-row { border-radius: 6px !important; }
+.app-shell .docbridge-panel .sync-badge { border-radius: 4px !important; }
+.app-shell .docbridge-panel input[type="file"] { border: 1px dashed var(--fh-line-strong) !important; border-radius: 6px !important; background: transparent !important; }
+.app-shell .docbridge-panel .db-list-head h4 { font-family: var(--fh-serif) !important; font-weight: 400 !important; font-size: 1.3rem !important; letter-spacing: 0 !important; }
+@media (max-width: 720px) {
+  .app-shell .docbridge-panel .db-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .app-shell .docbridge-panel .db-metrics > div:nth-child(3n + 1) { border-left: 0 !important; padding-left: 0 !important; }
+  .app-shell .docbridge-panel .db-metrics > div:nth-child(n + 4) { border-top: 1px solid var(--fh-line) !important; }
+  .app-shell .docbridge-panel .db-metrics strong { font-size: 1.4rem !important; }
+}
+
 /* ---------- Motion ----------
    The homepage has no entrance or looping animation. Only the guide's mark moves, and only while it
    is working on an answer. */

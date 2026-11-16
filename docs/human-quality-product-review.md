@@ -224,3 +224,23 @@ Every value, unit, label, range and sentence is unchanged. The page is about 60 
 **Screenshots:**
 - before: `before-report-results-1440.png` and `before-report-results-390.png`;
 - after: `after-report-results-1440.png` and `after-report-results-390.png`.
+
+## DocBridge clinician workspace (16 Nov)
+
+**Before.**
+- Rounded pricing cards and filled notices.
+- Six white stat tiles. Only five fit on a row, so "Approved with no edits" sat alone on a second row. This is a layout defect, visible in `before-docbridge-1440.png`.
+- Rounded white blocks for New lab, Inbox, Team and Settings.
+- A teal dashed file picker.
+
+**After** (CSS only, `site.css` "Pass 13"):
+- The six numbers sit on one ruled row on desktop, and in two rows of three on phones.
+- Pricing is set as ruled columns.
+- Notices have a left rule instead of a fill.
+- Blocks are ruled, not boxed.
+- No teal remains.
+- Numbers, wording and prices are unchanged.
+
+**Screenshots:**
+- `before-docbridge-1440.png` and `before-docbridge-390.png`
+- `after-docbridge-1440.png` and `after-docbridge-390.png`
