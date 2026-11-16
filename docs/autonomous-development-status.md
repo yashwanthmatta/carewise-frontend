@@ -6,14 +6,14 @@ Last verified run: 2026-11-16, daily run at 04:23 UTC.
 
 | Repo | main | Working branch | Open PRs from this work |
 |---|---|---|---|
-| carewise-frontend | `3994f43` (#156 merged) | `claude/carewise-api-project-jmxg7f` | #158: craft pass from the 13 Nov audit (one accent colour, no empty demo boxes, help button clear of controls, flat AI Guide mark, "Profile" → "Account", visible privacy disclosure) and, from this run, the encryption-claim fix. Cache version 226. |
+| carewise-frontend | `01ec0ec` (#163 merged) | `claude/carewise-api-project-jmxg7f` | "Welcome back" drawn as the report on paper, with the homepage's pen (owner feedback 16 Nov). Cache version 233. |
 | carewise-mobile-app | `69c49fb` (#53 merged) | `claude/carewise-api-project-jmxg7f` | #52: Expo tooling advisories (lockfile only). Green, mergeable. Provider sign-in and the mobile restyle wait for #52. |
 | carewise-production-backend | `b9b5f3c` (#58 merged, live on Render) | `claude/carewise-api-project-jmxg7f` (at main) | None. #56 and #58 merged. |
 
 **Other open PRs:**
 - frontend #155 (the owner's revert of #154) is now closed.
 - Agent and Dependabot PRs: frontend #132 and #112; backend #51 and #57; mobile #48, #41 and #42.
-- **Owner:** merge cache-version PRs one at a time. #158 uses 226.
+- **Owner:** merge cache-version PRs one at a time. The dashboard PR uses 233.
 
 ## Automation that actually exists
 

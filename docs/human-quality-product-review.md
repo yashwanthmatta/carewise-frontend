@@ -176,6 +176,30 @@ A person should confirm problems 1–8 look fixed at 1440 and 390 px before this
   - there is no card grid;
   - the earlier checks still pass, including that a reminder's private title is never shown.
 
+## "Welcome back" drawn as the report on paper (16 Nov, owner feedback: "it simple and not worh make something unique")
+
+**What the owner saw.** The 13 Nov version was tidy but plain: a heading, a ruled list and lines of text. Nothing about it was ours. The same "Earlier" report was also listed three times when a sample was opened more than once.
+
+**Now it uses the homepage's own idea:**
+- the latest report is drawn as the paper it came on (file name, date, each result with its value and the lab's range, exactly as saved);
+- the same pen as the homepage circles up to two results outside the lab's range, and writes the app's own label and range beside each one. Positions come from the real table cells, and the loop circles just the number;
+- "+ N more to talk about" in the same handwriting when more results are outside the range;
+- earlier reports show as one or two sheets lying behind the latest one, and the line "1 earlier report saved on this device" counts each report once;
+- "Welcome back.", the report's own doctor questions and one ink button sit beside the paper;
+- on phones the notes go under the sheet, numbered to match the circles.
+
+**Unchanged:** the values, units, ranges, labels and questions are the ones the app saved with the report. No medical wording or rule changed. Tracking and reminder lines show only when there is something in them.
+
+**Evidence:**
+- Screenshots: `sheet-dashboard-1440.png` and `sheet-dashboard-390.png`. These use the two made-up samples; no real data.
+- No sideways scroll at 1440 or 390 px.
+- `home-dashboard.mjs` now checks four more things:
+  - creatinine is on the sheet with value, unit and range;
+  - creatinine is circled, and its note is the app's own label and range;
+  - potassium, which is within range, is on the sheet but not circled;
+  - pen marks are drawn.
+- Status: IMPLEMENTED. Whether it reads as "unique" is the owner's call: REQUIRES HUMAN REVIEW.
+
 ## App screens in the homepage's language (15 Nov)
 
 **Before.** Upload, History, Record and Account still had the old template:

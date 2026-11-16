@@ -3,6 +3,8 @@
 // reminders. A first visit shows no dashboard. No score is shown.
 // 13 Nov rebuild: set like a homepage part. The results to talk about are listed with the exact value,
 // unit and lab range saved with the report; empty sections are left out instead of shown as boxes.
+// 16 Nov: the latest report is drawn as a paper sheet. Results outside the lab's range are circled
+// in pen and noted in the app's own label and range; results within range are on the sheet, unmarked.
 // Optional: AXE_PATH=/path/to/axe.min.js runs an accessibility scan of the dashboard.
 // Usage: serve the site on :4173, then node scripts/eval/home-dashboard.mjs
 import fs from "node:fs";
@@ -35,13 +37,19 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   await page.goto(base, { waitUntil: "load" });
   await page.waitForFunction(() => !document.querySelector("#dashboard").hidden);
   const text = await page.innerText("#dashboard");
-  check(/Welcome back/.test(text) && /Dad's kidney panel/.test(text), `${size}: dashboard shows the latest report`);
+  // The file name is printed in capitals on the sheet, so read the text as written, not as shown.
+  check(/Welcome back/.test(text) && /Dad's kidney panel/.test(await page.$eval("#dashboard", (el) => el.textContent)), `${size}: dashboard shows the latest report`);
   check(/1 of 3 results outside the lab's range|2 of 3 results outside the lab's range/.test(text), `${size}: latest report shows its lab-range count`);
   check(/How are my kidneys working/.test(text), `${size}: doctor questions are the report's own`);
   check(!/Which results matter most for me/.test(text.split("Tracking")[0]), `${size}: no general question in the top three`);
-  const rows = await page.$$eval("#dashboard .ft-dash-results tbody tr", (trs) => trs.map((tr) => tr.innerText.replace(/\s+/g, " ")));
-  check(rows.some((r) => /Creatinine/.test(r) && /2\.3 mg\/dL/.test(r) && /0\.6-1\.3/.test(r)), `${size}: results to talk about show exact value, unit and lab range (${rows.join(" | ")})`);
-  check(!rows.some((r) => /Potassium/.test(r)), `${size}: a result within range is not listed to talk about`);
+  const sheet = await page.$$eval("#dashboard .ft-dash-paper .ed-sheet tbody tr", (trs) => trs.map((tr) => ({ text: tr.innerText.replace(/\s+/g, " "), mark: tr.querySelector("[data-mark]")?.dataset.mark || "" })));
+  const creat = sheet.find((r) => /Creatinine/.test(r.text));
+  check(creat && /2\.3 mg\/dL/.test(creat.text) && /0\.6-1\.3/.test(creat.text), `${size}: sheet shows exact value, unit and lab range (${sheet.map((r) => r.text).join(" | ")})`);
+  const note = creat?.mark ? await page.$eval(`#dashboard [data-note="${creat.mark}"]`, (el) => el.textContent).catch(() => "") : "";
+  check(creat?.mark && /^Creatinine: .*above.* \(0\.6-1\.3\)$/.test(note.trim()), `${size}: out-of-range result is circled with the app's label and range (${note})`);
+  const potassium = sheet.find((r) => /Potassium/.test(r.text));
+  check(potassium && !potassium.mark, `${size}: a result within range is on the sheet but not marked`);
+  check(await page.$$eval("#dashboard .ed-ink path", (els) => els.length) >= 1, `${size}: pen marks are drawn`);
   check(await page.$$eval("#dashboard .ft-dash-card", (els) => els.length) === 0, `${size}: no card grid`);
   check(/Creatinine/.test(text) && /2\.3 mg\/dL/.test(text), `${size}: tracked result with value and unit`);
   check(/Lab follow-up/.test(text) && !/Private note/.test(text), `${size}: upcoming reminder by type, not its private title`);
