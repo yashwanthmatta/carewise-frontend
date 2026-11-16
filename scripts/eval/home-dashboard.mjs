@@ -57,6 +57,16 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   check(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), `${size}: no sideways scroll`);
   await page.click('#dashboard a[href="#report-title"]');
   check(await page.evaluate(() => !document.querySelector(".report-panel").hidden), `${size}: "Understand a new report" opens Upload`);
+  // A report saved before each result was kept (Oct 2026) has only the count sentence. The summary
+  // must not say "no results outside the lab's range" under a count that says 7 (owner's screenshot, 16 Nov).
+  await page.evaluate(() => {
+    localStorage.setItem("carewiseReports", JSON.stringify([{ id: "old-1", person: "Dad (sample)", fileName: "old-panel.pdf", status: "analyzed locally", message: "7 of 10 results outside the lab's range. LDL cholesterol", questions: ["What should my LDL goal be?"], createdAt: "2026-10-25T10:00:00Z" }]));
+  });
+  await page.goto(base, { waitUntil: "load" });
+  await page.waitForFunction(() => !document.querySelector("#dashboard").hidden);
+  const oldText = await page.innerText("#dashboard");
+  check(/7 of 10 results outside the lab's range/.test(oldText) && !/No results outside|Ningún resultado/i.test(oldText), `${size}: an older report keeps its count and never says "no results" under it`);
+  check(await page.$$eval("#dashboard [data-dash-open]", (els) => els.length) === 1, `${size}: an older report offers to open the full report`);
   check(!errors.length, `${size}: no script errors ${errors.join("; ")}`);
   if (process.env.AXE_PATH) {
     await page.goto(base, { waitUntil: "load" });

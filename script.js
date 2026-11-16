@@ -5485,7 +5485,7 @@ function renderHomeDashboard() {
               <figure class="ft-dash-paper ed-sheet-wrap" data-annotated data-earlier="${Math.min(earlier.length, 2)}" aria-label="${es ? "Su último informe, con notas" : "Your latest report, with notes"}">
                 <div class="ed-sheet">
                   <header><b>${escapeHtml(name)}</b><span>${escapeHtml(date)}</span></header>
-                  ${rows ? `<table><thead><tr><th scope="col">${es ? "Prueba" : "Test"}</th><th scope="col">${es ? "Resultado" : "Result"}</th><th scope="col">${es ? "Rango" : "Ref. range"}</th></tr></thead><tbody>${rows}</tbody></table>` : `<p class="ft-dash-note">${escapeHtml(countText || (es ? "Informe guardado" : "Saved report"))}</p>`}
+                  ${rows ? `<table><thead><tr><th scope="col">${es ? "Prueba" : "Test"}</th><th scope="col">${es ? "Resultado" : "Result"}</th><th scope="col">${es ? "Rango" : "Ref. range"}</th></tr></thead><tbody>${rows}</tbody></table>` : `<p class="ft-dash-note">${escapeHtml(countText || (es ? "Informe guardado" : "Saved report"))}.</p><p class="ft-dash-note">${es ? "Este informe se guardó antes de que la app guardara cada resultado." : "This report was saved before the app kept each result on this device."} <button class="ed-link ft-dash-open" type="button" data-dash-open="${escapeHtml(latest.id || "")}">${es ? "Abrir el informe" : "Open the report"}</button></p>`}
                   ${results.length > shownRows.length ? `<p class="ft-dash-more">${es ? `y ${results.length - shownRows.length} más` : `and ${results.length - shownRows.length} more`}</p>` : ""}
                 </div>
                 <svg class="ed-ink" data-ink aria-hidden="true" focusable="false"></svg>
@@ -5503,6 +5503,7 @@ function renderHomeDashboard() {
               </div>
             </div>`;
   window.ftAnnotate?.(box.querySelector("[data-annotated]"));
+  box.querySelector("[data-dash-open]")?.addEventListener("click", (event) => openReportHistoryItem(event.currentTarget.dataset.dashOpen));
   box.hidden = false;
 }
 
