@@ -45,7 +45,7 @@ jobs:
           AXE_PATH=node_modules/axe-core/axe.min.js A11Y_JSON=a11y-findings.json node scripts/eval/a11y-scan.mjs
       - name: Keep the findings
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: a11y-findings
           path: a11y-findings.json
