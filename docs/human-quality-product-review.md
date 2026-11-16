@@ -202,3 +202,45 @@ Wording, values, layout order and behaviour are unchanged.
 - `after-app-*-390.png`
 
 The screens are Upload (`report-title`), History (`saved-title`), Record (`record-title`) and Account (`account-title`).
+
+## The opened report (16 Nov)
+
+**Before.** The report screen, where people spend the most time, set every part in its own box:
+- a rounded summary card;
+- a grid of rounded result cards;
+- a filled questions panel;
+- boxed sections for "Your original report", "Save or share", the safety note and the feedback question.
+
+**A real defect, verified on the screen:** in "Your next 3 steps" the list drew the browser's own number as well as its custom counter. The browser number sat outside the left edge of the page, showing a stray "." at 1440 px.
+
+**After** (CSS only, `site.css` "Pass 12"):
+- ruled parts, with a 2 px rule over the summary;
+- each result is a ruled row in two columns, with no box;
+- 4–6 px corners;
+- questions and steps show one accent number each, inside the column, at 1440 and 390 px.
+
+Every value, unit, label, range and sentence is unchanged. The page is about 60 px shorter at 1440 and about 340 px shorter at 390.
+
+**Screenshots:**
+- before: `before-report-results-1440.png` and `before-report-results-390.png`;
+- after: `after-report-results-1440.png` and `after-report-results-390.png`.
+
+## DocBridge clinician workspace (16 Nov)
+
+**Before.**
+- Rounded pricing cards and filled notices.
+- Six white stat tiles. Only five fit on a row, so "Approved with no edits" sat alone on a second row. This is a layout defect, visible in `before-docbridge-1440.png`.
+- Rounded white blocks for New lab, Inbox, Team and Settings.
+- A teal dashed file picker.
+
+**After** (CSS only, `site.css` "Pass 13"):
+- The six numbers sit on one ruled row on desktop, and in two rows of three on phones.
+- Pricing is set as ruled columns.
+- Notices have a left rule instead of a fill.
+- Blocks are ruled, not boxed.
+- No teal remains.
+- Numbers, wording and prices are unchanged.
+
+**Screenshots:**
+- `before-docbridge-1440.png` and `before-docbridge-390.png`
+- `after-docbridge-1440.png` and `after-docbridge-390.png`
