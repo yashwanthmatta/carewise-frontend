@@ -28,6 +28,10 @@ The tracker for errors found in FollowThrough Health. Every row is a defect that
 | Report reading | `run-eval.mjs` (68 made-up reports, 200 checks), `heading-values.mjs`, the 34 frontend safety cases | 100% read rate, value accuracy and flag accuracy. All safety cases pass |
 | Backend | 239 pytest tests, ruff, `tests/static_readiness_check.py` on `main` (`b9b5f3c`) | All pass |
 | Mobile | `scripts/ci_check.js` on `main` (`69c49fb`) | Passes. Emulator and real-device checks were not run in this session |
+| Accessibility | axe-core (WCAG 2 A and AA) on the share, packet, About, FAQ, Safety, Support, Accessibility, Glossary, Demo and Privacy pages; the existing accessibility evals on the app | No violations |
+| Backend access control | The API schema lists 118 operations; 35 have no sign-in. Each of the 35 was read in code | All 35 are meant to be open (sign-in, health, public plan list) or are protected another way: scheduled jobs need a secret header (`require_cron_token`), the founder summary needs its own token, the Stripe webhook checks its signature and ignores repeated event ids, Twilio voice calls check the request signature and an unguessable per-event token, inbound email needs a secret path token. Share and packet views take the token in the POST body, with rate limits |
+| Sign-in provider buttons | `index.html` and `script.js` (`/auth/providers`) | Google, Apple and Microsoft buttons stay hidden unless the API reports that provider as configured. None is marked working: a real sign-in was not tested |
+| Full frontend suite | All 34 local evals, including safety, accuracy, CSP, accessibility, two-step sign-in for staff, reminders and the dashboard | 34 of 34 pass on the branch (`2d59b3b`) |
 | Production, read-only | Render request logs for 5xx since 10 Nov; app logs for errors since 9 Nov; GitHub monitors (Production Monitor, Live Browser Check, Live Backend Smoke) | No 5xx request logs. The only recurring app error is E-001. All monitors green; no open `production-alert` issue |
 
 ## Not checked yet, and why
