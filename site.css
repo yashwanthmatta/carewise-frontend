@@ -506,6 +506,27 @@ body[data-active-workspace]:not([data-active-workspace="home-title"]) .topbar.si
 .app-shell .auth-tabs, .app-shell .segmented { border-radius: 8px !important; }
 .app-shell .auth-tabs button, .app-shell .segmented button { border-radius: 6px !important; }
 
+/* ---------- Pass 12 (16 Nov): the opened report in the homepage's language ----------
+   The report screen still set every part in its own box: a rounded summary card, a grid of rounded
+   result cards, a filled questions panel, boxed "original report", "save or share", safety note and
+   feedback. Same rules as the rest of the site now: ruled parts, results as ruled rows, 6 px corners.
+   Presentation only; every value, label, range and sentence is unchanged. */
+.app-shell #report-results :is(.report-summary, .result-doctor, .result-source, .result-save, .safety-note, .feedback-box) { border: 0 !important; border-top: 1px solid var(--fh-line-strong) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding-left: 0 !important; padding-right: 0 !important; }
+.app-shell #report-results .report-summary { border-top: 2px solid var(--fh-ink) !important; }
+.app-shell #report-results .result-cards-grid { column-gap: 48px !important; row-gap: 0 !important; }
+.app-shell #report-results .result-cards-grid > .result-card-item { border: 0 !important; border-top: 1px solid var(--fh-line-strong) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding: 18px 0 20px !important; animation: none !important; }
+.app-shell #report-results .result-card-item header em { border-radius: 4px !important; }
+.app-shell #report-results .result-more { border: 0 !important; border-top: 1px solid var(--fh-line) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+.app-shell #report-results .result-more:last-of-type { border-bottom: 1px solid var(--fh-line) !important; }
+.app-shell #report-results .result-more > summary { padding-left: 0 !important; padding-right: 0 !important; }
+/* "Your next 3 steps": the list drew the browser's own "1." as well as its counter, and the browser
+   number sat outside the page edge (a stray "." at 1440 px). One number, inside the column. */
+.app-shell #report-results :is(.next-steps-list, .result-doctor-questions) { list-style: decimal outside !important; padding-left: 1.6em !important; margin-left: 0 !important; }
+.app-shell #report-results :is(.next-steps-list, .result-doctor-questions) li::before { content: none !important; display: none !important; }
+.app-shell #report-results :is(.next-steps-list, .result-doctor-questions) li::marker { color: var(--fh-accent); font-weight: 600; }
+/* The three steps sit side by side in a grid, so each number goes inside its own column. */
+.app-shell #report-results .next-steps-list { list-style-position: inside !important; padding-left: 0 !important; }
+
 /* ---------- Motion ----------
    The homepage has no entrance or looping animation. Only the guide's mark moves, and only while it
    is working on an answer. */
