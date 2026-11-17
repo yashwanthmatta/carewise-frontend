@@ -176,6 +176,62 @@ A person should confirm problems 1–8 look fixed at 1440 and 390 px before this
   - there is no card grid;
   - the earlier checks still pass, including that a reminder's private title is never shown.
 
+## "Welcome back" drawn as the report on paper (16 Nov, owner feedback: "it simple and not worh make something unique")
+
+**What the owner saw.** The 13 Nov version was tidy but plain: a heading, a ruled list and lines of text. Nothing about it was ours. The same "Earlier" report was also listed three times when a sample was opened more than once.
+
+**Now it uses the homepage's own idea:**
+- the latest report is drawn as the paper it came on (file name, date, each result with its value and the lab's range, exactly as saved);
+- the same pen as the homepage circles up to two results outside the lab's range, and writes the app's own label and range beside each one. Positions come from the real table cells, and the loop circles just the number;
+- "+ N more to talk about" in the same handwriting when more results are outside the range;
+- earlier reports show as one or two sheets lying behind the latest one, and the line "1 earlier report saved on this device" counts each report once;
+- "Welcome back.", the report's own doctor questions and one ink button sit beside the paper;
+- on phones the notes go under the sheet, numbered to match the circles.
+
+**Unchanged:** the values, units, ranges, labels and questions are the ones the app saved with the report. No medical wording or rule changed. Tracking and reminder lines show only when there is something in them.
+
+**Evidence:**
+- Screenshots: `sheet-dashboard-1440.png` and `sheet-dashboard-390.png`. These use the two made-up samples; no real data.
+- No sideways scroll at 1440 or 390 px.
+- `home-dashboard.mjs` now checks four more things:
+  - creatinine is on the sheet with value, unit and range;
+  - creatinine is circled, and its note is the app's own label and range;
+  - potassium, which is within range, is on the sheet but not circled;
+  - pen marks are drawn.
+- Status: IMPLEMENTED. Whether it reads as "unique" is the owner's call: REQUIRES HUMAN REVIEW.
+
+**Follow-up the same day (owner's screenshot, "fix this" / "its not good").** The live summary said "7 of 10 results outside the lab's range" and then "No results outside the lab's range in this report." The cause: reports saved before early November keep only the count sentence, not each result, so the list came out empty. CONFIRMED and IMPLEMENTED in the same PR:
+- an older report now shows its own count on the sheet, says plainly that it was saved before each result was kept, and offers "Open the report";
+- it never says "no results" under a count that says otherwise;
+- `home-dashboard.mjs` checks this with a made-up older report;
+- screenshot: `dashboard-older-report-1440.png`.
+
+## Shared summary, clinic packet and info pages (16 Nov)
+
+**Before.** The page a doctor opens from "Share with my doctor", the clinic packet and the info pages (About, FAQ, Safety, Support, Accessibility, Glossary, Demo) still had the old template:
+- stacked white rounded cards;
+- pill buttons in terracotta;
+- a teal tinted box for the next step;
+- default blue footer links;
+- the site's fonts never loaded, so they fell back to Georgia and system fonts.
+
+**Now:**
+- set like the homepage, with paper, hairline rules between parts and the part's name as a small label in the margin;
+- a large serif title over a heavy rule;
+- tables read like a lab printout;
+- one ink button;
+- the next step marked with a terracotta rule, not a tinted box;
+- the site's fonts load;
+- **Printed or saved as PDF:** the doctor's copy is black on white, with no buttons, the labels kept in the margin, and no part split across pages. The made-up sample fits on one A4 page.
+
+**Unchanged:** every word, value, label and disclaimer on these pages. Only `share.css` and a font link changed. The glossary page also pointed at an old stylesheet version (146), now current.
+
+**Not changed, for the owner:** the shared summary still shows the "educational estimate" score (for example "72/100"), which the app's own screens no longer show. Whether a doctor should see it is the owner's decision. REQUIRES HUMAN REVIEW.
+
+**Evidence:**
+- Screenshots: `before-share-1440.png`, `share-1440.png`, `share-390.png`, `share-print.png`, `before-about-1440.png` and `about-1440.png`. All use made-up data.
+- No sideways scroll at 1440 or 390 px on the share, packet, About, FAQ, Demo and Glossary pages.
+
 ## App screens in the homepage's language (15 Nov)
 
 **Before.** Upload, History, Record and Account still had the old template:

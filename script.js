@@ -5450,42 +5450,60 @@ function renderHomeDashboard() {
   const tracked = [...new Map(trends.map((item) => [item.test, item])).values()];
   const today = new Date().toISOString().slice(0, 10);
   const upcoming = getReminders().filter((item) => item.startDate >= today).sort((a, b) => a.startDate.localeCompare(b.startDate)).slice(0, 2);
-  // Set like the homepage: a margin label, a plain sentence about the latest report, then the results
-  // to talk about (exact value, unit and lab range as saved; nothing re-calculated) beside that
-  // report's own doctor questions. Tracking, reminders and older reports are one quiet line each, and
-  // only when there is something to show: no empty boxes.
+  // The latest report drawn as the paper it came on, with the same pen as the homepage: each result
+  // outside the lab's range is circled and noted in the app's own words (label and lab range, exact as
+  // saved; nothing re-calculated). Earlier reports sit as sheets behind it, each listed once. The
+  // report's own doctor questions are beside it. Nothing is shown in an empty box.
   const name = latest.fileName || (es ? "Informe" : "Report");
   const date = when(latest.testDate ? `${latest.testDate}T12:00:00` : latest.createdAt || latest.updatedAt);
   const countText = String(latest.message || "").split(/\.\s/)[0].replace(/\.$/, "");
-  const results = Array.isArray(latest.results) ? latest.results : [];
-  const toTalk = results.filter((item) => item && item.status && item.status !== "within" && item.status !== "unknown");
-  const shown = toTalk.slice(0, 5);
-  const resultRows = shown.map((item) => `<tr><th scope="row">${escapeHtml(item.name || "")}</th><td class="ft-dash-value">${escapeHtml(String(item.value || ""))}</td><td>${escapeHtml(item.label || "")}${item.range ? `<span class="ft-dash-range">${escapeHtml(item.rangeLabel || (es ? "Rango del laboratorio" : "Lab's range"))} ${escapeHtml(item.range)}</span>` : ""}</td></tr>`).join("");
-  const more = toTalk.length > shown.length ? `<p class="ft-dash-note">${es ? `Y ${toTalk.length - shown.length} más en el informe.` : `And ${toTalk.length - shown.length} more in the report.`}</p>` : "";
+  const results = (Array.isArray(latest.results) ? latest.results : []).filter((item) => item && item.name);
+  const isOut = (item) => item.status && item.status !== "within" && item.status !== "unknown";
+  const shownRows = results.slice(0, 8);
+  const marked = shownRows.filter(isOut).slice(0, 2);
+  const markKey = (item) => `r${shownRows.indexOf(item)}`;
+  const rows = shownRows.map((item) => {
+    const out = isOut(item);
+    return `<tr><td>${escapeHtml(item.name)}</td><td${out && marked.includes(item) ? ` data-mark="${markKey(item)}"` : ""}>${escapeHtml(String(item.value || ""))}</td><td>${item.range ? escapeHtml(item.range) : ""}</td></tr>`;
+  }).join("");
+  const notes = marked.map((item) => `<li class="ed-hand" data-note="${markKey(item)}">${escapeHtml(item.name)}: ${escapeHtml(String(item.label || "").toLowerCase())}${item.range ? ` (${escapeHtml(item.range)})` : ""}</li>`).join("");
+  const moreOut = results.filter(isOut).length - marked.length;
+  const seen = new Set([`${name}|${date}`]);
+  const earlier = reports.slice(1).filter((report) => {
+    const key = `${report.fileName || ""}|${when(report.createdAt || report.updatedAt)}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
   const whose = person === "Me" ? (es ? "Su último informe" : "Your latest report") : (es ? `Último informe, de ${escapeHtml(person)}` : `Latest report, for ${escapeHtml(person)}`);
   const lines = [];
   if (tracked.length) lines.push(`<li><span>${es ? "Seguimiento" : "Tracking"}</span>${tracked.slice(0, 3).map((item) => `${escapeHtml(item.test)} ${escapeHtml(`${item.value} ${item.unit || ""}`.trim())}${item.date ? ` <small>(${escapeHtml(when(item.date))})</small>` : ""}`).join(", ")} <a class="ed-link" href="#saved-title">${es ? "Ver tendencias" : "See trends"}</a></li>`);
   if (upcoming.length) lines.push(`<li><span>${es ? "Próximo" : "Coming up"}</span>${upcoming.map((item) => `${escapeHtml(item.type || (es ? "Recordatorio" : "Reminder"))}, ${escapeHtml(when(`${item.startDate}T12:00:00`))}`).join("; ")} <a class="ed-link" href="#record-title">${es ? "Recordatorios" : "Reminders"}</a></li>`);
-  if (reports.length > 1) lines.push(`<li><span>${es ? "Anteriores" : "Earlier"}</span>${reports.slice(1, 4).map((report) => `${escapeHtml(report.fileName || (es ? "Informe" : "Report"))} <small>(${escapeHtml(when(report.createdAt || report.updatedAt))}${normalizeReportPerson(report.person) === "Me" ? "" : `, ${escapeHtml(normalizeReportPerson(report.person))}`})</small>`).join("; ")} <a class="ed-link" href="#saved-title">${es ? "Ver todos" : "See all"}</a></li>`);
   box.innerHTML = `
             <p class="ed-label">${es ? "Su resumen" : "Your summary"}</p>
-            <div>
-              <h2 id="ft-dash-title" class="ed-h2">${es ? "Bienvenido de nuevo." : "Welcome back."}</h2>
-              <p class="ed-body">${whose}: <b class="ft-dash-name">${escapeHtml(name)}</b>${date ? `, ${escapeHtml(date)}` : ""}.${countText ? ` ${escapeHtml(countText)}.` : ""}</p>
-              <div class="ft-dash-cols">
-                <div>
-                  <h3>${es ? "Para hablar con su médico" : "To talk about"}</h3>
-                  ${resultRows ? `<table class="ft-dash-results"><caption class="visually-hidden">${es ? "Resultados fuera del rango del laboratorio" : "Results outside the lab's range"}</caption><tbody>${resultRows}</tbody></table>${more}` : `<p class="ft-dash-note">${es ? "Ningún resultado fuera del rango del laboratorio en este informe." : "No results outside the lab's range in this report."}</p>`}
+            <div class="ft-dash-body">
+              <figure class="ft-dash-paper ed-sheet-wrap" data-annotated data-earlier="${Math.min(earlier.length, 2)}" aria-label="${es ? "Su último informe, con notas" : "Your latest report, with notes"}">
+                <div class="ed-sheet">
+                  <header><b>${escapeHtml(name)}</b><span>${escapeHtml(date)}</span></header>
+                  ${rows ? `<table><thead><tr><th scope="col">${es ? "Prueba" : "Test"}</th><th scope="col">${es ? "Resultado" : "Result"}</th><th scope="col">${es ? "Rango" : "Ref. range"}</th></tr></thead><tbody>${rows}</tbody></table>` : `<p class="ft-dash-note">${escapeHtml(countText || (es ? "Informe guardado" : "Saved report"))}.</p><p class="ft-dash-note">${es ? "Este informe se guardó antes de que la app guardara cada resultado." : "This report was saved before the app kept each result on this device."} <button class="ed-link ft-dash-open" type="button" data-dash-open="${escapeHtml(latest.id || "")}">${es ? "Abrir el informe" : "Open the report"}</button></p>`}
+                  ${results.length > shownRows.length ? `<p class="ft-dash-more">${es ? `y ${results.length - shownRows.length} más` : `and ${results.length - shownRows.length} more`}</p>` : ""}
                 </div>
-                <div>
-                  <h3>${es ? "Preguntas para su médico" : "Questions for your doctor"}</h3>
-                  ${questions.length ? `<ol class="ft-dash-questions">${questions.map((q) => `<li>${escapeHtml(q)}</li>`).join("")}</ol>` : `<p class="ft-dash-note">${es ? "Explique un informe para ver preguntas sobre sus resultados." : "Explain a report to see questions about your results."}</p>`}
-                  <a class="ed-link" href="#saved-title">${es ? "Preparar la visita" : "Prepare for the visit"}</a>
-                </div>
+                <svg class="ed-ink" data-ink aria-hidden="true" focusable="false"></svg>
+                ${notes ? `<ol class="ed-notes">${notes}</ol>` : ""}
+                ${!marked.length && results.length ? `<p class="ed-hand ft-dash-ok">${escapeHtml(countText || (es ? "Todo dentro del rango del laboratorio" : "All within the lab's ranges"))}</p>` : ""}
+                ${moreOut > 0 ? `<p class="ed-hand ft-dash-ok">${es ? `y ${moreOut} más para hablar` : `+ ${moreOut} more to talk about`}</p>` : ""}
+              </figure>
+              <div class="ft-dash-side">
+                <h2 id="ft-dash-title" class="ed-h2">${es ? "Bienvenido de nuevo." : "Welcome back."}</h2>
+                <p class="ed-body">${whose}${date ? `, ${escapeHtml(date)}` : ""}.${countText ? ` ${escapeHtml(countText)}.` : ""}</p>
+                ${questions.length ? `<h3>${es ? "Preguntas para su médico" : "Questions for your doctor"}</h3><ol class="ft-dash-questions">${questions.map((q) => `<li>${escapeHtml(q)}</li>`).join("")}</ol>` : ""}
+                <p class="ed-row"><a class="ed-btn" href="#report-title">${es ? "Entender un informe nuevo" : "Understand a new report"}</a><a class="ed-link" href="#saved-title">${es ? "Preparar la visita" : "Prepare for the visit"}</a></p>
+                ${earlier.length ? `<p class="ft-dash-earlier">${es ? `${earlier.length} ${earlier.length === 1 ? "informe anterior" : "informes anteriores"} guardados en este dispositivo.` : `${earlier.length} earlier ${earlier.length === 1 ? "report" : "reports"} saved on this device.`} <a class="ed-link" href="#saved-title">${es ? "Ver todos" : "See all"}</a></p>` : ""}
+                ${lines.length ? `<ul class="ft-dash-lines">${lines.join("")}</ul>` : ""}
               </div>
-              ${lines.length ? `<ul class="ft-dash-lines">${lines.join("")}</ul>` : ""}
-              <p class="ed-row"><a class="ed-btn" href="#report-title">${es ? "Entender un informe nuevo" : "Understand a new report"}</a><a class="ed-link" href="#saved-title">${es ? "Ver todos los informes" : "See all reports"}</a></p>
             </div>`;
+  window.ftAnnotate?.(box.querySelector("[data-annotated]"));
+  box.querySelector("[data-dash-open]")?.addEventListener("click", (event) => openReportHistoryItem(event.currentTarget.dataset.dashOpen));
   box.hidden = false;
 }
 

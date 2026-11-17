@@ -2,9 +2,11 @@
 // arrow runs along the ruled line above that row to the note in the margin, so the pen never crosses a
 // printed number. Positions come from the real table cells, so a circle cannot land on the wrong
 // value. On phones the notes sit under the sheet, numbered to match the circles.
-(() => {
-  const wrap = document.querySelector("[data-annotated]");
-  if (!wrap) return;
+// The same pen is used on the "Welcome back" summary, which is drawn later by script.js, so it is
+// exposed as window.ftAnnotate(wrap) and applied to every [data-annotated] already on the page.
+function ftAnnotate(wrap) {
+  if (!wrap || wrap.dataset.inked) return;
+  wrap.dataset.inked = "1";
   const svg = wrap.querySelector("[data-ink]");
   const sheet = wrap.querySelector(".ed-sheet");
   const notes = [...wrap.querySelectorAll("[data-note]")];
@@ -23,11 +25,23 @@
       const text = cell.firstChild && document.createRange();
       let left = c.left;
       let width = 24;
-      if (text) { text.selectNodeContents(cell); const r = text.getBoundingClientRect(); left = r.left; width = r.width; }
+      let top = c.top;
+      let height = c.height;
+      if (text) {
+        // Circle the number itself, not the unit or a conversion after it ("3.6" in "3.6 mmol/L (about
+        // 139 mg/dL)"), so the loop stays small and never runs into the next column.
+        const node = cell.firstChild;
+        const first = node.nodeType === 3 ? node.textContent.search(/\s/) : -1;
+        if (first > 0) { text.setStart(node, 0); text.setEnd(node, first); } else text.selectNodeContents(cell);
+        // The number's own line box, so a value that wraps onto two lines on a phone is still circled
+        // where the number is printed, not in the middle of the cell.
+        const r = text.getClientRects()[0] || text.getBoundingClientRect();
+        left = r.left; width = r.width; top = r.top; height = r.height;
+      }
       const cx = left - box.left + width / 2;
-      const cy = c.top - box.top + c.height / 2;
+      const cy = top - box.top + height / 2;
       const rx = Math.max(16, width / 2 + 8);
-      const ry = Math.min(15, c.height / 2 + 2);
+      const ry = Math.min(15, height / 2 + 4);
       // A loose loop, not a perfect ellipse: it overshoots where the pen closes it.
       d += `M${cx - rx + 4} ${cy - ry + 3} C${cx - rx - 8} ${cy + ry - 2} ${cx + rx + 10} ${cy + ry + 4} ${cx + rx + 2} ${cy - ry + 5} S${cx - rx + 6} ${cy - ry - 8} ${cx - rx - 2} ${cy - 2} `;
       if (wide) {
@@ -44,7 +58,8 @@
       } else {
         note.style.left = "";
         note.style.top = "";
-        labels += `<text x="${cx + rx + 6}" y="${cy - 4}">${index + 1}</text>`;
+        // The number sits just left of the loop, in the gap between columns, clear of the unit text.
+        labels += `<text x="${cx - rx - 9}" y="${cy - ry + 6}" text-anchor="end">${index + 1}</text>`;
       }
     });
     svg.innerHTML = `<path d="${d}"/>${labels}`;
@@ -54,7 +69,9 @@
   window.addEventListener("resize", redraw);
   if ("ResizeObserver" in window) new ResizeObserver(redraw).observe(wrap);
   redraw();
-})();
+}
+window.ftAnnotate = ftAnnotate;
+document.querySelectorAll("[data-annotated]").forEach(ftAnnotate);
 
 // FAQ: one answer opens at a time; buttons carry aria-expanded and the answer is a labelled region.
 (() => {
