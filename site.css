@@ -622,3 +622,4 @@ body[data-active-workspace]:not([data-active-workspace="home-title"]) .topbar.si
   #guide .guide-form { flex-wrap: wrap; }
   #guide .guide-form .fh-btn { flex: 1 1 100%; }
 }
+.history-item-head .ft-dash-tag { margin-left: 8px; vertical-align: 2px; }

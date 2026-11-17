@@ -73,6 +73,8 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   check(/Blood test/.test(oldText) && !/sample-blood-work|SAMPLE-BLOOD-WORK/i.test(oldText), `${size}: report named "Blood test", not its file name`);
   check(/Maria's latest report/.test(oldText) && !/\(sample\)/i.test(oldText), `${size}: person shown as "Maria", without "(sample)"`);
   check(await page.$$eval("#dashboard .ft-dash-tag", (els) => els.length === 1 && /sample/i.test(els[0].textContent)), `${size}: made-up data still tagged "Sample"`);
+  const historyText = await page.$eval(".v1-history-list", (el) => el.textContent).catch(() => "");
+  check(/For Maria\b/.test(historyText) && !/\(sample\)|sample-blood-work/i.test(historyText) && /Sample/.test(historyText), `${size}: History lists "Blood test, For Maria" with a Sample tag (${historyText.replace(/\s+/g, " ").slice(0, 80)})`);
   check(!errors.length, `${size}: no script errors ${errors.join("; ")}`);
   if (process.env.AXE_PATH) {
     await page.goto(base, { waitUntil: "load" });

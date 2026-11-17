@@ -5614,8 +5614,8 @@ function renderReportHistory() {
     reportHistoryList.innerHTML = reports.slice(0, 4).map((report) => `
       <article class="history-item">
         <div class="history-item-head">
-          <strong>${escapeHtml(historyTitle(report))}</strong>
-          <span>${escapeHtml(`For ${normalizeReportPerson(report.person)} · ${historyDateText(report)}`)}</span>
+          <strong>${escapeHtml(historyTitle(report))}${isSampleReport(report) ? ' <em class="ft-dash-tag">Sample</em>' : ""}</strong>
+          <span>${escapeHtml(`For ${personDisplayName(normalizeReportPerson(report.person))} · ${historyDateText(report)}`)}</span>
         </div>
         <p>${escapeHtml(report.message || "Saved report. Run or load analysis to see a plain-English explanation.")}</p>
         ${report.questions?.length ? `<p><strong>Doctor question:</strong> ${escapeHtml(report.questions[0])}</p>` : ""}
