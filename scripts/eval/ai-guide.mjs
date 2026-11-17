@@ -69,6 +69,8 @@ async function askAndWait(page, question) {
   // plainly, never only a menu (owner's screenshot, 17 Nov: "dolo 650").
   const unknown = await askAndWait(page, "dolo 650");
   check(/isn't answering right now/.test(unknown) && /dolo 650/.test(unknown) && !/^Here's what I can help with/.test(unknown), `unanswerable question while offline: says the assistant is unavailable ("${unknown.slice(0, 70)}…")`);
+  const cbc = await askAndWait(page, "What does CBC test for?");
+  check(/red cells/.test(cbc) && /white cells/.test(cbc) && /platelets/.test(cbc), `common panel name answered: CBC ("${cbc.slice(0, 50)}…")`);
   const urgent = await askAndWait(page, "I have chest pain right now");
   check(/call 911 or your local emergency number/i.test(urgent) && await page.$(".guide-msg-guide.guide-urgent"), "emergency words: urgent message, shown as urgent");
   check(await page.$$eval("[data-guide-copy]", (list) => list.length) >= 5, "every answer has Copy");
