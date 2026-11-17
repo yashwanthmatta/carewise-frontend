@@ -171,6 +171,13 @@
     return "";
   }
 
+  function offlineAnswer(question, es) {
+    const asked = question.length > 60 ? `${question.slice(0, 57)}…` : question;
+    return es
+      ? `El asistente completo no responde en este momento, así que solo puedo usar una lista corta de respuestas, y no tengo una para "${asked}". Inténtalo de nuevo en unos minutos. Para preguntas sobre un medicamento, tu farmacéutico puede ayudarte hoy mismo.\n\nMientras tanto, puedo ayudarte con lo de abajo.`
+      : `The full assistant isn't answering right now, so I can only use a short built-in list, and it has nothing for "${asked}". Please try again in a few minutes. For a question about a medicine, your pharmacist can help today.\n\nIn the meantime, I can help with the topics below.`;
+  }
+
   function fallbackAnswer(es) {
     return es
       ? "Puedo ayudarte con esto:\n• Qué significa tu resultado y qué hacer después\n• Qué mide una prueba (escribe su nombre, por ejemplo \"TSH\")\n• Subir un informe, el resumen para el médico, tu cuenta y los planes\nElige una opción abajo o escribe tu pregunta de otra forma."
@@ -384,6 +391,10 @@
       return { reply: response.reply, source: "online" };
     } catch (error) {
       const answer = builtInAnswer(clean);
+      // When the online assistant cannot be reached and the short built-in list has nothing for this
+      // question, say so plainly. A menu on its own reads as if the question was ignored (owner's
+      // screenshot, 17 Nov: "dolo 650" answered with "Here's what I can help with").
+      if (answer.showTopics) return { reply: offlineAnswer(clean, es), showTopics: true, source: "built-in" };
       return { reply: answer.reply, showTopics: Boolean(answer.showTopics), source: "built-in" };
     }
   }

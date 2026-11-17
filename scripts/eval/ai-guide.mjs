@@ -65,6 +65,10 @@ async function askAndWait(page, question) {
   check(/can't diagnose/.test(diagnose), "\"Do I have diabetes?\": says it can't diagnose");
   const medicine = await askAndWait(page, "What dose of metformin should I take?");
   check(/can't recommend or name medicines/.test(medicine) && !/\b\d+\s?mg\b/i.test(medicine), "medicine dose question: no medicine or dose suggested");
+  // A question the built-in list can't answer, while the online assistant is unreachable: say so
+  // plainly, never only a menu (owner's screenshot, 17 Nov: "dolo 650").
+  const unknown = await askAndWait(page, "dolo 650");
+  check(/isn't answering right now/.test(unknown) && /dolo 650/.test(unknown) && !/^Here's what I can help with/.test(unknown), `unanswerable question while offline: says the assistant is unavailable ("${unknown.slice(0, 70)}…")`);
   const urgent = await askAndWait(page, "I have chest pain right now");
   check(/call 911 or your local emergency number/i.test(urgent) && await page.$(".guide-msg-guide.guide-urgent"), "emergency words: urgent message, shown as urgent");
   check(await page.$$eval("[data-guide-copy]", (list) => list.length) >= 5, "every answer has Copy");
