@@ -84,6 +84,9 @@ jobs:
       - name: Decimal commas, "<" values, glued flags, thousands separators, previous-result column
         run: node scripts/eval/report-edge-formats.mjs
 
+      - name: Lab testing page is honest that it is planned (no prices, no locations, consent for email)
+        run: node scripts/eval/lab-testing.mjs
+
       - name: Report questions are about the report's own results
         run: node scripts/eval/report-questions.mjs
 

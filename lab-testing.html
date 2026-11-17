@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self'; connect-src 'self' https://carewise-api.onrender.com https://cdn.jsdelivr.net; worker-src 'self' blob:; frame-src 'self' blob:; base-uri 'self'; form-action 'self'; object-src 'none'" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lab testing (planned) | FollowThrough Health</title>
+    <meta name="description" content="Lab testing with partner labs and licensed clinicians is planned for FollowThrough Health. It is not available yet." />
+    <link rel="canonical" href="https://followthroughhealth.com/lab-testing.html" />
+    <link rel="icon" href="assets/carewise-app-icon.svg" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:opsz,wght@9..40,400..700&family=Newsreader:ital,wght@0,300;0,400;1,300&display=swap" />
+    <link rel="stylesheet" href="share.css?v=carewise-product-235" />
+    <link rel="stylesheet" href="lab-testing.css?v=carewise-product-235" />
+  </head>
+  <body>
+    <main class="sv lt">
+      <header class="sv-head"><a class="sv-brand" href="/"><img src="assets/carewise-logo.svg" alt="" width="28" height="28" /> FollowThrough Health</a><nav class="pg-nav" aria-label="Site"><a href="/">Home</a><a href="/lab-testing.html" aria-current="page">Lab testing</a><a href="/demo.html">Try the demo</a><a href="/safety.html">Safety</a><a href="/faq.html">FAQ</a></nav></header>
+
+      <section class="lt-hero" aria-labelledby="lt-title">
+        <p class="lt-status"><span aria-hidden="true"></span>Planned · not available yet</p>
+        <h1 id="lt-title">Blood tests you can <em>follow through</em> on.</h1>
+        <p class="lt-lead">We are building lab testing the careful way: tests from partner labs, each request reviewed by a licensed clinician, and results explained in plain words with a summary signed by that clinician.</p>
+        <p class="lt-note"><strong>Nothing here can be ordered or paid for today.</strong> We have no lab partners yet. Tests, prices, locations and appointment times will only appear once a lab has signed with us and they have been checked.</p>
+        <p class="lt-actions"><a class="pg-cta" href="#lt-near">Tell me when it's near me</a><a class="lt-link" href="/#report-title">Explain a report you already have</a></p>
+      </section>
+
+      <section class="lt-part" id="lt-near" aria-labelledby="lt-near-title">
+        <p class="lt-label">Find testing near you</p>
+        <div>
+          <h2 id="lt-near-title" class="lt-h2">Is there a partner lab near you?</h2>
+          <form class="lt-zip" data-lt-zip novalidate>
+            <label for="lt-zip-input">ZIP code</label>
+            <div class="lt-zip-row"><input id="lt-zip-input" name="zip" inputmode="numeric" autocomplete="postal-code" maxlength="10" placeholder="e.g. 78701" /><button class="pg-cta" type="submit">Search</button></div>
+            <p class="lt-zip-error" data-lt-zip-error hidden role="alert">Please enter a 5-digit ZIP code.</p>
+          </form>
+          <div class="lt-zip-result" data-lt-zip-result hidden aria-live="polite">
+            <p class="lt-zip-none"></p>
+            <form class="lt-notify" data-lt-notify novalidate>
+              <label for="lt-email">Email me when testing is available near this ZIP code</label>
+              <div class="lt-zip-row"><input id="lt-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" /><button class="pg-cta" type="submit">Notify me</button></div>
+              <label class="lt-consent"><input type="checkbox" name="consent" /> I agree to be emailed about FollowThrough Health lab testing. I can ask to be removed at any time.</label>
+              <p class="lt-notify-status" data-lt-notify-status role="status"></p>
+            </form>
+          </div>
+          <p class="lt-small">We never show a lab as a place to get tested unless it has an agreement with us and we have checked it. Your email is stored encrypted, with the ZIP code you searched, and used only for this. See the <a href="/legal/privacy.html">privacy policy</a>.</p>
+        </div>
+      </section>
+
+      <section class="lt-part" aria-labelledby="lt-tests-title">
+        <p class="lt-label">Tests we plan to offer</p>
+        <div>
+          <h2 id="lt-tests-title" class="lt-h2">Common tests, grouped the way doctors think about them.</h2>
+          <p class="lt-body">This is a draft list to plan with partner labs, not a menu. What is offered, what each panel includes, how to prepare and what it costs will come from the partner lab's own catalog. Not every test suits everyone; a clinician reviews each request.</p>
+          <div class="lt-cats" data-lt-catalog></div>
+        </div>
+      </section>
+
+      <section class="lt-part" aria-labelledby="lt-how-title">
+        <p class="lt-label">How it will work</p>
+        <div>
+          <h2 id="lt-how-title" class="lt-h2">Five steps, with a person at the important one.</h2>
+          <ol class="lt-steps">
+            <li><b>Choose a test.</b> Read what it measures and how to prepare, from the lab's own instructions.</li>
+            <li><b>A licensed clinician reviews the request.</b> They can approve it, decline it or ask you a question. Paying never approves a test on its own.</li>
+            <li><b>Visit a partner lab.</b> At a time the lab has confirmed, with your booking reference.</li>
+            <li><b>Results come straight from the lab.</b> Every value, unit and range exactly as the lab reports them, with any later corrections kept alongside.</li>
+            <li><b>Read your clinician's summary and the plain-language explanation.</b> The clinician's signed note is always marked apart from anything written by AI.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="lt-part" aria-labelledby="lt-now-title">
+        <p class="lt-label">Today and next</p>
+        <div>
+          <h2 id="lt-now-title" class="lt-h2">What you can do now, and what is coming.</h2>
+          <div class="lt-table" role="table" aria-labelledby="lt-now-title">
+            <div class="lt-row lt-row-head" role="row"><span role="columnheader">Feature</span><span role="columnheader">Available now</span><span role="columnheader">With partner labs (planned)</span></div>
+            <div class="lt-row" role="row"><span role="rowheader">Explain a report you upload</span><span role="cell" class="lt-yes">Yes</span><span role="cell" class="lt-yes">Yes</span></div>
+            <div class="lt-row" role="row"><span role="rowheader">Questions for your doctor and a one-page brief</span><span role="cell" class="lt-yes">Yes</span><span role="cell" class="lt-yes">Yes</span></div>
+            <div class="lt-row" role="row"><span role="rowheader">Your results over time</span><span role="cell" class="lt-yes">Yes, from saved reports</span><span role="cell" class="lt-yes">Yes, straight from the lab</span></div>
+            <div class="lt-row" role="row"><span role="rowheader">Order a blood test</span><span role="cell" class="lt-no">Not yet</span><span role="cell" class="lt-plan">Planned</span></div>
+            <div class="lt-row" role="row"><span role="rowheader">Summary signed by a licensed clinician</span><span role="cell" class="lt-no">Not yet</span><span role="cell" class="lt-plan">Planned</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lt-part" aria-labelledby="lt-faq-title">
+        <p class="lt-label">Questions</p>
+        <div>
+          <h2 id="lt-faq-title" class="lt-h2">About lab testing</h2>
+          <div class="lt-faq">
+            <details><summary>Can I order a test today?</summary><p>No. Lab testing is planned and not available yet. You can still upload a report you already have and get it explained, for free.</p></details>
+            <details><summary>Which labs will you work with?</summary><p>We have no lab partners yet. We will only name a lab once it has signed an agreement with us, and only show locations we have checked.</p></details>
+            <details><summary>Who reviews the results?</summary><p>The plan is for a licensed clinician to review each request and sign a summary of your results. Anything written by AI is labelled as such and never presented as a clinician's note.</p></details>
+            <details><summary>What will it cost?</summary><p>Prices will be set with partner labs and shown before you pay. Explaining reports you upload stays free.</p></details>
+            <details><summary>What happens to my information?</summary><p>Only what the lab and the clinician need to carry out your test, under agreements that protect it, and only with your consent. See the <a href="/legal/privacy.html">privacy policy</a>.</p></details>
+            <details><summary>What if a result needs urgent attention?</summary><p>Before launch, the lab and the clinical partner will agree on how urgent results reach you quickly by phone. An app message or the AI chat will never be the only way you hear. In an emergency, call 911 or your local emergency number.</p></details>
+          </div>
+        </div>
+      </section>
+
+      <p class="sv-foot">Lab testing is planned and not available. FollowThrough Health explains reports for education; it does not diagnose and does not replace your doctor. In an emergency, call 911 or your local emergency number.<br /><a href="/legal/privacy.html">Privacy</a> · <a href="/legal/terms.html">Terms</a> · <a href="/legal/disclaimer.html">Disclaimer</a> · <a href="/accessibility.html">Accessibility</a></p>
+    </main>
+    <script src="lab-testing.js?v=carewise-product-235"></script>
+  </body>
+</html>

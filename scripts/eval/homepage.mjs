@@ -37,9 +37,12 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   const sample = await page.$$eval(".landing [data-try-sample]", (els) => els.map((el) => el.textContent.trim()));
   check(sample.length >= 1 && sample.every((label) => label === "Try a sample report"), `${size}: one sample label (${[...new Set(sample)].join(" | ")})`);
   check(await page.$eval(".fh-hero", (hero) => hero.getAnimations({ subtree: true }).length) === 0, `${size}: the hero does not animate`);
-  // Header links go to real parts of the page.
-  const links = await page.$$eval(".fh-site-links a", (els) => els.map((a) => [a.textContent.trim(), Boolean(document.querySelector(a.getAttribute("href")))]));
-  check(links.length === 4 && links.every(([, exists]) => exists), `${size}: header links reach real sections (${links.map(([t]) => t).join(", ")})`);
+  // Header links go to real parts of the page, or (17 Nov: "Lab testing") to a page that exists.
+  const links = await page.$$eval(".fh-site-links a", (els) => els.map((a) => [a.textContent.trim(), a.getAttribute("href")]));
+  const reachable = await Promise.all(links.map(async ([, href]) => href.startsWith("#")
+    ? page.evaluate((selector) => Boolean(document.querySelector(selector)), href)
+    : (await page.request.get(new URL(href, base).href)).ok()));
+  check(links.length === 5 && reachable.every(Boolean), `${size}: header links reach real sections or pages (${links.map(([t]) => t).join(", ")})`);
   check(!/Explain a report, free/.test(await page.innerText("main")), `${size}: no leftover "Explain a report, free"`);
 
   // The hero's handwritten notes are the app's own words for these exact numbers.
