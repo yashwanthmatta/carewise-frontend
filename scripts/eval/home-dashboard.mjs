@@ -60,13 +60,21 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   // A report saved before each result was kept (Oct 2026) has only the count sentence. The summary
   // must not say "no results outside the lab's range" under a count that says 7 (owner's screenshot, 16 Nov).
   await page.evaluate(() => {
-    localStorage.setItem("carewiseReports", JSON.stringify([{ id: "old-1", person: "Dad (sample)", fileName: "old-panel.pdf", status: "analyzed locally", message: "7 of 10 results outside the lab's range. LDL cholesterol", questions: ["What should my LDL goal be?"], createdAt: "2026-10-25T10:00:00Z" }]));
+    localStorage.setItem("carewiseReports", JSON.stringify([{ id: "old-1", person: "Maria (sample)", fileName: "sample-blood-work.txt", status: "analyzed locally", message: "7 of 10 results outside the lab's range. LDL cholesterol", questions: ["What should my LDL goal be?"], createdAt: "2026-10-25T10:00:00Z" }]));
   });
   await page.goto(base, { waitUntil: "load" });
   await page.waitForFunction(() => !document.querySelector("#dashboard").hidden);
   const oldText = await page.innerText("#dashboard");
   check(/7 of 10 results outside the lab's range/.test(oldText) && !/No results outside|Ningún resultado/i.test(oldText), `${size}: an older report keeps its count and never says "no results" under it`);
   check(await page.$$eval("#dashboard [data-dash-open]", (els) => els.length) === 1, `${size}: an older report offers to open the full report`);
+  // Names read as a person would write them (owner, 17 Nov: "i dont like some sample names"). The file
+  // name is not shown in capitals and "(sample)" is not part of the person's name; a "Sample" tag still
+  // marks made-up data.
+  check(/Blood test/.test(oldText) && !/sample-blood-work|SAMPLE-BLOOD-WORK/i.test(oldText), `${size}: report named "Blood test", not its file name`);
+  check(/Maria's latest report/.test(oldText) && !/\(sample\)/i.test(oldText), `${size}: person shown as "Maria", without "(sample)"`);
+  check(await page.$$eval("#dashboard .ft-dash-tag", (els) => els.length === 1 && /sample/i.test(els[0].textContent)), `${size}: made-up data still tagged "Sample"`);
+  const historyText = await page.$eval(".v1-history-list", (el) => el.textContent).catch(() => "");
+  check(/For Maria\b/.test(historyText) && !/\(sample\)|sample-blood-work/i.test(historyText) && /Sample/.test(historyText), `${size}: History lists "Blood test, For Maria" with a Sample tag (${historyText.replace(/\s+/g, " ").slice(0, 80)})`);
   check(!errors.length, `${size}: no script errors ${errors.join("; ")}`);
   if (process.env.AXE_PATH) {
     await page.goto(base, { waitUntil: "load" });

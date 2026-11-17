@@ -206,6 +206,24 @@ A person should confirm problems 1–8 look fixed at 1440 and 390 px before this
 - `home-dashboard.mjs` checks this with a made-up older report;
 - screenshot: `dashboard-older-report-1440.png`.
 
+## Report and person names (17 Nov, owner: "i dont like some sample names")
+
+**Before.** The summary printed the raw file name in capitals ("SAMPLE-BLOOD-WORK.TXT") and put "(sample)" inside people's names ("Latest report, for Maria (sample)").
+
+**Now:**
+- Reports are named as a person would write them. The made-up samples read "Blood test", "Kidney and heart check" and "Chest CT report". Other files lose their extension and dashes, so "my_labs-march.pdf" reads "My labs march". The full file name stays as a tooltip.
+- People's names read plainly: "Maria's latest report". A small "Sample" tag on the sheet still marks made-up data, so nothing is passed off as real.
+- An older report shows its count in a larger serif line.
+- The History list uses the same names.
+
+**Unchanged:**
+- The saved data keeps its own values. The tour uses the "(sample)" marker to find and clear its made-up records.
+- The printed doctor brief still says "(sample)", because there it marks made-up data for a doctor.
+
+**Evidence:**
+- Screenshots: `dashboard-names-1440.png` and `dashboard-names-older-1440.png`.
+- `home-dashboard.mjs` checks, using the owner's own case, that the report reads "Blood test" (not its file name), the person reads "Maria" (without "(sample)"), and made-up data is still tagged "Sample".
+
 ## Shared summary, clinic packet and info pages (16 Nov)
 
 **Before.** The page a doctor opens from "Share with my doctor", the clinic packet and the info pages (About, FAQ, Safety, Support, Accessibility, Glossary, Demo) still had the old template:
