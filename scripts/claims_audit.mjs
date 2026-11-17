@@ -12,7 +12,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 const PUBLIC_PAGES = [
   "index.html", "about.html", "faq.html", "safety.html", "demo.html", "support.html",
-  "accessibility.html", "glossary.html", "packet.html", "share.html", "lab-testing.html",
+  "accessibility.html", "glossary.html", "packet.html", "share.html", "lab-testing.html", "lab-results-example.html",
 ];
 const SCRIPTS = ["docbridge.js", "help.js", "reminders.js", "packet-view.js", "share-view.js", "doctor-share.js", "lab-testing.js"];
 // Outreach text the founder sends to clinicians is marketing too.

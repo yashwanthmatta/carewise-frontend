@@ -26,7 +26,7 @@ const watch = (page) => page.on("console", (message) => {
 context.on("page", watch);
 
 // 1. Every page loads with the policy (headers present).
-const pages = ["", "demo.html", "faq.html", "safety.html", "about.html", "support.html", "accessibility.html", "glossary.html", "packet.html", "share.html", "lab-testing.html",
+const pages = ["", "demo.html", "faq.html", "safety.html", "about.html", "support.html", "accessibility.html", "glossary.html", "packet.html", "share.html", "lab-testing.html", "lab-results-example.html",
   "legal/privacy.html", "legal/terms.html", "legal/disclaimer.html", "legal/data-deletion.html", "legal/security.html", "legal/app-store-disclosures.html"];
 const page = await context.newPage();
 for (const path of pages) {

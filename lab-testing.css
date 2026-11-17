@@ -93,3 +93,36 @@
 @media (prefers-reduced-motion: no-preference) {
   .lt-test summary::after, .lt-faq summary::after { transition: transform 0.2s ease; }
 }
+
+/* Example of clinician-reviewed results (made-up data). The clinician's signed summary and the AI
+   explanation look different on purpose: paper with a signature versus a tinted, labelled box. */
+.lr-banner { margin: 18px 0 0; padding: 12px 16px; border: 1px solid #E2C9B9; border-radius: 6px; background: #F7EADF; color: var(--ink); font-size: 0.95rem; }
+.lr-head { padding: clamp(36px, 6vw, 64px) 0 28px; border-bottom: 2px solid var(--ink); }
+.lr-head h1 { max-width: 20ch; margin: 10px 0 12px; font: 400 clamp(2.1rem, 5vw, 3.6rem)/1.06 var(--serif); letter-spacing: -0.02em; color: var(--ink); }
+.lr-meta { margin: 0; color: var(--muted); font: 400 0.82rem var(--mono); }
+.lr-part { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 16px 48px; padding: clamp(36px, 5vw, 60px) 0; border-bottom: 1px solid var(--line); }
+.lr-kind { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 0 0 14px; }
+.lr-badge { padding: 4px 10px; border-radius: 999px; background: var(--ink); color: #fff; font: 500 0.7rem var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
+.lr-badge-ai { background: transparent; border: 1px dashed var(--muted); color: var(--muted); }
+.lr-example { color: #8a2b1d; font: 500 0.72rem var(--mono); letter-spacing: 0.06em; text-transform: uppercase; }
+.lr-signed { padding: clamp(22px, 3vw, 36px); border: 1px solid #E6DECF; border-radius: 4px; background: #FFFDF8; box-shadow: 0 18px 40px -30px rgba(70, 45, 20, 0.45); }
+.lr-signed .lt-h2 { margin-bottom: 14px; }
+.lr-note p { max-width: 60ch; margin: 0 0 12px; font: 400 1.2rem/1.6 var(--serif); color: var(--ink); }
+.lr-sign { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: 0.92rem; }
+.lr-sign p { margin: 0 0 4px; }
+.lr-signature { font: 600 2rem/1.1 "Caveat", "Bradley Hand", cursive; color: #2B3A55; }
+.lr-ai { padding: clamp(18px, 2.5vw, 28px); border: 1px dashed var(--line-strong); border-radius: 4px; background: rgba(243, 237, 226, 0.6); color: var(--ink-2); }
+.lr-ai p { max-width: 62ch; margin: 0 0 10px; }
+.lr-h3 { margin: 0 0 12px; font: 400 1.5rem/1.2 var(--serif); color: var(--ink); }
+.lr-small { margin: 12px 0 0; color: var(--muted); font-size: 0.85rem; }
+.lr-discuss { margin: 0 0 30px; padding: 0; list-style: none; }
+.lr-discuss li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 14px 0 14px 14px; border-bottom: 1px solid var(--line); box-shadow: inset 3px 0 0 var(--accent); font-family: var(--mono); font-size: 0.95rem; color: var(--ink); }
+.lr-discuss b { min-width: 11rem; font: 500 1rem var(--sans); }
+.lr-discuss span { color: var(--muted); font: 400 0.85rem var(--sans); }
+.lr-questions { margin: 0; padding-left: 1.4em; font: 400 1.12rem/1.55 var(--serif); color: var(--ink); }
+.lr-questions li { margin: 0 0 8px; }
+.lr-table .lt-row > span:nth-child(2) { background: none; font-family: var(--mono); font-size: 0.92rem; }
+.lr-table .lr-out > span:first-child { box-shadow: inset 3px 0 0 var(--accent); padding-left: 12px; }
+.lr-corrected { display: block; margin-top: 4px; color: #8a2b1d; font: 400 0.78rem var(--sans); }
+@media (max-width: 860px) { .lr-part { grid-template-columns: 1fr; gap: 10px; } }
+@media (max-width: 560px) { .lr-table .lt-row { grid-template-columns: 1fr 1fr; } }

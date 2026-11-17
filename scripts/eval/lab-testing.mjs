@@ -52,6 +52,23 @@ for (const [size, viewport] of [["desktop", { width: 1440, height: 900 }], ["pho
   await context.close();
 }
 
+// The example of clinician-reviewed results: it must say it is an example, never pass a made-up
+// review off as real, and keep the clinician's summary apart from the AI explanation.
+for (const [size, viewport] of [["desktop", { width: 1440, height: 900 }], ["small phone", { width: 320, height: 700 }]]) {
+  const context = await browser.newContext({ viewport, serviceWorkers: "block" });
+  await context.route(/fonts\.|jsdelivr|onrender/, (route) => route.abort());
+  const page = await context.newPage();
+  await page.goto(`${base}lab-results-example.html`, { waitUntil: "load" });
+  const banner = await page.innerText(".lr-banner");
+  check(/Example with made-up results/.test(banner) && /not available yet/.test(banner) && /No real clinician/.test(banner), `example (${size}): banner says it is made up and not available`);
+  const signed = await page.innerText(".lr-signed");
+  check(/Example: not a real review/i.test(signed) && /\(made up\)/.test(signed), `example (${size}): the signed summary itself is marked as an example`);
+  check(/Written by AI · not reviewed by a clinician/i.test(await page.innerText(".lr-ai")) && !(await page.$(".lr-ai .lr-sign")), `example (${size}): the AI explanation is labelled and carries no signature`);
+  check(/First reported as 1\.5 mg\/dL/.test(await page.innerText(".lr-corrected")), `example (${size}): a corrected result keeps the first value`);
+  check(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), `example (${size}): no sideways scroll`);
+  await context.close();
+}
+
 // The homepage links to it.
 {
   const context = await browser.newContext({ serviceWorkers: "block" });

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self'; connect-src 'self' https://carewise-api.onrender.com https://cdn.jsdelivr.net; worker-src 'self' blob:; frame-src 'self' blob:; base-uri 'self'; form-action 'self'; object-src 'none'" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Example: clinician-reviewed results | FollowThrough Health</title>
+    <meta name="description" content="An example, with made-up results, of how clinician-reviewed lab results are planned to look. Not a real review." />
+    <link rel="icon" href="assets/carewise-app-icon.svg" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Mono&family=DM+Sans:opsz,wght@9..40,400..700&family=Newsreader:ital,wght@0,300;0,400;1,300&display=swap" />
+    <link rel="stylesheet" href="share.css?v=carewise-product-236" />
+    <link rel="stylesheet" href="lab-testing.css?v=carewise-product-236" />
+  </head>
+  <body>
+    <main class="sv lt lr">
+      <header class="sv-head"><a class="sv-brand" href="/"><img src="assets/carewise-logo.svg" alt="" width="28" height="28" /> FollowThrough Health</a><nav class="pg-nav" aria-label="Site"><a href="/">Home</a><a href="/lab-testing.html">Lab testing</a><a href="/safety.html">Safety</a><a href="/faq.html">FAQ</a></nav></header>
+
+      <p class="lr-banner" role="note"><strong>Example with made-up results.</strong> Clinician review is planned and not available yet. No real clinician wrote or signed anything on this page, and "Alex Sample" is not a real person.</p>
+
+      <section class="lr-head" aria-labelledby="lr-title">
+        <p class="lt-label">Your lab results · example</p>
+        <h1 id="lr-title">Alex Sample, results from 7 January 2030</h1>
+        <p class="lr-meta">Collected at Example Lab (made up) · 9:10 am · Report received 3:00 pm · One result corrected by the lab on 8 January</p>
+      </section>
+
+      <section class="lr-part" aria-labelledby="lr-signed-title">
+        <p class="lt-label">From your reviewing clinician</p>
+        <article class="lr-signed" aria-labelledby="lr-signed-title">
+          <p class="lr-kind"><span class="lr-badge">Clinician-reviewed</span><span class="lr-example">Example: not a real review</span></p>
+          <h2 id="lr-signed-title" class="lt-h2">Summary from your reviewing clinician</h2>
+          <div class="lr-note">
+            <p>Most of your results are within the lab's ranges. Two are slightly above them: your kidney test (creatinine) and your LDL cholesterol. Neither needs urgent attention.</p>
+            <p>I'd like to repeat the kidney test in a few weeks, and talk with you about your cholesterol at your next visit. Please bring the questions below.</p>
+          </div>
+          <footer class="lr-sign">
+            <p class="lr-signature" aria-hidden="true">Sample Clinician</p>
+            <p>Reviewed and signed by <b>Sample Clinician, MD</b> (made up) · licensed in Texas · 8 January 2030, 4:12 pm</p>
+            <p class="lr-small">The clinician read every result below. This summary is theirs; it was not written by AI.</p>
+          </footer>
+        </article>
+      </section>
+
+      <section class="lr-part" aria-labelledby="lr-ai-title">
+        <p class="lt-label">Plain-language explanation</p>
+        <article class="lr-ai" aria-labelledby="lr-ai-title">
+          <p class="lr-kind"><span class="lr-badge lr-badge-ai">Written by AI · not reviewed by a clinician</span></p>
+          <h2 id="lr-ai-title" class="lr-h3">What these tests mean</h2>
+          <p><b>Creatinine</b> is a waste product from muscles that the kidneys clear from the blood. A result a little above the range can come from many things, such as how much water you drank, recent exercise or muscle mass. Your clinician has asked to repeat it.</p>
+          <p><b>LDL cholesterol</b> is the "bad" cholesterol that can build up in blood vessels over time. Doctors look at it together with blood pressure, family history and other risks.</p>
+          <p class="lr-small">This explanation is general education. Your clinician's summary above is what applies to you.</p>
+        </article>
+      </section>
+
+      <section class="lr-part" aria-labelledby="lr-discuss-title">
+        <p class="lt-label">Results to discuss</p>
+        <div>
+          <h2 id="lr-discuss-title" class="lr-h3">Outside the lab's range</h2>
+          <ul class="lr-discuss">
+            <li><b>Creatinine</b> 1.4 mg/dL <span>Lab's range 0.6–1.3 · above</span></li>
+            <li><b>LDL cholesterol</b> 142 mg/dL <span>Lab's range under 100 · above</span></li>
+          </ul>
+          <h2 class="lr-h3">Questions for your next appointment</h2>
+          <ol class="lr-questions">
+            <li>When should I repeat the kidney test, and should a urine test be done with it?</li>
+            <li>What should my LDL goal be, given my other risks?</li>
+            <li>Is there anything I should do before the repeat test?</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="lr-part" aria-labelledby="lr-report-title">
+        <p class="lt-label">Your detailed lab report</p>
+        <div>
+          <h2 id="lr-report-title" class="lr-h3">Every result, as the lab reported it</h2>
+          <div class="lt-table lr-table" role="table" aria-labelledby="lr-report-title">
+            <div class="lt-row lt-row-head" role="row"><span role="columnheader">Test</span><span role="columnheader">Result</span><span role="columnheader">Lab's range</span></div>
+            <div class="lt-row lr-out" role="row"><span role="rowheader">Creatinine</span><span role="cell">1.4 mg/dL <small class="lr-corrected">Corrected by the lab on 8 Jan. First reported as <s>1.5 mg/dL</s></small></span><span role="cell">0.6–1.3</span></div>
+            <div class="lt-row lr-out" role="row"><span role="rowheader">LDL cholesterol</span><span role="cell">142 mg/dL</span><span role="cell">under 100</span></div>
+            <div class="lt-row" role="row"><span role="rowheader">HDL cholesterol</span><span role="cell">55 mg/dL</span><span role="cell">over 40</span></div>
+            <div class="lt-row" role="row"><span role="rowheader">eGFR</span><span role="cell">68 mL/min/1.73m²</span><span role="cell">60 or more</span></div>
+            <div class="lt-row" role="row"><span role="rowheader">Hemoglobin</span><span role="cell">13.5 g/dL</span><span role="cell">12.0–15.5</span></div>
+            <div class="lt-row" role="row"><span role="rowheader">TSH</span><span role="cell">2.1 mIU/L</span><span role="cell">0.4–4.0</span></div>
+          </div>
+          <p class="lr-small">Source: Example Lab (made up), report received 7 Jan 2030, 3:00 pm; corrected 8 Jan 2030, 10:00 am. Every value, unit and range is shown exactly as the lab sent it, and the first version of a corrected result is kept.</p>
+        </div>
+      </section>
+
+      <p class="sv-foot">This page is an example with made-up results. Clinician review is planned and not available yet. In an emergency, call 911 or your local emergency number.<br /><a href="/lab-testing.html">About lab testing</a> · <a href="/legal/privacy.html">Privacy</a> · <a href="/legal/disclaimer.html">Disclaimer</a></p>
+    </main>
+  </body>
+</html>

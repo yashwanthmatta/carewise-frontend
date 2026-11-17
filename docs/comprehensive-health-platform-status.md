@@ -26,7 +26,7 @@ Nothing below is PARTNER INTEGRATED, CLINICALLY APPROVED or PRODUCTION ENABLED. 
 | Payments for lab tests | Not started, on purpose | | No lab-test payments until a partner, prices and owner approval. The existing Stripe plans are unchanged |
 | Result import | CODE COMPLETE, TESTED WITH SYNTHETIC DATA | backend `results.py` | Strict matching on patient and order. Every revision is kept. HL7/FHIR parsing depends on the partner's format. **BLOCKED:** a partner, a BAA and a security review |
 | Clinician review | CODE COMPLETE, TESTED WITH SYNTHETIC DATA | backend `review.py` | AI drafts are never shown as reviewed. Signing needs a credential, a licence in the patient's state and access to the patient. **BLOCKED:** a contracted clinician service |
-| Clinician notes page (patient) | Not started | | Next frontend step: a page that shows a signed note apart from AI text, using synthetic data |
+| Clinician notes page (patient) | CODE COMPLETE as a labelled example, TESTED | `lab-results-example.html` (frontend #168) | It has made-up results only, marked in the banner, on the signed summary and in the footer. The signed summary is visibly apart from the AI explanation, and a corrected result shows its first value. The real page waits for the clinician service. **BLOCKED:** a contracted clinician service |
 | Critical results | Not built, on purpose | backend `docs/lab-testing-architecture.md` | Must be agreed with the lab and the clinical partner. App messages and the AI chat are never the only channel. **BLOCKED:** a partner |
 | Biomarker dashboard | CODE COMPLETE, TESTED | frontend #167: the results summary, area counts and earlier-reading dots | Uses saved reports only, from the same person. No health score, no "improving" judgement |
 | Follow-up plans | Partly existing | Reminders, doctor questions | Clinician-authored plans wait for the clinician service |
@@ -69,7 +69,7 @@ Function Health's facts come from its public pages, read on 17 Nov 2026: home, h
    - set the Anthropic key in Render;
    - merge frontend #167 and backend #60;
    - choose two or three local labs to approach. The pack is in `docs/lab-partnership-program.md`.
-2. **Claude:** a patient "clinician notes" page with synthetic data. The signed note will be visibly different from AI text and its provenance shown, behind the not-live flag.
+2. ~~**Claude:** a patient "clinician notes" page with synthetic data.~~ Done 17 Nov as a labelled example (`lab-results-example.html`).
 3. **Claude:** a homepage section for lab testing (clearly planned), plus the comparison and the FAQ in the reference style.
 4. **Owner:** approve the first lab-testing tables (a production migration) once a partner pilot is agreed.
 5. **Owner and counsel:**
