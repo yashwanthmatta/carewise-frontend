@@ -5427,6 +5427,35 @@ function saveReportHistory(report) {
 // Home for someone who has saved reports: the latest report, its doctor questions, recent reports,
 // tracked results and upcoming reminders, all from what is already saved on this device.
 // No score: the only count is the lab-range count the report itself shows.
+// How a saved report and its person are named on screen. The saved data keeps its own values (the
+// "(sample)" marker is how the tour finds and clears its made-up records); only the display changes:
+// "raj-kidney-heart-uk.pdf" reads "Kidney and heart check", "my_labs-march.pdf" reads "My labs march",
+// and "Maria (sample)" reads "Maria" with a separate "Sample" tag, so made-up data is still marked.
+// A function, not a const: History renders while the page loads, before a const here would exist.
+function sampleReportTitles() {
+  return {
+  "maria-blood-test": ["Blood test", "Análisis de sangre"],
+  "sample-blood-work": ["Blood test", "Análisis de sangre"],
+  "raj-kidney-heart-uk": ["Kidney and heart check", "Control de riñón y corazón"],
+  "maria-ct-chest": ["Chest CT report", "Informe de TAC de tórax"],
+  };
+}
+function reportDisplayName(fileName, es = false) {
+  const base = String(fileName || "").trim().replace(/\.(pdf|txt|png|jpe?g|heic|webp)$/i, "");
+  const sample = sampleReportTitles()[base.toLowerCase()];
+  if (sample) return sample[es ? 1 : 0];
+  if (!base || /^(local report analysis|report|informe)$/i.test(base)) return es ? "Informe de laboratorio" : "Lab report";
+  const words = base.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
+  return words === words.toLowerCase() ? words.charAt(0).toUpperCase() + words.slice(1) : words;
+}
+function isSampleReport(report) {
+  const base = String(report?.fileName || "").replace(/\.[a-z0-9]+$/i, "").toLowerCase();
+  return /\(sample\)/i.test(String(report?.person || "")) || Boolean(sampleReportTitles()[base]);
+}
+function personDisplayName(person) {
+  return String(person || "").replace(/\s*\((sample|muestra)\)\s*$/i, "").trim() || person;
+}
+
 function renderHomeDashboard() {
   const box = document.querySelector("#dashboard");
   if (!box) return;
@@ -5455,6 +5484,9 @@ function renderHomeDashboard() {
   // saved; nothing re-calculated). Earlier reports sit as sheets behind it, each listed once. The
   // report's own doctor questions are beside it. Nothing is shown in an empty box.
   const name = latest.fileName || (es ? "Informe" : "Report");
+  const title = reportDisplayName(latest.fileName, es);
+  const sample = isSampleReport(latest);
+  const who = personDisplayName(person);
   const date = when(latest.testDate ? `${latest.testDate}T12:00:00` : latest.createdAt || latest.updatedAt);
   const countText = String(latest.message || "").split(/\.\s/)[0].replace(/\.$/, "");
   const results = (Array.isArray(latest.results) ? latest.results : []).filter((item) => item && item.name);
@@ -5475,7 +5507,7 @@ function renderHomeDashboard() {
     seen.add(key);
     return true;
   });
-  const whose = person === "Me" ? (es ? "Su último informe" : "Your latest report") : (es ? `Último informe, de ${escapeHtml(person)}` : `Latest report, for ${escapeHtml(person)}`);
+  const whose = person === "Me" ? (es ? "Su último informe" : "Your latest report") : (es ? `Último informe de ${escapeHtml(who)}` : `${escapeHtml(who)}'s latest report`);
   const lines = [];
   if (tracked.length) lines.push(`<li><span>${es ? "Seguimiento" : "Tracking"}</span>${tracked.slice(0, 3).map((item) => `${escapeHtml(item.test)} ${escapeHtml(`${item.value} ${item.unit || ""}`.trim())}${item.date ? ` <small>(${escapeHtml(when(item.date))})</small>` : ""}`).join(", ")} <a class="ed-link" href="#saved-title">${es ? "Ver tendencias" : "See trends"}</a></li>`);
   if (upcoming.length) lines.push(`<li><span>${es ? "Próximo" : "Coming up"}</span>${upcoming.map((item) => `${escapeHtml(item.type || (es ? "Recordatorio" : "Reminder"))}, ${escapeHtml(when(`${item.startDate}T12:00:00`))}`).join("; ")} <a class="ed-link" href="#record-title">${es ? "Recordatorios" : "Reminders"}</a></li>`);
@@ -5484,8 +5516,8 @@ function renderHomeDashboard() {
             <div class="ft-dash-body">
               <figure class="ft-dash-paper ed-sheet-wrap" data-annotated data-earlier="${Math.min(earlier.length, 2)}" aria-label="${es ? "Su último informe, con notas" : "Your latest report, with notes"}">
                 <div class="ed-sheet">
-                  <header><b>${escapeHtml(name)}</b><span>${escapeHtml(date)}</span></header>
-                  ${rows ? `<table><thead><tr><th scope="col">${es ? "Prueba" : "Test"}</th><th scope="col">${es ? "Resultado" : "Result"}</th><th scope="col">${es ? "Rango" : "Ref. range"}</th></tr></thead><tbody>${rows}</tbody></table>` : `<p class="ft-dash-note">${escapeHtml(countText || (es ? "Informe guardado" : "Saved report"))}.</p><p class="ft-dash-note">${es ? "Este informe se guardó antes de que la app guardara cada resultado." : "This report was saved before the app kept each result on this device."} <button class="ed-link ft-dash-open" type="button" data-dash-open="${escapeHtml(latest.id || "")}">${es ? "Abrir el informe" : "Open the report"}</button></p>`}
+                  <header><b title="${escapeHtml(name)}">${escapeHtml(title)}</b><span>${sample ? `<em class="ft-dash-tag">${es ? "Ejemplo" : "Sample"}</em>` : ""}${escapeHtml(date)}</span></header>
+                  ${rows ? `<table><thead><tr><th scope="col">${es ? "Prueba" : "Test"}</th><th scope="col">${es ? "Resultado" : "Result"}</th><th scope="col">${es ? "Rango" : "Ref. range"}</th></tr></thead><tbody>${rows}</tbody></table>` : `<p class="ft-dash-count">${escapeHtml(countText || (es ? "Informe guardado" : "Saved report"))}.</p><p class="ft-dash-note">${es ? "Este informe se guardó antes de que la app guardara cada resultado." : "This report was saved before the app kept each result on this device."} <button class="ed-link ft-dash-open" type="button" data-dash-open="${escapeHtml(latest.id || "")}">${es ? "Abrir el informe" : "Open the report"}</button></p>`}
                   ${results.length > shownRows.length ? `<p class="ft-dash-more">${es ? `y ${results.length - shownRows.length} más` : `and ${results.length - shownRows.length} more`}</p>` : ""}
                 </div>
                 <svg class="ed-ink" data-ink aria-hidden="true" focusable="false"></svg>
@@ -5563,7 +5595,7 @@ function renderReportHistory() {
     <article class="saved-plan-row">
       <div class="saved-plan-top">
         <div>
-          <strong>${escapeHtml(report.fileName || "Untitled report")}</strong>
+          <strong title="${escapeHtml(report.fileName || "")}">${escapeHtml(report.fileName ? reportDisplayName(report.fileName) : "Untitled report")}</strong>
           <span>${escapeHtml(report.status || "uploaded")} · ${escapeHtml(new Date(report.createdAt || report.updatedAt || Date.now()).toLocaleString())}</span>
         </div>
 
@@ -5605,7 +5637,7 @@ function shortTestDate(iso) {
 }
 function historyTitle(report) {
   const name = String(report.fileName || "").trim();
-  if (name && name !== "Local report analysis") return name;
+  if (name && name !== "Local report analysis") return reportDisplayName(name);
   return report.testDate ? `Report from ${formatTestDate(report.testDate)}` : "Saved report";
 }
 function historyDateText(report) {
