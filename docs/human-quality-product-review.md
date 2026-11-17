@@ -206,6 +206,34 @@ A person should confirm problems 1–8 look fixed at 1440 and 390 px before this
 - `home-dashboard.mjs` checks this with a made-up older report;
 - screenshot: `dashboard-older-report-1440.png`.
 
+## All tests on a report: counts, split bars and earlier readings (17 Nov)
+
+**Why.** The owner pointed to how a polished lab product shows results: one count, in-range and out-of-range bars, results grouped by body area, and a small trend for each test. Our "All tests on your report" was already grouped by area, but read as a plain table. This is our own design, not a copy of theirs.
+
+**Now:**
+- **At the top:** the number of tests, plus bars for "Within the lab's range", "Outside the lab's range" and, when present, "No range to compare". Each bar is sized to its share.
+- **Each body area:** its name, "2 tests · 2 outside the lab's range", and a small split bar.
+- **Each result:**
+  - a thin coloured edge (green within the lab's range, terracotta outside it, grey without a range);
+  - dots for up to three earlier readings of the same test, taken only from the same person's reports saved on this device;
+  - the earlier values spoken for screen readers ("Earlier: 1.9 mg/dL (Aug 2026)").
+
+**Unchanged:**
+- Every value, range and label, and how results are graded. The colours and counts only repeat the lab's own range.
+- The filters and the grouping.
+
+**Not added on purpose:**
+- "Improving": deciding whether a change is better is a medical judgement.
+- "Biological age" and a supplement plan: the app can't back them up, and they break the safety rules.
+
+**Evidence:**
+- Screenshots: `before-results-groups-1440.png`, `results-groups-1440.png` and `results-groups-390.png`. Made-up reports only.
+- `results-groups.mjs` now also checks four things:
+  - the summary counts;
+  - an area's count;
+  - no dots on a first report;
+  - earlier dots come from the same person only, never another family member.
+
 ## Report and person names (17 Nov, owner: "i dont like some sample names")
 
 **Before.** The summary printed the raw file name in capitals ("SAMPLE-BLOOD-WORK.TXT") and put "(sample)" inside people's names ("Latest report, for Maria (sample)").

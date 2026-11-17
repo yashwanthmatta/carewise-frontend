@@ -6782,6 +6782,48 @@ const TEST_AREAS = [
 ];
 const testAreaOf = (key) => TEST_AREAS.find((area) => area[3].includes(key))?.[0] || "other";
 
+// Earlier readings of each test for the same person, from reports saved on this device, oldest
+// first (at most three). Only values saved with the report are used; nothing is re-calculated.
+function labEarlierReadings(analysis) {
+  const person = normalizeReportPerson(latestReportPerson);
+  const dated = (report) => report.testDate ? `${report.testDate}T12:00:00` : report.createdAt || report.updatedAt || "";
+  const seen = new Set();
+  const byKey = {};
+  getReportHistory()
+    .filter((report) => report && report.id !== analysis?.id && Array.isArray(report.results) && normalizeReportPerson(report.person) === person)
+    .sort((a, b) => String(dated(a)).localeCompare(String(dated(b))))
+    .forEach((report) => {
+      const when = String(dated(report)).slice(0, 10);
+      // The same report saved twice (same file and date) counts once.
+      const once = `${report.fileName || ""}|${when}`;
+      if (!when || seen.has(once)) return;
+      seen.add(once);
+      report.results.forEach((item) => {
+        if (!item || !item.key) return;
+        (byKey[item.key] = byKey[item.key] || []).push({ value: String(item.value || ""), unit: item.unit || "", status: item.status || "", date: when });
+      });
+    });
+  Object.keys(byKey).forEach((key) => { byKey[key] = byKey[key].slice(-3); });
+  return byKey;
+}
+
+// A few dots for earlier readings and today's, placed by value when every reading is a plain number
+// in the same unit; otherwise dots in a row. Colour follows each reading's own saved status.
+function labTrendDots(earlier, item, es) {
+  if (!earlier || !earlier.length) return "";
+  const readings = [...earlier, { value: item.value, unit: item.unit, status: item.status, date: "" }];
+  const numbers = readings.map((r) => (r.unit || "") === (item.unit || "") && /^\s*\d/.test(r.value) ? parseFloat(r.value) : NaN);
+  const plotted = numbers.every(Number.isFinite);
+  const lo = Math.min(...numbers), hi = Math.max(...numbers);
+  const x = (i) => 6 + i * (68 / Math.max(1, readings.length - 1));
+  const y = (i) => plotted && hi > lo ? 5 + (1 - (numbers[i] - lo) / (hi - lo)) * 14 : 12;
+  const tone = (status) => OUTSIDE_STATUSES.has(status) ? "out" : status === "within" ? "in" : "none";
+  const points = readings.map((r, i) => `${x(i).toFixed(1)},${y(i).toFixed(1)}`).join(" ");
+  const when = (date) => { const d = new Date(`${date}T12:00:00`); return Number.isNaN(d.getTime()) ? date : d.toLocaleDateString(es ? "es" : undefined, { month: "short", year: "numeric" }); };
+  const spoken = earlier.map((r) => `${r.value} (${when(r.date)})`).join(", ");
+  return `<span class="lab-trend"><svg viewBox="0 0 80 24" width="80" height="24" aria-hidden="true" focusable="false"><polyline points="${points}"/>${readings.map((r, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(i).toFixed(1)}" r="${i === readings.length - 1 ? 4 : 3.2}" class="lab-dot-${tone(r.status)}"/>`).join("")}</svg><span class="visually-hidden">${escapeHtml(es ? `Antes: ${spoken}` : `Earlier: ${spoken}`)}</span></span>`;
+}
+
 function renderLabPanelSection(analysis, view = buildReportView(analysis, reportLanguage)) {
   if (!view.tests.length) return "";
   const es = reportLanguage === "es";
@@ -6793,10 +6835,24 @@ function renderLabPanelSection(analysis, view = buildReportView(analysis, report
   const grouped = view.tests.length >= 6 && areas.length >= 2;
   const isOutside = (item) => OUTSIDE_STATUSES.has(item.status);
   const outside = view.tests.filter(isOutside).length;
+  const within = view.tests.filter((item) => item.status === "within").length;
+  const other = view.tests.length - outside - within;
+  const earlier = labEarlierReadings(analysis);
+  const tone = (item) => isOutside(item) ? "out" : item.status === "within" ? "in" : "none";
+  // A split bar: the share of results within and outside the lab's range, nothing more.
+  const split = (items) => {
+    const out = items.filter(isOutside).length;
+    const inn = items.filter((item) => item.status === "within").length;
+    return `<span class="lab-split" aria-hidden="true">${inn ? `<i class="lab-split-in" style="flex:${inn}"></i>` : ""}${out ? `<i class="lab-split-out" style="flex:${out}"></i>` : ""}${items.length - inn - out ? `<i class="lab-split-none" style="flex:${items.length - inn - out}"></i>` : ""}</span>`;
+  };
+  const areaCount = (items) => {
+    const out = items.filter(isOutside).length;
+    return es ? `${items.length} ${items.length === 1 ? "prueba" : "pruebas"}${out ? ` · ${out} fuera del rango` : ""}` : `${items.length} ${items.length === 1 ? "test" : "tests"}${out ? ` · ${out} outside the lab's range` : ""}`;
+  };
   const row = (item) => `
-            <div class="lab-panel-row lab-status-${escapeHtml(item.status)}" role="row" data-test-area="${testAreaOf(item.key)}" data-test-outside="${isOutside(item)}">
+            <div class="lab-panel-row lab-status-${escapeHtml(item.status)} lab-tone-${tone(item)}" role="row" data-test-area="${testAreaOf(item.key)}" data-test-outside="${isOutside(item)}">
               <span role="cell"><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.what)}</small></span>
-              <span role="cell">${escapeHtml(item.value)}${item.unitHint ? `<small>${escapeHtml(item.unitHint)}</small>` : ""}</span>
+              <span role="cell">${escapeHtml(item.value)}${item.unitHint ? `<small>${escapeHtml(item.unitHint)}</small>` : ""}${labTrendDots(earlier[item.key], item, es)}</span>
               <span role="cell">${escapeHtml(item.range || t.noRange)}</span>
               <span role="cell"><em>${escapeHtml(item.label)}</em></span>
             </div>`;
@@ -6804,6 +6860,14 @@ function renderLabPanelSection(analysis, view = buildReportView(analysis, report
   return `
         <section class="lab-panel${grouped ? " lab-panel-grouped" : ""}">
           <h4>${escapeHtml(t.title)}</h4>
+          <div class="lab-summary">
+            <p class="lab-summary-count"><b>${view.tests.length}</b> ${es ? (view.tests.length === 1 ? "prueba en este informe" : "pruebas en este informe") : (view.tests.length === 1 ? "test on this report" : "tests on this report")}</p>
+            <ul class="lab-summary-bars">
+              <li><span>${es ? "En el rango del laboratorio" : "Within the lab's range"} · ${within}</span><i class="lab-split-in" style="width:${view.tests.length ? Math.round((within / view.tests.length) * 100) : 0}%"></i></li>
+              <li><span>${es ? "Fuera del rango del laboratorio" : "Outside the lab's range"} · ${outside}</span><i class="lab-split-out" style="width:${view.tests.length ? Math.round((outside / view.tests.length) * 100) : 0}%"></i></li>
+              ${other ? `<li><span>${es ? "Sin rango para comparar" : "No range to compare"} · ${other}</span><i class="lab-split-none" style="width:${Math.round((other / view.tests.length) * 100)}%"></i></li>` : ""}
+            </ul>
+          </div>
           <p class="lab-panel-note">${escapeHtml(view.text.allTestsNote)}</p>
           ${grouped ? `<div class="lab-filters" role="group" aria-label="${es ? "Mostrar" : "Show"}">
             ${chip("all", es ? "Todos" : "All", view.tests.length, true)}
@@ -6818,7 +6882,7 @@ function renderLabPanelSection(analysis, view = buildReportView(analysis, report
             ${grouped
               ? areas.map((area) => `
             <div class="lab-panel-group" role="rowgroup" data-test-group="${area.id}">
-              <div class="lab-panel-row lab-panel-group-head" role="row"><span role="rowheader">${escapeHtml(area.name)}</span></div>${area.items.map(row).join("")}
+              <div class="lab-panel-row lab-panel-group-head" role="row"><span role="rowheader">${escapeHtml(area.name)}<small>${escapeHtml(areaCount(area.items))}</small>${split(area.items)}</span></div>${area.items.map(row).join("")}
             </div>`).join("")
               : view.tests.map(row).join("")}
           </div>
