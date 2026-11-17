@@ -118,3 +118,19 @@ ol li::marker { color: var(--accent); }
   .sv-table { overflow: visible; }
   .sv-card a:not([class]) { color: #000; }
 }
+
+/* Legal pages (privacy, terms, disclaimer, security, data deletion, app-store disclosures): a plain,
+   readable document in the site's type. The wording is counsel's and is not changed here. */
+.sv .legal-back { color: var(--ink-2); font-size: 0.95rem; text-underline-offset: 3px; }
+.legal-body { max-width: 72ch; padding: 32px 0 8px; }
+.legal-body .eyebrow { margin: 0; font: 500 0.74rem var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.legal-body h1 { margin: 10px 0 8px; font: 400 clamp(2rem, 5vw, 3rem)/1.08 var(--serif); letter-spacing: -0.015em; }
+.legal-body .document-meta { margin: 0 0 24px; padding-bottom: 24px; border-bottom: 2px solid var(--ink); color: var(--muted); font-size: 0.92rem; }
+.legal-body h2 { margin: 32px 0 10px; padding-top: 20px; border-top: 1px solid var(--line); font: 400 1.45rem/1.25 var(--serif); }
+.legal-body .document-meta + h2 { margin-top: 0; padding-top: 0; border-top: 0; }
+.legal-body h3 { margin: 22px 0 6px; font: 600 1rem var(--sans); }
+.legal-body p, .legal-body li { color: var(--ink-2); }
+.legal-body p { margin: 0 0 12px; }
+.legal-body a { color: var(--accent); text-underline-offset: 3px; }
+.legal-body table { margin: 8px 0 16px; }
+@media print { .legal-back { display: none; } .legal-body { max-width: none; padding-top: 8pt; } }

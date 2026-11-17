@@ -1,12 +1,12 @@
 # Development status (read this first on every run)
 
-Last verified run: 2026-11-16, daily run at 04:23 UTC.
+Last verified run: 2026-11-17, daily run at 04:23 UTC.
 
 ## Repository state
 
 | Repo | main | Working branch | Open PRs from this work |
 |---|---|---|---|
-| carewise-frontend | `01ec0ec` (#163 merged) | `claude/carewise-api-project-jmxg7f` | "Welcome back" drawn as the report on paper, with the homepage's pen (owner feedback 16 Nov). Cache version 233. |
+| carewise-frontend | `01ec0ec` (#163 merged) | `claude/carewise-api-project-jmxg7f` | #164: "Welcome back" on paper, the older-report fix, the shared, info and legal pages restyled, the error tracker and the report-format test. Cache version 233. Green, mergeable. |
 | carewise-mobile-app | `69c49fb` (#53 merged) | `claude/carewise-api-project-jmxg7f` | #52: Expo tooling advisories (lockfile only). Green, mergeable. Provider sign-in and the mobile restyle wait for #52. |
 | carewise-production-backend | `b9b5f3c` (#58 merged, live on Render) | `claude/carewise-api-project-jmxg7f` (at main) | None. #56 and #58 merged. |
 
@@ -59,6 +59,15 @@ Last verified run: 2026-11-16, daily run at 04:23 UTC.
    - ~~Nightly axe scan~~ Built on 9 Nov: `scripts/eval/a11y-scan.mjs` scans 21 screens and pages at phone and desktop size (axe-core 4.14.0, WCAG A/AA). It runs in Frontend CI on every PR and nightly in `accessibility-scan.yml`. The first scan found one serious issue, now fixed: the desktop "Need help?" button's accessible name did not contain its visible text (WCAG 2.5.3).
 5b. **Staff two-step sign-in requirement:** built, off by default (`CAREWISE_STAFF_TWO_FACTOR_REQUIRED`, backend #56). ~~Website banner~~ Built on 8 Nov: Account shows "Turn on two-step sign-in to use your clinic tools" when `/auth/me` reports `staff_two_factor_needed`, links to Two-step sign-in, and hides once it is on. Shows nothing until #56 is merged, deployed and the setting is on. Eval `staff-two-factor.mjs` (14 checks) runs in CI.
 5c. **Main red on 5 Nov:** #116 merged after #142 with the same cache version, 208. Frontend #143 bumps it to 209. **Owner:** merge cache-version PRs one at a time.
+
+## Run on 17 Nov (daily, 04:23 UTC)
+
+- **Open PRs:** frontend #164 is green and mergeable, with no review comments.
+- **Task (UX and a cache bug):** the legal pages, the last pages still in the old style. The commit is added to #164, which shares the branch.
+  - The pages loaded `styles.css` at cache version 20, many releases old, so they could show stale styles (E-005 in `docs/application-error-remediation.md`).
+  - They now use `share.css` at the current version, with the site's fonts and the info pages' header.
+  - Wording unchanged: a script checked each page's visible text, word for word.
+- **Next:** wait for the owner on E-001 (the Anthropic API key in Render), on merging #164, and on whether doctors should see the score on the shared summary. Then E-004 (the mobile web preview, after mobile #52).
 
 ## Run on 16 Nov (daily, 04:23 UTC)
 

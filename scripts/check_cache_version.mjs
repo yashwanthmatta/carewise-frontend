@@ -29,6 +29,22 @@ for (const page of pages) {
   }
 }
 
+// Every page must ask for the current version. A page left on an old number (the legal pages sat on
+// 20 while sw.js was at 232, found 17 Nov) keeps whatever an old visit cached and never gets the
+// new file. Bumping by replacing only the current number misses them, so check every page.
+const current = versionOf(readFileSync("sw.js", "utf8"));
+const stale = [];
+for (const page of pages) {
+  for (const [, version] of readFileSync(page, "utf8").matchAll(/\?v=carewise-product-(\d+)/g)) {
+    if (version !== current) stale.push(`${page} (carewise-product-${version})`);
+  }
+}
+if (stale.length) {
+  console.error(`These pages load files at an old cache version; sw.js is at ${current}:`);
+  for (const line of [...new Set(stale)]) console.error(`  ${line}`);
+  process.exit(1);
+}
+
 const changed = git("diff", "--name-only", base, "HEAD").split("\n").filter(Boolean);
 const changedVersioned = changed.filter((file) => versioned.has(file) && file !== "sw.js");
 const before = versionOf(git("show", `${base}:sw.js`));
