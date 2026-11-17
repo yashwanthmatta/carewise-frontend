@@ -12,7 +12,7 @@ const base = process.env.CAREWISE_EVAL_URL || "http://localhost:4173/";
 let failed = 0;
 const check = (ok, label) => { if (!ok) failed += 1; console.log(`${ok ? "ok  " : "FAIL"} ${label}`); };
 
-const ORDER = ["fh-hero", "fh-how", "ed-why", "fh-info", "guide", "fh-trust", "fh-doctors", "fh-pricing", "faq"];
+const ORDER = ["fh-hero", "fh-how", "ed-why", "fh-info", "fh-labs", "guide", "fh-trust", "fh-doctors", "fh-pricing", "faq"];
 
 const browser = await chromium.launch();
 for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["phone", { width: 375, height: 740 }]]) {
@@ -81,7 +81,7 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
 
   // Trust: does, never, and your data, with links to the policies.
   const safety = await page.innerText("#safety");
-  check(/It will/i.test(safety) && /It won't/i.test(safety) && /Your data/i.test(safety) && /Diagnose anything/i.test(safety) && /Name medicines or doses/i.test(safety), `${size}: safety has will / won't / your data`);
+  check(/It will/i.test(safety) && /It won't/i.test(safety) && /Your data/i.test(safety) && /Diagnose anything/i.test(safety) && /Recommend medicines or give doses/i.test(safety), `${size}: safety has will / won't / your data`);
   check(!/HIPAA|certified|zero retention|clinically validated/i.test(safety), `${size}: no unsupported claims in the trust section`);
   check(await page.$$eval("#safety a", (links) => ["legal/privacy.html", "safety.html", "#your-data"].every((href) => links.some((a) => a.getAttribute("href") === href))), `${size}: privacy, safety and your-data links`);
 
