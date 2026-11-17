@@ -41,9 +41,16 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   const expected = await page.evaluate((text) => buildReportView(analyzeReportTextLocally(text), "en").tests.map((t) => [t.name, t.value, t.range, t.label]), REPORT);
   const all = await rows();
   check(all.length === expected.length && expected.every(([name, value, range, label]) => all.some((row) => row.includes(name) && row.includes(value) && row.includes(range) && row.includes(label))), `${size}: all ${expected.length} results shown with their exact value, range and label`);
-  const groups = await page.$$eval("#report-results .lab-panel-group-head", (heads) => heads.map((head) => head.innerText.trim()));
+  const groups = await page.$$eval("#report-results .lab-panel-group-head [role=rowheader]", (heads) => heads.map((head) => head.firstChild.textContent.trim()));
   check(groups.includes("Kidneys") && groups.includes("Blood count and clotting") && groups.includes("Other tests"), `${size}: grouped by area (${groups.join(", ")})`);
 
+  // 17 Nov: a count of tests with within/outside bars, and each area with its own count. The numbers
+  // are counts of the same statuses shown in the rows, nothing re-graded.
+  const summary = (await page.innerText("#report-results .lab-summary")).replace(/\s+/g, " ");
+  check(new RegExp(`^${expected.length} tests on this report`).test(summary) && /Outside the lab's range · 3/.test(summary), `${size}: summary counts every test and the 3 outside the range ("${summary}")`);
+  const kidneyHead = await page.innerText('#report-results [data-test-group="kidneys"] .lab-panel-group-head');
+  check(/2 tests · 2 outside the lab's range/.test(kidneyHead), `${size}: Kidneys heading counts its tests ("${kidneyHead.replace(/\s+/g, " ")}")`);
+  check(await page.$$eval("#report-results .lab-trend", (list) => list.length) === 0, `${size}: no earlier-reading dots on a first report`);
   await page.click('#report-results [data-test-filter="outside"]');
   const outside = await rows();
   check(outside.length === 3 && outside.every((row) => /Hemoglobin|Creatinine|eGFR/.test(row)), `${size}: "Outside the lab's range" shows the 3 results outside it`);
@@ -66,6 +73,29 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
     const violations = await page.evaluate(async () => (await axe.run({ include: [["#report-results"]] })).violations.map((v) => `${v.id} (${v.nodes.length})`));
     check(!violations.length, `${size}: axe ${violations.length ? violations.join(", ") : "no violations"}`);
   }
+  await context.close();
+}
+
+// Earlier readings: a second report for the same person shows dots for the earlier value of each
+// test, with the earlier value spoken for screen readers. Another person's report never does.
+{
+  const context = await browser.newContext({ serviceWorkers: "block" });
+  await context.route(/fonts\.|jsdelivr|onrender/, (route) => route.abort());
+  const page = await context.newPage();
+  const explain = async (person, text, name) => {
+    await page.goto(`${base}#report-title`, { waitUntil: "load" });
+    await page.$eval("#report-person", (el, value) => { el.value = value; }, person);
+    await page.$eval("#report-name", (el, value) => { el.value = value; }, name);
+    await page.fill("#report-text", text);
+    await page.click("#analyze-report");
+    await page.waitForSelector("#report-results .lab-panel", { state: "attached", timeout: 15000 });
+  };
+  await explain("Dad", "Sample Lab\nCreatinine 1.9 H mg/dL 0.6-1.3\neGFR 34 L mL/min/1.73m2 >=60", "August panel");
+  await explain("Mum", "Sample Lab\nCreatinine 0.8 mg/dL 0.6-1.3\neGFR 88 mL/min/1.73m2 >=60", "Mum's panel");
+  await explain("Dad", "Sample Lab\nCreatinine 2.3 H mg/dL 0.6-1.3\neGFR 28 L mL/min/1.73m2 >=60", "November panel");
+  const spoken = await page.$$eval("#report-results .lab-trend .visually-hidden", (list) => list.map((el) => el.textContent));
+  check(spoken.length === 2 && spoken.some((text) => /^Earlier: 1\.9 mg\/dL/.test(text)) && !spoken.some((text) => /0\.8|88/.test(text)), `earlier readings come from the same person only (${spoken.join(" | ")})`);
+  check(await page.$$eval("#report-results .lab-trend circle", (list) => list.length) === 4, "two dots per test: the earlier reading and this one");
   await context.close();
 }
 
