@@ -25,6 +25,11 @@ for (const [size, viewport] of [["desktop", { width: 1440, height: 900 }], ["pho
 
   check(/Planned · not available yet/i.test(text) && /Nothing here can be ordered or paid for today/.test(text), `${size}: says plainly that lab testing is planned and can't be ordered`);
   check(!/\$\s?\d/.test(text), `${size}: no prices shown`);
+  // 18 Nov redesign: the hero's status card states where things stand, and the main button uses the
+  // site's terracotta like every other page.
+  const card = await page.innerText(".lt-hero-card");
+  check(/Lab partners\s*None signed yet/.test(card) && /Ordering\s*Not available/.test(card) && /Clinician review\s*Planned/.test(card) && /Available now, free/.test(card), `${size}: status card says no partners, no ordering, review planned`);
+  check(await page.$eval(".lt-hero .pg-cta", (el) => getComputedStyle(el).backgroundColor) === "rgb(161, 78, 46)", `${size}: main button is the site's terracotta`);
   check(!/\b(Quest|Labcorp|LabCorp)\b/.test(text), `${size}: no lab named as a partner`);
   const tests = await page.$$eval(".lt-test summary small", (list) => list.map((el) => el.textContent.trim()));
   check(tests.length >= 10 && tests.every((label) => label === "Planned"), `${size}: every test is marked Planned (${tests.length})`);

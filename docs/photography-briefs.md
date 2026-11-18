@@ -85,7 +85,7 @@ Photorealistic photograph in a clean, modern outpatient blood-draw room with neu
 - **Avoid:** branding, logos and name badges; any needle in skin; blood; exaggerated equipment.
 - **Grade:** muted, warm and even.
 
-Disclosure to keep: the default line. This person does not work for FollowThrough, and the room is not a partner site.
+Disclosure to set in `photos.json` for this slot (it also appears in the lab testing page hero): "Illustrative AI-generated image. Not a FollowThrough employee or partner lab." This person does not work for FollowThrough, and the room is not a partner site.
 
 ### 4. Clinician review: looking at results
 
