@@ -655,3 +655,13 @@ body[data-active-workspace]:not([data-active-workspace="home-title"]) .topbar.si
   #report-results .lab-summary-bars li { grid-template-columns: 1fr; gap: 4px; }
 }
 @media print { #report-results .lab-trend polyline { stroke: #999; } }
+
+/* Homepage: lab testing (planned, 17 Nov). Four ruled steps; the status is said in words, not only colour. */
+.fh-labs-status { display: inline-block; margin-top: 8px; padding: 2px 8px; border: 1px solid var(--fh-accent); border-radius: 999px; color: var(--fh-accent); letter-spacing: 0.08em; }
+.app-shell .landing .fh-labs-steps { counter-reset: lab; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 28px; margin: 28px 0 20px; padding: 0; list-style: none; }
+.app-shell .landing .fh-labs-steps li { counter-increment: lab; margin: 0; padding: 16px 0 0; border-top: 1px solid var(--fh-ink); }
+.app-shell .landing .fh-labs-steps li::before { content: counter(lab, decimal-leading-zero); display: block; margin-bottom: 10px; color: var(--fh-accent); font: 400 1.6rem/1 var(--fh-serif); }
+.app-shell .landing .fh-labs-steps b { display: block; margin-bottom: 6px; font: 400 1.2rem/1.25 var(--fh-serif); color: var(--fh-ink); }
+.app-shell .landing .fh-labs-steps span { color: var(--fh-ink-3); font-size: 0.92rem; line-height: 1.45; }
+@media (max-width: 860px) { .app-shell .landing .fh-labs-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 24px; } }
+@media (max-width: 480px) { .app-shell .landing .fh-labs-steps { grid-template-columns: 1fr; } }
