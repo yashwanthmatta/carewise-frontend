@@ -51,7 +51,7 @@
 }
 
 /* ---------- Type ---------- */
-.fh-display, .fh-h2, .workspace > .panel h3, .ft-dash h2 {
+.fh-display, .fh-h2, .workspace > .panel h3 {
   font-family: var(--fh-serif) !important;
   font-weight: 300 !important;
   letter-spacing: -0.012em !important;
@@ -295,49 +295,115 @@ body { background: var(--fh-paper) !important; color: var(--fh-ink); }
 .fh-footer-legal a:hover { color: var(--fh-accent); text-decoration: underline; }
 .fh-footer-fine { margin: 28px 0 0; color: var(--fh-ink-3); font-size: 0.78rem; line-height: 1.55; }
 
-/* Returning visitors' summary: the latest report on paper, with the homepage's pen, beside the
-   report's own questions. Earlier reports show as sheets behind it. */
-.app-shell .landing .ft-dash { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; gap: 14px 48px; margin: 0 !important; padding: clamp(40px, 5vw, 64px) 0 !important; border: 0 !important; border-bottom: 1px solid var(--fh-line) !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
+/* Returning visitors' dashboard (rebuilt 18 Nov). A welcome line and the latest report's summary
+   card are the focus; doctor questions, earlier reports and tracking sit beside it in one grid.
+   Phones: welcome, report, the "new report" action, then the side panels. */
+.app-shell .landing .ft-dash { display: block; margin: 0 !important; padding: clamp(32px, 4vw, 56px) 0 clamp(40px, 5vw, 64px) !important; border: 0 !important; border-bottom: 1px solid var(--fh-line) !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
 .app-shell .landing .ft-dash[hidden] { display: none; }
-.ft-dash-body { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 40px 56px; align-items: start; }
-.ft-dash-paper { position: relative; margin: 0; padding: 14px 200px 8px 0; }
-.ft-dash-paper .ed-sheet { position: relative; z-index: 1; }
-/* Earlier reports: one or two sheets behind, offset like a small pile on a desk. */
-.ft-dash-paper[data-earlier="1"]::before, .ft-dash-paper[data-earlier="2"]::before, .ft-dash-paper[data-earlier="2"]::after { content: ""; position: absolute; left: 10px; top: 22px; right: 206px; bottom: 0; border: 1px solid #E6DECF; background: #FBF8F1; transform: rotate(2.2deg); box-shadow: 0 10px 24px -18px rgba(70, 45, 20, 0.35); }
-.ft-dash-paper[data-earlier="2"]::after { left: 18px; top: 30px; transform: rotate(-3.4deg); background: #F8F4EB; }
-.ft-dash-paper .ed-ink, .ft-dash-paper .ed-notes { z-index: 2; }
-.ft-dash-paper .ed-sheet { font-size: 0.76rem; }
-.ft-dash-paper .ed-sheet td { white-space: normal; }
-.ft-dash-paper .ed-sheet td:nth-child(2), .ft-dash-paper .ed-sheet td:nth-child(3) { white-space: nowrap; }
-.ft-dash-more { margin: 10px 0 0 4px; color: #6B665F; font-size: 0.72rem; }
-.ft-dash-ok { position: relative; z-index: 2; margin: 18px 0 0 8px; transform: rotate(-1.5deg); }
-.ft-dash-note { margin: 12px 0 0; color: var(--fh-ink-3); font-size: 0.92rem; }
-/* The report's name as a person would write it, not a file name in capitals; a small tag marks made-up samples. */
-.app-shell .landing .ft-dash-paper .ed-sheet header b { font: 400 1.15rem/1.25 var(--fh-serif) !important; letter-spacing: 0 !important; text-transform: none; color: var(--fh-ink); }
-.ft-dash-paper .ed-sheet header span { display: inline-flex; align-items: baseline; gap: 10px; }
-.ft-dash-tag { padding: 1px 6px; border: 1px solid currentColor; border-radius: 3px; color: var(--fh-accent); font: 500 0.62rem var(--fh-mono); font-style: normal; letter-spacing: 0.08em; text-transform: uppercase; }
-.ft-dash-count { margin: 18px 0 6px; font: 400 1.35rem/1.3 var(--fh-serif); color: var(--fh-ink); }
-.app-shell .landing .ft-dash-open { min-height: 32px; padding: 0 !important; border: 0 !important; background: none !important; font: inherit !important; color: var(--fh-accent) !important; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-.ft-dash-side .ed-h2 { margin-bottom: 12px !important; }
-.app-shell .landing .ft-dash-side h3 { margin: 26px 0 6px; padding-bottom: 8px; border-bottom: 2px solid var(--fh-ink); font: 600 0.95rem var(--ft-font) !important; color: var(--fh-ink); }
-.ft-dash-questions { display: grid; gap: 10px; margin: 12px 0 0; padding-left: 1.3em; color: var(--fh-ink); font: 400 1.08rem/1.5 var(--fh-serif); }
-.ft-dash-questions li::marker { color: var(--fh-accent); }
-.ft-dash-earlier { margin: 22px 0 0; color: var(--fh-ink-2); font-size: 0.95rem; }
-.ft-dash-earlier .ed-link { min-height: 32px; margin-left: 8px; font-size: 0.95rem; }
-.ft-dash-lines { margin: 18px 0 0; padding: 0; list-style: none; }
-.ft-dash-lines li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 10px 0; border-top: 1px solid var(--fh-line); color: var(--fh-ink-2); font-size: 0.95rem; }
-.ft-dash-lines span { min-width: 90px; color: var(--fh-ink-3); font: 500 0.74rem var(--fh-mono); letter-spacing: 0.06em; text-transform: uppercase; }
-.ft-dash-lines small { color: var(--fh-ink-3); }
-.ft-dash-lines .ed-link { min-height: 32px; font-size: 0.92rem; }
-.ft-dash .ed-btn { text-decoration: none; }
-@media (max-width: 1180px) {
-  .ft-dash-body { grid-template-columns: minmax(0, 1fr); }
+.fd { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); grid-template-areas: "head actions" "report side"; gap: 28px clamp(24px, 3vw, 40px); align-items: start; }
+.fd-head { grid-area: head; min-width: 0; }
+.fd-actions { grid-area: actions; align-self: end; justify-self: end; margin: 0; }
+.fd-report { grid-area: report; min-width: 0; }
+.fd-side { grid-area: side; display: grid; gap: 16px; min-width: 0; }
+.fd-eyebrow { margin: 0 0 10px; color: var(--fh-accent); font: 500 0.76rem var(--fh-mono); letter-spacing: 0.12em; text-transform: uppercase; }
+.app-shell .landing .fd-title { margin: 0 0 10px !important; font: 400 clamp(2.4rem, 4.6vw, 3.6rem)/1.02 var(--fh-serif) !important; letter-spacing: -0.025em; color: var(--fh-ink) !important; }
+.fd-meta { margin: 0; color: var(--fh-ink-2); font-size: 1.05rem; line-height: 1.5; }
+.fd-meta b { color: var(--fh-ink); font-weight: 600; }
+.fd .ft-dash-tag { margin-left: 6px; vertical-align: 2px; }
+
+/* Buttons and links, the same as the rest of the site */
+.app-shell .landing .fd-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 22px; border: 1px solid var(--fh-accent); border-radius: 10px; font: 600 1rem var(--ft-font, system-ui) !important; text-decoration: none !important; cursor: pointer; }
+.app-shell .landing .fd-btn-primary { background: var(--fh-accent) !important; color: #fff !important; }
+.app-shell .landing .fd-btn-primary:hover { background: var(--fh-accent-dark) !important; }
+.app-shell .landing .fd-btn-ghost { background: transparent !important; color: var(--fh-accent) !important; }
+.app-shell .landing .fd-btn-ghost:hover { background: var(--fh-accent-soft) !important; }
+.app-shell .landing .fd-btn:focus-visible, .fd-recent button:focus-visible, .fd-more-q summary:focus-visible { outline: 3px solid rgba(161, 78, 46, 0.45); outline-offset: 2px; }
+.fd-link { display: inline-flex; align-items: center; min-height: 40px; color: var(--fh-accent) !important; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+.fd-row { display: flex; flex-wrap: wrap; gap: 0 20px; margin: 4px 0 0; }
+
+/* The latest report: the one large card */
+.fd-report { display: grid; gap: 24px; padding: clamp(22px, 3vw, 32px); border: 1px solid var(--fh-line); border-radius: 22px; background: var(--fh-white); box-shadow: 0 24px 48px -36px rgba(80, 52, 28, 0.35); }
+.fd-report-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px 20px; padding-bottom: 18px; border-bottom: 1px solid var(--fh-line); }
+.app-shell .landing .fd-report-head h3 { margin: 0 0 4px; font: 400 clamp(1.5rem, 2.4vw, 1.9rem)/1.15 var(--fh-serif) !important; color: var(--fh-ink) !important; }
+.fd-report-head p { margin: 0; color: var(--fh-ink-3); font-size: 0.92rem; }
+.fd-status { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; font: 600 0.88rem var(--ft-font, system-ui); white-space: nowrap; }
+.fd-status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.fd-status-out { background: var(--fh-accent-soft); color: var(--fh-accent-dark); }
+.fd-status-in { background: #E3EFE7; color: #2F6B4C; }
+.fd-status-saved { background: var(--fh-cream); color: var(--fh-ink-2); }
+
+.fd-stats { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "total bar" "total legend"; align-items: center; gap: 10px 28px; }
+.fd-total { grid-area: total; margin: 0; color: var(--fh-ink-2); font-size: 1rem; }
+.fd-total b { display: block; color: var(--fh-ink); font: 400 clamp(3.2rem, 6vw, 4.4rem)/0.95 var(--fh-serif); letter-spacing: -0.03em; }
+.fd-bar { grid-area: bar; display: flex; gap: 4px; height: 14px; }
+.fd-bar i { display: block; height: 100%; border-radius: 7px; }
+.fd-bar-in, .fd-dot-in { background: #6FA285; }
+.fd-bar-out, .fd-dot-out { background: #C8734F; }
+.fd-bar-none, .fd-dot-none { background: var(--fh-line-strong); }
+.fd-legend { grid-area: legend; display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 0; padding: 0; list-style: none; color: var(--fh-ink-2); font-size: 0.92rem; }
+.fd-legend li { display: inline-flex; align-items: center; gap: 8px; margin: 0 !important; padding: 0 !important; border: 0 !important; background: none !important; }
+.fd-legend b { color: var(--fh-ink); font-variant-numeric: tabular-nums; }
+.fd-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+.fd-areas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; margin: 0; padding: 0; list-style: none; }
+.fd-areas li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 0 !important; padding: 10px 0 !important; border: 0 !important; border-top: 1px solid var(--fh-line) !important; background: none !important; }
+.fd-areas b { color: var(--fh-ink); font-size: 0.95rem; font-weight: 500; }
+.fd-areas span { flex: none; color: var(--fh-ink-3); font-size: 0.86rem; }
+.fd-areas .fd-area-out span { color: var(--fh-accent-dark); font-weight: 600; }
+.app-shell .landing .fd-out h4 { margin: 0 0 8px; color: var(--fh-ink); font: 600 0.95rem var(--ft-font, system-ui) !important; }
+.fd-out ul { margin: 0; padding: 0; list-style: none; }
+.fd-out li { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name value" "range label"; align-items: baseline; gap: 4px 16px; margin: 0 !important; padding: 12px 0 !important; border: 0 !important; border-top: 1px solid var(--fh-line) !important; background: none !important; }
+.fd-out-name { grid-area: name; color: var(--fh-ink); font-weight: 600; }
+.fd-out-value { grid-area: value; justify-self: end; color: var(--fh-ink); font: 400 1.2rem var(--fh-serif); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fd-out-range { grid-area: range; color: var(--fh-ink-3); font-size: 0.88rem; }
+.fd-out-label { grid-area: label; justify-self: end; padding: 2px 10px; border-radius: 999px; background: var(--fh-accent-soft); color: var(--fh-accent-dark); font-size: 0.8rem; font-weight: 600; text-align: right; }
+.fd-more { margin: 8px 0 0; color: var(--fh-ink-3); font-size: 0.9rem; }
+
+.fd-legacy p { margin: 0; }
+.fd-legacy-count { color: var(--fh-ink); font: 400 clamp(1.4rem, 2.4vw, 1.75rem)/1.25 var(--fh-serif); }
+.fd-legacy-when { margin-top: 4px !important; color: var(--fh-ink-3); font-size: 0.92rem; }
+.fd-legacy-note { margin-top: 16px !important; padding: 14px 16px; border-radius: 12px; background: var(--fh-paper); color: var(--fh-ink-2); font-size: 0.95rem; line-height: 1.55; }
+
+.fd-report-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; padding-top: 18px; border-top: 1px solid var(--fh-line); }
+.fd-report-foot span { color: var(--fh-ink-3); font-size: 0.88rem; }
+
+/* Side panels */
+.fd-panel { padding: 22px 24px; border: 1px solid var(--fh-line); border-radius: 18px; background: var(--fh-white); }
+.app-shell .landing .fd-panel h3 { margin: 0 0 4px; font: 400 1.35rem/1.2 var(--fh-serif) !important; color: var(--fh-ink) !important; }
+.fd-panel-note { margin: 0 0 12px; color: var(--fh-ink-3); font-size: 0.86rem; }
+.fd-questions ol { display: grid; gap: 10px; margin: 0; padding-left: 1.6em; color: var(--fh-ink); font: 400 1.04rem/1.45 var(--fh-serif); }
+.fd-questions li { margin: 0 !important; padding: 0 !important; border: 0 !important; background: none !important; }
+.fd-questions li::marker { color: var(--fh-accent); font-family: var(--fh-mono); font-size: 0.9em; }
+.fd-more-q { margin-top: 10px; }
+.fd-more-q summary { display: inline-flex; align-items: center; min-height: 40px; color: var(--fh-accent); font-weight: 600; cursor: pointer; }
+.fd-more-q ol { margin-top: 6px; }
+.fd-questions .fd-link { margin-top: 6px; }
+.fd-recent ul, .fd-follow ul { margin: 8px 0 0; padding: 0; list-style: none; }
+.fd-recent li, .fd-follow li { margin: 0 !important; padding: 0 !important; border: 0 !important; border-top: 1px solid var(--fh-line) !important; background: none !important; }
+.app-shell .landing .fd-recent button { display: grid; gap: 2px; width: 100%; min-height: 56px; padding: 10px 0 !important; border: 0 !important; background: none !important; color: var(--fh-ink) !important; text-align: left; cursor: pointer; }
+.fd-recent button b { font-weight: 600; }
+.fd-recent button span { color: var(--fh-ink-3); font-size: 0.88rem; }
+.fd-recent button:hover b { color: var(--fh-accent); }
+.fd-follow li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 12px; padding: 10px 0 !important; }
+.fd-follow li span { color: var(--fh-ink); }
+.fd-follow li b { color: var(--fh-ink); font-variant-numeric: tabular-nums; }
+.fd-follow li small { grid-column: 1 / -1; color: var(--fh-ink-3); font-size: 0.82rem; }
+
+@media (max-width: 1100px) {
+  .fd { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "report" "actions" "side"; }
+  .fd-actions { justify-self: start; }
+  .fd-side { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
 }
 @media (max-width: 640px) {
-  .ft-dash-paper { padding-right: 0; }
-  .ft-dash-paper .ed-sheet td:nth-child(2), .ft-dash-paper .ed-sheet td:nth-child(3) { white-space: normal; }
-  .ft-dash-paper[data-earlier="1"]::before, .ft-dash-paper[data-earlier="2"]::before, .ft-dash-paper[data-earlier="2"]::after { right: 6px; bottom: auto; height: 70%; }
+  .fd { gap: 20px; }
+  .fd-actions, .fd-actions .fd-btn, .fd-report-foot .fd-btn { width: 100%; }
+  .fd-report { padding: 20px 18px; border-radius: 18px; }
+  .fd-stats { grid-template-columns: minmax(0, 1fr); grid-template-areas: "total" "bar" "legend"; }
+  .fd-areas { grid-template-columns: minmax(0, 1fr); }
+  .fd-panel { padding: 18px; }
+  .fd-status { white-space: normal; }
 }
+.ft-dash-tag { padding: 1px 6px; border: 1px solid currentColor; border-radius: 3px; color: var(--fh-accent); font: 500 0.62rem var(--fh-mono); font-style: normal; letter-spacing: 0.08em; text-transform: uppercase; }
 /* The install button in the header: a quiet text button, not a pill */
 .app-shell .site-nav .install-button { min-height: 40px; padding: 0 10px !important; border: 0 !important; border-radius: 6px !important; background: none !important; color: var(--fh-ink-2) !important; box-shadow: none !important; font-weight: 500 !important; text-decoration: underline; text-underline-offset: 4px; }
 
@@ -588,7 +654,7 @@ body[data-active-workspace]:not([data-active-workspace="home-title"]) .topbar.si
   .ed-sheet-wrap { max-width: 720px; }
 }
 @media (max-width: 860px) {
-  .ed-part, .app-shell .landing .ft-dash { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .ed-part { grid-template-columns: minmax(0, 1fr); gap: 8px; }
 
   .ed-steps, .ed-cols, .ed-clinic, .fh-areas { grid-template-columns: 1fr; gap: 28px; }
   .fh-areas { gap: 0; }
