@@ -211,3 +211,9 @@ html, body, .app-shell, .app-shell .landing, .app-shell main { background-color:
 .app-shell .landing #faq .faq-icon::before, .app-shell .landing #faq .faq-icon::after { top: 8.25px; width: 18px; }
 .app-shell .landing #faq .faq-more { text-align: center; }
 .app-shell .landing #faq > .ed-label { display: block; margin: 0 auto 14px; color: var(--fx-accent-ink) !important; font: 500 0.78rem var(--fx-mono) !important; letter-spacing: 0.12em; text-align: center; text-transform: uppercase; }
+/* Let the sample cards start inside the first screen on a laptop */
+.app-shell .landing .fx-hero { padding-top: clamp(40px, 5vw, 72px) !important; }
+.app-shell .landing .fx-display { font-size: clamp(3.1rem, 7vw, 5.8rem) !important; margin-bottom: 22px !important; }
+.app-shell .landing .fx-kicker { margin-bottom: 20px; }
+.app-shell .landing .fx-lede { margin-bottom: 28px; }
+.app-shell .landing .fx-reel { margin-top: clamp(40px, 5vw, 64px); }
