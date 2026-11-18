@@ -181,11 +181,12 @@
     return "";
   }
 
+  // When the online helper is unavailable and no built-in answer fits: one calm, plain message, with no
+  // internal details (owner, 18 Nov: users should not see "a short built-in list"). Nothing is guessed.
   function offlineAnswer(question, es) {
-    const asked = question.length > 60 ? `${question.slice(0, 57)}…` : question;
     return es
-      ? `El asistente completo no responde en este momento, así que solo puedo usar una lista corta de respuestas, y no tengo una para "${asked}". Inténtalo de nuevo en unos minutos. Para preguntas sobre un medicamento, tu farmacéutico puede ayudarte hoy mismo.\n\nMientras tanto, puedo ayudarte con lo de abajo.`
-      : `The full assistant isn't answering right now, so I can only use a short built-in list, and it has nothing for "${asked}". Please try again in a few minutes. For a question about a medicine, your pharmacist can help today.\n\nIn the meantime, I can help with the topics below.`;
+      ? "El asistente de salud no está disponible en este momento. Inténtalo de nuevo en un rato.\n\nSi tu pregunta es sobre un medicamento, tu farmacéutico puede ayudarte hoy mismo."
+      : "The health assistant is temporarily unavailable. Please try again shortly.\n\nIf your question is about a medicine, your pharmacist can help today.";
   }
 
   function fallbackAnswer(es) {
@@ -398,12 +399,14 @@
         source: "web",
       }, { skipAuth: true });
       if (!response || !response.reply) throw new Error("No reply");
-      return { reply: response.reply, source: "online" };
+      // Sources come only from the backend's checked medicine reference; none are made up here.
+      const sources = Array.isArray(response.sources) ? response.sources.filter((item) => item && item.title && /^https:\/\//.test(item.url || "")) : [];
+      const cite = sources.length ? `\n\n${es ? "Fuentes" : "Sources"}: ${sources.map((item) => `${item.title} (${item.url})`).join("; ")}` : "";
+      return { reply: response.reply + cite, source: "online" };
     } catch (error) {
       const answer = builtInAnswer(clean);
-      // When the online assistant cannot be reached and the short built-in list has nothing for this
-      // question, say so plainly. A menu on its own reads as if the question was ignored (owner's
-      // screenshot, 17 Nov: "dolo 650" answered with "Here's what I can help with").
+      // When the online assistant cannot be reached and no built-in answer fits, say so plainly. A menu
+      // on its own reads as if the question was ignored (owner's screenshot, 17 Nov: "dolo 650").
       if (answer.showTopics) return { reply: offlineAnswer(clean, es), showTopics: true, source: "built-in" };
       return { reply: answer.reply, showTopics: Boolean(answer.showTopics), source: "built-in" };
     }

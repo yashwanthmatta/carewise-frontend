@@ -45,7 +45,7 @@ Every photo shows a visible line by default: *"Illustrative AI-generated image. 
 | # | Slot (where it goes) | Sizes | Status |
 |---|---|---|---|
 | 1 | `hero`: homepage hero, under the headline | 1600×700 and 800×1000 (phone crop) | Slot built |
-| 2 | Understanding results: upload page or demo | 1600×1000 | Not placed yet; the homepage keeps the product preview there |
+| 2 | `dashboard`: the "Welcome back" dashboard, beside the next step (added 18 Nov) | 1200×1500 (4:5) | Slot built. Until a photo exists, a warm panel holds the next step |
 | 3 | `lab`: lab testing section | 1200×1500 (4:5) | Slot built |
 | 4 | `clinician`: "Two kinds of explanation" | 1200×1500 (4:5) | Slot built |
 | 5 | Everyday wellness: pricing or final call to action | 1600×1000 | Not placed yet |
