@@ -68,7 +68,7 @@ async function askAndWait(page, question) {
   // A question the built-in list can't answer, while the online assistant is unreachable: say so
   // plainly, never only a menu (owner's screenshot, 17 Nov: "dolo 650").
   const unknown = await askAndWait(page, "dolo 650");
-  check(/isn't answering right now/.test(unknown) && /dolo 650/.test(unknown) && !/^Here's what I can help with/.test(unknown), `unanswerable question while offline: says the assistant is unavailable ("${unknown.slice(0, 70)}…")`);
+  check(/The health assistant is temporarily unavailable\. Please try again shortly\./.test(unknown) && !/built-in list|isn't answering|full assistant/.test(unknown) && !/^Here's what I can help with/.test(unknown), `unanswerable question while offline: one calm message, no internal details (${unknown.slice(0, 60)})`);
   const cbc = await askAndWait(page, "What does CBC test for?");
   check(/red cells/.test(cbc) && /white cells/.test(cbc) && /platelets/.test(cbc), `common panel name answered: CBC ("${cbc.slice(0, 50)}…")`);
   const urgent = await askAndWait(page, "I have chest pain right now");
