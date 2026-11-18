@@ -708,31 +708,6 @@ body[data-auth="in"] details.when-in { display: block; }
 @media (prefers-reduced-motion: reduce) {
   .lab-filter, .report-panel .result-card-item { transition: none; }}
 
-/* ---------- Home dashboard for returning people (2026-11-09) ---------- */
-.ft-dash { margin: clamp(16px, 3vw, 32px) 0 clamp(24px, 4vw, 48px); padding: clamp(24px, 4vw, 44px); border: 1px solid var(--ft-line); border-radius: 28px; background: var(--ft-ivory, #fbf9f4); }
-.ft-dash[hidden] { display: none; }
-.ft-dash-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px; }
-.ft-dash-head h2 { margin: 0; font-family: var(--ft-serif, Georgia, serif) !important; font-weight: 600; font-size: var(--ft-text-xl); letter-spacing: -0.02em; color: var(--ft-ink); }
-.ft-dash-lede { margin: 8px 0 0 !important; color: var(--ft-ink-2); font-size: var(--ft-text-sm); }
-.ft-dash-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-.ft-dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 16px; margin-top: 24px; }
-.ft-dash-card { display: grid; align-content: start; gap: 8px; padding: 20px 22px; border: 1px solid var(--ft-line); border-radius: var(--ft-radius-lg); background: var(--ft-surface); box-shadow: var(--ft-shadow-sm); }
-.ft-dash-card h3 { margin: 0; color: var(--ft-ink-3); font-size: var(--ft-text-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-.ft-dash-card p { margin: 0; color: var(--ft-ink-2); font-size: var(--ft-text-sm); line-height: 1.5; }
-.ft-dash-meta { color: var(--ft-ink-3) !important; }
-.ft-dash-big { color: var(--ft-ink) !important; font-size: var(--ft-text-lg) !important; font-weight: 600; overflow-wrap: anywhere; }
-.ft-dash-latest { border-top: 3px solid var(--ft-brand); }
-.ft-dash-questions { display: grid; gap: 8px; margin: 0; padding-left: 1.2em; color: var(--ft-ink); font-size: var(--ft-text-sm); line-height: 1.45; }
-.ft-dash-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
-.ft-dash-list li { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding-bottom: 8px; border-bottom: 1px solid var(--ft-line); font-size: var(--ft-text-sm); }
-.ft-dash-list li:last-child { border-bottom: 0; padding-bottom: 0; }
-.ft-dash-list span { color: var(--ft-ink); overflow-wrap: anywhere; }
-.ft-dash-list b { font-variant-numeric: tabular-nums; color: var(--ft-ink); }
-.ft-dash-list small { grid-column: 1 / -1; color: var(--ft-ink-3); font-size: var(--ft-text-xs); }
-.ft-dash-link { margin-top: 4px; color: var(--ft-brand); font-weight: 600; font-size: var(--ft-text-sm); text-decoration: none; }
-.ft-dash-link:hover { text-decoration: underline; }
-@media (max-width: 600px) { .ft-dash-actions { width: 100%; }}
-
 /* ---------- Footer (2026-11-09): one ivory card, brand, link columns, closing call to action ---------- */
 
 /* The older .lp-footer rules make every div a stretched grid: undo that inside the new footer. */
@@ -761,8 +736,6 @@ body[data-auth="in"] details.when-in { display: block; }
   --ft-terracotta-soft: #F6E6DC;
 }
 .ft-serif-accent { color: var(--ft-terracotta) !important; font-style: italic !important; }
-.ft-dash { background: var(--ft-ivory); }
-.ft-dash-card { background: var(--ft-surface); }
 
 /* ---------- AI Health Guide (2026-11-09) ----------
    An original illustrated guide (inline SVG, no extra download). Movement is CSS only:

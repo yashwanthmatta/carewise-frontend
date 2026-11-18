@@ -5,6 +5,11 @@
 // unit and lab range saved with the report; empty sections are left out instead of shown as boxes.
 // 16 Nov: the latest report is drawn as a paper sheet. Results outside the lab's range are circled
 // in pen and noted in the app's own label and range; results within range are on the sheet, unmarked.
+// 18 Nov rebuild: no paper sheet. One dashboard: welcome line, a summary card of the latest report
+// (counts within and outside the lab's ranges from the saved results, body areas, the results to talk
+// about with exact saved values), and beside it the questions, earlier reports and tracking. Questions
+// are the report's own when something is outside the lab's range; when nothing is, they are general
+// and labelled so (owner's screenshot: "0 of 5 outside" above LDL and A1C questions).
 // Optional: AXE_PATH=/path/to/axe.min.js runs an accessibility scan of the dashboard.
 // Usage: serve the site on :4173, then node scripts/eval/home-dashboard.mjs
 import fs from "node:fs";
@@ -39,18 +44,21 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   const text = await page.innerText("#dashboard");
   // The file name is printed in capitals on the sheet, so read the text as written, not as shown.
   check(/Welcome back/.test(text) && /Dad's kidney panel/.test(await page.$eval("#dashboard", (el) => el.textContent)), `${size}: dashboard shows the latest report`);
-  check(/1 of 3 results outside the lab's range|2 of 3 results outside the lab's range/.test(text), `${size}: latest report shows its lab-range count`);
   check(/How are my kidneys working/.test(text), `${size}: doctor questions are the report's own`);
   check(!/Which results matter most for me/.test(text.split("Tracking")[0]), `${size}: no general question in the top three`);
-  const sheet = await page.$$eval("#dashboard .ft-dash-paper .ed-sheet tbody tr", (trs) => trs.map((tr) => ({ text: tr.innerText.replace(/\s+/g, " "), mark: tr.querySelector("[data-mark]")?.dataset.mark || "" })));
-  const creat = sheet.find((r) => /Creatinine/.test(r.text));
-  check(creat && /2\.3 mg\/dL/.test(creat.text) && /0\.6-1\.3/.test(creat.text), `${size}: sheet shows exact value, unit and lab range (${sheet.map((r) => r.text).join(" | ")})`);
-  const note = creat?.mark ? await page.$eval(`#dashboard [data-note="${creat.mark}"]`, (el) => el.textContent).catch(() => "") : "";
-  check(creat?.mark && /^Creatinine: .*above.* \(0\.6-1\.3\)$/.test(note.trim()), `${size}: out-of-range result is circled with the app's label and range (${note})`);
-  const potassium = sheet.find((r) => /Potassium/.test(r.text));
-  check(potassium && !potassium.mark, `${size}: a result within range is on the sheet but not marked`);
-  check(await page.$$eval("#dashboard .ed-ink path", (els) => els.length) >= 1, `${size}: pen marks are drawn`);
-  check(await page.$$eval("#dashboard .ft-dash-card", (els) => els.length) === 0, `${size}: no card grid`);
+  const outRows = await page.$$eval("#dashboard .fd-out li", (lis) => lis.map((li) => li.innerText.replace(/\s+/g, " ")));
+  const creat = outRows.find((r) => /Creatinine/.test(r));
+  check(creat && /2\.3 mg\/dL/.test(creat) && /0\.6-1\.3/.test(creat), `${size}: results to talk about show exact value, unit and lab range (${outRows.join(" | ")})`);
+  check(!outRows.some((r) => /Potassium/.test(r)), `${size}: a result within range is not listed as one to talk about`);
+  const counts = await page.$eval("#dashboard .fd-legend", (el) => el.innerText.replace(/\s+/g, " "));
+  check(/Within the lab's range 1/.test(counts) && /Outside the lab's range 2/.test(counts) && /\b3\b/.test(await page.innerText("#dashboard .fd-total")), `${size}: counts come from the saved results (${counts})`);
+  check(/2 outside the lab's range/.test(await page.innerText("#dashboard .fd-status")), `${size}: status says how many are outside, in words`);
+  check(await page.$$eval("#dashboard .fd-areas li", (els) => els.length) >= 1, `${size}: body areas listed`);
+  check(/From this report/.test(await page.innerText("#dashboard .fd-questions")), `${size}: questions marked as this report's own`);
+  check(await page.$$eval("#dashboard .ed-sheet, #dashboard [data-annotated], #dashboard .ft-dash-card", (els) => els.length) === 0, `${size}: no paper sheet or card grid`);
+  // On a phone the report comes before the "new report" action, and that before the questions.
+  const order = await page.evaluate(() => ["#dashboard .fd-head", "#dashboard .fd-report", "#dashboard .fd-actions", "#dashboard .fd-questions"].map((sel) => document.querySelector(sel).getBoundingClientRect().top));
+  if (size === "phone") check(order.every((top, i) => !i || top > order[i - 1]), `${size}: welcome, report, action, questions in that order`);
   check(/Creatinine/.test(text) && /2\.3 mg\/dL/.test(text), `${size}: tracked result with value and unit`);
   check(/Lab follow-up/.test(text) && !/Private note/.test(text), `${size}: upcoming reminder by type, not its private title`);
   check(!/score/i.test(text), `${size}: no health score`);
@@ -67,6 +75,33 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   const oldText = await page.innerText("#dashboard");
   check(/7 of 10 results outside the lab's range/.test(oldText) && !/No results outside|Ningún resultado/i.test(oldText), `${size}: an older report keeps its count and never says "no results" under it`);
   check(await page.$$eval("#dashboard [data-dash-open]", (els) => els.length) === 1, `${size}: an older report offers to open the full report`);
+  check(/Saved summary/.test(oldText) && /saved by an earlier version/.test(oldText) && !(await page.$("#dashboard .fd-total")), `${size}: an older report is labelled a saved summary, with no made-up counts or results`);
+  check(/From this report|Saved with this report/.test(oldText), `${size}: an older report's questions say where they came from`);
+  // The owner's screenshot: an older report saved as "0 of 5 outside" with LDL and A1C questions.
+  // Nothing outside the lab's range means general questions, labelled so; no test is implied to be a problem.
+  await page.evaluate(() => {
+    localStorage.setItem("carewiseReports", JSON.stringify([{ id: "old-0", person: "Maria (sample)", fileName: "sample-blood-work.txt", status: "analyzed locally", message: "0 of 5 results outside the lab's range. LDL cholesterol", questions: ["What LDL goal is appropriate for me based on my age, family history, blood pressure, and other risks?", "What changes would help lower my A1C safely over the next 3 months?"], createdAt: "2026-11-04T10:00:00Z" }]));
+  });
+  await page.goto(base, { waitUntil: "load" });
+  await page.waitForFunction(() => !document.querySelector("#dashboard").hidden);
+  const zero = await page.innerText("#dashboard .fd-questions");
+  check(/General questions you could ask/.test(zero) && /these are general questions/.test(zero) && !/LDL|A1C/.test(zero), `${size}: "0 outside" shows general questions, labelled, without LDL or A1C`);
+  // A report with every result within range says so, in words, and also gets general questions.
+  await page.goto(`${base}#report-title`, { waitUntil: "load" });
+  await page.evaluate(() => localStorage.removeItem("carewiseReports"));
+  await page.$eval("#report-name", (el) => { el.value = "Kidney check"; });
+  await page.fill("#report-text", "Sample Lab\nCreatinine 1.0 mg/dL 0.6-1.3\neGFR 82 mL/min/1.73m2 >60\nPotassium 4.2 mmol/L 3.5-5.1");
+  await page.click("#analyze-report");
+  await page.waitForSelector("#report-results .report-summary", { state: "attached", timeout: 15000 });
+  await page.goto(base, { waitUntil: "load" });
+  await page.waitForFunction(() => !document.querySelector("#dashboard").hidden);
+  check(/All within the lab's ranges/.test(await page.innerText("#dashboard .fd-status")) && !(await page.$("#dashboard .fd-out")) && /General questions/.test(await page.innerText("#dashboard .fd-questions")), `${size}: all-within report says so, lists nothing to talk about, and labels its questions general`);
+  check(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), `${size}: no sideways scroll (all within)`);
+  await page.evaluate(() => {
+    localStorage.setItem("carewiseReports", JSON.stringify([{ id: "old-1", person: "Maria (sample)", fileName: "sample-blood-work.txt", status: "analyzed locally", message: "7 of 10 results outside the lab's range. LDL cholesterol", questions: ["What should my LDL goal be?"], createdAt: "2026-10-25T10:00:00Z" }]));
+  });
+  await page.goto(base, { waitUntil: "load" });
+  await page.waitForFunction(() => !document.querySelector("#dashboard").hidden);
   // Names read as a person would write them (owner, 17 Nov: "i dont like some sample names"). The file
   // name is not shown in capitals and "(sample)" is not part of the person's name; a "Sample" tag still
   // marks made-up data.
