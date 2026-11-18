@@ -86,6 +86,8 @@ jobs:
 
       - name: Lab testing page is honest that it is planned (no prices, no locations, consent for email)
         run: node scripts/eval/lab-testing.mjs
+      - name: Photo slots (disclosure, loading, fallback)
+        run: node scripts/eval/photo-slots.mjs
 
       - name: Report questions are about the report's own results
         run: node scripts/eval/report-questions.mjs
