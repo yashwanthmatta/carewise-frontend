@@ -183,9 +183,6 @@ body { background: var(--fh-paper) !important; color: var(--fh-ink); }
 .app-shell .landing .ed-steps b { display: block; margin-bottom: 12px; font: 400 2.2rem/1 var(--fh-serif) !important; color: var(--fh-accent); }
 .app-shell .landing .ed-steps h3 { margin: 0 0 6px; font: 600 1rem/1.4 var(--ft-font) !important; color: var(--fh-ink); }
 .ed-steps p { margin: 0; color: var(--fh-ink-2); font-size: 0.98rem; line-height: 1.6; }
-.ed-letter { max-width: 36em; }
-.ed-letter p { margin: 0 0 1em; font: 400 clamp(1.15rem, 1.6vw, 1.3rem)/1.65 var(--fh-serif); color: var(--fh-ink); }
-.ed-letter p:last-child { margin-bottom: 0; }
 .ed-sign { margin-top: 14px !important; font: 600 1.7rem var(--ed-hand) !important; color: var(--ed-pen) !important; }
 
 /* What it reads: a plain index, not cards */
@@ -350,8 +347,8 @@ body { background: var(--fh-paper) !important; color: var(--fh-ink); }
    stays as the analysis produced it. */
 /* One button language across the site (13 Nov): the main action is ink with a small radius, like the
    homepage and header; terracotta is kept for links and hover. */
-.app-shell .primary-button, .app-shell .workspace .primary-button { background: var(--fh-ink) !important; color: var(--fh-paper) !important; box-shadow: none !important; border-radius: 6px !important; font-weight: 600 !important; }
-.app-shell .primary-button:hover, .app-shell .workspace .primary-button:hover { background: var(--fh-accent) !important; transform: none; }
+.app-shell .primary-button, .app-shell .workspace .primary-button { background: var(--fh-accent) !important; color: #fff !important; box-shadow: none !important; border-radius: 10px !important; font-weight: 600 !important; }
+.app-shell .primary-button:hover, .app-shell .workspace .primary-button:hover { background: var(--fh-accent-dark) !important; transform: none; }
 .app-shell .site-nav .quick-nav.patient-nav a.active { background: var(--fh-white) !important; color: var(--fh-accent-dark) !important; box-shadow: 0 0 0 1px var(--fh-line) !important; }
 .app-shell .primary-button { min-height: 48px; height: auto !important; padding: 12px 24px !important; line-height: 1.25 !important; }
 .app-shell .secondary-button { border-color: var(--fh-line) !important; box-shadow: none !important; }
@@ -494,9 +491,8 @@ main.app-shell { padding-bottom: 96px; }
    action, terracotta for links. Layout and behaviour are unchanged; this is presentation only. */
 .app-shell .workspace > .panel { border: 0 !important; border-top: 1px solid var(--fh-line) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding-left: 0 !important; padding-right: 0 !important; }
 .app-shell .workspace > .panel:first-of-type { border-top: 0 !important; }
-.app-shell :is(.secondary-button, .install-button, .rm-list button) { border-radius: 6px !important; background: transparent !important; border: 1px solid var(--fh-line-strong) !important; color: var(--fh-ink) !important; }
-.app-shell .secondary-button:hover { border-color: var(--fh-ink) !important; }
-.app-shell .primary-button, .app-shell .workspace .primary-button { border-radius: 6px !important; }
+.app-shell :is(.secondary-button, .install-button, .rm-list button) { border-radius: 10px !important; background: transparent !important; border: 1px solid var(--fh-accent) !important; color: var(--fh-accent) !important; }
+.app-shell .secondary-button:hover { border-color: var(--fh-accent-dark) !important; background: var(--fh-accent-soft) !important; }
 .app-shell .report-panel .whose-chip { border-radius: 6px !important; }
 .app-shell .workspace :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea) { border-radius: 6px !important; box-shadow: none !important; }
 .app-shell .report-panel :is(.composer-drop, .hero-sample, .composer-sample) { border-radius: 8px !important; box-shadow: none !important; }
@@ -532,7 +528,9 @@ body[data-active-workspace]:not([data-active-workspace="home-title"]) .topbar.si
    feedback. Same rules as the rest of the site now: ruled parts, results as ruled rows, 6 px corners.
    Presentation only; every value, label, range and sentence is unchanged. */
 .app-shell #report-results :is(.report-summary, .result-doctor, .result-source, .result-save, .safety-note, .feedback-box) { border: 0 !important; border-top: 1px solid var(--fh-line-strong) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding-left: 0 !important; padding-right: 0 !important; }
-.app-shell #report-results .report-summary { border-top: 2px solid var(--fh-ink) !important; }
+/* The summary is the one card on the results screen, in the homepage's panel style (18 Nov). */
+.app-shell #report-results .report-summary { border: 1px solid var(--fh-line) !important; border-radius: 22px !important; background: var(--fh-white) !important; padding: 26px 28px !important; box-shadow: 0 24px 48px -36px rgba(80, 52, 28, 0.35) !important; }
+.app-shell #report-results .summary-meter span { border-radius: 3px; }
 .app-shell #report-results .result-cards-grid { column-gap: 48px !important; row-gap: 0 !important; }
 .app-shell #report-results .result-cards-grid > .result-card-item { border: 0 !important; border-top: 1px solid var(--fh-line-strong) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding: 18px 0 20px !important; animation: none !important; }
 .app-shell #report-results .result-card-item header em { border-radius: 4px !important; }
@@ -541,7 +539,7 @@ body[data-active-workspace]:not([data-active-workspace="home-title"]) .topbar.si
 .app-shell #report-results .result-more > summary { padding-left: 0 !important; padding-right: 0 !important; }
 /* "Your next 3 steps": the list drew the browser's own "1." as well as its counter, and the browser
    number sat outside the page edge (a stray "." at 1440 px). One number, inside the column. */
-.app-shell #report-results :is(.next-steps-list, .result-doctor-questions) { list-style: decimal outside !important; padding-left: 1.6em !important; margin-left: 0 !important; }
+.app-shell #report-results :is(.next-steps-list, .result-doctor-questions) { list-style: decimal outside !important; padding-left: 2.4em !important; margin-left: 0 !important; }
 .app-shell #report-results :is(.next-steps-list, .result-doctor-questions) li::before { content: none !important; display: none !important; }
 .app-shell #report-results :is(.next-steps-list, .result-doctor-questions) li::marker { color: var(--fh-accent); font-weight: 600; }
 /* The three steps sit side by side in a grid, so each number goes inside its own column. */
@@ -655,13 +653,3 @@ body[data-active-workspace]:not([data-active-workspace="home-title"]) .topbar.si
   #report-results .lab-summary-bars li { grid-template-columns: 1fr; gap: 4px; }
 }
 @media print { #report-results .lab-trend polyline { stroke: #999; } }
-
-/* Homepage: lab testing (planned, 17 Nov). Four ruled steps; the status is said in words, not only colour. */
-.fh-labs-status { display: inline-block; margin-top: 8px; padding: 2px 8px; border: 1px solid var(--fh-accent); border-radius: 999px; color: var(--fh-accent); letter-spacing: 0.08em; }
-.app-shell .landing .fh-labs-steps { counter-reset: lab; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 28px; margin: 28px 0 20px; padding: 0; list-style: none; }
-.app-shell .landing .fh-labs-steps li { counter-increment: lab; margin: 0; padding: 16px 0 0; border-top: 1px solid var(--fh-ink); }
-.app-shell .landing .fh-labs-steps li::before { content: counter(lab, decimal-leading-zero); display: block; margin-bottom: 10px; color: var(--fh-accent); font: 400 1.6rem/1 var(--fh-serif); }
-.app-shell .landing .fh-labs-steps b { display: block; margin-bottom: 6px; font: 400 1.2rem/1.25 var(--fh-serif); color: var(--fh-ink); }
-.app-shell .landing .fh-labs-steps span { color: var(--fh-ink-3); font-size: 0.92rem; line-height: 1.45; }
-@media (max-width: 860px) { .app-shell .landing .fh-labs-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 24px; } }
-@media (max-width: 480px) { .app-shell .landing .fh-labs-steps { grid-template-columns: 1fr; } }

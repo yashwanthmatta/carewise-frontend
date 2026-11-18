@@ -11,8 +11,8 @@
   --fx-ink-2: #4A4743;
   --fx-ink-3: #6B665F;
   --fx-line: #E7DED0;
-  --fx-accent: #B35A3A;
-  --fx-accent-ink: #9A4A2E;   /* text on cream: 5.9:1 */
+  --fx-accent: var(--fh-accent, #A14E2E);       /* one terracotta for the site and the app */
+  --fx-accent-ink: var(--fh-accent-dark, #8A4126);
   --fx-in: #6FA285;
   --fx-in-ink: #2F6B4C;
   --fx-out: #C8734F;
@@ -21,7 +21,7 @@
   --fx-mono: "DM Mono", ui-monospace, Menlo, monospace;
   --fx-radius: 22px;
 }
-body { background: var(--fx-cream) !important; }
+html, body, .app-shell, .app-shell .landing, .app-shell main { background-color: var(--fx-cream, #FBF7EF) !important; }
 
 /* ---------- Header ---------- */
 .app-shell .site-nav { background: rgba(251, 247, 239, 0.97) !important; border-bottom: 1px solid transparent !important; }
@@ -33,8 +33,8 @@ body { background: var(--fx-cream) !important; }
 .app-shell .site-nav .nav-cta:hover { background: var(--fx-accent-ink) !important; }
 
 /* ---------- Shared pieces ---------- */
-.app-shell .landing .fx-head { max-width: 760px; margin: 0 auto clamp(36px, 5vw, 64px); text-align: center; }
-.app-shell .landing .fx-eyebrow { margin: 0 0 14px; color: var(--fx-accent-ink); font: 500 0.78rem var(--fx-mono); letter-spacing: 0.12em; text-transform: uppercase; }
+.app-shell .landing .fx-head { max-width: 760px; margin: 0 auto clamp(28px, 4vw, 48px); text-align: center; }
+.app-shell .landing .fx-eyebrow { margin: 0 0 14px; color: var(--fx-accent-ink) !important; font: 500 0.78rem var(--fx-mono); letter-spacing: 0.12em; text-transform: uppercase; }
 .app-shell .landing .fx-h2 { margin: 0 0 16px; font: 400 clamp(2.4rem, 5.2vw, 4.2rem)/1.04 var(--fx-serif) !important; letter-spacing: -0.025em; color: var(--fx-ink) !important; }
 .app-shell .landing .fx-h2 em, .app-shell .landing .fx-display em { color: var(--fx-accent); font-style: italic; font-weight: 300; }
 .app-shell .landing .fx-sub { max-width: 60ch; margin: 0 auto; color: var(--fx-ink-2); font: 400 1.12rem/1.6 var(--fx-sans); }
@@ -46,16 +46,16 @@ body { background: var(--fx-cream) !important; }
 .app-shell .landing .fx-btn:focus-visible { outline: 3px solid rgba(179, 90, 58, 0.45); outline-offset: 3px; }
 .app-shell .landing .fx-fine { margin: 22px auto 0; max-width: 70ch; color: var(--fx-ink-3); font-size: 0.86rem; text-align: center; }
 .app-shell .landing .fx-center { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin: clamp(32px, 4vw, 48px) 0 0; }
-.app-shell .landing > section.fx-glance, .app-shell .landing > section.fx-how, .app-shell .landing > section.fx-compare { padding: clamp(72px, 9vw, 128px) 0 !important; border: 0 !important; background: none !important; }
+.app-shell .landing > section.fx-glance, .app-shell .landing > section.fx-how { padding: clamp(56px, 6.5vw, 96px) 0 !important; border: 0 !important; background: none !important; }
 
 /* ---------- Hero ---------- */
-.app-shell .landing .fx-hero { display: block !important; padding: clamp(56px, 8vw, 112px) 0 0 !important; border: 0 !important; background: none !important; text-align: center; }
+.app-shell .landing .fx-hero { display: block !important; padding: clamp(40px, 5vw, 72px) 0 0 !important; border: 0 !important; background: none !important; text-align: center; }
 .app-shell .landing .fx-hero-copy { max-width: 880px; margin: 0 auto; }
-.app-shell .landing .fx-kicker { display: inline-flex; align-items: center; gap: 10px; margin: 0 0 26px; padding: 7px 16px; border: 1px solid var(--fx-line); border-radius: 999px; background: var(--fx-card); color: var(--fx-ink-2); font: 500 0.86rem var(--fx-sans); }
+.app-shell .landing .fx-kicker { display: inline-flex; align-items: center; gap: 10px; margin: 0 0 20px; padding: 7px 16px; border: 1px solid var(--fx-line); border-radius: 999px; background: var(--fx-card); color: var(--fx-ink-2); font: 500 0.86rem var(--fx-sans); }
 .app-shell .landing .fx-kicker span { width: 8px; height: 8px; border-radius: 50%; background: var(--fx-in); }
-.app-shell .landing .fx-display { margin: 0 0 26px !important; font: 400 clamp(3.1rem, 8.4vw, 7rem)/0.98 var(--fx-serif) !important; letter-spacing: -0.035em !important; color: var(--fx-ink) !important; text-wrap: balance; }
+.app-shell .landing .fx-display { margin: 0 0 22px !important; font: 400 clamp(3.1rem, 7vw, 5.8rem)/0.98 var(--fx-serif) !important; letter-spacing: -0.035em !important; color: var(--fx-ink) !important; text-wrap: balance; }
 .app-shell .landing .fx-display em { display: block; }
-.app-shell .landing .fx-lede { max-width: 40ch; margin: 0 auto 34px; color: var(--fx-ink-2); font: 400 clamp(1.15rem, 1.9vw, 1.42rem)/1.5 var(--fx-sans); }
+.app-shell .landing .fx-lede { max-width: 40ch; margin: 0 auto 28px; color: var(--fx-ink-2); font: 400 clamp(1.15rem, 1.9vw, 1.42rem)/1.5 var(--fx-sans); }
 .app-shell .landing .fx-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
 .app-shell .landing .fx-actions .fh-drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .app-shell .landing .fx-actions .fh-drop:focus-within { outline: 3px solid rgba(179, 90, 58, 0.45); outline-offset: 3px; }
@@ -63,7 +63,7 @@ body { background: var(--fx-cream) !important; }
 .app-shell .landing .fx-hero .fh-data-use { max-width: 640px; margin: 12px auto 0; text-align: left; }
 .app-shell .landing .fx-hero .fh-data-use summary { justify-content: center; color: var(--fx-accent-ink); }
 
-.app-shell .landing .fx-reel { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin: clamp(56px, 7vw, 88px) 0 0; }
+.app-shell .landing .fx-reel { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
 .app-shell .landing .fx-card { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: clamp(300px, 30vw, 420px); margin: 0; padding: 20px; overflow: hidden; border-radius: 28px; text-align: left; isolation: isolate; }
 .app-shell .landing .fx-card::before { content: ""; position: absolute; inset: 0; z-index: -1; transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1); }
 .app-shell .landing .fx-card:hover::before { transform: scale(1.04); }
@@ -75,6 +75,7 @@ body { background: var(--fx-cream) !important; }
 .app-shell .landing .fx-card-tag { align-self: flex-start; padding: 6px 12px; border-radius: 999px; background: rgba(255, 253, 248, 0.82); color: var(--fx-ink); font: 500 0.8rem var(--fx-sans); }
 .app-shell .landing .fx-glass { padding: 18px 18px 16px; border: 1px solid rgba(255, 255, 255, 0.45); border-radius: 18px; background: rgba(255, 253, 248, 0.2); backdrop-filter: blur(14px) saturate(1.2); color: #fff; }
 .app-shell .landing .fx-glass p { display: flex; align-items: baseline; gap: 8px; margin: 0 0 6px; }
+.app-shell .landing .fx-glass b, .app-shell .landing .fx-glass span, .app-shell .landing .fx-glass small { color: #fff !important; text-shadow: 0 1px 12px rgba(0, 0, 0, 0.12); }
 .app-shell .landing .fx-glass b { font: 400 clamp(2.6rem, 4.6vw, 3.6rem)/1 var(--fx-serif); letter-spacing: -0.02em; }
 .app-shell .landing .fx-glass span { font: 400 1rem var(--fx-serif); opacity: 0.92; }
 .app-shell .landing .fx-glass small { display: block; font: 500 0.86rem var(--fx-sans); opacity: 0.95; }
@@ -101,19 +102,18 @@ body { background: var(--fx-cream) !important; }
 .app-shell .landing .fx-areas li { display: grid; grid-template-columns: minmax(0, 1fr) 88px; grid-template-areas: "name bar" "note bar"; align-items: center; gap: 2px 14px; margin: 0 !important; padding: 11px 0 !important; border: 0 !important; border-top: 1px solid var(--fx-line) !important; background: none !important; }
 .app-shell .landing .fx-areas li span { grid-area: name; color: var(--fx-ink); font: 500 0.98rem var(--fx-sans); }
 .app-shell .landing .fx-areas li small { grid-area: note; color: var(--fx-ink-3); font-size: 0.82rem; }
-.app-shell .landing .fx-split { grid-area: bar; display: flex; gap: 4px; height: 6px; }
-.app-shell .landing .fx-split em { display: block; border-radius: 3px; }
-.app-shell .landing .fx-split em.in { background: var(--fx-in); }
-.app-shell .landing .fx-split em.out { background: var(--fx-out); }
-.app-shell .landing .fx-trend svg { width: 100%; height: auto; overflow: visible; }
+.app-shell .landing .fx-splitbar { grid-area: bar; display: flex; gap: 4px; height: 6px; }
+.app-shell .landing .fx-splitbar em { display: block; border-radius: 3px; }
+.app-shell .landing .fx-splitbar em.in { background: var(--fx-in); }
+.app-shell .landing .fx-splitbar em.out { background: var(--fx-out); }
 .app-shell .landing .fx-band { fill: rgba(111, 162, 133, 0.16); }
 .app-shell .landing .fx-band-label { fill: var(--fx-in-ink); font: 500 9px var(--fx-mono); letter-spacing: 0.1em; }
 .app-shell .landing .fx-line { fill: none; stroke: var(--fx-out); stroke-width: 2; }
 .app-shell .landing .fx-dot { fill: var(--fx-card); stroke: var(--fx-out); stroke-width: 2.5; }
 .app-shell .landing .fx-dot-now { fill: var(--fx-out); }
 .app-shell .landing .fx-val { fill: var(--fx-ink); font: 500 13px var(--fx-sans); text-anchor: middle; }
-.app-shell .landing .fx-trend-dates { display: flex; justify-content: space-between; margin: 10px 20px 0; color: var(--fx-ink-3); font: 500 0.78rem var(--fx-mono); }
-.app-shell .landing .fx-ask ol { margin: 0; padding-left: 1.3em; color: var(--fx-ink); font: 400 1.08rem/1.5 var(--fx-serif); }
+.app-shell .landing .fx-ask { grid-column: 2 / span 2; }
+.app-shell .landing .fx-ask ol { columns: 2; column-gap: 32px;  margin: 0; padding-left: 1.3em; color: var(--fx-ink); font: 400 1.08rem/1.5 var(--fx-serif); }
 .app-shell .landing .fx-ask li { margin: 0 0 8px; padding: 0 !important; border: 0 !important; background: none !important; }
 .app-shell .landing .fx-ask li::marker { color: var(--fx-accent); }
 .app-shell .landing .fx-ask-foot { margin: 14px 0 0; color: var(--fx-ink-3); font: 500 0.82rem var(--fx-mono); letter-spacing: 0.06em; text-transform: uppercase; }
@@ -142,63 +142,78 @@ body { background: var(--fx-cream) !important; }
 .app-shell .landing .fx-row + .fx-row { margin-top: 8px; }
 .app-shell .landing .fx-row-icon { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: var(--fx-accent); color: #fff; font: 600 1rem var(--fx-sans); }
 
-/* ---------- Comparison ---------- */
-.app-shell .landing .fx-table { max-width: 980px; margin: 0 auto; }
-.app-shell .landing .fx-tr { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; }
-.app-shell .landing .fx-tr > span { display: flex; align-items: center; min-height: 64px; padding: 14px 18px; border-bottom: 1px solid var(--fx-line); color: var(--fx-ink); font: 400 1.05rem var(--fx-sans); }
-.app-shell .landing .fx-tr > span:not(:first-child) { justify-content: center; text-align: center; }
-.app-shell .landing .fx-th > span { min-height: 76px; border-bottom: 0; color: var(--fx-ink-2); font: 400 1.25rem/1.2 var(--fx-serif); }
-.app-shell .landing .fx-tr .fx-us { background: var(--fx-card); border-left: 1px solid var(--fx-line); border-right: 1px solid var(--fx-line); }
-.app-shell .landing .fx-th .fx-us { border-top: 1px solid var(--fx-line); border-radius: 20px 20px 0 0; color: var(--fx-accent-ink); font-weight: 500; }
-.app-shell .landing .fx-tr:last-child .fx-us { border-radius: 0 0 20px 20px; box-shadow: 0 24px 40px -32px rgba(80, 52, 28, 0.4); }
-.app-shell .landing .fx-yes { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--fx-accent); color: #fff; font: 600 0.92rem var(--fx-sans); }
-.app-shell .landing .fx-yes-muted { background: var(--fx-cream-2); color: var(--fx-ink-2); }
-.app-shell .landing .fx-no { color: var(--fx-ink-3); font-size: 1.2rem; }
-.app-shell .landing .fx-soon { padding: 4px 12px; border: 1px solid var(--fx-accent); border-radius: 999px; color: var(--fx-accent-ink); font: 500 0.82rem var(--fx-sans); }
+/* ---------- Photo slots ----------
+   A slot shows its product illustration until a photo is listed in assets/photos/photos.json
+   (photos.js). Photos always carry a visible disclosure line. */
+.app-shell .landing .fx-photo { position: relative; margin: 0; overflow: hidden; border-radius: 28px; background: var(--fx-cream-2); }
+.app-shell .landing .fx-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.app-shell .landing .fx-photo-note { position: absolute; right: 12px; bottom: 10px; max-width: calc(100% - 24px); padding: 4px 10px; border-radius: 999px; background: rgba(36, 34, 31, 0.62); color: #fff; font: 500 0.72rem/1.3 var(--fx-sans); }
+.app-shell .landing [data-photo-slot]:not(.has-photo) > .fx-photo { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.app-shell .landing [data-photo-slot].has-photo > .fx-media-art { display: none; }
 
-/* ---------- Footer: one large rounded container ---------- */
-.app-shell .landing .fh-footer-card { padding: clamp(36px, 5vw, 64px) !important; border: 0 !important; border-radius: 32px !important; background: var(--fx-cream-2) !important; }
-.app-shell .landing .fh-footer-brand span { font: 400 clamp(2rem, 4vw, 3rem) var(--fx-serif) !important; letter-spacing: -0.02em; }
-.app-shell .landing .fh-footer-line { font: 400 1.6rem/1.3 var(--fx-serif) !important; }
-.app-shell .landing .fh-footer-line em { color: var(--fx-accent); }
+/* Hero stage: the four sample cards, or one photograph with a single sample result over it */
+.app-shell .landing .fx-stage { position: relative; margin: clamp(40px, 5vw, 64px) 0 0; }
+.app-shell .landing .fx-stage-card { display: none; }
+.app-shell .landing .fx-stage.has-photo > .fx-reel, .app-shell .landing .fx-stage.has-photo > .fx-reel-note { display: none; }
+.app-shell .landing .fx-stage.has-photo > .fx-photo { aspect-ratio: 16 / 7; }
+.app-shell .landing .fx-stage.has-photo > .fx-stage-card { position: absolute; left: clamp(16px, 3vw, 40px); bottom: clamp(16px, 3vw, 40px); display: block; width: min(300px, 70%); padding: 18px; border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 18px; background: rgba(255, 253, 248, 0.86); backdrop-filter: blur(14px); color: var(--fx-ink); text-align: left; }
+.app-shell .landing .fx-stage-card p { display: flex; align-items: baseline; gap: 8px; margin: 0 0 6px; }
+.app-shell .landing .fx-stage-card b { font: 400 3rem/1 var(--fx-serif); }
+.app-shell .landing .fx-stage-card small { display: block; color: var(--fx-ink-2); font: 500 0.88rem var(--fx-sans); }
+.app-shell .landing .fx-stage-card .fx-stage-made { margin-top: 8px; color: var(--fx-ink-3); font-size: 0.76rem; }
 
-/* ---------- Smaller screens ---------- */
-@media (max-width: 1100px) {
-  .app-shell .landing .fx-reel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .app-shell .landing .fx-dash { grid-template-columns: 1fr 1fr; }
-  .app-shell .landing .fx-count { grid-row: auto; grid-column: span 2; }
-  .app-shell .landing .fx-bars { height: 160px; }
-}
-@media (max-width: 860px) {
-  .app-shell .landing .fx-steps { grid-template-columns: 1fr; max-width: 560px; margin: 0 auto; }
-}
-@media (max-width: 640px) {
-  .app-shell .landing .fx-display em { display: inline; }
-  .app-shell .landing .fx-reel { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
-  .app-shell .landing .fx-reel::-webkit-scrollbar { display: none; }
-  .app-shell .landing .fx-card { flex: 0 0 72%; min-height: 340px; scroll-snap-align: start; }
-  .app-shell .landing .fx-dash { grid-template-columns: 1fr; }
-  .app-shell .landing .fx-count { grid-column: auto; }
-  .app-shell .landing .fx-actions .fx-btn { width: 100%; }
-  .app-shell .landing .fx-tr { grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr) minmax(0, 0.8fr); }
-  .app-shell .landing .fx-tr > span { padding: 12px 10px; font-size: 0.95rem; }
-  .app-shell .landing .fx-th > span { font-size: 0.98rem; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .app-shell .landing .fx-card::before, .app-shell .landing .fx-btn { transition: none; }
-  .app-shell .landing .fx-card:hover::before { transform: none; }
-}
+/* Split rows: a picture on one side, a short story on the other */
+.app-shell .landing > section.fx-labs, .app-shell .landing > section.fx-remind { display: block !important; padding: clamp(56px, 6.5vw, 96px) 0 !important; border: 0 !important; background: none !important; }
+.app-shell .landing .fx-split { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: center; gap: clamp(32px, 6vw, 96px); }
+.app-shell .landing .fx-split + .fx-split { margin-top: clamp(40px, 5vw, 72px); }
+.app-shell .landing .fx-split-rev > .fx-media { order: 2; }
+.app-shell .landing .fx-split-copy { max-width: 520px; }
+.app-shell .landing .fx-split-copy .fx-h2, .app-shell .landing .fx-split-copy .fx-eyebrow { text-align: left; }
+.app-shell .landing .fx-split-copy .fx-sub { margin: 0 0 22px; }
+.app-shell .landing .fx-split-copy h3 { margin: 0 0 14px; font: 400 clamp(1.8rem, 3vw, 2.5rem)/1.1 var(--fx-serif) !important; letter-spacing: -0.02em; color: var(--fx-ink) !important; }
+.app-shell .landing .fx-split-copy p { margin: 0 0 14px; color: var(--fx-ink-2); font-size: 1.06rem; line-height: 1.6; }
+.app-shell .landing .fx-link { color: var(--fx-accent-ink) !important; font-weight: 500; text-decoration: underline; text-underline-offset: 4px; }
+.app-shell .landing .fx-media { position: relative; min-width: 0; }
+.app-shell .landing .fx-media .fx-photo { aspect-ratio: 4 / 5; }
+.app-shell .landing .fx-media-art { position: relative; display: grid; place-items: center; min-height: clamp(320px, 32vw, 440px); padding: clamp(24px, 4vw, 48px); border-radius: 28px; overflow: hidden; isolation: isolate; }
+.app-shell .landing .fx-media-art::before { content: ""; position: absolute; inset: 0; z-index: -1; }
+.app-shell .landing .fx-art-lab::before { background: radial-gradient(110% 80% at 25% 20%, #DCE9DD 0%, transparent 55%), radial-gradient(100% 90% at 90% 90%, #4F7A64 0%, transparent 60%), linear-gradient(165deg, #A9C7B2, #3E5E4E); }
+.app-shell .landing .fx-art-review::before { background: radial-gradient(110% 80% at 70% 15%, #E3E7EE 0%, transparent 55%), radial-gradient(100% 90% at 15% 85%, #55657A 0%, transparent 60%), linear-gradient(170deg, #AEB9C7, #475569); }
+.app-shell .landing .fx-art-remind::before { background: radial-gradient(120% 90% at 20% 15%, #F3C9A8 0%, transparent 55%), radial-gradient(90% 80% at 85% 85%, #9C5236 0%, transparent 60%), linear-gradient(160deg, #E9A27E, #7C3F2A); }
+.app-shell .landing .fx-media-cap { position: absolute; right: 16px; bottom: 12px; margin: 0; color: rgba(255, 255, 255, 0.9); font: 500 0.76rem var(--fx-sans); }
 
-/* Fixes after the first visual check */
-html, body, .app-shell, .app-shell .landing, .app-shell main { background-color: var(--fx-cream, #FBF7EF) !important; }
-.app-shell .landing .fx-glass b, .app-shell .landing .fx-glass span, .app-shell .landing .fx-glass small { color: #fff !important; text-shadow: 0 1px 12px rgba(0, 0, 0, 0.12); }
-.app-shell .landing .fx-ask { grid-column: 2 / span 2; }
-.app-shell .landing .fx-ask ol { columns: 2; column-gap: 32px; }
-@media (max-width: 1100px) { .app-shell .landing .fx-ask { grid-column: span 2; } }
-@media (max-width: 640px) { .app-shell .landing .fx-ask { grid-column: auto; } .app-shell .landing .fx-ask ol { columns: 1; } }
+/* Lab steps inside the green panel */
+.app-shell .landing .fx-art-lab .fh-labs-steps { display: grid; gap: 10px; width: 100%; max-width: 440px; margin: 0; padding: 0; list-style: none; counter-reset: lab; }
+.app-shell .landing .fx-art-lab .fh-labs-steps li { counter-increment: lab; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 2px 14px; margin: 0 !important; padding: 16px 18px !important; border: 1px solid rgba(255, 255, 255, 0.5) !important; border-radius: 16px; background: rgba(255, 253, 248, 0.9) !important; }
+.app-shell .landing .fx-art-lab .fh-labs-steps li::before { content: counter(lab); grid-row: span 2; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--fx-in-ink); color: #fff; font: 600 0.9rem var(--fx-sans); }
+.app-shell .landing .fx-art-lab .fh-labs-steps b { color: var(--fx-ink); font: 500 1rem var(--fx-sans); }
+.app-shell .landing .fx-art-lab .fh-labs-steps span { color: var(--fx-ink-3); font-size: 0.88rem; line-height: 1.45; }
+.app-shell .landing .fx-labs .fh-labs-status { margin-left: 8px; padding: 3px 10px; border: 1px solid var(--fx-accent); border-radius: 999px; letter-spacing: 0.08em; }
 
-/* FAQ, take two: one centred column, a big serif heading, calm rounded panels */
-.app-shell .landing #faq { grid-template-columns: 1fr !important; }
+/* Two kinds of explanation */
+.app-shell .landing .fx-art-review { gap: 14px; align-content: center; }
+.app-shell .landing .fx-review { width: 100%; max-width: 420px; padding: 20px 22px; border-radius: 18px; background: rgba(255, 253, 248, 0.94); }
+.app-shell .landing .fx-review p { margin: 10px 0 0; color: var(--fx-ink-2); font: 400 1.02rem/1.5 var(--fx-serif); }
+.app-shell .landing .fx-review-ai { background: rgba(255, 253, 248, 0.74); }
+.app-shell .landing .fx-badge { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--fx-in-ink); color: #fff; font: 500 0.8rem var(--fx-sans); }
+.app-shell .landing .fx-badge-ai { background: transparent; border: 1px solid var(--fx-ink-3); color: var(--fx-ink-2); }
+
+/* Reminders: a phone with three made-up reminders */
+.app-shell .landing .fx-ticks { margin: 0; padding: 0; list-style: none; }
+.app-shell .landing .fx-ticks li { position: relative; margin: 0 0 10px !important; padding: 0 0 0 30px !important; border: 0 !important; background: none !important; color: var(--fx-ink-2); }
+.app-shell .landing .fx-ticks li::before { content: "✓"; position: absolute; left: 0; top: 1px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--fx-in); color: #fff; font-size: 0.7rem; }
+.app-shell .landing .fx-ticks li.fx-tick-off::before { content: ""; background: var(--fx-cream-2); border: 2px solid var(--fx-ink-3); width: 16px; height: 16px; top: 3px; }
+.app-shell .landing .fx-phone { width: min(320px, 100%); padding: 22px 16px 18px; border: 8px solid #24221F; border-radius: 38px; background: var(--fx-card); box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.45); }
+.app-shell .landing .fx-phone-head { margin: 0 6px 14px; color: var(--fx-ink); font: 400 1.6rem var(--fx-serif); }
+.app-shell .landing .fx-rem { display: grid; gap: 2px; margin-top: 10px; padding: 14px; border: 1px solid var(--fx-line); border-radius: 14px; }
+.app-shell .landing .fx-rem b { color: var(--fx-ink); font: 500 0.98rem var(--fx-sans); }
+.app-shell .landing .fx-rem small { color: var(--fx-ink-3); font-size: 0.82rem; }
+.app-shell .landing .fx-rem span { justify-self: start; margin-top: 6px; color: var(--fx-in-ink); font: 500 0.8rem var(--fx-sans); }
+.app-shell .landing .fx-rem .fx-rem-btn { padding: 5px 14px; border-radius: 999px; background: var(--fx-accent); color: #fff; }
+
+/* ---------- FAQ: one centred column, a big serif heading, calm rounded panels ---------- */
+.app-shell .landing #faq { display: block !important; padding: clamp(56px, 6.5vw, 96px) 0 !important; border: 0 !important; }
+.app-shell .landing #faq > .ed-label { display: block; margin: 0 auto 14px; color: var(--fx-accent-ink) !important; font: 500 0.78rem var(--fx-mono) !important; letter-spacing: 0.12em; text-align: center; text-transform: uppercase; }
 .app-shell .landing #faq > div { max-width: 860px; margin: 0 auto; width: 100%; }
 .app-shell .landing #faq .fx-faq-h2 { margin: 0 0 clamp(32px, 4vw, 52px); text-align: center; }
 .app-shell .landing #faq .faq-list { max-width: none; gap: 12px; }
@@ -210,10 +225,42 @@ html, body, .app-shell, .app-shell .landing, .app-shell main { background-color:
 .app-shell .landing #faq .faq-icon { width: 18px; height: 18px; }
 .app-shell .landing #faq .faq-icon::before, .app-shell .landing #faq .faq-icon::after { top: 8.25px; width: 18px; }
 .app-shell .landing #faq .faq-more { text-align: center; }
-.app-shell .landing #faq > .ed-label { display: block; margin: 0 auto 14px; color: var(--fx-accent-ink) !important; font: 500 0.78rem var(--fx-mono) !important; letter-spacing: 0.12em; text-align: center; text-transform: uppercase; }
-/* Let the sample cards start inside the first screen on a laptop */
-.app-shell .landing .fx-hero { padding-top: clamp(40px, 5vw, 72px) !important; }
-.app-shell .landing .fx-display { font-size: clamp(3.1rem, 7vw, 5.8rem) !important; margin-bottom: 22px !important; }
-.app-shell .landing .fx-kicker { margin-bottom: 20px; }
-.app-shell .landing .fx-lede { margin-bottom: 28px; }
-.app-shell .landing .fx-reel { margin-top: clamp(40px, 5vw, 64px); }
+
+/* ---------- Footer: one large rounded container ---------- */
+.app-shell .landing .fh-footer-card { padding: clamp(36px, 5vw, 64px) !important; border: 0 !important; border-radius: 32px !important; background: var(--fx-cream-2) !important; }
+.app-shell .landing .fh-footer-brand span { font: 400 clamp(2rem, 4vw, 3rem) var(--fx-serif) !important; letter-spacing: -0.02em; }
+.app-shell .landing .fh-footer-line { font: 400 1.6rem/1.3 var(--fx-serif) !important; }
+.app-shell .landing .fh-footer-line em { color: var(--fx-accent); }
+
+/* ---------- Smaller screens ---------- */
+@media (max-width: 1100px) {
+  .app-shell .landing .fx-ask { grid-column: span 2; }
+  .app-shell .landing .fx-reel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app-shell .landing .fx-dash { grid-template-columns: 1fr 1fr; }
+  .app-shell .landing .fx-count { grid-row: auto; grid-column: span 2; }
+  .app-shell .landing .fx-bars { height: 160px; }
+}
+@media (max-width: 860px) {
+  .app-shell .landing .fx-split { grid-template-columns: 1fr; }
+  .app-shell .landing .fx-split-rev > .fx-media { order: 0; }
+  .app-shell .landing .fx-split-copy { max-width: 620px; }
+  .app-shell .landing .fx-media .fx-photo { aspect-ratio: 4 / 3; }
+  .app-shell .landing .fx-media-art { min-height: 0; }
+  .app-shell .landing .fx-steps { grid-template-columns: 1fr; max-width: 560px; margin: 0 auto; }
+}
+@media (max-width: 640px) {
+  .app-shell .landing .fx-stage.has-photo > .fx-photo { aspect-ratio: 4 / 5; }
+  .app-shell .landing .fx-media-art { padding: 20px 16px 36px; }
+  .app-shell .landing .fx-display em { display: inline; }
+  .app-shell .landing .fx-reel { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .app-shell .landing .fx-reel::-webkit-scrollbar { display: none; }
+  .app-shell .landing .fx-card { flex: 0 0 72%; min-height: 340px; scroll-snap-align: start; }
+  .app-shell .landing .fx-dash { grid-template-columns: 1fr; }
+  .app-shell .landing .fx-count, .app-shell .landing .fx-ask { grid-column: auto; }
+  .app-shell .landing .fx-ask ol { columns: 1; }
+  .app-shell .landing .fx-actions .fx-btn { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .landing .fx-card::before, .app-shell .landing .fx-btn { transition: none; }
+  .app-shell .landing .fx-card:hover::before { transform: none; }
+}
