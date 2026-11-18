@@ -52,9 +52,9 @@ for (const width of [1440, 1024, 768, 390, 320]) {
     check(!overlap, "320px: the header button does not cover the brand name");
   }
   if (width === 1440) {
-    // The hero's sample report shows every result with its unit and the lab's range, like a real printout.
-    const rows = await page.$$eval(".fh-preview tbody tr", (trs) => trs.map((tr) => [...tr.cells].map((td) => td.textContent.trim())));
-    check(rows.length === 5 && rows.every((r) => /^\d[\d.]*$/.test(r[1]) && r[3] && /\d/.test(r[4])), `hero report shows value, unit and range (${rows.map((r) => `${r[0]} ${r[1]} ${r[3]}`).join(" | ")})`);
+    // The hero's sample results each show a value, its unit and a label (18 Nov redesign).
+    const cards = await page.$$eval(".fx-reel .fx-glass", (els) => els.map((el) => [el.querySelector("b").textContent.trim(), el.querySelector("span").textContent.trim(), el.querySelector("small").textContent.trim()]));
+    check(cards.length === 4 && cards.every((c) => /^\d[\d.]*$/.test(c[0]) && c[1] && /range/.test(c[2])), `hero cards show value, unit and range (${cards.map((c) => c.join(" ")).join(" | ")})`);
     const looping = await page.evaluate(() => document.querySelector(".fh-hero")?.getAnimations({ subtree: true }).filter((a) => a.effect?.getTiming().iterations === Infinity).length ?? 0);
     check(looping === 0, "hero has no looping animation");
     check(!/explained in a minute/.test(await page.innerText("footer")), "footer does not repeat the closing call to action");
