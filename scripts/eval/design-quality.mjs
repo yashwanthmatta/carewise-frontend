@@ -113,6 +113,12 @@ for (const width of [1440, 390, 320]) {
   }
   const listen = await page.evaluate(() => listenParts().join(" "));
   check(/148 milligrams per deciliter/.test(listen) || /148 mg\/dL/.test(listen), `${width}px: Listen still reads the value with its unit`);
+  // 18 Nov: the question numbers sit fully inside the screen, and the main button uses the
+  // same terracotta as the homepage.
+  const listBox = await page.$eval("#report-results .result-doctor-questions", (ol) => ({ pad: parseFloat(getComputedStyle(ol).paddingLeft), left: ol.getBoundingClientRect().left }));
+  check(listBox.pad >= 32, `${width}px results: question numbers are not cut off (indent ${listBox.pad}px)`);
+  const primary = await page.$eval("#report-results .primary-button", (b) => getComputedStyle(b).backgroundColor);
+  check(primary === "rgb(161, 78, 46)", `${width}px results: the main button is the site's terracotta (${primary})`);
   check(!errors.length, `${width}px results: no script errors ${errors.join("; ")}`);
   await context.close();
 }

@@ -44,7 +44,24 @@ Last verified run: 2026-11-17, daily run at 04:23 UTC.
 - No thresholds, urgency rules or medical wording changed in any open PR.
 - Real-patient evaluation stays blocked.
 
-## Next tasks, in order
+## Next tasks, in order (refreshed 18 Nov from the owner's latest priorities)
+
+1. **Owner:**
+   - merge frontend #170, backend #60 and mobile #52;
+   - set the Anthropic key in Render (E-001);
+   - supply or approve a way to produce the homepage photos (`docs/photography-briefs.md`).
+2. **Results dashboard (owner priority 2):**
+   - ~~One button style and a summary card in the homepage style~~ Done on 18 Nov.
+   - Next: put the grouped summary (count, in/out bars) at the top of every report.
+   - Make the result rows read as one list on phones.
+3. **Lab testing pages (priority 3):** bring `lab-testing.html` and the example page into the new homepage style.
+4. **AI Health Guide (priority 4):** a useful, compact panel instead of the decorative avatar.
+5. **Mobile app (priority 5):** apply the same tokens in the Expo app after #52.
+6. **Trust (priority 6):** a privacy and security page whose claims are each checked against the code.
+
+Earlier list, kept for reference:
+
+### Earlier next tasks
 
 1. Keep #138, #55 and #51 green; resolve the #134 cache-version collision when it happens.
 2. ~~**Backend, after #55 merges:** checkout price conversion~~ Checked on 11 Nov: today's prices are whole dollars ($0, $7, $12) and the API schema types them as `int`, so `int(price) * 100` charges exactly the listed price. No billing code was changed. A new test, `test_checkout_charges_exactly_the_listed_monthly_price` (backend #56, commit 161ad7b), fails if a non-whole price such as 6.99 is ever added; this was confirmed by setting 6.99 temporarily, which the test failed, and then restoring the file. **If prices ever need cents:** switch to `Decimal` with rounding to cents first. That needs owner approval, because it changes billing.
@@ -59,6 +76,24 @@ Last verified run: 2026-11-17, daily run at 04:23 UTC.
    - ~~Nightly axe scan~~ Built on 9 Nov: `scripts/eval/a11y-scan.mjs` scans 21 screens and pages at phone and desktop size (axe-core 4.14.0, WCAG A/AA). It runs in Frontend CI on every PR and nightly in `accessibility-scan.yml`. The first scan found one serious issue, now fixed: the desktop "Need help?" button's accessible name did not contain its visible text (WCAG 2.5.3).
 5b. **Staff two-step sign-in requirement:** built, off by default (`CAREWISE_STAFF_TWO_FACTOR_REQUIRED`, backend #56). ~~Website banner~~ Built on 8 Nov: Account shows "Turn on two-step sign-in to use your clinic tools" when `/auth/me` reports `staff_two_factor_needed`, links to Two-step sign-in, and hides once it is on. Shows nothing until #56 is merged, deployed and the setting is on. Eval `staff-two-factor.mjs` (14 checks) runs in CI.
 5c. **Main red on 5 Nov:** #116 merged after #142 with the same cache version, 208. Frontend #143 bumps it to 209. **Owner:** merge cache-version PRs one at a time.
+
+## Run on 18 Nov (daily, 04:23 UTC)
+
+**Open PRs:** all green.
+- frontend #170 is green and mergeable;
+- backend #60 is green;
+- mobile #52 is green.
+
+**Done (frontend, on #170's branch):**
+- **Results screen buttons:** they now match the homepage. Primary buttons are terracotta; secondary buttons have a terracotta outline with 10 px corners. This was changed in `site.css`'s own rules, not as an extra override layer.
+- **Shared terracotta:** the homepage now takes its terracotta from the app's `--fh-accent`, so the site and the app use exactly one value.
+- **Report summary:** it is a card in the homepage panel style.
+- **Bug fixed:** the numbers on "Questions for your doctor" were clipped at the left edge. The list indent is now 2.4em.
+
+**Tests:**
+- `design-quality.mjs` checks the indent and the button colour at 1440, 390 and 320 px.
+- All 37 evals pass, including axe colour contrast, and the 18-page crawl is clean.
+- No medical wording, labels or thresholds changed.
 
 ## Run on 17 Nov (daily, 04:23 UTC)
 

@@ -11,8 +11,8 @@
   --fx-ink-2: #4A4743;
   --fx-ink-3: #6B665F;
   --fx-line: #E7DED0;
-  --fx-accent: #B35A3A;
-  --fx-accent-ink: #9A4A2E;   /* text on cream: 5.9:1 */
+  --fx-accent: var(--fh-accent, #A14E2E);       /* one terracotta for the site and the app */
+  --fx-accent-ink: var(--fh-accent-dark, #8A4126);
   --fx-in: #6FA285;
   --fx-in-ink: #2F6B4C;
   --fx-out: #C8734F;
