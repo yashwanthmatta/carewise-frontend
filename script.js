@@ -5461,168 +5461,191 @@ function renderHomeDashboard() {
   if (!box) return;
   let reports = [];
   try { reports = getReportHistory(); } catch { reports = []; }
-  if (!reports.length) {
+  // 18 Nov, second rebuild (owner: "too plain, too text-heavy … do not use sample data"). Made-up
+  // sample reports never appear here: the dashboard shows only reports the person saved. Someone who
+  // has tried the sample or is signed in, but has saved nothing of their own, gets a finished "ready"
+  // state with no report data in it. A first visit shows no dashboard (the homepage is the welcome).
+  const own = reports.filter((report) => !isSampleReport(report));
+  const signedIn = Boolean(typeof authToken === "string" && authToken);
+  if (!own.length && !reports.length && !signedIn) {
     box.hidden = true;
     box.innerHTML = "";
     return;
   }
-  // 18 Nov rebuild (owner: "no more floating report cards, excessive empty space or disconnected
-  // content"). One dashboard: a welcome line with the latest report's name and date, a summary card
-  // of that report (counts within and outside the lab's ranges, body areas, the results to talk
-  // about with exact saved values), and beside it the doctor questions, earlier reports, tracked
-  // results and reminders. Only what was saved is shown: nothing is re-calculated or made up, and a
-  // report saved before each result was kept says so instead of pretending to have the values.
   const es = reportLanguage === "es";
   const when = (value) => {
     const date = new Date(value);
     return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString(es ? "es" : undefined, { day: "numeric", month: "short", year: "numeric" });
   };
   const reportDate = (report) => when(report.testDate ? `${report.testDate}T12:00:00` : report.createdAt || report.updatedAt);
-  const latest = reports[0];
-  const person = normalizeReportPerson(latest.person);
-  const who = personDisplayName(person);
-  const title = reportDisplayName(latest.fileName, es);
-  const sample = isSampleReport(latest);
-  const date = reportDate(latest);
-  const sampleTag = `<em class="ft-dash-tag">${es ? "Ejemplo" : "Sample"}</em>`;
-  const countText = String(latest.message || "").split(/\.\s/)[0].replace(/\.$/, "");
-  const results = (Array.isArray(latest.results) ? latest.results : []).filter((item) => item && item.name);
-  const legacy = !results.length;
-  const isOut = (item) => OUTSIDE_STATUSES.has(item.status);
-  const outside = results.filter(isOut);
-  const within = results.filter((item) => item.status === "within").length;
-  const noRange = results.length - outside.length - within;
-  // A saved count sentence ("0 of 5 results outside the lab's range") from a report kept before
-  // each result was saved: read only to know whether anything was outside, never re-calculated.
-  const savedNone = legacy && /^0 (of|de) \d+/.test(countText);
-  const noneOutside = legacy ? savedNone : !outside.length;
-  const valueText = (item) => {
-    const value = String(item.value || "");
-    const unit = String(item.unit || "");
-    return unit && !value.includes(unit) ? `${value} ${unit}` : value;
+  const icon = (name) => {
+    const paths = {
+      upload: '<path d="M12 16V4m0 0-5 5m5-5 5 5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>',
+      folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+      visit: '<path d="M9 4h6v3H9z"/><path d="M7 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1"/><path d="M8 12h8M8 16h5"/>',
+      bell: '<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/>',
+      lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    };
+    return `<svg class="fd-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${paths[name]}</svg>`;
   };
-  const whose = person === "Me" ? (es ? "Su último informe" : "Your latest report") : (es ? `Último informe de ${who}` : `${who}'s latest report`);
-
-  // Status, in words as well as colour.
-  let status;
-  if (legacy) status = `<span class="fd-status fd-status-saved">${es ? "Resumen guardado" : "Saved summary"}</span>`;
-  else if (outside.length) status = `<span class="fd-status fd-status-out">${es ? `${outside.length} fuera del rango del laboratorio` : `${outside.length} outside the lab's range`}</span>`;
-  else status = `<span class="fd-status fd-status-in">${es ? "Todo dentro de los rangos del laboratorio" : "All within the lab's ranges"}</span>`;
-
-  // Body areas, with how many results each has and how many are outside the lab's range.
-  const areas = legacy ? [] : [...TEST_AREAS.map(([id, en, esName]) => [id, es ? esName : en]), ["other", es ? "Otros" : "Other tests"]]
-    .map(([id, name]) => ({ id, name, items: results.filter((item) => testAreaOf(item.key) === id) }))
-    .filter((area) => area.items.length);
-  const pct = (n) => (results.length ? `${Math.round((n / results.length) * 1000) / 10}%` : "0");
-  const summary = legacy
-    ? `<div class="fd-legacy">
-        <p class="fd-legacy-count">${escapeHtml(countText || (es ? "Informe guardado" : "Saved report"))}.</p>
-        <p class="fd-legacy-when">${es ? `Tal como se guardó${date ? ` el ${escapeHtml(date)}` : ""}.` : `As saved${date ? ` on ${escapeHtml(date)}` : ""}.`}</p>
-        <p class="fd-legacy-note">${es ? "Este informe se guardó con una versión anterior, antes de que la app guardara cada resultado. Ábralo para leer el resumen guardado, o añádalo de nuevo para ver cada resultado." : "This report was saved by an earlier version, before the app kept each result. Open it to read the saved summary, or add it again to see every result."}</p>
-      </div>`
-    : `<div class="fd-stats">
-        <p class="fd-total"><b>${results.length}</b> ${es ? (results.length === 1 ? "resultado" : "resultados") : (results.length === 1 ? "result" : "results")}</p>
-        <div class="fd-bar" aria-hidden="true">${within ? `<i class="fd-bar-in" style="width:${pct(within)}"></i>` : ""}${outside.length ? `<i class="fd-bar-out" style="width:${pct(outside.length)}"></i>` : ""}${noRange ? `<i class="fd-bar-none" style="width:${pct(noRange)}"></i>` : ""}</div>
-        <ul class="fd-legend">
-          <li><i class="fd-dot fd-dot-in"></i>${es ? "Dentro del rango del laboratorio" : "Within the lab's range"} <b>${within}</b></li>
-          <li><i class="fd-dot fd-dot-out"></i>${es ? "Fuera del rango del laboratorio" : "Outside the lab's range"} <b>${outside.length}</b></li>
-          ${noRange ? `<li><i class="fd-dot fd-dot-none"></i>${es ? "Sin rango para comparar" : "No range to compare"} <b>${noRange}</b></li>` : ""}
-        </ul>
-      </div>
-      ${areas.length ? `<ul class="fd-areas" aria-label="${es ? "Áreas del cuerpo" : "Body areas"}">${areas.map((area) => {
-        const out = area.items.filter(isOut).length;
-        return `<li class="${out ? "fd-area-out" : ""}"><b>${escapeHtml(area.name)}</b><span>${out ? (es ? `${out} de ${area.items.length} fuera` : `${out} of ${area.items.length} outside`) : (es ? `${area.items.length} en rango` : `${area.items.length} within range`)}</span></li>`;
-      }).join("")}</ul>` : ""}
-      ${outside.length ? `<div class="fd-out">
-        <h4>${es ? "Para hablar con su médico" : "To talk about with your doctor"}</h4>
-        <ul>${outside.slice(0, 4).map((item) => `<li><span class="fd-out-name">${escapeHtml(item.name)}</span><span class="fd-out-value">${escapeHtml(valueText(item))}</span><span class="fd-out-range">${item.range ? `${es ? "Rango del laboratorio" : "Lab's range"} ${escapeHtml(item.range)}` : ""}</span><span class="fd-out-label">${escapeHtml(item.label || "")}</span></li>`).join("")}</ul>
-        ${outside.length > 4 ? `<p class="fd-more">${es ? `y ${outside.length - 4} más fuera del rango` : `and ${outside.length - 4} more outside the range`}</p>` : ""}
-      </div>` : ""}`;
-
-  // Doctor questions: the report's own when something is outside the lab's range. When nothing is
-  // outside, general questions, labelled as general, so no result is implied to be a problem.
-  const saved = (latest.questions || []).filter(Boolean);
-  let questions = saved;
-  let questionsTitle = es ? "Preguntas para su médico" : "Questions for your doctor";
-  let questionsNote = es ? "De este informe." : "From this report.";
-  if (noneOutside) {
-    questions = GENERAL_REPORT_QUESTIONS.slice(1).map((item) => (es ? translateReportText(item, "es") : item));
-    questionsTitle = es ? "Preguntas generales" : "General questions you could ask";
-    questionsNote = es ? "Ningún resultado de este informe está fuera del rango del laboratorio; estas preguntas son generales." : "None of this report's results are outside the lab's range, so these are general questions.";
-  } else if (legacy) {
-    questionsNote = es ? "Guardadas con este informe." : "Saved with this report.";
-  }
-  const qItem = (q) => `<li>${escapeHtml(q)}</li>`;
-  const questionsPanel = questions.length ? `
-      <section class="fd-panel fd-questions" aria-labelledby="fd-q-title">
-        <h3 id="fd-q-title">${questionsTitle}</h3>
-        <p class="fd-panel-note">${questionsNote}</p>
-        <ol>${questions.slice(0, 3).map(qItem).join("")}</ol>
-        ${questions.length > 3 ? `<details class="fd-more-q"><summary>${es ? `Ver ${questions.length - 3} más` : `Show ${questions.length - 3} more`}</summary><ol start="4">${questions.slice(3).map(qItem).join("")}</ol></details>` : ""}
-        <a class="fd-link" href="#saved-title">${es ? "Preparar la visita" : "Prepare for the visit"}</a>
-      </section>` : "";
-
-  // Earlier reports, each listed once.
-  const seen = new Set([`${latest.fileName || ""}|${date}`]);
-  const earlier = reports.slice(1).filter((report) => {
-    const key = `${report.fileName || ""}|${reportDate(report)}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-  const recentPanel = earlier.length ? `
-      <section class="fd-panel fd-recent" aria-labelledby="fd-recent-title">
-        <h3 id="fd-recent-title">${es ? "Informes anteriores" : "Earlier reports"}</h3>
-        <ul>${earlier.slice(0, 3).map((report) => {
-          const forWho = normalizeReportPerson(report.person);
-          return `<li><button type="button" data-dash-report="${escapeHtml(report.id || "")}"><b>${escapeHtml(reportDisplayName(report.fileName, es))}${isSampleReport(report) ? ` ${sampleTag}` : ""}</b><span>${escapeHtml(reportDate(report))}${forWho === "Me" ? "" : ` · ${es ? "para" : "for"} ${escapeHtml(personDisplayName(forWho))}`}</span></button></li>`;
-        }).join("")}</ul>
-        ${earlier.length > 3 ? `<a class="fd-link" href="#saved-title">${es ? `Ver los ${earlier.length}` : `See all ${earlier.length}`}</a>` : ""}
-      </section>` : "";
-
-  // Tracked results and upcoming reminders, only when there are some. Reminders by type, never by
-  // their private title.
-  const trends = getLabTrends();
-  const tracked = [...new Map(trends.map((item) => [item.test, item])).values()].slice(0, 3);
+  const latest = own[0];
   const today = new Date().toISOString().slice(0, 10);
-  const upcoming = getReminders().filter((item) => item.startDate >= today).sort((a, b) => a.startDate.localeCompare(b.startDate)).slice(0, 2);
-  const followPanel = tracked.length || upcoming.length ? `
-      <section class="fd-panel fd-follow" aria-labelledby="fd-follow-title">
-        <h3 id="fd-follow-title">${es ? "Seguimiento" : "Keeping track"}</h3>
-        <ul>
-          ${tracked.map((item) => `<li><span>${escapeHtml(item.test)}</span><b>${escapeHtml(`${item.value} ${item.unit || ""}`.trim())}</b>${item.date ? `<small>${escapeHtml(when(item.date))}</small>` : ""}</li>`).join("")}
-          ${upcoming.map((item) => `<li><span>${escapeHtml(item.type || (es ? "Recordatorio" : "Reminder"))}</span><b>${escapeHtml(when(`${item.startDate}T12:00:00`))}</b><small>${es ? "Próximo" : "Coming up"}</small></li>`).join("")}
-        </ul>
-        <p class="fd-row">${tracked.length ? `<a class="fd-link" href="#saved-title">${es ? "Ver tendencias" : "See trends"}</a>` : ""}${upcoming.length ? `<a class="fd-link" href="#record-title">${es ? "Recordatorios" : "Reminders"}</a>` : ""}</p>
-      </section>` : "";
+  const upcoming = getReminders().filter((item) => item.startDate >= today).sort((a, b) => a.startDate.localeCompare(b.startDate));
+  const earlier = own.slice(1);
 
-  box.innerHTML = `
-        <div class="fd">
-          <header class="fd-head">
-            <p class="fd-eyebrow">${es ? "Su panel" : "Your dashboard"}</p>
-            <h2 id="ft-dash-title" class="fd-title">${es ? "Bienvenido de nuevo." : "Welcome back."}</h2>
-            <p class="fd-meta">${escapeHtml(whose)}: <b>${escapeHtml(title)}</b>${date ? `, ${escapeHtml(date)}` : ""}${sample ? ` ${sampleTag}` : ""}</p>
-          </header>
-          <p class="fd-actions"><a class="fd-btn fd-btn-ghost" href="#report-title">${es ? "Entender un informe nuevo" : "Understand a new report"}</a></p>
+  // Four clear next steps; the first is the main one.
+  const tile = (href, name, title, help, main = false) => `<a class="fd-tile${main ? " fd-tile-main" : ""}" href="${href}">${icon(name)}<span><b>${title}</b><small>${help}</small></span></a>`;
+  const tiles = `
+          <nav class="fd-tiles" aria-label="${es ? "Siguientes pasos" : "Next steps"}">
+            ${tile("#report-title", "upload", es ? "Subir un informe" : "Upload a report", es ? "PDF, foto o texto" : "A PDF, a photo or typed results", true)}
+            ${tile("#saved-title", "folder", es ? "Informes guardados" : "Saved reports", own.length ? (es ? `${own.length} en este dispositivo` : `${own.length} on this device`) : (es ? "Aún no hay ninguno" : "None saved yet"))}
+            ${tile("#visit-brief-title", "visit", es ? "Preparar una visita" : "Prepare for a visit", es ? "Preguntas y un resumen de una página" : "Questions and a one-page brief")}
+            ${tile("#reminder-title", "bell", es ? "Recordatorios" : "Reminders", upcoming.length ? (es ? `${upcoming.length} próximos` : `${upcoming.length} coming up`) : (es ? "Fechas de pruebas y citas" : "Test dates and appointments"))}
+          </nav>`;
+
+  // The main panel: the person's latest saved report, or a ready state with nothing made up in it.
+  let panel;
+  let questionsPanel = "";
+  if (latest) {
+    const person = normalizeReportPerson(latest.person);
+    const who = personDisplayName(person);
+    const title = reportDisplayName(latest.fileName, es);
+    const date = reportDate(latest);
+    const countText = String(latest.message || "").split(/\.\s/)[0].replace(/\.$/, "");
+    const results = (Array.isArray(latest.results) ? latest.results : []).filter((item) => item && item.name);
+    const legacy = !results.length;
+    const isOut = (item) => OUTSIDE_STATUSES.has(item.status);
+    const outside = results.filter(isOut);
+    const within = results.filter((item) => item.status === "within").length;
+    const noRange = results.length - outside.length - within;
+    const noneOutside = legacy ? /^0 (of|de) \d+/.test(countText) : !outside.length;
+    const valueText = (item) => {
+      const value = String(item.value || "");
+      const unit = String(item.unit || "");
+      return unit && !value.includes(unit) ? `${value} ${unit}` : value;
+    };
+    const pct = (n) => `${Math.round((n / results.length) * 1000) / 10}%`;
+    const status = legacy
+      ? `<span class="fd-status fd-status-saved">${es ? "Resumen guardado" : "Saved summary"}</span>`
+      : outside.length
+        ? `<span class="fd-status fd-status-out">${es ? `${outside.length} fuera del rango del laboratorio` : `${outside.length} outside the lab's range`}</span>`
+        : `<span class="fd-status fd-status-in">${es ? "Todo dentro de los rangos del laboratorio" : "All within the lab's ranges"}</span>`;
+    const areas = legacy ? [] : [...TEST_AREAS.map(([id, en, esName]) => [id, es ? esName : en]), ["other", es ? "Otros" : "Other tests"]]
+      .map(([id, name]) => ({ id, name, items: results.filter((item) => testAreaOf(item.key) === id) }))
+      .filter((area) => area.items.length);
+    const body = legacy
+      ? `<div class="fd-legacy">
+          <p class="fd-legacy-count">${escapeHtml(countText || (es ? "Informe guardado" : "Saved report"))}.</p>
+          <p class="fd-legacy-note">${es ? "Guardado con una versión anterior, antes de que la app guardara cada resultado. Añádalo de nuevo para ver cada resultado." : "Saved by an earlier version, before the app kept each result. Add it again to see every result."}</p>
+        </div>`
+      : `<div class="fd-stats">
+          <p class="fd-total"><b>${results.length}</b> ${es ? (results.length === 1 ? "resultado" : "resultados") : (results.length === 1 ? "result" : "results")}</p>
+          <div class="fd-bar" aria-hidden="true">${within ? `<i class="fd-bar-in" style="width:${pct(within)}"></i>` : ""}${outside.length ? `<i class="fd-bar-out" style="width:${pct(outside.length)}"></i>` : ""}${noRange ? `<i class="fd-bar-none" style="width:${pct(noRange)}"></i>` : ""}</div>
+          <ul class="fd-legend">
+            <li><i class="fd-dot fd-dot-in"></i>${es ? "Dentro del rango del laboratorio" : "Within the lab's range"} <b>${within}</b></li>
+            <li><i class="fd-dot fd-dot-out"></i>${es ? "Fuera del rango del laboratorio" : "Outside the lab's range"} <b>${outside.length}</b></li>
+            ${noRange ? `<li><i class="fd-dot fd-dot-none"></i>${es ? "Sin rango para comparar" : "No range to compare"} <b>${noRange}</b></li>` : ""}
+          </ul>
+        </div>
+        ${areas.length ? `<ul class="fd-areas" aria-label="${es ? "Áreas del cuerpo" : "Body areas"}">${areas.map((area) => {
+          const out = area.items.filter(isOut).length;
+          return `<li class="${out ? "fd-area-out" : ""}"><b>${escapeHtml(area.name)}</b><span>${out ? (es ? `${out} de ${area.items.length} fuera` : `${out} of ${area.items.length} outside`) : (es ? `${area.items.length} en rango` : `${area.items.length} within range`)}</span></li>`;
+        }).join("")}</ul>` : ""}
+        ${outside.length ? `<div class="fd-out">
+          <h4>${es ? "Para hablar con su médico" : "To talk about with your doctor"}</h4>
+          <ul>${outside.slice(0, 3).map((item) => `<li><span class="fd-out-name">${escapeHtml(item.name)}</span><span class="fd-out-value">${escapeHtml(valueText(item))}</span><span class="fd-out-range">${item.range ? `${es ? "Rango del laboratorio" : "Lab's range"} ${escapeHtml(item.range)}` : ""}</span><span class="fd-out-label">${escapeHtml(item.label || "")}</span></li>`).join("")}</ul>
+          ${outside.length > 3 ? `<p class="fd-more">${es ? `y ${outside.length - 3} más fuera del rango` : `and ${outside.length - 3} more outside the range`}</p>` : ""}
+        </div>` : ""}`;
+    panel = `
           <article class="fd-report" aria-labelledby="fd-report-title">
             <header class="fd-report-head">
               <div>
+                <p class="fd-kicker">${es ? "Su último informe" : "Your latest report"}</p>
                 <h3 id="fd-report-title">${escapeHtml(title)}</h3>
-                <p>${[date, person === "Me" ? "" : `${es ? "Para" : "For"} ${escapeHtml(who)}`, es ? "Guardado en este dispositivo" : "Saved on this device"].filter(Boolean).join(" · ")}</p>
+                <p>${[date, person === "Me" ? "" : `${es ? "Para" : "For"} ${escapeHtml(who)}`].filter(Boolean).join(" · ")}</p>
               </div>
               ${status}
             </header>
-            ${summary}
+            ${body}
             <footer class="fd-report-foot">
               <button class="fd-btn fd-btn-primary" type="button" data-dash-open="${escapeHtml(latest.id || "")}">${legacy ? (es ? "Abrir el resumen guardado" : "Open the saved summary") : (es ? "Ver el informe completo" : "View full report")}</button>
-              ${legacy ? `<a class="fd-link" href="#report-title">${es ? "Añadirlo de nuevo" : "Add it again"}</a>` : `<span>${es ? "Cada valor, unidad y rango tal como los imprimió su laboratorio." : "Every value, unit and range exactly as your lab printed them."}</span>`}
+              ${earlier.length ? `<span>${es ? "Anteriores:" : "Earlier:"} ${earlier.slice(0, 2).map((report) => `<button class="fd-inline" type="button" data-dash-report="${escapeHtml(report.id || "")}">${escapeHtml(reportDisplayName(report.fileName, es))}, ${escapeHtml(reportDate(report))}</button>`).join(", ")}</span>` : ""}
             </footer>
-          </article>
-          <div class="fd-side">${questionsPanel}${recentPanel}${followPanel}</div>
+          </article>`;
+    // Questions: the report's own when something is outside the lab's range; otherwise general, and
+    // labelled as general so no result is implied to be a problem.
+    let questions = (latest.questions || []).filter(Boolean);
+    let qTitle = es ? "Preguntas para su médico" : "Questions for your doctor";
+    let qNote = legacy ? (es ? "Guardadas con este informe." : "Saved with this report.") : (es ? "De este informe." : "From this report.");
+    if (noneOutside) {
+      questions = GENERAL_REPORT_QUESTIONS.slice(1).map((item) => (es ? translateReportText(item, "es") : item));
+      qTitle = es ? "Preguntas generales" : "General questions you could ask";
+      qNote = es ? "Ningún resultado está fuera del rango del laboratorio; estas preguntas son generales." : "No result is outside the lab's range, so these are general questions.";
+    }
+    const qItem = (q) => `<li>${escapeHtml(q)}</li>`;
+    if (questions.length) questionsPanel = `
+          <section class="fd-panel fd-questions" aria-labelledby="fd-q-title">
+            <h3 id="fd-q-title">${qTitle}</h3>
+            <p class="fd-panel-note">${qNote}</p>
+            <ol>${questions.slice(0, 2).map(qItem).join("")}</ol>
+            ${questions.length > 2 ? `<details class="fd-more-q"><summary>${es ? `Ver ${questions.length - 2} más` : `Show ${questions.length - 2} more`}</summary><ol start="3">${questions.slice(2).map(qItem).join("")}</ol></details>` : ""}
+          </section>`;
+  } else {
+    panel = `
+          <article class="fd-report fd-ready" aria-labelledby="fd-report-title">
+            <div class="fd-ready-mark" aria-hidden="true">${icon("folder")}</div>
+            <p class="fd-kicker">${es ? "Su último informe" : "Your latest report"}</p>
+            <h3 id="fd-report-title">${es ? "Su primer informe aparecerá aquí." : "Your first report will appear here."}</h3>
+            <p class="fd-ready-lede">${es ? "Añada un informe de laboratorio y guárdelo. Aquí verá, de un vistazo, lo que encontramos y qué preguntar." : "Add a lab report and save it. You'll see, at a glance, what it shows and what to ask, right here."}</p>
+            <ul class="fd-ready-list">
+              <li>${es ? "Cuántos resultados están dentro y fuera del rango de su laboratorio" : "How many results are within and outside your lab's own ranges"}</li>
+              <li>${es ? "Qué áreas del cuerpo cubre el informe" : "Which body areas the report covers"}</li>
+              <li>${es ? "Preguntas para su próxima visita" : "Questions for your next visit"}</li>
+            </ul>
+            <footer class="fd-report-foot">
+              <a class="fd-btn fd-btn-primary" href="#report-title">${es ? "Subir un informe" : "Upload a report"}</a>
+              <span>${es ? "Los informes de ejemplo no se guardan aquí." : "Sample reports are never shown here."}</span>
+            </footer>
+          </article>`;
+  }
+
+  // The picture: a photograph when one has been added (assets/photos/photos.json, slot "dashboard"),
+  // otherwise a warm panel holding the next step. Never a made-up person or a stand-in photo.
+  const next = upcoming[0];
+  const nextCard = next
+    ? `<p class="fd-next-kicker">${es ? "Próximo" : "Coming up"}</p><p class="fd-next-title">${escapeHtml(next.type || (es ? "Recordatorio" : "Reminder"))}</p><p class="fd-next-when">${escapeHtml(when(`${next.startDate}T12:00:00`))}</p><a class="fd-link" href="#reminder-title">${es ? "Ver recordatorios" : "See reminders"}</a>`
+    : latest
+      ? `<p class="fd-next-kicker">${es ? "Siguiente paso" : "Next step"}</p><p class="fd-next-title">${es ? "Lleve sus preguntas a la próxima visita." : "Take your questions to the next visit."}</p><a class="fd-link" href="#visit-brief-title">${es ? "Preparar un resumen" : "Make a one-page brief"}</a>`
+      : `<p class="fd-next-kicker">${es ? "Para familias" : "For families"}</p><p class="fd-next-title">${es ? "Guarde los informes de cada persona por separado." : "Keep each person's reports apart."}</p><p class="fd-next-when">${es ? "Elija para quién es el informe al añadirlo: usted, mamá, papá." : "Choose who a report is for when you add it: you, Mum, Dad."}</p>`;
+  const media = `
+          <figure class="fd-media" data-photo-slot="dashboard">
+            <div class="fx-media-art fd-media-art"><div class="fd-next">${nextCard}</div></div>
+          </figure>`;
+  const trust = `
+          <section class="fd-panel fd-trust" aria-labelledby="fd-trust-title">
+            ${icon("lock")}
+            <div>
+              <h3 id="fd-trust-title">${es ? "Privado por defecto" : "Private by default"}</h3>
+              <p>${es ? "Un PDF o una foto, leídos en su teléfono u ordenador. No se sube nada a menos que decida guardarlo." : "A PDF or a photo, read on your phone or computer. Nothing is uploaded unless you choose to save it."}</p>
+              <a class="fd-link" href="#your-data">${es ? "Sus datos" : "Your data controls"}</a>
+            </div>
+          </section>`;
+
+  box.innerHTML = `
+        <div class="fd${latest ? "" : " fd-is-ready"}">
+          <header class="fd-head">
+            <p class="fd-eyebrow">${es ? "Su panel" : "Your dashboard"}</p>
+            <h2 id="ft-dash-title" class="fd-title">${es ? "Bienvenido de <em>nuevo</em>." : "Welcome <em>back</em>."}</h2>
+            <p class="fd-lede">${latest ? (es ? "Su último informe, lo que muestra y qué hacer a continuación." : "Your latest report, what it shows, and what to do next.") : (es ? "Todo lo que guarde se reunirá aquí, en un solo lugar." : "Everything you save comes together here, in one calm place.")}</p>
+          </header>
+          ${tiles}
+          ${panel}
+          <div class="fd-side">${media}${questionsPanel}${trust}</div>
         </div>`;
   box.querySelector("[data-dash-open]")?.addEventListener("click", (event) => openReportHistoryItem(event.currentTarget.dataset.dashOpen));
   box.querySelectorAll("[data-dash-report]").forEach((button) => button.addEventListener("click", () => openReportHistoryItem(button.dataset.dashReport)));
   box.hidden = false;
+  window.ftPhotos?.fill(box);
 }
 
 // Caregiver mode: each report records who it is for ("Me" by default).
