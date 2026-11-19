@@ -50,11 +50,12 @@ Last verified run: 2026-11-17, daily run at 04:23 UTC.
    - merge frontend #170, backend #60 and mobile #52;
    - set the Anthropic key in Render (E-001);
    - supply or approve a way to produce the homepage photos (`docs/photography-briefs.md`).
+1a. **Owner:** merge backend #61. The nightly smoke will then fail until the key is replaced; that is intended.
 2. **Results dashboard (owner priority 2):**
    - ~~One button style and a summary card in the homepage style~~ Done on 18 Nov.
    - Next: put the grouped summary (count, in/out bars) at the top of every report.
    - Make the result rows read as one list on phones.
-3. **Lab testing pages (priority 3):** bring `lab-testing.html` and the example page into the new homepage style.
+3. ~~**Lab testing pages (priority 3)**~~ Done on 18 Nov (#173).
 4. **AI Health Guide (priority 4):** a useful, compact panel instead of the decorative avatar.
 5. **Mobile app (priority 5):** apply the same tokens in the Expo app after #52.
 6. **Trust (priority 6):** a privacy and security page whose claims are each checked against the code.
@@ -76,6 +77,28 @@ Earlier list, kept for reference:
    - ~~Nightly axe scan~~ Built on 9 Nov: `scripts/eval/a11y-scan.mjs` scans 21 screens and pages at phone and desktop size (axe-core 4.14.0, WCAG A/AA). It runs in Frontend CI on every PR and nightly in `accessibility-scan.yml`. The first scan found one serious issue, now fixed: the desktop "Need help?" button's accessible name did not contain its visible text (WCAG 2.5.3).
 5b. **Staff two-step sign-in requirement:** built, off by default (`CAREWISE_STAFF_TWO_FACTOR_REQUIRED`, backend #56). ~~Website banner~~ Built on 8 Nov: Account shows "Turn on two-step sign-in to use your clinic tools" when `/auth/me` reports `staff_two_factor_needed`, links to Two-step sign-in, and hides once it is on. Shows nothing until #56 is merged, deployed and the setting is on. Eval `staff-two-factor.mjs` (14 checks) runs in CI.
 5c. **Main red on 5 Nov:** #116 merged after #142 with the same cache version, 208. Frontend #143 bumps it to 209. **Owner:** merge cache-version PRs one at a time.
+
+## Run on 19 Nov (daily, 04:23 UTC)
+
+**Merged and live since the last run (owner):**
+- frontend #170, #171, #172 and #173 (homepage, dashboard twice, lab pages);
+- backend #60 (chat reliability, lab testing stage 1);
+- mobile #52.
+
+**Outage still open: E-001.**
+- Every chat request fails with `provider_auth_rejected`. The Anthropic key in Render is rejected.
+- Only the owner can replace it.
+- The nightly smoke recorded that failure and still passed, so nothing alerted.
+
+**Done:** backend PR #61.
+- The live smoke now fails, with the reason, when the helper is switched on but not answering.
+- 4 new tests; the full suite passes (279).
+
+**Read-only checks today:** all mains green.
+- frontend accuracy 100% on 68 reports;
+- 34 safety cases pass;
+- backend 275 tests pass;
+- mobile CI check passes.
 
 ## Run on 18 Nov (daily, 04:23 UTC)
 
