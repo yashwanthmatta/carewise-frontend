@@ -1180,6 +1180,30 @@ const reportBadge = document.querySelector("#report-badge");
 const reportStatus = document.querySelector("#report-status");
 const ocrStatus = document.querySelector("#ocr-status");
 const reportResults = document.querySelector("#report-results");
+// Buttons inside the results (PDF, copy, save, remove) report back in the status line at the top of the
+// form, which is far above them on a long report. Show the same words next to the part that was used.
+// The copy is aria-hidden: screen readers already hear the status line, so it is not announced twice.
+let resultStatusTarget = null;
+reportResults?.addEventListener("click", (event) => {
+  const action = event.target.closest?.("[data-report-action], button");
+  const section = action?.closest(".result-save, .result-privacy, section");
+  // Fifteen seconds covers a slow save or share finishing after "Saving…".
+  resultStatusTarget = section ? { section, until: Date.now() + 15000 } : null;
+}, true);
+if (reportStatus && typeof MutationObserver === "function") {
+  new MutationObserver(() => {
+    if (!resultStatusTarget || Date.now() > resultStatusTarget.until) return;
+    const { section } = resultStatusTarget;
+    if (!section?.isConnected || !reportResults.contains(section)) return;
+    let local = section.querySelector(":scope > .result-local-status");
+    if (!local) {
+      local = Object.assign(document.createElement("p"), { className: "result-local-status" });
+      local.setAttribute("aria-hidden", "true");
+      section.appendChild(local);
+    }
+    local.textContent = reportStatus.textContent;
+  }).observe(reportStatus, { childList: true, characterData: true, subtree: true });
+}
 const reportQuestion = document.querySelector("#report-question");
 const reportAnswer = document.querySelector("#report-answer");
 const reportEvalResults = document.querySelector("#report-eval-results");
@@ -8587,22 +8611,86 @@ async function downloadSharePacketPdf() {
   reportStatus.textContent = `Saved ${name}. Attach it to an email or bring it to the visit, with the original report.`;
 }
 
+// The doctor brief opens in a dialog on this page, not a new tab: phone browsers can block a tab opened
+// this way, and the content is the same either way. The brief is shown in a same-origin frame so its own
+// print styles apply; printing prints only the frame, and a print rule on this page covers browsers
+// that print the whole page instead.
+function briefDialogElements() {
+  let dialog = document.querySelector("#doctor-brief-dialog");
+  if (!dialog) {
+    dialog = document.createElement("dialog");
+    dialog.id = "doctor-brief-dialog";
+    dialog.className = "brief-dialog";
+    dialog.setAttribute("aria-labelledby", "doctor-brief-dialog-title");
+    dialog.innerHTML = `
+      <div class="brief-dialog-bar">
+        <h2 id="doctor-brief-dialog-title" tabindex="-1"></h2>
+        <div class="brief-dialog-actions">
+          <button type="button" class="brief-dialog-print" data-brief-dialog-print></button>
+          <button type="button" class="brief-dialog-close" data-brief-dialog-close></button>
+        </div>
+      </div>
+      <iframe class="brief-dialog-frame" title=""></iframe>`;
+    document.body.appendChild(dialog);
+    dialog.querySelector("[data-brief-dialog-close]").addEventListener("click", () => dialog.close());
+    dialog.querySelector("[data-brief-dialog-print]").addEventListener("click", () => printDoctorBrief(dialog));
+    dialog.addEventListener("close", () => {
+      document.documentElement.classList.remove("brief-open");
+      // "Doctor brief open" no longer applies once it is closed.
+      const local = dialog.returnFocusTo?.closest?.("section")?.querySelector(":scope > .result-local-status");
+      if (local) local.textContent = "";
+      dialog.returnFocusTo?.focus?.();
+    });
+  }
+  return { dialog, frame: dialog.querySelector("iframe") };
+}
+
+function printDoctorBrief(dialog) {
+  const frameWindow = dialog.querySelector("iframe")?.contentWindow;
+  try {
+    frameWindow.focus();
+    frameWindow.print();
+  } catch {
+    window.print();
+  }
+}
+
 function openDoctorBrief() {
   trackReportUsage("doctor_brief_opened");
   if (!latestReportAnalysis) {
     reportStatus.textContent = "Analyze a report first, then open the doctor brief.";
     return;
   }
-  const briefWindow = window.open("", "_blank");
-  if (!briefWindow) {
-    reportStatus.textContent = "Allow pop-ups for FollowThrough Health to open the doctor brief.";
-    return;
-  }
-  briefWindow.document.write(buildDoctorBriefHtml(latestReportAnalysis, latestReportPerson));
-  briefWindow.document.close();
-  // Attached here rather than inline: the site's Content-Security-Policy blocks inline handlers.
-  briefWindow.document.querySelector("[data-brief-print]")?.addEventListener("click", () => briefWindow.print());
-  reportStatus.textContent = "Doctor brief opened in a new tab. Print it or save it as a PDF for your visit.";
+  const { dialog, frame } = briefDialogElements();
+  const spanish = reportLanguage === "es";
+  dialog.querySelector("h2").textContent = spanish ? "Preguntas para su consulta" : "Questions for your visit";
+  dialog.querySelector("[data-brief-dialog-print]").textContent = spanish ? "Imprimir o guardar como PDF" : "Print or save as PDF";
+  dialog.querySelector("[data-brief-dialog-close]").textContent = spanish ? "Cerrar" : "Close";
+  frame.title = spanish ? "Resumen para su médico" : "Doctor brief";
+  dialog.returnFocusTo = document.activeElement;
+  frame.addEventListener("load", () => {
+    const doc = frame.contentDocument;
+    if (!doc) return;
+    // The dialog bar has the print button, so the brief's own button is not shown twice.
+    // Attached here rather than inline: the site's Content-Security-Policy blocks inline handlers.
+    const inner = doc.querySelector("[data-brief-print]");
+    if (inner) {
+      inner.addEventListener("click", () => printDoctorBrief(dialog));
+      inner.hidden = true;
+    }
+    // Keys pressed inside the frame do not reach the dialog, so Escape is handled here too.
+    doc.addEventListener("keydown", (event) => { if (event.key === "Escape") dialog.close(); });
+    // The frame is as tall as the brief, so the dialog scrolls and a whole-page print shows all of it.
+    frame.style.height = `${Math.ceil(doc.documentElement.scrollHeight) + 8}px`;
+  }, { once: true });
+  frame.srcdoc = buildDoctorBriefHtml(latestReportAnalysis, latestReportPerson);
+  document.documentElement.classList.add("brief-open");
+  if (!dialog.open) dialog.showModal();
+  dialog.scrollTop = 0;
+  dialog.querySelector("h2").focus();
+  reportStatus.textContent = spanish
+    ? "El resumen para su médico está abierto. Imprímalo o guárdelo como PDF para su consulta."
+    : "Doctor brief open. Print it or save it as a PDF for your visit.";
 }
 
 function buildReportSummaryPack(analysis) {

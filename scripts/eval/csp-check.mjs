@@ -50,21 +50,18 @@ ok(!injected, "an injected inline script is blocked");
 await page.waitForTimeout(500); // the violation report arrives asynchronously
 violations.splice(0); // that block is the expected violation
 
-// 2. Explain a pasted report, then open the doctor brief window (written into a new tab).
+// 2. Explain a pasted report, then open the doctor brief (a dialog on this page since 21 Nov; it was a new tab).
 await page.goto(base, { waitUntil: "load" });
 await page.waitForFunction(() => typeof showOcrResult === "function" && typeof window.showCareWiseSection === "function");
 await page.evaluate(() => window.showCareWiseSection("report-title", false));
 await page.fill("#report-text", "Sample Lab\nLDL cholesterol 148 mg/dL <100\nHDL cholesterol 52 mg/dL >40\nA1C 5.4 % 4.0-5.6");
 await page.click("#analyze-report");
 await page.waitForSelector("#report-results .report-summary");
-const [brief] = await Promise.all([
-  context.waitForEvent("page"),
-  page.locator('[data-report-action="doctor-brief"]').first().evaluate((el) => el.click()),
-]);
-await brief.waitForLoadState();
-ok(/Patient questions/.test(await brief.content()), "doctor brief window opens with its content");
-ok(await brief.evaluate(() => !document.querySelector("[onclick]") && !!document.querySelector("[data-brief-print]")), "brief print button has no inline handler");
-await brief.close();
+await page.locator('[data-report-action="doctor-brief"]').first().evaluate((el) => el.click());
+await page.waitForFunction(() => /Patient questions/.test(document.querySelector("#doctor-brief-dialog iframe")?.contentDocument?.body?.innerText || ""), null, { timeout: 5000 }).catch(() => {});
+ok(await page.evaluate(() => /Patient questions/.test(document.querySelector("#doctor-brief-dialog iframe")?.contentDocument?.body?.innerText || "")), "doctor brief opens with its content, under the site's policy");
+ok(await page.evaluate(() => { const doc = document.querySelector("#doctor-brief-dialog iframe").contentDocument; return !doc.querySelector("[onclick]") && !!doc.querySelector("[data-brief-print]"); }), "brief print button has no inline handler");
+await page.keyboard.press("Escape");
 
 // 3. PDF upload (PDF.js served from this site).
 await page.goto(base + "#report-title", { waitUntil: "load" });
