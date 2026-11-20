@@ -56,7 +56,7 @@ Last verified run: 2026-11-17, daily run at 04:23 UTC.
    - ~~Next: put the grouped summary (count, in/out bars) at the top of every report.~~ Done on 20 Nov.
    - Make the result rows read as one list on phones.
 3. ~~**Lab testing pages (priority 3)**~~ Done on 18 Nov (#173).
-4. **AI Health Guide (priority 4):** a useful, compact panel instead of the decorative avatar.
+4. ~~**AI Health Guide (priority 4)**~~ Done on 20 Nov (PR #174). The chat is a card, the mark is a small state icon, and "It can / It won't" is said beside it.
 5. **Mobile app (priority 5):** apply the same tokens in the Expo app after #52.
 6. **Trust (priority 6):** a privacy and security page whose claims are each checked against the code.
 

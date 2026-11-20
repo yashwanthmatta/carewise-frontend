@@ -163,7 +163,7 @@ html, body, .app-shell, .app-shell .landing, .app-shell main { background-color:
 .app-shell .landing .fx-stage-card .fx-stage-made { margin-top: 8px; color: var(--fx-ink-3); font-size: 0.76rem; }
 
 /* Split rows: a picture on one side, a short story on the other */
-.app-shell .landing > section.fx-labs, .app-shell .landing > section.fx-remind { display: block !important; padding: clamp(56px, 6.5vw, 96px) 0 !important; border: 0 !important; background: none !important; }
+.app-shell .landing > section.fx-labs, .app-shell .landing > section.fx-remind, .app-shell .landing > section.fx-guide { display: block !important; padding: clamp(56px, 6.5vw, 96px) 0 !important; border: 0 !important; background: none !important; }
 .app-shell .landing .fx-split { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: center; gap: clamp(32px, 6vw, 96px); }
 .app-shell .landing .fx-split + .fx-split { margin-top: clamp(40px, 5vw, 72px); }
 .app-shell .landing .fx-split-rev > .fx-media { order: 2; }

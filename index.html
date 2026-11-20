@@ -247,14 +247,33 @@
               </div>
             </div>
           </section>
-          <section class="ed-part guide" id="guide" aria-labelledby="guide-title">
-            <p class="ed-label">Ask about a word</p>
-            <div>
-              <h2 id="guide-title" class="ed-h2">Not sure what a test means? Ask.</h2>
-              <p class="ed-body">The AI Health Guide answers in plain language and helps you write better questions for your doctor. It is an AI, not a doctor: it doesn't diagnose or suggest medicines.</p>
-              <p class="guide-label"><strong>AI Health Guide</strong> — Educational information, not medical diagnosis.</p>
-            <div class="guide-stage">
-              <div class="guide-avatar is-idle" data-guide-avatar>
+          <section class="guide fx-guide" id="guide" aria-labelledby="guide-title">
+            <div class="fx-split">
+              <div class="fx-split-copy">
+                <p class="fx-eyebrow">AI Health Guide</p>
+                <h2 id="guide-title" class="fx-h2">Not sure what a test means? <em>Ask.</em></h2>
+                <p class="fx-sub">It answers in plain language and helps you write better questions for your doctor. It is an AI, not a doctor.</p>
+                <div class="guide-scope">
+                  <div>
+                    <h3>It can</h3>
+                    <ul class="fx-ticks">
+                      <li>Explain a test, a result or a medical word</li>
+                      <li>Say what a named medicine is, in general terms</li>
+                      <li>Help you write questions for your visit</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3>It won't</h3>
+                    <ul class="fx-ticks guide-wont">
+                      <li class="fx-tick-off">Diagnose you</li>
+                      <li class="fx-tick-off">Give doses or say whether to take a medicine</li>
+                      <li class="fx-tick-off">Replace your doctor</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="guide-card">
+                <div class="guide-avatar is-idle" data-guide-avatar>
                 <svg class="guide-figure" viewBox="0 0 320 320" role="img" aria-labelledby="guide-figure-title">
                   <title id="guide-figure-title">The AI Health Guide: an abstract symbol of light and orbits, not a person</title>
                   <circle class="guide-halo" cx="160" cy="160" r="150" fill="#F3EDE2"/>
@@ -270,9 +289,10 @@
                   </g>
                   <g class="guide-orbit"><circle class="guide-spark" cx="160" cy="48" r="6" fill="#B85C38"/></g>
                 </svg>
-                <p class="guide-state" data-guide-state role="status">Ready for your question</p>
-              </div>
-              <div class="guide-chat" data-guide>
+                  <div class="guide-who"><p class="guide-name">AI Health Guide</p><p class="guide-state" data-guide-state role="status">Ready for your question</p></div>
+                  <p class="guide-label">Educational information, not medical diagnosis.</p>
+                </div>
+                <div class="guide-chat" data-guide>
                 <div class="guide-log" data-guide-log aria-live="polite" aria-label="Conversation with the AI Health Guide">
                   <div class="guide-msg guide-msg-guide"><p>Hello. I'm an AI education guide, not a doctor. Ask me what a lab test means, or how to prepare for your next visit.</p></div>
                 </div>
@@ -289,8 +309,8 @@
                 </form>
                 <label class="guide-share" data-guide-share hidden><input type="checkbox" /> Include my latest report in the question</label>
                 <p class="guide-fine">Answers come from FollowThrough Health's built-in explanations, or from our AI provider, Anthropic, when it is available; your question is not saved by our servers. "Listen" uses your device's own voice. In an emergency, call your local emergency number.</p>
+                </div>
               </div>
-            </div>
             </div>
           </section>
           <section class="ed-part fh-info" id="explore-reports" aria-labelledby="fh-info-title">

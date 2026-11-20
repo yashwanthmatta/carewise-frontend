@@ -46,7 +46,10 @@ async function askAndWait(page, question) {
 // 1. Label, states and safety, with the server not reachable (built-in answers).
 {
   const { context, page, errors } = await open();
-  check(/AI Health Guide — Educational information, not medical diagnosis\./.test(await page.innerText("#guide")), "label: AI Health Guide — Educational information, not medical diagnosis.");
+  // The card header names the guide and states, in words, that it is educational, not diagnosis.
+  const header = (await page.innerText("#guide [data-guide-avatar]")).replace(/\s+/g, " ");
+  check(/AI Health Guide/.test(header) && /Educational information, not medical diagnosis\./.test(header), `label: AI Health Guide, "Educational information, not medical diagnosis." (${header.slice(0, 80)})`);
+  check(/It won't/.test(await page.innerText("#guide")) && /Diagnose you/.test(await page.innerText("#guide")) && /Give doses or say whether to take a medicine/.test(await page.innerText("#guide")), "what it won't do is said beside the chat");
   check(await page.getAttribute("[data-guide-avatar]", "data-state") === "idle", "avatar starts idle");
   await page.focus("#guide-input");
   await page.keyboard.type("What");
@@ -139,7 +142,8 @@ for (const [size, viewport] of [["phone", { width: 375, height: 740 }], ["deskto
   const { context, page } = await open({ viewport, reducedMotion: "reduce" });
   check(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), `${size}: no sideways scroll`);
   const box = await page.$eval(".guide-figure", (svg) => { const r = svg.getBoundingClientRect(); return { w: r.width, h: r.height }; });
-  check(box.w > 150 && box.w <= viewport.width, `${size}: avatar is drawn at a sensible size (${Math.round(box.w)} px wide)`);
+  // 19 Nov redesign (owner: "less decorative"): the mark is a small header icon on the chat card.
+  check(box.w >= 40 && box.w <= 72, `${size}: the guide's mark is a small header icon (${Math.round(box.w)} px wide)`);
   // Reduced motion: even while thinking, nothing moves.
   await page.evaluate(() => { document.querySelector("[data-guide-avatar]").className = "guide-avatar is-thinking"; });
   const animation = await page.$eval(".guide-avatar .guide-body", (el) => getComputedStyle(el).animationName);
