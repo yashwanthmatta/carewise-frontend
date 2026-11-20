@@ -37,6 +37,10 @@ const RULES = [
   // Backend docs/security-hardening/inventory.md: only listed fields are app-encrypted; dates,
   // risk level and reminder times/days stay plain so they can be sorted and scheduled.
   ["blanket-encryption", /(health (details|information|data)|everything|all (your )?data)[^.]{0,60}(stored|kept|saved) encrypted/i, "Only some fields are encrypted; name what is (see backend inventory.md)", "marketing"],
+  // 20 Nov 2026: older rows in some fields wait for the production backfill, and not every view is
+  // audited (backend encryption-migration.md; clinics.py audit events). Name what is covered.
+  ["blanket-db-encryption", /health (details|information|data)[^.]{0,80}encrypted in the database/i, "Older saved records are not all field-encrypted yet; name the fields and the date", "all"],
+  ["every-view-logged", /every (view|access|action)[^.]{0,60}(recorded|logged)/i, "Not every view is audited; list the audited actions", "all"],
   ["deidentified-pilot", /de-identified or (a )?samples?/i, "Clinic evaluation is synthetic-only (pilot-clinic-onboarding.md)", "marketing"],
 ];
 
