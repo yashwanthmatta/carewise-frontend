@@ -461,7 +461,7 @@ body { background: var(--fh-paper) !important; color: var(--fh-ink); }
 .app-shell .secondary-button { border-color: var(--fh-line) !important; box-shadow: none !important; }
 .app-shell #report-results .result-hero .section-heading-action > strong { font-family: var(--fh-serif) !important; font-weight: 300 !important; font-size: clamp(2rem, 3.4vw, 2.8rem) !important; line-height: 1.05 !important; letter-spacing: -0.01em; color: var(--fh-ink); }
 .app-shell #report-results .result-hero > div > span { font-family: var(--fh-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fh-accent); }
-.app-shell #report-results :is(.result-cards, .result-doctor, .next-steps, .result-source, .result-save) :is(h4, .section-heading-action > strong, .section-heading-action > h4) { font-family: var(--fh-serif) !important; font-weight: 400 !important; font-size: clamp(1.45rem, 2.2vw, 1.85rem) !important; letter-spacing: -0.005em !important; color: var(--fh-ink); }
+.app-shell #report-results :is(.result-cards, .result-doctor, .next-steps, .result-source, .result-save, .result-privacy) :is(h4, .section-heading-action > strong, .section-heading-action > h4) { font-family: var(--fh-serif) !important; font-weight: 400 !important; font-size: clamp(1.45rem, 2.2vw, 1.85rem) !important; letter-spacing: -0.005em !important; color: var(--fh-ink); }
 .app-shell #report-results .report-summary { border: 1px solid var(--fh-line) !important; border-left-width: 1px !important; box-shadow: none !important; background: var(--fh-white) !important; }
 .app-shell #report-results .report-summary-eyebrow { font-family: var(--fh-mono); font-size: 0.72rem; letter-spacing: 0.06em; color: var(--fh-accent); }
 /* Counts at the top of every report (19 Nov): labelled numbers, one bar, body areas. */
@@ -651,7 +651,7 @@ body[data-active-workspace]:not([data-active-workspace="home-title"]) .topbar.si
    result cards, a filled questions panel, boxed "original report", "save or share", safety note and
    feedback. Same rules as the rest of the site now: ruled parts, results as ruled rows, 6 px corners.
    Presentation only; every value, label, range and sentence is unchanged. */
-.app-shell #report-results :is(.report-summary, .result-doctor, .result-source, .result-save, .safety-note, .feedback-box) { border: 0 !important; border-top: 1px solid var(--fh-line-strong) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding-left: 0 !important; padding-right: 0 !important; }
+.app-shell #report-results :is(.report-summary, .result-doctor, .result-source, .result-save, .result-privacy, .safety-note, .feedback-box) { border: 0 !important; border-top: 1px solid var(--fh-line-strong) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding-left: 0 !important; padding-right: 0 !important; }
 /* The summary is the one card on the results screen, in the homepage's panel style (18 Nov). */
 .app-shell #report-results .report-summary { border: 1px solid var(--fh-line) !important; border-radius: 22px !important; background: var(--fh-white) !important; padding: 26px 28px !important; box-shadow: 0 24px 48px -36px rgba(80, 52, 28, 0.35) !important; }
 .app-shell #report-results .result-cards-grid { column-gap: 48px !important; row-gap: 0 !important; }
@@ -775,3 +775,61 @@ body[data-active-workspace]:not([data-active-workspace="home-title"]) .topbar.si
   #report-results .lab-summary-bars li { grid-template-columns: 1fr; gap: 4px; }
 }
 @media print { #report-results .lab-trend polyline { stroke: #999; } }
+
+/* ---------- Report journey (20 Nov) ----------
+   The header sits flush at the top with a full-width band, so text no longer shows through the gap
+   above it. Under the summary: jump links and "Find a result". Own questions under the report's.
+   "Your privacy" after Save or share. One layout from phone to desktop: it only wraps. */
+.topbar.site-nav { top: 0 !important; }
+.topbar.site-nav::before { content: ""; position: absolute; z-index: -1; top: -12px; bottom: 0; left: calc(50% - 50vw); right: calc(50% - 50vw); background: var(--fh-paper); border-bottom: 1px solid var(--fh-line); pointer-events: none; }
+.app-shell #report-results .result-tools { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin: 4px 0 26px; min-width: 0; }
+.app-shell #report-results .result-jump { display: flex; flex-wrap: wrap; gap: 8px; }
+.app-shell #report-results .result-jump-link { flex: 0 0 auto; min-height: 40px; padding: 8px 14px; border: 1px solid var(--fh-line-strong); border-radius: 999px; background: var(--fh-white); color: var(--fh-ink); font: 500 0.92rem/1.2 inherit; font-family: inherit; cursor: pointer; }
+.app-shell #report-results .result-jump-link:hover { border-color: var(--fh-accent); color: var(--fh-accent); }
+.app-shell #report-results .result-find { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; max-width: 560px; min-width: 0; }
+.app-shell #report-results .result-find label, .app-shell #report-results .result-own-question label { font-weight: 600; color: var(--fh-ink); font-size: 0.95rem; }
+.app-shell #report-results .result-find input, .app-shell #report-results .result-own-row input { width: 100%; min-width: 0; min-height: 46px; padding: 10px 14px; border: 1px solid var(--fh-line-strong); border-radius: 12px; background: var(--fh-white); color: var(--fh-ink); font: inherit; font-size: 1rem; }
+.app-shell #report-results .result-find-list { display: grid; gap: 6px; margin: 4px 0 0; padding: 0; list-style: none; }
+.app-shell #report-results .result-find-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name label" "value value" "range range"; gap: 2px 12px; width: 100%; padding: 12px 14px; border: 1px solid var(--fh-line); border-left: 4px solid var(--fh-line-strong); border-radius: 12px; background: var(--fh-white); color: var(--fh-ink); text-align: left; font: inherit; cursor: pointer; }
+.app-shell #report-results .result-find-item:hover { border-color: var(--fh-accent); }
+.app-shell #report-results .result-find-out { border-left-color: var(--fh-terracotta); }
+.app-shell #report-results .result-find-in { border-left-color: #6E9E85; }
+.app-shell #report-results .result-find-item strong { grid-area: name; font-weight: 600; }
+.app-shell #report-results .result-find-item em { grid-area: label; font-style: normal; font-size: 0.85rem; color: var(--fh-ink-2); }
+.app-shell #report-results .result-find-value { grid-area: value; font-family: var(--fh-serif); font-size: 1.25rem; }
+.app-shell #report-results .result-find-item small { grid-area: range; color: var(--fh-ink-3); font-family: var(--fh-mono); font-size: 0.82rem; }
+.app-shell #report-results .result-find-empty { padding: 10px 2px; color: var(--fh-ink-3); }
+.app-shell #report-results .is-found { animation: fh-found 1.6s var(--fh-ease); }
+@keyframes fh-found { 0%, 40% { box-shadow: 0 0 0 3px rgba(161, 78, 46, 0.35); background-color: var(--fh-accent-soft); } 100% { box-shadow: 0 0 0 0 rgba(161, 78, 46, 0); } }
+@media (prefers-reduced-motion: reduce) { .app-shell #report-results .is-found { animation: none; outline: 3px solid rgba(161, 78, 46, 0.45); outline-offset: 2px; } }
+.app-shell #report-results [tabindex="-1"]:focus { outline: none; }
+.app-shell #report-results [tabindex="-1"]:focus-visible { outline: 3px solid rgba(161, 78, 46, 0.45); outline-offset: 4px; }
+.app-shell #report-results .result-own-item { list-style: none; }
+.app-shell #report-results .result-own-tag { display: inline-block; margin-right: 6px; padding: 1px 8px; border-radius: 999px; background: var(--fh-accent-soft); color: var(--fh-accent-dark); font-size: 0.78rem; font-weight: 600; vertical-align: 2px; }
+.app-shell #report-results .result-own-remove { min-height: 32px; margin-left: 4px; font-size: 0.85rem; }
+.app-shell #report-results .result-own-question { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; margin: 14px 0 16px; max-width: 640px; }
+.app-shell #report-results .result-own-row { display: flex; gap: 8px; }
+.app-shell #report-results .result-own-row input { flex: 1 1 auto; min-width: 0; width: 0 !important; }
+.app-shell #report-results .result-own-row button { flex: 0 0 auto; width: auto !important; min-height: 46px; }
+.app-shell #report-results .result-privacy-facts { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; color: var(--fh-ink-2); }
+.app-shell #report-results .result-privacy-facts li { position: relative; display: block !important; padding: 0 0 0 22px !important; border: 0 !important; background: none !important; }
+.app-shell #report-results .result-privacy-facts li::before { content: ""; position: absolute; left: 4px; top: 0.55em; width: 8px; height: 8px; border-radius: 50%; background: var(--fh-teal); }
+.app-shell #report-results .result-privacy-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.app-shell #report-results .result-privacy-actions a { display: inline-flex; align-items: center; text-decoration: none; }
+/* Room for the help button and the phone tab bar under the last part of the results. */
+@media (max-width: 720px) {
+  .app-shell #report-results .v1-result-card { padding-bottom: 72px; }
+  .app-shell #report-results .result-jump { gap: 6px; }
+  .app-shell #report-results .result-jump-link { min-height: 36px; padding: 6px 12px; font-size: 0.86rem; }
+}
+/* Phones: the name and "Sign in" stay on one line each and no longer overlap in the header. */
+@media (max-width: 480px) {
+  .app-shell .topbar.site-nav .nav-signin { min-height: 40px; padding: 0 12px !important; font-size: 0.9rem !important; white-space: nowrap; }
+  .app-shell .topbar.site-nav .brand-text strong { font-size: 1.05rem !important; }
+}
+@media (max-width: 360px) {
+  .app-shell .topbar.site-nav .brand-text strong { font-size: 0.94rem !important; }
+  .app-shell .topbar.site-nav .brand-logo { width: 26px; height: 26px; }
+  .app-shell .topbar.site-nav .brand-lockup { gap: 6px; }
+  .app-shell .topbar.site-nav .nav-signin { padding: 0 10px !important; font-size: 0.86rem !important; }
+}
