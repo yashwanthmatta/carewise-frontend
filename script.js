@@ -7022,6 +7022,37 @@ document.addEventListener("click", (event) => {
   if (button) filterLabPanel(button);
 });
 
+// The counts at the top of every report (19 Nov, owner priority 2: "make the report-results
+// dashboard exceptionally clear"). Labelled numbers, one bar and the body areas, counted the same
+// way as "All tests on your report" so the two never disagree. Replaces a row of unlabelled dots.
+function renderSummaryStats(view) {
+  const tests = view.tests || [];
+  if (tests.length < 2) return "";
+  const es = reportLanguage === "es";
+  const isOut = (item) => OUTSIDE_STATUSES.has(item.status);
+  const outside = tests.filter(isOut).length;
+  const within = tests.filter((item) => item.status === "within").length;
+  const other = tests.length - outside - within;
+  const pct = (n) => `${Math.round((n / tests.length) * 1000) / 10}%`;
+  const areas = [...TEST_AREAS.map(([id, en, esName]) => [id, es ? esName : en]), ["other", es ? "Otros" : "Other tests"]]
+    .map(([id, name]) => ({ name, items: tests.filter((item) => testAreaOf(item.key) === id) }))
+    .filter((area) => area.items.length);
+  return `
+        <div class="summary-stats">
+          <p class="summary-total"><b>${tests.length}</b> ${es ? "pruebas en este informe" : "tests on this report"}</p>
+          <div class="summary-bar" aria-hidden="true">${within ? `<i class="summary-bar-in" style="width:${pct(within)}"></i>` : ""}${outside ? `<i class="summary-bar-out" style="width:${pct(outside)}"></i>` : ""}${other ? `<i class="summary-bar-none" style="width:${pct(other)}"></i>` : ""}</div>
+          <ul class="summary-legend">
+            <li><i class="summary-dot summary-dot-in"></i>${es ? "Dentro del rango del laboratorio" : "Within the lab's range"} <b>${within}</b></li>
+            <li><i class="summary-dot summary-dot-out"></i>${es ? "Fuera del rango del laboratorio" : "Outside the lab's range"} <b>${outside}</b></li>
+            ${other ? `<li><i class="summary-dot summary-dot-none"></i>${es ? "Sin rango para comparar" : "No range to compare"} <b>${other}</b></li>` : ""}
+          </ul>
+          ${areas.length > 1 ? `<ul class="summary-areas" aria-label="${es ? "Áreas del cuerpo" : "Body areas"}">${areas.map((area) => {
+            const out = area.items.filter(isOut).length;
+            return `<li class="${out ? "summary-area-out" : ""}"><span>${escapeHtml(area.name)}</span><small>${out ? (es ? `${out} de ${area.items.length} fuera` : `${out} of ${area.items.length} outside`) : (es ? `${area.items.length} en rango` : `${area.items.length} within range`)}</small></li>`;
+          }).join("")}</ul>` : ""}
+        </div>`;
+}
+
 // Summary first: what matters, in plain words, before any numbers.
 function renderReportSummary(view, nextStep = "") {
   if (!view.headline && !view.body.length) return "";
@@ -7029,7 +7060,7 @@ function renderReportSummary(view, nextStep = "") {
       <section class="report-summary report-summary-${view.urgent ? "urgent" : view.outside || view.cards.length ? "attention" : "clear"}" aria-labelledby="report-summary-title">
         <span class="report-summary-eyebrow">${escapeHtml(view.title)}</span>
         <h3 id="report-summary-title">${escapeHtml(view.headline)}</h3>
-        ${view.tests.length > 1 && view.tests.length <= 40 ? `<div class="summary-meter" aria-hidden="true">${view.tests.map((_, index) => `<span class="${index < view.outside ? "is-out" : ""}"></span>`).join("")}</div>` : ""}
+        ${renderSummaryStats(view)}
         ${view.body.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}
         ${nextStep ? `<p class="report-summary-next">${escapeHtml(nextStep)}</p>` : ""}
       </section>`;

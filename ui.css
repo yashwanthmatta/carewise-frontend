@@ -516,9 +516,6 @@ body[data-auth="in"] .auth-layout, body:not([data-auth="in"]) .account-home, bod
 .report-panel .report-summary { background: var(--ft-surface) !important; border: 1px solid var(--ft-line) !important; border-left: 4px solid var(--ft-attention) !important; box-shadow: var(--ft-shadow-sm); }
 .report-panel .report-summary-clear { border-left-color: var(--ft-brand) !important; }
 .report-panel .report-summary-urgent { border-left-color: var(--ft-danger) !important; background: var(--ft-danger-soft) !important; }
-.summary-meter { display: flex; gap: 4px; margin: 6px 0 10px; max-width: 420px; }
-.summary-meter span { flex: 1; height: 8px; border-radius: 4px; background: #d9e7e3; }
-.summary-meter span.is-out { background: var(--ft-attention); }
 .report-panel .result-cards-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)) !important; gap: 14px !important; }
 .report-panel .result-card-item { border: 1px solid var(--ft-line) !important; border-left: 4px solid var(--ft-attention) !important; background: var(--ft-surface) !important; }
 .report-panel .result-card-critical { border-left-color: var(--ft-danger) !important; }
@@ -573,7 +570,6 @@ body[data-auth="in"] .auth-layout, body:not([data-auth="in"]) .account-home, bod
   --ft-line-strong: #cbd5e1;
   --ft-brand-soft: #ccfbf1;
 }
-.summary-meter span { background: #e2e8f0; }
 
 /* Results, simplified (Stage 1): summary, results, questions, original report, save. */
 .report-panel .result-hero .section-heading-action { gap: 8px; }

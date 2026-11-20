@@ -456,8 +456,25 @@ body { background: var(--fh-paper) !important; color: var(--fh-ink); }
 .app-shell #report-results :is(.result-cards, .result-doctor, .next-steps, .result-source, .result-save) :is(h4, .section-heading-action > strong, .section-heading-action > h4) { font-family: var(--fh-serif) !important; font-weight: 400 !important; font-size: clamp(1.45rem, 2.2vw, 1.85rem) !important; letter-spacing: -0.005em !important; color: var(--fh-ink); }
 .app-shell #report-results .report-summary { border: 1px solid var(--fh-line) !important; border-left-width: 1px !important; box-shadow: none !important; background: var(--fh-white) !important; }
 .app-shell #report-results .report-summary-eyebrow { font-family: var(--fh-mono); font-size: 0.72rem; letter-spacing: 0.06em; color: var(--fh-accent); }
-.app-shell #report-results .summary-meter span { background: var(--fh-line); }
-.app-shell #report-results .summary-meter span.is-out { background: var(--fh-terracotta); }
+/* Counts at the top of every report (19 Nov): labelled numbers, one bar, body areas. */
+.app-shell #report-results .summary-stats { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "total bar" "total legend" "areas areas"; align-items: center; gap: 10px 24px; margin: 18px 0 16px; padding: 18px 0; border-top: 1px solid var(--fh-line); border-bottom: 1px solid var(--fh-line); }
+.app-shell #report-results .summary-total { grid-area: total; margin: 0; color: var(--fh-ink-2); font-size: 0.92rem; }
+.app-shell #report-results .summary-total b { display: block; color: var(--fh-ink); font: 400 clamp(2.6rem, 5vw, 3.4rem)/0.95 var(--fh-serif); letter-spacing: -0.03em; }
+.app-shell #report-results .summary-bar { grid-area: bar; display: flex; gap: 4px; height: 12px; }
+.app-shell #report-results .summary-bar i { display: block; height: 100%; border-radius: 6px; }
+.app-shell #report-results .summary-bar-in, .app-shell #report-results .summary-dot-in { background: #6FA285; }
+.app-shell #report-results .summary-bar-out, .app-shell #report-results .summary-dot-out { background: #C8734F; }
+.app-shell #report-results .summary-bar-none, .app-shell #report-results .summary-dot-none { background: var(--fh-line-strong); }
+.app-shell #report-results .summary-legend { grid-area: legend; display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 0; padding: 0; list-style: none; color: var(--fh-ink-2); font-size: 0.9rem; }
+.app-shell #report-results .summary-legend li { display: inline-flex; align-items: center; gap: 8px; margin: 0 !important; padding: 0 !important; border: 0 !important; background: none !important; }
+.app-shell #report-results .summary-legend b { color: var(--fh-ink); font-variant-numeric: tabular-nums; }
+.app-shell #report-results .summary-dot { width: 10px; height: 10px; border-radius: 50%; }
+.app-shell #report-results .summary-areas { grid-area: areas; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 0 24px; margin: 6px 0 0; padding: 0; list-style: none; }
+.app-shell #report-results .summary-areas li { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 0 !important; padding: 8px 0 !important; border: 0 !important; border-top: 1px solid var(--fh-line) !important; background: none !important; }
+.app-shell #report-results .summary-areas span { color: var(--fh-ink); font-size: 0.92rem; font-weight: 500; }
+.app-shell #report-results .summary-areas small { flex: none; color: var(--fh-ink-3); font-size: 0.84rem; }
+.app-shell #report-results .summary-area-out small { color: var(--fh-accent-dark); font-weight: 600; }
+@media (max-width: 560px) { .app-shell #report-results .summary-stats { grid-template-columns: minmax(0, 1fr); grid-template-areas: "total" "bar" "legend" "areas"; } }
 .app-shell #report-results .result-card-item { border: 1px solid var(--fh-line) !important; border-left-width: 1px !important; box-shadow: none !important; background: var(--fh-white) !important; padding: 20px 22px !important; }
 .app-shell #report-results .result-card-item header strong { font-weight: 500 !important; font-size: 1.05rem; }
 .app-shell #report-results .result-card-item header em { font-style: normal; font-weight: 500 !important; font-size: 0.8rem; padding: 3px 10px; background: var(--fh-accent-soft); color: var(--fh-accent-dark); }
@@ -629,7 +646,6 @@ body[data-active-workspace]:not([data-active-workspace="home-title"]) .topbar.si
 .app-shell #report-results :is(.report-summary, .result-doctor, .result-source, .result-save, .safety-note, .feedback-box) { border: 0 !important; border-top: 1px solid var(--fh-line-strong) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding-left: 0 !important; padding-right: 0 !important; }
 /* The summary is the one card on the results screen, in the homepage's panel style (18 Nov). */
 .app-shell #report-results .report-summary { border: 1px solid var(--fh-line) !important; border-radius: 22px !important; background: var(--fh-white) !important; padding: 26px 28px !important; box-shadow: 0 24px 48px -36px rgba(80, 52, 28, 0.35) !important; }
-.app-shell #report-results .summary-meter span { border-radius: 3px; }
 .app-shell #report-results .result-cards-grid { column-gap: 48px !important; row-gap: 0 !important; }
 .app-shell #report-results .result-cards-grid > .result-card-item { border: 0 !important; border-top: 1px solid var(--fh-line-strong) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; padding: 18px 0 20px !important; animation: none !important; }
 .app-shell #report-results .result-card-item header em { border-radius: 4px !important; }

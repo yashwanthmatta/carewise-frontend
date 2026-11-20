@@ -53,7 +53,7 @@ Last verified run: 2026-11-17, daily run at 04:23 UTC.
 1a. **Owner:** merge backend #61. The nightly smoke will then fail until the key is replaced; that is intended.
 2. **Results dashboard (owner priority 2):**
    - ~~One button style and a summary card in the homepage style~~ Done on 18 Nov.
-   - Next: put the grouped summary (count, in/out bars) at the top of every report.
+   - ~~Next: put the grouped summary (count, in/out bars) at the top of every report.~~ Done on 20 Nov.
    - Make the result rows read as one list on phones.
 3. ~~**Lab testing pages (priority 3)**~~ Done on 18 Nov (#173).
 4. **AI Health Guide (priority 4):** a useful, compact panel instead of the decorative avatar.
@@ -77,6 +77,20 @@ Earlier list, kept for reference:
    - ~~Nightly axe scan~~ Built on 9 Nov: `scripts/eval/a11y-scan.mjs` scans 21 screens and pages at phone and desktop size (axe-core 4.14.0, WCAG A/AA). It runs in Frontend CI on every PR and nightly in `accessibility-scan.yml`. The first scan found one serious issue, now fixed: the desktop "Need help?" button's accessible name did not contain its visible text (WCAG 2.5.3).
 5b. **Staff two-step sign-in requirement:** built, off by default (`CAREWISE_STAFF_TWO_FACTOR_REQUIRED`, backend #56). ~~Website banner~~ Built on 8 Nov: Account shows "Turn on two-step sign-in to use your clinic tools" when `/auth/me` reports `staff_two_factor_needed`, links to Two-step sign-in, and hides once it is on. Shows nothing until #56 is merged, deployed and the setting is on. Eval `staff-two-factor.mjs` (14 checks) runs in CI.
 5c. **Main red on 5 Nov:** #116 merged after #142 with the same cache version, 208. Frontend #143 bumps it to 209. **Owner:** merge cache-version PRs one at a time.
+
+## Run on 20 Nov (daily, 04:23 UTC)
+
+**Open PRs:** backend #61 (the smoke check alerts on a broken helper) is green and waits for the owner. E-001 (the Anthropic key) is still open; read-only checks on all mains are green.
+
+**Done (owner priority 2, results dashboard):** frontend PR, this branch.
+- **Counts at the top of every report:** the top summary used to show a row of unlabelled dots. It now shows the number of tests, a within/outside bar with labelled counts, and the body areas with how many are outside in each.
+- **Same counting rules:** the counts use the same rules as "All tests on your report", so the two always agree.
+- **Wording:** no medical wording or labels changed. The old dot CSS was deleted from `ui.css` and `site.css`.
+
+**Tests:**
+- `results-groups.mjs` checks that the counts match the list, the body areas, and that the dot row is gone.
+- All 37 evals pass, the 18-page crawl is clean, and the claims audit passes.
+- Cache version 242.
 
 ## Run on 19 Nov (daily, 04:23 UTC)
 
