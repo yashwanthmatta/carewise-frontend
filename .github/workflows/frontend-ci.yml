@@ -89,6 +89,9 @@ jobs:
       - name: Photo slots (disclosure, loading, fallback)
         run: node scripts/eval/photo-slots.mjs
 
+      - name: Report journey (explain, find a result, own questions, privacy) at four widths
+        run: node scripts/eval/report-journey.mjs
+
       - name: Report questions are about the report's own results
         run: node scripts/eval/report-questions.mjs
 

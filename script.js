@@ -189,6 +189,7 @@ let latestCheckoutUrl = localStorage.getItem("carewiseCheckoutUrl") || "";
 let latestReportQuestionPack = "";
 let latestReportSummaryPack = "";
 let latestReportAnalysis = null;
+let latestResultView = null;
 let latestReportPerson = "Me";
 const REPORT_LANGUAGES = { en: "English", es: "Español" };
 let reportLanguage = REPORT_LANGUAGES[localStorage.getItem("carewiseReportLanguage")] ? localStorage.getItem("carewiseReportLanguage") : "en";
@@ -781,7 +782,7 @@ const REPORT_TRANSLATIONS = {
       safetyText: "Esto no es un diagnóstico ni un plan de tratamiento. Un profesional de salud autorizado debe interpretar su informe original junto con su historial completo.",
       copySummary: "Copiar resumen",
       shareSummary: "Compartir resumen",
-      doctorBrief: "Preparar preguntas para su médico",
+      doctorBrief: "Imprimir preguntas para su consulta",
       packetPdf: "PDF para su médico",
       shareDoctor: "Enviar un enlace a su médico",
       listen: "Escuchar",
@@ -926,7 +927,7 @@ const REPORT_UI_EN = {
   safetyText: "This is not a diagnosis or treatment plan. A licensed professional should interpret your original report with your full history.",
   copySummary: "Copy summary",
   shareSummary: "Share summary",
-  doctorBrief: "Prepare questions for your doctor",
+  doctorBrief: "Print questions for your visit",
   packetPdf: "PDF for your doctor",
   shareDoctor: "Send a link to your doctor",
   listen: "Listen",
@@ -1461,6 +1462,8 @@ document.querySelector("#analyze-report")?.addEventListener("click", () => {
 async function analyzeAndShowReport() {
   await analyzeLatestReport();
   scrollBelowHeader(document.querySelector("#report-results .v1-result-card"));
+  // Keyboard and screen-reader users land on the result too, not back on the button.
+  document.querySelector("#result-ready-title")?.focus({ preventScroll: true });
 }
 
 // Scrolls an element to just below the sticky header and tab bar, which would otherwise cover its heading.
@@ -6959,7 +6962,7 @@ function renderLabPanelSection(analysis, view = buildReportView(analysis, report
     return es ? `${items.length} ${items.length === 1 ? "prueba" : "pruebas"}${out ? ` · ${out} fuera del rango` : ""}` : `${items.length} ${items.length === 1 ? "test" : "tests"}${out ? ` · ${out} outside the lab's range` : ""}`;
   };
   const row = (item) => `
-            <div class="lab-panel-row lab-status-${escapeHtml(item.status)} lab-tone-${tone(item)}" role="row" data-test-area="${testAreaOf(item.key)}" data-test-outside="${isOutside(item)}">
+            <div class="lab-panel-row lab-status-${escapeHtml(item.status)} lab-tone-${tone(item)}" role="row" data-test-area="${testAreaOf(item.key)}" data-test-outside="${isOutside(item)}" data-test-index="${view.tests.indexOf(item)}" tabindex="-1">
               <span role="cell"><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.what)}</small></span>
               <span role="cell">${escapeHtml(item.value)}${item.unitHint ? `<small>${escapeHtml(item.unitHint)}</small>` : ""}${labTrendDots(earlier[item.key], item, es)}</span>
               <span role="cell">${escapeHtml(item.range || t.noRange)}</span>
@@ -7226,12 +7229,12 @@ function resultValueHtml(card) {
   return escapeHtml(value);
 }
 
-function renderResultCard(card, text) {
+function renderResultCard(card, text, testIndex = -1) {
   const line = sourceLineFor(card);
   const es = reportLanguage === "es";
   const pageRow = sourcePdfRowFor(line);
   return `
-          <article class="result-card-item result-card-${escapeHtml(card.tone)}">
+          <article class="result-card-item result-card-${escapeHtml(card.tone)}"${testIndex >= 0 ? ` data-test-index="${testIndex}" tabindex="-1"` : ""}>
             <header><strong>${escapeHtml(card.name)}</strong><em>${escapeHtml(card.label)}</em></header>
             <p class="result-card-value"><b>${resultValueHtml(card)}</b>${card.unitHint ? `<small>${escapeHtml(card.unitHint)}</small>` : ""}</p>
             ${card.rangeLabel ? `<p class="result-card-range">${escapeHtml(card.rangeLabel)}: ${escapeHtml(card.range || text.noRangePrinted)}</p>` : ""}
@@ -7260,12 +7263,249 @@ function renderCheckNumbers(view) {
       </section>`;
 }
 
+// ---- The report journey (20 Nov): find a result, jump to a part, add your own questions, and see
+// where this report is kept. Only finding and arranging: nothing here changes how a result is read,
+// and values are shown exactly as the report printed them.
+let ownReportQuestions = [];
+let ownQuestionsReportId = "";
+
+function resultToolText() {
+  return reportLanguage === "es" ? {
+    jump: "En esta página", cards: "Resultados para revisar", questions: "Preguntas para su médico", tests: "Todas las pruebas", save: "Guardar o compartir", privacy: "Su privacidad",
+    find: "Buscar un resultado", findHint: "Por ejemplo: TSH, potasio", none: "Ninguna prueba de este informe coincide.", range: "Rango del laboratorio", noRange: "sin rango impreso",
+    found: (n) => `${n} ${n === 1 ? "resultado" : "resultados"}`,
+  } : {
+    jump: "On this page", cards: "Results to look at", questions: "Questions for your doctor", tests: "All tests", save: "Save or share", privacy: "Your privacy",
+    find: "Find a result", findHint: "For example: TSH, potassium", none: "No test on this report matches.", range: "Lab's range", noRange: "no range printed",
+    found: (n) => `${n} result${n === 1 ? "" : "s"}`,
+  };
+}
+
+function renderResultTools(view) {
+  const t = resultToolText();
+  const jumps = [
+    view.cards.length ? ["result-cards-title", t.cards] : null,
+    ["result-doctor-title", t.questions],
+    view.tests.length ? ["result-source-title", t.tests] : null,
+    ["result-save-title", t.save],
+    ["result-privacy-title", t.privacy],
+  ].filter(Boolean);
+  return `
+      <div class="result-tools">
+        <nav class="result-jump" aria-label="${escapeHtml(t.jump)}">
+          ${jumps.map(([id, name]) => `<button type="button" class="result-jump-link" data-result-jump="${id}">${escapeHtml(name)}</button>`).join("")}
+        </nav>
+        ${view.tests.length >= 4 ? `
+        <div class="result-find" role="search">
+          <label for="result-find-input">${escapeHtml(t.find)}</label>
+          <input id="result-find-input" type="search" autocomplete="off" spellcheck="false" placeholder="${escapeHtml(t.findHint)}" data-result-find aria-describedby="result-find-status" />
+          <ul class="result-find-list" data-result-find-list hidden></ul>
+          <p id="result-find-status" class="visually-hidden" role="status" data-result-find-status></p>
+        </div>` : ""}
+      </div>`;
+}
+
+// Matches on the test's name as shown, its plain-language "what it is", and the report's own key.
+function findReportTests(query) {
+  const view = latestResultView;
+  const q = query.trim().toLowerCase();
+  if (!view || !q) return [];
+  return view.tests
+    .map((item, index) => ({ item, index }))
+    .filter(({ item }) => [item.name, item.what, item.key].some((text) => String(text || "").toLowerCase().includes(q)));
+}
+
+function updateResultFind(input) {
+  const box = input.closest(".result-find");
+  const list = box?.querySelector("[data-result-find-list]");
+  const status = box?.querySelector("[data-result-find-status]");
+  if (!list) return;
+  const t = resultToolText();
+  if (!input.value.trim()) {
+    list.hidden = true;
+    list.innerHTML = "";
+    if (status) status.textContent = "";
+    return;
+  }
+  const matches = findReportTests(input.value);
+  list.hidden = false;
+  list.innerHTML = matches.length
+    ? matches.slice(0, 8).map(({ item, index }) => `
+            <li><button type="button" class="result-find-item result-find-${OUTSIDE_STATUSES.has(item.status) ? "out" : item.status === "within" ? "in" : "none"}" data-result-show="${index}">
+              <strong>${escapeHtml(item.name)}</strong>
+              <span class="result-find-value">${escapeHtml(item.value)}</span>
+              <em>${escapeHtml(item.label)}</em>
+              <small>${escapeHtml(t.range)}: ${escapeHtml(item.range || t.noRange)}</small>
+            </button></li>`).join("")
+    : `<li class="result-find-empty">${escapeHtml(t.none)}</li>`;
+  if (status) status.textContent = matches.length ? t.found(matches.length) : t.none;
+}
+
+function focusResultTarget(element) {
+  if (!element) return;
+  scrollBelowHeader(element);
+  element.focus({ preventScroll: true });
+  element.classList.remove("is-found");
+  void element.offsetWidth;
+  element.classList.add("is-found");
+}
+
+// Shows a result where its explanation is: its card when it has one, otherwise its row in
+// "All tests on your report", opened and with every filter cleared.
+function showReportTest(index) {
+  const card = reportResults?.querySelector(`.result-card-item[data-test-index="${index}"]`);
+  if (card) return focusResultTarget(card);
+  const row = reportResults?.querySelector(`.lab-panel-row[data-test-index="${index}"]`);
+  if (!row) return;
+  const details = row.closest("details");
+  if (details) details.open = true;
+  const all = row.closest(".lab-panel")?.querySelector('[data-test-filter="all"]');
+  if (all) filterLabPanel(all);
+  focusResultTarget(row);
+}
+
+function jumpToResultPart(id) {
+  const heading = document.getElementById(id);
+  if (!heading) return;
+  if (!heading.hasAttribute("tabindex")) heading.setAttribute("tabindex", "-1");
+  if (id === "result-source-title") {
+    const details = heading.closest("section")?.querySelector("details");
+    if (details) details.open = true;
+  }
+  focusResultTarget(heading);
+}
+
+document.addEventListener("click", (event) => {
+  const jump = event.target.closest?.("[data-result-jump]");
+  if (jump) jumpToResultPart(jump.dataset.resultJump);
+  const show = event.target.closest?.("[data-result-show]");
+  if (show) showReportTest(show.dataset.resultShow);
+  const remove = event.target.closest?.("[data-own-question-remove]");
+  if (remove) removeOwnQuestion(Number(remove.dataset.ownQuestionRemove));
+});
+document.addEventListener("input", (event) => {
+  if (event.target.matches?.("[data-result-find]")) updateResultFind(event.target);
+});
+document.addEventListener("keydown", (event) => {
+  // Enter in "Find a result" goes to the first match.
+  if (event.key === "Enter" && event.target.matches?.("[data-result-find]")) {
+    event.preventDefault();
+    const first = findReportTests(event.target.value)[0];
+    if (first) showReportTest(first.index);
+  }
+});
+
+// Your own questions, added next to the report's. Kept only while this report is open on this page:
+// they go into "Copy questions" and the printable page, and nowhere else.
+function ownQuestionItems() {
+  const label = reportLanguage === "es" ? "Su pregunta" : "Your question";
+  const removeLabel = reportLanguage === "es" ? "Quitar" : "Remove";
+  return ownReportQuestions.map((text, index) => `<li class="result-own-item"><span class="result-own-tag">${label}</span> ${escapeHtml(text)} <button type="button" class="link-button result-own-remove" data-own-question-remove="${index}" aria-label="${removeLabel}: ${escapeHtml(text)}">${removeLabel}</button></li>`).join("");
+}
+
+function renderOwnQuestionForm() {
+  const es = reportLanguage === "es";
+  return `
+          <form class="result-own-question" data-own-question novalidate>
+            <label for="own-question-input">${es ? "Añada su propia pregunta" : "Add your own question"}</label>
+            <div class="result-own-row">
+              <input id="own-question-input" type="text" maxlength="200" autocomplete="off" placeholder="${es ? "Escriba lo que quiere preguntar" : "Type what you want to ask"}" />
+              <button class="secondary-button compact" type="submit">${es ? "Añadir" : "Add"}</button>
+            </div>
+            <p class="result-doctor-hint">${es ? "Se incluye al copiar e imprimir. Solo en esta página: no se guarda ni se envía." : "Included when you copy or print. Only on this page: not saved or sent anywhere."}</p>
+          </form>`;
+}
+
+function refreshOwnQuestions() {
+  const list = reportResults?.querySelector(".result-doctor-questions");
+  if (!list) return;
+  list.querySelectorAll(".result-own-item").forEach((item) => item.remove());
+  list.insertAdjacentHTML("beforeend", ownQuestionItems());
+  if (latestReportAnalysis) latestReportQuestionPack = buildReportQuestionPack(latestReportAnalysis);
+}
+
+function removeOwnQuestion(index) {
+  if (!(index >= 0)) return;
+  ownReportQuestions.splice(index, 1);
+  refreshOwnQuestions();
+  reportResults?.querySelector("#own-question-input")?.focus();
+}
+
+document.addEventListener("submit", (event) => {
+  const form = event.target.closest?.("[data-own-question]");
+  if (!form) return;
+  event.preventDefault();
+  const input = form.querySelector("input");
+  const text = input.value.replace(/\s+/g, " ").trim().slice(0, 200);
+  if (!text || ownReportQuestions.includes(text) || ownReportQuestions.length >= 10) return;
+  ownReportQuestions.push(text);
+  input.value = "";
+  refreshOwnQuestions();
+  const status = reportStatus;
+  if (status) status.textContent = reportLanguage === "es" ? "Pregunta añadida a su lista." : "Question added to your list.";
+});
+
+// Where this report is kept, said plainly, with the controls one step away.
+function renderResultPrivacy() {
+  const es = reportLanguage === "es";
+  const onAccount = Boolean(latestReportId) && !latestReportId.startsWith("local-");
+  const inHistory = Boolean(latestReportAnalysis) && getReportHistory().some((report) => report.id === latestReportId);
+  const facts = es ? [
+    onAccount ? "Este informe está guardado en su cuenta, para verlo en otros dispositivos." : "Se leyó en este dispositivo. No se subió para explicarlo.",
+    inHistory ? "Está en el Historial de este dispositivo, para abrirlo otra vez." : "No está en el Historial de este dispositivo.",
+    "Solo se comparte si usted envía un enlace o un PDF.",
+  ] : [
+    onAccount ? "This report is saved to your account, so you can see it on other devices." : "Read on this device. It was not uploaded to explain it.",
+    inHistory ? "It is in History on this device, so you can open it again." : "It is not in History on this device.",
+    "It is only shared if you send a link or a PDF.",
+  ];
+  return `
+        <section class="result-privacy" aria-labelledby="result-privacy-title">
+          <h4 id="result-privacy-title" tabindex="-1">${es ? "Su privacidad" : "Your privacy"}</h4>
+          <ul class="result-privacy-facts">${facts.map((fact) => `<li>${escapeHtml(fact)}</li>`).join("")}</ul>
+          <div class="result-privacy-actions">
+            ${inHistory ? `<button class="secondary-button compact" type="button" data-report-forget>${es ? "Quitar de este dispositivo" : "Remove from this device"}</button>` : ""}
+            <a class="secondary-button compact" href="#your-data">${es ? "Todos los controles de privacidad" : "All privacy controls"}</a>
+          </div>
+          ${onAccount ? `<p class="result-doctor-hint">${es ? "Para borrarlo de su cuenta, use Sus datos." : "To delete it from your account, use Your data."}</p>` : ""}
+          <p class="status-line" role="status" data-privacy-status></p>
+        </section>`;
+}
+
+// Removes this report from History on this device only. The explanation stays on screen until the
+// page is left; nothing on the account changes.
+function forgetReportOnDevice(button) {
+  const es = reportLanguage === "es";
+  if (!latestReportId) return;
+  const ok = window.confirm(es ? "¿Quitar este informe del Historial de este dispositivo?" : "Remove this report from History on this device?");
+  const status = button.closest(".result-privacy")?.querySelector("[data-privacy-status]");
+  if (!ok) {
+    if (status) status.textContent = es ? "No se quitó nada." : "Nothing was removed.";
+    return;
+  }
+  const reports = getReportHistory().filter((report) => report.id !== latestReportId);
+  localStorage.setItem("carewiseReports", JSON.stringify(reports));
+  if (localStorage.getItem("carewiseLatestReportId") === latestReportId) localStorage.removeItem("carewiseLatestReportId");
+  renderReportHistory();
+  renderDashboardStats();
+  renderHomeDashboard();
+  if (typeof renderYourDataDevice === "function") renderYourDataDevice();
+  const facts = button.closest(".result-privacy")?.querySelectorAll(".result-privacy-facts li");
+  if (facts?.[1]) facts[1].textContent = es ? "Se quitó del Historial de este dispositivo." : "Removed from History on this device.";
+  button.remove();
+  if (status) status.textContent = es ? "Se quitó del Historial de este dispositivo. La explicación sigue en pantalla hasta que salga de esta página." : "Removed from History on this device. The explanation stays on screen until you leave this page.";
+}
+document.addEventListener("click", (event) => {
+  const button = event.target.closest?.("[data-report-forget]");
+  if (button) forgetReportOnDevice(button);
+});
+
 function renderResultCards(view) {
   if (!view.cards.length) return "";
   return `
       <section class="result-cards" aria-label="${escapeHtml(view.text.attentionTitle)}">
-        <h4>${escapeHtml(view.text.attentionTitle)} <span class="section-count">${view.cards.length}</span></h4>
-        <div class="result-cards-grid">${view.cards.map((card) => renderResultCard(card, view.text)).join("")}</div>
+        <h4 id="result-cards-title" tabindex="-1">${escapeHtml(view.text.attentionTitle)} <span class="section-count">${view.cards.length}</span></h4>
+        <div class="result-cards-grid">${view.cards.map((card) => renderResultCard(card, view.text, view.tests.indexOf(card))).join("")}</div>
       </section>`;
 }
 
@@ -7945,6 +8185,11 @@ function renderLocalReportAnalysis(analysis) {
   }
   const plan = analysis.noData || analysis.scanOnly ? null : getLatestPersonalPlan(analysis);
   const reportView = buildReportView(analysis, reportLanguage, plan, unsureOcrKeys(), reportFromPhoto);
+  latestResultView = reportView;
+  if (ownQuestionsReportId !== analysis.id) {
+    ownReportQuestions = [];
+    ownQuestionsReportId = analysis.id;
+  }
   const questions = reportQuestions(analysis, reportView);
   const showFindings = !reportView.tests.length && !reportView.cards.length && !analysis.scanOnly;
   stopListening();
@@ -7954,7 +8199,7 @@ function renderLocalReportAnalysis(analysis) {
         <div>
           <span>${escapeHtml(ui.eyebrow)}</span>
           <div class="section-heading-action">
-            <strong>${escapeHtml(ui.title)}</strong>
+            <strong id="result-ready-title" role="heading" aria-level="3" tabindex="-1">${escapeHtml(ui.title)}</strong>
             <label class="result-language"><span class="visually-hidden">${reportLanguage === "es" ? "Idioma del informe" : "Report language"}</span>
             <select data-report-language aria-label="${reportLanguage === "es" ? "Idioma del informe" : "Report language"}">${Object.entries(REPORT_LANGUAGES).map(([code, name]) => `<option value="${code}"${code === reportLanguage ? " selected" : ""}>${escapeHtml(name)}</option>`).join("")}</select>
             </label>
@@ -7972,6 +8217,7 @@ function renderLocalReportAnalysis(analysis) {
       })()}
       ${analysis.noData ? "" : renderCheckNumbers(reportView)}
       ${renderReportChanges(analysis)}
+      ${analysis.noData || analysis.scanOnly ? "" : renderResultTools(reportView)}
       <div class="result-sections">
         ${analysis.noData || analysis.scanOnly ? "" : renderResultCards(reportView)}
         ${analysis.noData || analysis.scanOnly ? "" : renderOtherInfo(reportView)}
@@ -7984,7 +8230,8 @@ function renderLocalReportAnalysis(analysis) {
         ${analysis.noData ? "" : `
         <section class="result-doctor" aria-labelledby="result-doctor-title">
           <h4 id="result-doctor-title">${escapeHtml(ui.questions)}</h4>
-          <ol class="result-doctor-questions">${questions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ol>
+          <ol class="result-doctor-questions">${questions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}${ownQuestionItems()}</ol>
+          ${renderOwnQuestionForm()}
           <div class="result-doctor-actions">
             <button class="primary-button" type="button" data-report-action="doctor-brief">${escapeHtml(ui.doctorBrief)}</button>
             <button class="secondary-button compact" type="button" data-report-action="copy-questions">${escapeHtml(ui.copyQuestions)}</button>
@@ -8016,7 +8263,8 @@ function renderLocalReportAnalysis(analysis) {
           </div>
           ${view.labValues?.length ? `<label class="trend-date" for="trend-date">${reportLanguage === "es" ? "Fecha del análisis (de su informe), para el registro de análisis" : "Date of the test (from your report), for the lab tracker"}<input id="trend-date" type="date" data-trend-date value="${escapeHtml(reportTestDate(getLocalReportText()))}" max="${new Date().toISOString().slice(0, 10)}" /></label>` : ""}
           ${renderResultMore(`<div class="lab-reminder"><label for="lab-reminder-date">${escapeHtml(reportView.text.reminderLabel)}</label><input id="lab-reminder-date" type="date" data-lab-reminder min="${new Date().toISOString().slice(0, 10)}" /><button class="secondary-button compact" type="button" data-report-action="lab-reminder">${reportLanguage === "es" ? "Añadir al calendario" : "Add to calendar"}</button></div>`, reportLanguage === "es" ? "Añadir la próxima prueba al calendario" : "Add your next test to your calendar", "")}
-        </section>`}
+        </section>
+        ${renderResultPrivacy()}`}
       </div>
       <div class="safety-note"><strong>${escapeHtml(ui.safetyTitle)}</strong><span>${escapeHtml(ui.safetyText)}</span></div>
       ${analysis.noData ? "" : renderFeedbackBox(ui)}
@@ -8092,7 +8340,8 @@ function buildDoctorBriefHtml(analysis, person = "Me") {
     <tr><td>${escapeHtml(item.label)}</td><td>${escapeHtml(String(item.value))} ${escapeHtml(item.unit)}</td><td>${escapeHtml(item.flag)}</td></tr>`).join("");
   const view = buildReportView(analysis, "en");
   const findings = analysis.findings.map((item) => `<li><b>${escapeHtml(item.label)}:</b> ${escapeHtml(item.level)}. ${escapeHtml(item.detail)}</li>`).join("");
-  const questions = reportQuestions(analysis, view, "en").map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  const own = ownQuestionsReportId === analysis.id ? ownReportQuestions : [];
+  const questions = [...reportQuestions(analysis, view, "en"), ...own].map((item) => `<li>${escapeHtml(item)}</li>`).join("");
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FollowThrough Health doctor brief</title>
@@ -8460,6 +8709,7 @@ function buildReportQuestionPack(analysis) {
     "Educational prep only. Review the original report with a licensed professional.",
     "",
     ...reportQuestions(analysis, buildReportView(analysis, "en"), "en").map((question, index) => `${index + 1}. ${question}`),
+    ...(ownQuestionsReportId === analysis.id && ownReportQuestions.length ? ["", "My own questions:", ...ownReportQuestions.map((question) => `- ${question}`)] : []),
   ].join("\n");
 }
 
