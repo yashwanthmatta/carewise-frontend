@@ -48,6 +48,12 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   // are counts of the same statuses shown in the rows, nothing re-graded.
   const summary = (await page.innerText("#report-results .lab-summary")).replace(/\s+/g, " ");
   check(new RegExp(`^${expected.length} tests on this report`).test(summary) && /Outside the lab's range · 3/.test(summary), `${size}: summary counts every test and the 3 outside the range ("${summary}")`);
+  // 19 Nov: the summary at the top of the report shows the same counts as "All tests on your report",
+  // labelled, with the body areas; no unlabelled dot row.
+  const top = (await page.innerText("#report-results .report-summary .summary-stats")).replace(/\s+/g, " ");
+  check(new RegExp(`^${expected.length} tests on this report`).test(top) && /Outside the lab's range 3/.test(top) && /Within the lab's range \d+/.test(top), `${size}: the top summary has labelled counts that match the list ("${top.slice(0, 90)}")`);
+  check(/Kidneys 2 of 2 outside/.test(top), `${size}: the top summary lists body areas with how many are outside`);
+  check(!(await page.$("#report-results .summary-meter")), `${size}: no unlabelled dot row`);
   const kidneyHead = await page.innerText('#report-results [data-test-group="kidneys"] .lab-panel-group-head');
   check(/2 tests · 2 outside the lab's range/.test(kidneyHead), `${size}: Kidneys heading counts its tests ("${kidneyHead.replace(/\s+/g, " ")}")`);
   check(await page.$$eval("#report-results .lab-trend", (list) => list.length) === 0, `${size}: no earlier-reading dots on a first report`);
