@@ -833,3 +833,56 @@ body[data-active-workspace]:not([data-active-workspace="home-title"]) .topbar.si
   .app-shell .topbar.site-nav .brand-lockup { gap: 6px; }
   .app-shell .topbar.site-nav .nav-signin { padding: 0 10px !important; font-size: 0.86rem !important; }
 }
+
+/* 21 Nov: "Save or load reports" belongs to the form, not to the results. It now sits in the form's
+   action row under "Explain report", as a quiet link, instead of on its own just above "Your report is ready". */
+.app-shell .composer-type .composer-actions { flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.app-shell .composer-type .composer-more { flex: 1 1 100%; order: 2; margin: 0; padding-top: 10px; border-top: 1px solid var(--fh-line); }
+.app-shell .composer-type .composer-more > summary { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; font-size: 0.92rem; font-weight: 600; color: var(--fh-ink-2); list-style: none; }
+.app-shell .composer-type .composer-more > summary::-webkit-details-marker { display: none; }
+.app-shell .composer-type .composer-more > summary::before { content: ""; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform 0.15s ease; }
+.app-shell .composer-type .composer-more[open] > summary::before { transform: rotate(45deg); }
+@media (prefers-reduced-motion: reduce) { .app-shell .composer-type .composer-more > summary::before { transition: none; } }
+.app-shell .composer-type .composer-more-body { display: grid; gap: 12px; margin-top: 8px; max-width: 560px; }
+.app-shell .composer-type .composer-more-body .sync-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.app-shell .composer-type .composer-more-body .sync-grid button { width: auto; }
+
+/* What a button in the results did, shown next to it (the same words as the status line above the form). */
+.app-shell #report-results .result-local-status { margin: 10px 0 0; padding: 8px 12px; border-left: 3px solid var(--fh-teal); background: var(--fh-white, #fff); color: var(--fh-ink-2); font-size: 0.92rem; }
+.app-shell #report-results .result-local-status:empty { display: none; }
+
+/* The doctor brief, in a dialog on this page instead of a new tab. */
+.brief-dialog { width: min(860px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid var(--fh-line, #e6ddce); border-radius: 16px; background: #fffdf8; color: var(--fh-ink, #292929); overflow: auto; }
+.brief-dialog::backdrop { background: rgba(41, 41, 41, 0.45); }
+.brief-dialog-bar { position: sticky; top: 0; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 14px 20px; border-bottom: 1px solid var(--fh-line, #e6ddce); background: #fffdf8; }
+.brief-dialog-bar h2 { margin: 0; font-family: var(--fh-serif, Georgia, serif); font-weight: 400; font-size: 1.3rem; }
+.brief-dialog-bar h2:focus { outline: none; }
+.brief-dialog-bar h2:focus-visible { outline: 3px solid rgba(161, 78, 46, 0.45); outline-offset: 4px; }
+.brief-dialog-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.brief-dialog-actions button { width: auto; min-height: 44px; padding: 0 20px; border-radius: 999px; font-family: inherit; font-size: 0.95rem; font-weight: 600; line-height: 1; cursor: pointer; box-shadow: none; }
+.brief-dialog-print { border: 1px solid var(--fh-accent, #a14e2e); background: var(--fh-accent, #a14e2e); color: #fff; }
+.brief-dialog-print:hover { background: var(--fh-accent-dark, #8A4126); }
+.brief-dialog-close { border: 1px solid var(--fh-line-strong, #d6c9b4); background: #fffdf8; color: var(--fh-ink, #292929); }
+.brief-dialog-actions button:focus-visible { outline: 3px solid rgba(161, 78, 46, 0.45); outline-offset: 2px; }
+.brief-dialog-frame { display: block; width: 100%; min-height: 60vh; border: 0; background: #fffdf8; }
+@media (max-width: 600px) {
+  .brief-dialog { width: 100vw; max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; border: 0; border-radius: 0; }
+  .brief-dialog-bar { padding: 10px 16px; }
+  .brief-dialog-actions { flex: 1 1 100%; }
+  .brief-dialog-actions button { flex: 1 1 auto; }
+}
+/* For browsers that print the whole page rather than the brief's frame: print only the brief. */
+@media print {
+  html.brief-open body > *:not(#doctor-brief-dialog) { display: none !important; }
+  html.brief-open .brief-dialog { position: static; width: auto; max-width: none; max-height: none; height: auto; border: 0; overflow: visible; }
+  html.brief-open .brief-dialog-bar { display: none; }
+}
+
+/* The help button covered the right edge of results on phones and tablets (the page has no margin
+   for it there). Below 900px it becomes a slim tab on the screen edge: still always visible and one
+   tap away, with the same name for screen readers, but it covers only the page's side margin. */
+@media (max-width: 900px) {
+  .help-chat:not(.open) { right: 0; }
+  .help-chat:not(.open) .help-chat-launcher { width: 30px; min-height: 52px; padding: 0; border-radius: 14px 0 0 14px; box-shadow: -2px 3px 10px rgba(41, 41, 41, 0.18); }
+  .help-chat:not(.open) .help-chat-launcher > span:first-child { font-size: 1.15rem; }
+}

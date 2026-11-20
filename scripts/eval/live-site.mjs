@@ -54,9 +54,14 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
   await app.waitForSelector("#report-results .report-summary", { timeout: 15000 }).catch(() => {});
   const result = (await app.textContent("#report-results").catch(() => "")).replace(/\s+/g, " ");
   ok(/outside the lab's ranges/.test(result), "sample report from the demo page is explained");
-  const [brief] = await Promise.all([ctx.waitForEvent("page", { timeout: 10000 }).catch(() => null),
+  // The brief opens in a dialog on the page (21 Nov); before that it opened in a new tab. Accept either,
+  // so this check is right on both sides of the deploy.
+  const [brief] = await Promise.all([ctx.waitForEvent("page", { timeout: 4000 }).catch(() => null),
     app.locator('[data-report-action="doctor-brief"]').first().click().catch(() => {})]);
-  ok(Boolean(brief) && /Patient questions/.test(await brief.content()), "doctor brief opens");
+  const briefText = brief ? await brief.content()
+    : await app.waitForFunction(() => document.querySelector("#doctor-brief-dialog iframe")?.contentDocument?.body?.innerText || "", null, { timeout: 6000 }).then((h) => h.jsonValue()).catch(() => "");
+  ok(/Patient questions/.test(briefText), "doctor brief opens");
+  if (!brief) await app.keyboard.press("Escape").catch(() => {});
   const [download] = await Promise.all([app.waitForEvent("download", { timeout: 10000 }).catch(() => null),
     app.locator('[data-report-action="packet-pdf"]').first().click().catch(() => {})]);
   ok(Boolean(download) && /\.pdf$/.test(download.suggestedFilename()), "PDF for the doctor downloads");
