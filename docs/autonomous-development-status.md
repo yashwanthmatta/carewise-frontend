@@ -44,7 +44,14 @@ Last verified run: 2026-11-17, daily run at 04:23 UTC.
 - No thresholds, urgency rules or medical wording changed in any open PR.
 - Real-patient evaluation stays blocked.
 
-## Next tasks, in order (refreshed 18 Nov from the owner's latest priorities)
+## Next tasks: use the backlog in `docs/90-day-validation-roadmap.md` (from 22 Nov)
+
+The founder's 22 Nov turnaround directive replaces the list below. Work only from the roadmap's backlog
+(B1–B12), in order, and apply its five-shark questions before starting anything new. Paused: lab
+integrations, new tiers, social sign-in, health scores, dashboard extras, AI animations and homepage
+redesigns. See `docs/core-product-strategy.md`.
+
+## Previous next tasks (refreshed 18 Nov from the owner's latest priorities), kept for reference
 
 1. **Owner:**
    - merge frontend #170, backend #60 and mobile #52;
