@@ -29,6 +29,7 @@ async function session({ doNotTrack = false } = {}) {
   });
   await context.addInitScript((dnt) => {
     localStorage.setItem("carewiseTrackLocal", "1");
+    localStorage.setItem("carewiseTrackAutomation", "1");
     if (dnt) Object.defineProperty(Navigator.prototype, "doNotTrack", { get: () => "1" });
   }, doNotTrack);
   const page = await context.newPage();
@@ -85,6 +86,19 @@ for (const file of fs.readdirSync(".").filter((f) => f.endsWith(".js"))) {
 }
 const notAccepted = [...used].filter((name) => !KNOWN.has(name));
 check(!notAccepted.length, `every event name in the site's scripts is on the API's list ${notAccepted.join(", ")}`);
+
+// Automated browsers (like our scheduled monitors) are never counted unless a test asks for it.
+{
+  const bot = await session();
+  await bot.context.addInitScript(() => localStorage.removeItem("carewiseTrackAutomation"));
+  await bot.page.goto(base, { waitUntil: "load" });
+  await bot.page.evaluate(() => localStorage.removeItem("carewiseTrackAutomation"));
+  bot.sent.length = 0;
+  await bot.page.reload({ waitUntil: "load" });
+  await settle(bot.page);
+  check(await bot.page.evaluate(() => navigator.webdriver) === true && bot.sent.length === 0, "an automated browser (navigator.webdriver) is not counted");
+  await bot.context.close();
+}
 
 const dnt = await session({ doNotTrack: true });
 await dnt.page.goto(base, { waitUntil: "load" });

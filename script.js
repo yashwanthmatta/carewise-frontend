@@ -3522,6 +3522,9 @@ async function requestJson(method, path, payload, options = {}) {
 function trackUsage(name) {
   try {
     if (navigator.doNotTrack === "1" || window.doNotTrack === "1") return;
+    // Automated browsers (our own scheduled monitors, test runs, crawlers driven by WebDriver)
+    // are not people, so they are never counted. Tests of this code switch it on explicitly.
+    if (navigator.webdriver && localStorage.getItem("carewiseTrackAutomation") !== "1") return;
     const local = /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
     if (local && localStorage.getItem("carewiseTrackLocal") !== "1") return;
     fetch(`${backendBaseUrl}/product/events`, {

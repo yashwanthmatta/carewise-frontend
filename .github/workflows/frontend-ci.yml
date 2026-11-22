@@ -93,6 +93,8 @@ jobs:
         run: node scripts/eval/report-journey.mjs
       - name: Usage counts (core-workflow funnel, no content, Do Not Track)
         run: node scripts/eval/usage-events.mjs
+      - name: Founder metrics page (measured numbers only, token never stored)
+        run: node scripts/eval/founder-dashboard.mjs
 
       - name: Report questions are about the report's own results
         run: node scripts/eval/report-questions.mjs
