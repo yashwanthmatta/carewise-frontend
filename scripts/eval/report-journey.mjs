@@ -127,6 +127,17 @@ for (const [size, viewport] of [["desktop", { width: 1440, height: 900 }], ["tab
     return match && row.children[1].textContent.startsWith(match.item.value) && row.children[2].textContent === (match.item.range || row.children[2].textContent);
   }));
   check(same, `${size}: "Find a result" shows the same value and range text as "All tests"`);
+  // 4a. All tests on phones (22 Nov): one compact list. The label sits on the name's line at the right,
+  // the value and the named lab range on the line below; the range text itself is unchanged.
+  if (viewport.width < 760) {
+    const layout = await page.evaluate(() => [...document.querySelectorAll(".lab-panel-row[data-test-index]")].filter((row) => row.offsetParent).map((row) => {
+      const [name, value, range, label] = [...row.children].map((el) => el.getBoundingClientRect());
+      const before = getComputedStyle(row.children[2], "::before").content;
+      return { labelOnNameLine: Math.abs(label.top - name.top) < 8 && label.left > name.left, valueBelow: value.top >= name.bottom - 2 && Math.abs(value.top - range.top) < 8, named: /range|rango/i.test(before) };
+    }));
+    check(layout.length > 0 && layout.every((r) => r.labelOnNameLine && r.valueBelow), `${size}: each test is one row: label beside the name, value and range below`);
+    check(layout.length > 0 && layout.every((r) => r.named), `${size}: the lab's range is named on phones, where the column headers are hidden`);
+  }
 
   // 4b. A Save or share button's result is shown next to it, with the same words as the status line.
   await page.locator('[data-report-action="packet-pdf"]').first().scrollIntoViewIfNeeded();
