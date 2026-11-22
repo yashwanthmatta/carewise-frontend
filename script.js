@@ -6989,7 +6989,7 @@ function renderLabPanelSection(analysis, view = buildReportView(analysis, report
             <div class="lab-panel-row lab-status-${escapeHtml(item.status)} lab-tone-${tone(item)}" role="row" data-test-area="${testAreaOf(item.key)}" data-test-outside="${isOutside(item)}" data-test-index="${view.tests.indexOf(item)}" tabindex="-1">
               <span role="cell"><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.what)}</small></span>
               <span role="cell">${escapeHtml(item.value)}${item.unitHint ? `<small>${escapeHtml(item.unitHint)}</small>` : ""}${labTrendDots(earlier[item.key], item, es)}</span>
-              <span role="cell">${escapeHtml(item.range || t.noRange)}</span>
+              <span role="cell" data-label="${escapeHtml(t.range)}">${escapeHtml(item.range || t.noRange)}</span>
               <span role="cell"><em>${escapeHtml(item.label)}</em></span>
             </div>`;
   const chip = (filter, name, count, on = false) => `<button type="button" class="lab-filter" data-test-filter="${filter}" aria-pressed="${on}">${escapeHtml(name)} <span>${count}</span></button>`;

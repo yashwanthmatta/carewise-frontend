@@ -54,7 +54,7 @@ Last verified run: 2026-11-17, daily run at 04:23 UTC.
 2. **Results dashboard (owner priority 2):**
    - ~~One button style and a summary card in the homepage style~~ Done on 18 Nov.
    - ~~Next: put the grouped summary (count, in/out bars) at the top of every report.~~ Done on 20 Nov.
-   - Make the result rows read as one list on phones.
+   - ~~Make the result rows read as one list on phones.~~ Done on 22 Nov (see the run below).
 3. ~~**Lab testing pages (priority 3)**~~ Done on 18 Nov (#173).
 4. ~~**AI Health Guide (priority 4)**~~ Done on 20 Nov (PR #174). The chat is a card, the mark is a small state icon, and "It can / It won't" is said beside it.
 5. **Mobile app (priority 5):** apply the same tokens in the Expo app after #52.
@@ -255,3 +255,24 @@ Earlier list, kept for reference:
 ## Automation now in place
 
 - The scheduled task **"FollowThrough Health daily development"** runs every day at 04:23 UTC in this session. It keeps the open PRs healthy, then works this list. It never merges, deploys or changes production.
+
+## Run on 22 Nov (daily, 04:23 UTC)
+
+**Open PRs:** none of ours. Backend #62 and #63, mobile #54, #55 and #56, and frontend #175, #176 and #177 were merged on 20 Nov. Read-only checks on every main are green. The nightly live backend smoke is red on purpose: the Anthropic key is still rejected (E-001), and the startup log still warns that `CAREWISE_JWT_SECRET` is shorter than 32 bytes.
+
+**Done (owner priority 2, results):** "All tests on your report" now reads as one list on phones. This is a frontend PR from this branch.
+- **Before:** at 760px and below, the column headers are hidden. Each test stacked its name, description, value, range and label on separate lines, about 150px per test at 390px. The range showed as a bare "0-99" with nothing saying what it was.
+- **After:** each test is one row. The name and what it measures sit on the left, with the label ("High", "In range") on the right. The exact value and the range, named "Lab range" (Spanish: "Rango del laboratorio", the existing header text), sit on the line below. The panel is about 12% shorter.
+- **Unchanged:** the text, values, ranges and labels are the same strings. Desktop and tablet are unchanged, and no medical wording or rule was changed.
+
+**Tests:**
+- `report-journey.mjs` has 2 new checks at 390 and 320 px: the label is beside the name with the value and range below, and the range is named. Both fail on the old layout and pass now.
+- All 38 evals pass, including accuracy (68 reports, 100%), the 34 safety cases and axe.
+- The cache version is 245.
+
+**Owner (unchanged):**
+- Replace `ANTHROPIC_API_KEY` and `CAREWISE_JWT_SECRET` in Render.
+- Decide whether `carewise-api` should leave Render's free plan. It sleeps when idle, so the first visitor after a quiet spell waits about a minute.
+- Approve the database network lockdown and the encryption backfill.
+
+**Next task:** owner priority 5 (mobile): apply the website's design tokens (colours, type and spacing) in the Expo app.

@@ -886,3 +886,27 @@ body[data-active-workspace]:not([data-active-workspace="home-title"]) .topbar.si
   .help-chat:not(.open) .help-chat-launcher { width: 30px; min-height: 52px; padding: 0; border-radius: 14px 0 0 14px; box-shadow: -2px 3px 10px rgba(41, 41, 41, 0.18); }
   .help-chat:not(.open) .help-chat-launcher > span:first-child { font-size: 1.15rem; }
 }
+
+/* All tests on a phone (22 Nov): one compact list. Each result is a row with the name and what it
+   measures on the left and its label on the right; the value and the lab's range sit on a second
+   line, with the range named (the column headers are hidden on phones). Text and values unchanged. */
+@media (max-width: 760px) {
+  .app-shell #report-results .lab-panel-row:not(.lab-panel-head):not(.lab-panel-group-head) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "name label" "value range";
+    gap: 4px 12px;
+    padding: 12px 14px;
+    align-items: baseline;
+  }
+  .app-shell #report-results .lab-panel-row:not(.lab-panel-head):not(.lab-panel-group-head) > span:nth-child(1) { grid-area: name; grid-column: auto; }
+  .app-shell #report-results .lab-panel-row:not(.lab-panel-head):not(.lab-panel-group-head) > span:nth-child(2) { grid-area: value; }
+  .app-shell #report-results .lab-panel-row:not(.lab-panel-head):not(.lab-panel-group-head) > span:nth-child(3) { grid-area: range; text-align: right; }
+  .app-shell #report-results .lab-panel-row:not(.lab-panel-head):not(.lab-panel-group-head) > span:nth-child(4) { grid-area: label; text-align: right; white-space: nowrap; }
+  .app-shell #report-results .lab-panel-row > span[data-label]::before {
+    content: attr(data-label) " ";
+    font-family: var(--ft-font, inherit);
+    font-size: 0.74rem;
+    color: var(--fh-ink-3);
+  }
+  .app-shell #report-results .lab-panel-row small { font-size: 0.78rem; line-height: 1.35; margin-top: 2px; }
+}
