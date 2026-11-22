@@ -613,6 +613,7 @@
       const chooser = event.target.closest("[data-choose-plan]");
       if (!chooser) return;
       const code = chooser.dataset.choosePlan;
+      window.trackUsage?.("plan_interest");
       if (chooser.closest(".billing-panel")) {
         choosePlan(code);
         return;

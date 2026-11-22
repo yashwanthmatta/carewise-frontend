@@ -262,7 +262,10 @@ globalThis.ftReminderCalendar = (() => {
     byId("rm-save").disabled = true;
     try {
       if (editingId) await apiPut(`/reminders/${encodeURIComponent(editingId)}`, payload);
-      else await apiPost("/reminders", payload);
+      else {
+        await apiPost("/reminders", payload);
+        window.trackUsage?.("reminder_created");
+      }
       form.hidden = true;
       statusLine.textContent = call && backendFeatures.reminder_calls
         ? `Reminder saved. FollowThrough Health will call ${payload.person} now to ask them to press 1 and agree.`

@@ -91,6 +91,8 @@ jobs:
 
       - name: Report journey (explain, find a result, own questions, privacy) at four widths
         run: node scripts/eval/report-journey.mjs
+      - name: Usage counts (core-workflow funnel, no content, Do Not Track)
+        run: node scripts/eval/usage-events.mjs
 
       - name: Report questions are about the report's own results
         run: node scripts/eval/report-questions.mjs
