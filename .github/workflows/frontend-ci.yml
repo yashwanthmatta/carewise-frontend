@@ -95,6 +95,8 @@ jobs:
         run: node scripts/eval/usage-events.mjs
       - name: Founder metrics page (measured numbers only, token never stored)
         run: node scripts/eval/founder-dashboard.mjs
+      - name: Clinician validation pack matches the live rules
+        run: node scripts/eval/validation-pack-current.mjs
 
       - name: Report questions are about the report's own results
         run: node scripts/eval/report-questions.mjs

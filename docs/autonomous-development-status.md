@@ -283,3 +283,20 @@ Earlier list, kept for reference:
 - Approve the database network lockdown and the encryption backfill.
 
 **Next task:** owner priority 5 (mobile): apply the website's design tokens (colours, type and spacing) in the Expo app.
+
+## Run on 23 Nov (daily, 04:23 UTC)
+
+**Open PRs:** frontend #179 is green and waits for the owner. Backend #64 (funnel counts, founder metrics, plan copy) was merged on 22 Nov. Read-only checks on every main are green. E-001 (the Anthropic key) and the short `CAREWISE_JWT_SECRET` are still open.
+
+**Done (roadmap B4, engineering part, patient safety):**
+- **The gap:** the clinician validation pack was frozen at rules `.2` and copied at `.5`. The site runs `.8`, and the script that built the pack was never committed.
+- **New exporter:** `scripts/clinical/export-validation-cases.mjs` runs the same 160 synthetic cases through the live rules in a browser. It writes the reviewer CSV and a change list against an earlier pack. It reproduces the `.5` pack field for field, which shows it matches the original.
+- **Result:**
+  - Rules `.8` give **identical output to `.5` on all 160 cases**.
+  - Against the `.2` pack, 97 cases changed wording or result labels. **No urgency level changed.**
+  - New pack: `docs/clinical-validation-2026-10-20.8/`, with `changes-since-2026-10-20.2.md` and `changes-since-2026-10-20.5.md`.
+- **CI guard:** `scripts/eval/validation-pack-current.mjs` fails if the live rules version has no pack, or if its output differs from the pack. I checked that a version bump without a pack fails.
+- **Still open:** a named clinician's review (owner). No rule or wording was changed.
+
+**Next task:** B5. Each result card gets an explicit "check this value against your report" step, and a mismatch is counted in aggregate.
+

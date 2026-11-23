@@ -10,7 +10,7 @@ Written 22 Nov 2026. **No qualified clinician has reviewed or signed off any ver
 | Version frozen for review | `2026-10-20.2` (`docs/releases/clinical-review-candidate-2026-10-20.2.md`) |
 | Unreviewed changes since the freeze | `.3` to `.8`, recorded in `docs/releases/rules-2026-10-20.5.md`, `.6.md`, `.7.md` and `.8.md` |
 | Existing reviewer pack | `docs/clinical-review-package.md`, `clinical-review-cover-note.md`, `clinical-rules-for-review.md`, `clinical-validation/` (160 blinded synthetic cases) |
-| **Gap** | The pack describes `.5` as live; the site runs `.8`. Regenerate the case outputs for `.8` before sending (roadmap B4) |
+| **Pack for the live rules** | Regenerated on 23 Nov: `docs/clinical-validation-2026-10-20.8/validation-cases.csv`, made by the committed exporter `scripts/clinical/export-validation-cases.mjs`. Rules `.8` give **identical output to `.5` on all 160 cases**, and from `.2` 97 cases changed wording or labels with **no change of urgency level** (`changes-since-2026-10-20.2.md`). CI (`validation-pack-current.mjs`) now fails if the live rules and the pack drift apart. Still to do: a named clinician's review |
 
 ## Automated evidence (synthetic data only)
 
@@ -67,7 +67,7 @@ Disclaimers don't remove liability. This procedure, a named owner and clinical r
 
 ## The package to send a clinician (roadmap B4)
 
-1. Regenerate `clinical-validation/validation-cases.csv` outputs at rules `.8`.
+1. ~~Regenerate the case outputs at rules `.8`.~~ Done 23 Nov: send `docs/clinical-validation-2026-10-20.8/validation-cases.csv` (after the blinded file), with `changes-since-2026-10-20.2.md` if the reviewer already saw the `.2` pack.
 2. Add the `.3`–`.8` release notes and the assistant's system prompt and safety rules.
 3. Add this file's limitation table and incident procedure.
 4. Ask the reviewer to record verdicts per case and per rule, with the version.
