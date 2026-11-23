@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self'; connect-src 'self' https://carewise-api.onrender.com https://cdn.jsdelivr.net; worker-src 'self' blob:; frame-src 'self' blob:; base-uri 'self'; form-action 'self'; object-src 'none'" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>FollowThrough Health founder metrics</title>
+    <meta name="theme-color" content="#0f766e" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:opsz,wght@9..40,400..700&family=Newsreader:ital,wght@0,300;0,400;1,300&display=swap" />
+    <link rel="stylesheet" href="share.css?v=carewise-product-246" />
+    <link rel="stylesheet" href="founder.css?v=carewise-product-246" />
+  </head>
+  <body>
+    <main class="sv fm">
+      <header class="sv-head">
+        <a class="sv-brand" href="index.html"><img src="assets/carewise-logo.svg" alt="" width="28" height="28" /> FollowThrough Health</a>
+        <span class="fm-private">Founder only · not linked from the site</span>
+      </header>
+      <section class="fm-intro">
+        <h1>Founder metrics</h1>
+        <p>Measured numbers only. Where nothing has been measured, the card says <b>No verified data available.</b> Every card says what it counts, where the number comes from and what it cannot tell you.</p>
+        <form id="fm-form" class="fm-form" autocomplete="off">
+          <label for="fm-token">Founder token</label>
+          <input id="fm-token" type="password" required autocomplete="off" spellcheck="false" />
+          <button type="submit" class="pg-cta">Load metrics</button>
+          <p class="fm-hint">The token is the <code>CAREWISE_FOUNDER_TOKEN</code> set in Render. It is kept in this tab's memory only, never saved, and sent only to the FollowThrough API.</p>
+        </form>
+        <p id="fm-status" class="fm-status" role="status"></p>
+      </section>
+      <div id="fm-out" hidden></div>
+    </main>
+    <script src="founder.js?v=carewise-product-246"></script>
+  </body>
+</html>

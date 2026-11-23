@@ -8,7 +8,7 @@
     <meta name="description" content="How FollowThrough Health protects health information: on-device reading, encryption, audit logs, retention, the services we use and our incident plan." />
     <meta name="theme-color" content="#0f766e" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:opsz,wght@9..40,400..700&family=Newsreader:ital,wght@0,300;0,400;1,300&display=swap" />
-    <link rel="stylesheet" href="../share.css?v=carewise-product-245" />
+    <link rel="stylesheet" href="../share.css?v=carewise-product-246" />
   </head>
   <body>
     <main class="sv">
@@ -43,6 +43,7 @@
             <tr><td>Render</td><td>Hosts the website, API and database</td><td>Encrypted account and health data at rest</td></tr>
             <tr><td>Anthropic</td><td>Writes help-chat answers when the online helper is on, and answers to patient follow-up questions when a DocBridge clinic turns them on</td><td>Help chat: the question asked, and a result summary only if the person ticks "share". DocBridge questions: the question (with detected identifiers removed), the clinician-approved summary and that patient's lab values from the clinic</td></tr>
             <tr><td>Stripe</td><td>Handles plan payments</td><td>Name, email and card details for paying customers</td></tr>
+            <tr><td>OpenAI</td><td>Reads the text of a photo of a report that you save to your account, only if photo reading on our servers is switched on. Photos you explain without saving are read on your device</td><td>That photo</td></tr>
             <tr><td>Twilio</td><td>Places medicine reminder phone calls when someone turns calls on</td><td>The phone number called, the first name said on the call, and which key was pressed. Never the medicine name</td></tr>
             <tr><td>GitHub</td><td>Stores FollowThrough Health source code</td><td>No patient data</td></tr>
           </table>

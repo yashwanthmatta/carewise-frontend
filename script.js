@@ -1478,6 +1478,7 @@ heroDrop?.addEventListener("drop", (event) => {
 });
 
 document.querySelector("#analyze-report")?.addEventListener("click", () => {
+  trackReportUsage("upload_started");
   analyzeAndShowReport();
 });
 
@@ -1525,7 +1526,7 @@ reportResults?.addEventListener("click", (event) => {
   }
   if (action === "copy-summary") copyReportSummary();
   if (action === "share-summary") shareReportSummary();
-  if (action === "copy-questions") copyReportQuestions();
+  if (action === "copy-questions") { copyReportQuestions(); trackReportUsage("questions_copied"); }
   if (action === "copy-plan") copyPersonalPlan();
   if (action === "doctor-brief") openDoctorBrief();
   if (action === "packet-pdf") downloadSharePacketPdf();
@@ -3521,6 +3522,9 @@ async function requestJson(method, path, payload, options = {}) {
 function trackUsage(name) {
   try {
     if (navigator.doNotTrack === "1" || window.doNotTrack === "1") return;
+    // Automated browsers (our own scheduled monitors, test runs, crawlers driven by WebDriver)
+    // are not people, so they are never counted. Tests of this code switch it on explicitly.
+    if (navigator.webdriver && localStorage.getItem("carewiseTrackAutomation") !== "1") return;
     const local = /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
     if (local && localStorage.getItem("carewiseTrackLocal") !== "1") return;
     fetch(`${backendBaseUrl}/product/events`, {
@@ -3531,6 +3535,29 @@ function trackUsage(name) {
     }).catch(() => {});
   } catch {}
 }
+
+// Core-workflow funnel (22 Nov 2026), same anonymous daily counts as above:
+// - home_viewed: the homepage was opened;
+// - returning_visit: this browser was here on an earlier day. Only the last visit's date is kept,
+//   on this device; nothing about it is sent except the one count;
+// - source_line_viewed: someone opened "the line in your report" under a result.
+function trackVisit() {
+  try {
+    const path = window.location.pathname;
+    if (/(^|\/)(index\.html)?$/.test(path)) trackUsage("home_viewed");
+    const today = new Date().toISOString().slice(0, 10);
+    const last = localStorage.getItem("ftLastVisitDay");
+    if (last && last !== today) trackUsage("returning_visit");
+    localStorage.setItem("ftLastVisitDay", today);
+  } catch {}
+}
+trackVisit();
+document.addEventListener("toggle", (event) => {
+  const details = event.target;
+  if (details?.matches?.("details.result-card-more") && details.open && details.querySelector(".result-card-source")) {
+    trackReportUsage("source_line_viewed");
+  }
+}, true);
 
 function trackReportUsage(name) {
   try {
@@ -5119,7 +5146,7 @@ document.querySelector("#ocr-checks")?.addEventListener("click", (event) => {
   // chose. It is never treated as a lab result, and the usage count sent online has no values.
   if (button.hasAttribute("data-ocr-edit")) {
     addAuditEvent("ocr_line_edited", `${check.name}: photo read "${check.read}"; the person chose to fix the line by hand.`);
-    trackReportUsage("ocr_line_edited");
+    trackReportUsage("value_corrected");
     ocrChecks = ocrChecks.filter((item) => item !== check);
     renderOcrChecks();
     const start = lines.slice(0, check.line).reduce((total, line) => total + line.length + 1, 0);
@@ -8977,6 +9004,7 @@ async function uploadReport() {
         });
     latestReportId = response.id;
     localStorage.setItem("carewiseLatestReportId", latestReportId);
+    trackReportUsage("report_saved");
     saveReportHistory({
       id: response.id,
       patientId: response.patient_id,
@@ -10909,6 +10937,7 @@ function saveReminder() {
   const reminders = getReminders();
   reminders.unshift(reminder);
   localStorage.setItem("carewiseReminders", JSON.stringify(reminders.slice(0, 24)));
+  trackUsage("reminder_created");
   document.querySelector("#reminder-title-input").value = "";
   document.querySelector("#reminder-notes").value = "";
   reminderStatus.textContent = `${reminder.title} saved locally. Real notifications can be connected later.`;
