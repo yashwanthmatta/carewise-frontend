@@ -910,3 +910,13 @@ body[data-active-workspace]:not([data-active-workspace="home-title"]) .topbar.si
   }
   .app-shell #report-results .lab-panel-row small { font-size: 0.78rem; line-height: 1.35; margin-top: 2px; }
 }
+
+/* "Does this match your report?" on each result card (24 Nov). */
+#report-results .result-card-verify { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 10px 0 4px; font-size: 0.86rem; color: var(--fh-ink-2, #444); }
+#report-results .result-card-verify > span { margin-right: 4px; }
+#report-results .result-card-verify-btn { font: 500 0.84rem var(--ft-font, inherit); min-height: 32px; min-width: 52px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--fh-line, #d8d2c6); background: transparent; color: var(--fh-ink, #222); cursor: pointer; }
+#report-results .result-card-verify-btn[aria-pressed="true"] { background: var(--fh-ink, #222); color: var(--fh-paper, #fff); border-color: var(--fh-ink, #222); }
+#report-results .result-card-verify-btn:focus-visible { outline: 3px solid var(--fh-accent, #A14E2E); outline-offset: 2px; }
+#report-results .result-card-verify-note { flex-basis: 100%; margin: 2px 0 0; min-height: 0; }
+#report-results .result-card-verify-note:empty { display: none; }
+@media print { #report-results .result-card-verify { display: none !important; } }

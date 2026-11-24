@@ -300,3 +300,21 @@ Earlier list, kept for reference:
 
 **Next task:** B5. Each result card gets an explicit "check this value against your report" step, and a mismatch is counted in aggregate.
 
+## Run on 24 Nov (daily, 04:24 UTC)
+
+**Open PRs:** none before this run. Frontend #179 (turnaround: docs, funnel, founder page, `.8` pack) was merged on 23 Nov. Read-only checks on every main are green. The live backend smoke ran 4 hours late on 23 Nov and failed on `provider_auth_rejected`. The Anthropic key (E-001) is still rejected, now for 3 days.
+
+**Done (roadmap B5, the "verify" step of the core workflow):**
+- **The question:** every result card asks "Does this match your report? Yes / No".
+  - **Yes:** confirms the check.
+  - **No:** explains the fix and offers "Show me the line", which selects that exact line in the report text. Nothing is changed for the person.
+- **Counting:** each answer sends one anonymous count, once per card and answer: `value_confirmed` or `value_mismatch`. The backend PR accepts both names, and the founder page shows "match / do not". No value, test name or text is sent.
+- **Other details:**
+  - Spanish wording is included.
+  - The question is hidden when printing.
+  - No medical wording, rule or value changed.
+
+**Tests:** new `scripts/eval/value-check.mjs`, also in CI: 25 checks at 1280 and 320 px plus Spanish. `usage-events.mjs` covers the new names. Full suite below.
+
+**Next task:** B7 (move "Lab testing" and "For clinics" out of the top navigation) needs the owner's yes first. Until then, the next engineering task is the history comparison checks from the owner's priority 2: "identify when comparisons are not valid", for different units or ranges.
+

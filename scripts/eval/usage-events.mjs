@@ -12,6 +12,7 @@ const KNOWN = new Set([
   "doctor_brief_opened", "spanish_used", "early_access_opened", "listen_used", "share_packet_pdf",
   "home_viewed", "upload_started", "value_corrected", "source_line_viewed", "report_saved",
   "questions_copied", "reminder_created", "returning_visit", "plan_interest",
+  "value_confirmed", "value_mismatch",
 ]);
 const REPORT = "Sample Lab\nLDL cholesterol 162 H mg/dL 0-99\nGlucose 92 mg/dL 70-99\nPotassium 4.2 mmol/L 3.5-5.1";
 let failed = 0;

@@ -7280,6 +7280,68 @@ function resultValueHtml(card) {
   return escapeHtml(value);
 }
 
+// "Does this match your report?" (roadmap B5, 24 Nov 2026). The reader can misread a number, unit or
+// range, so each card asks the person to check it against their own report. "No" points them to
+// the exact line in the report text to fix, then Explain again; nothing is changed for them. Each
+// answer adds one anonymous count (value_confirmed / value_mismatch), with no value, name or text.
+function renderValueCheck(card, line, es) {
+  const id = `vc-${String(card.key || card.name).replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`;
+  return `
+            <div class="result-card-verify" data-value-check data-value-line="${escapeHtml(line || "")}" role="group" aria-labelledby="${id}">
+              <span id="${id}">${es ? "¿Coincide con su informe?" : "Does this match your report?"}</span>
+              <button type="button" class="result-card-verify-btn" data-value-answer="yes" aria-pressed="false">${es ? "Sí" : "Yes"}</button>
+              <button type="button" class="result-card-verify-btn" data-value-answer="no" aria-pressed="false">${es ? "No" : "No"}</button>
+              <p class="result-card-verify-note" role="status"></p>
+            </div>`;
+}
+
+function answerValueCheck(button) {
+  const box = button.closest("[data-value-check]");
+  if (!box) return;
+  const es = reportLanguage === "es";
+  const answer = button.dataset.valueAnswer;
+  box.querySelectorAll("[data-value-answer]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+  box.dataset.answered = answer;
+  const note = box.querySelector(".result-card-verify-note");
+  const line = box.dataset.valueLine || "";
+  if (answer === "yes") {
+    note.textContent = es ? "Gracias. Comprobado con su informe." : "Thanks. Checked against your report.";
+  } else {
+    note.innerHTML = `${escapeHtml(es
+      ? "Corrija la línea en el texto del informe para que coincida con su informe en papel, y luego pulse Explicar informe de nuevo."
+      : "Fix the line in the report text so it matches your paper report, then press Explain report again.")}${line ? ` <button type="button" class="secondary-button compact" data-value-fix>${es ? "Mostrar la línea" : "Show me the line"}</button>` : ""}`;
+  }
+  // One count per card and answer, so changing your mind does not double count.
+  const counted = (box.dataset.counted || "").split(",");
+  if (!counted.includes(answer)) {
+    box.dataset.counted = [...counted.filter(Boolean), answer].join(",");
+    trackReportUsage(answer === "yes" ? "value_confirmed" : "value_mismatch");
+  }
+}
+
+function showValueLine(button) {
+  const line = button.closest("[data-value-check]")?.dataset.valueLine || "";
+  const textArea = document.querySelector("#report-text");
+  if (!line || !textArea) return;
+  const lines = textArea.value.split("\n");
+  const index = lines.findIndex((item) => item.trim() === line.trim());
+  if (index < 0) return;
+  const start = lines.slice(0, index).reduce((total, item) => total + item.length + 1, 0);
+  textArea.scrollIntoView({ block: "center" });
+  textArea.focus({ preventScroll: true });
+  textArea.setSelectionRange(start, start + lines[index].length);
+  reportStatus.textContent = reportLanguage === "es"
+    ? "Corrija la línea resaltada y pulse Explicar informe."
+    : "Fix the highlighted line so it matches your report, then press Explain report.";
+}
+
+document.addEventListener("click", (event) => {
+  const answer = event.target.closest?.("[data-value-answer]");
+  if (answer) { answerValueCheck(answer); return; }
+  const fix = event.target.closest?.("[data-value-fix]");
+  if (fix) showValueLine(fix);
+});
+
 function renderResultCard(card, text, testIndex = -1) {
   const line = sourceLineFor(card);
   const es = reportLanguage === "es";
@@ -7291,6 +7353,7 @@ function renderResultCard(card, text, testIndex = -1) {
             ${card.rangeLabel ? `<p class="result-card-range">${escapeHtml(card.rangeLabel)}: ${escapeHtml(card.range || text.noRangePrinted)}</p>` : ""}
             ${card.note ? `<p class="result-card-range">${escapeHtml(card.note)}</p>` : ""}
             ${card.meaning ? `<h5 class="visually-hidden">${escapeHtml(text.whatMeans)}</h5><p class="result-card-meaning">${escapeHtml(card.meaning)}</p>` : ""}
+            ${renderValueCheck(card, line, es)}
             ${card.what || card.ask || line ? `<details class="result-card-more">
               <summary>${line ? (es ? "Más, y la línea de su informe" : "More, and the line in your report") : (es ? "Más sobre este resultado" : "More about this result")}</summary>
               ${line ? `<div class="result-card-source"><h5 class="result-card-source-title">${es ? "La línea de su informe" : "The line in your report"}</h5><code class="result-card-source-line">${escapeHtml(line)}</code>${pageRow ? `<button class="secondary-button compact result-card-source-page" type="button" data-source-line="${escapeHtml(line)}">${reportSourcePdf?.kind === "photo" ? (es ? "Verla en su foto" : "See it on your photo") : (es ? "Ver la página del informe" : "See it on the report page")}</button>` : ""}</div>` : ""}
