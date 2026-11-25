@@ -318,3 +318,21 @@ Earlier list, kept for reference:
 
 **Next task:** B7 (move "Lab testing" and "For clinics" out of the top navigation) needs the owner's yes first. Until then, the next engineering task is the history comparison checks from the owner's priority 2: "identify when comparisons are not valid", for different units or ranges.
 
+## Run on 25 Nov (daily, 04:23 UTC)
+
+**Open PRs:** backend #65 and frontend #181 are both green and waiting for the owner. Read-only checks on every main are green. The live smoke failed again on 24 Nov (`provider_auth_rejected`, day 4).
+
+**Fixed (patient safety, the owner's priority 2: "identify when comparisons are not valid"):**
+- **Bug 1, wrong verdict:** "What changed since your last report" compared numbers without checking units. A synthetic glucose of 126 mg/dL followed by 7.2 mmol/L was shown as "improving". 7.2 mmol/L is about 130 mg/dL, so the value had risen.
+- **Bug 2, wrong unit:** the line printed only the new unit ("126 → 7.2 mmol/L"), so the old value looked like 126 mmol/L.
+- **The fix:**
+  - Units are compared as printed, ignoring case and spaces. Nothing is converted.
+  - When units differ, the row says "different units, so the numbers are not compared", and the count line adds "N not compared".
+  - Each value keeps its own unit: "126 mg/dL → 7.2 mmol/L".
+  - "Back in range" and "now outside" still show across units, because each uses its own report's lab range.
+  - A missing unit on one side is not assumed to match.
+- **Unchanged:** no rule, threshold or urgency. The History trend chart already refused to draw mixed units. The mobile app has no comparison.
+- **Tests:** new `scripts/eval/compare-units.mjs`, in CI. It checks the function directly and then two real reports explained in sequence. 6 of its checks fail on the old code.
+
+**Next task:** B7 still waits for the owner's yes. Engineering next: "Compare the same laboratory test over time" in History should also flag a change of lab range between reports (owner priority 2).
+

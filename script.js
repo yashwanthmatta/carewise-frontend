@@ -7713,8 +7713,8 @@ async function copyPersonalPlan() {
 // ----- What changed since the last report (stored on this device only) -----
 const SNAPSHOT_KEY = "carewiseReportSnapshots";
 const CHANGE_TEXT = {
-  en: { title: "What changed since your last report", since: (d) => `Compared with your report from ${d}`, improved: "improved", worse: "need attention", same: "unchanged", improving: "improving", worsening: "moving away from the range", backIn: "back in range", stillOut: "still outside the range", newOut: "now outside the range", steady: "no change" },
-  es: { title: "Qué cambió desde su último informe", since: (d) => `Comparado con su informe del ${d}`, improved: "mejoraron", worse: "requieren atención", same: "sin cambios", improving: "mejorando", worsening: "alejándose del rango", backIn: "de vuelta en el rango", stillOut: "todavía fuera del rango", newOut: "ahora fuera del rango", steady: "sin cambios" },
+  en: { title: "What changed since your last report", since: (d) => `Compared with your report from ${d}`, improved: "improved", worse: "need attention", same: "unchanged", improving: "improving", worsening: "moving away from the range", backIn: "back in range", stillOut: "still outside the range", newOut: "now outside the range", steady: "no change", unitsDiffer: "different units, so the numbers are not compared", notCompared: "not compared" },
+  es: { title: "Qué cambió desde su último informe", since: (d) => `Comparado con su informe del ${d}`, improved: "mejoraron", worse: "requieren atención", same: "sin cambios", improving: "mejorando", worsening: "alejándose del rango", backIn: "de vuelta en el rango", stillOut: "todavía fuera del rango", newOut: "ahora fuera del rango", steady: "sin cambios", unitsDiffer: "unidades distintas, así que los números no se comparan", notCompared: "no comparados" },
 };
 
 // A plain count instead of a 0-100 score: how many results sit outside the lab's range.
@@ -7762,6 +7762,10 @@ function readSnapshots() {
   }
 }
 
+// Units are compared as printed, ignoring case and spaces ("mg/dL" = "mg/dl"). Nothing is converted:
+// a value in mg/dL and one in mmol/L are never put on one scale (24 Nov 2026: 126 mg/dL then
+// 7.2 mmol/L glucose was called "improving", although 7.2 mmol/L is the higher value).
+const unitKey = (unit) => String(unit || "").toLowerCase().replace(/\s+/g, "");
 function compareMarkers(before, now) {
   const previous = new Map(before.map((m) => [m.name.toLowerCase(), m]));
   return now.flatMap((m) => {
@@ -7769,14 +7773,17 @@ function compareMarkers(before, now) {
     if (!old) return [];
     const a = parseFloat(String(old.value).replace(/[^\d.-]/g, ""));
     const b = parseFloat(String(m.value).replace(/[^\d.-]/g, ""));
+    const sameUnit = unitKey(old.unit) === unitKey(m.unit);
     let kind = "same";
+    // Back in range / now outside compare each report with its own lab's range, so they stay valid.
     if (old.out && !m.out) kind = "backIn";
     else if (!old.out && m.out) kind = "newOut";
+    else if (!sameUnit) kind = "unitsDiffer";
     else if (Number.isFinite(a) && Number.isFinite(b) && a !== b && m.out) {
       const lowerIsBetter = (m.direction || old.direction) !== "high-good";
       kind = (lowerIsBetter ? b < a : b > a) ? "improving" : "worsening";
     } else if (String(old.value) !== String(m.value)) kind = "steady-changed";
-    return [{ name: m.name, before: old.value, now: m.value, unit: m.unit, kind, out: m.out }];
+    return [{ name: m.name, before: old.value, beforeUnit: old.unit || "", now: m.value, unit: m.unit, kind, out: m.out }];
   });
 }
 
@@ -7817,6 +7824,7 @@ function changeLabel(row, t) {
   if (row.kind === "newOut") return t.newOut;
   if (row.kind === "improving") return `${t.improving}, ${t.stillOut}`;
   if (row.kind === "worsening") return `${t.worsening}, ${t.stillOut}`;
+  if (row.kind === "unitsDiffer") return t.unitsDiffer;
   return t.steady;
 }
 
@@ -7826,13 +7834,14 @@ function renderReportChanges(analysis) {
   const t = CHANGE_TEXT[reportLanguage === "es" ? "es" : "en"];
   const improved = changes.rows.filter((r) => r.kind === "backIn" || r.kind === "improving").length;
   const worse = changes.rows.filter((r) => r.kind === "newOut" || r.kind === "worsening").length;
-  const same = changes.rows.length - improved - worse;
+  const notCompared = changes.rows.filter((r) => r.kind === "unitsDiffer").length;
+  const same = changes.rows.length - improved - worse - notCompared;
   const arrow = (r) => (r.kind === "backIn" || r.kind === "improving" ? "▲" : r.kind === "newOut" || r.kind === "worsening" ? "▼" : "•");
   const date = new Date(`${changes.since}T12:00:00`).toLocaleDateString(reportLanguage === "es" ? "es" : undefined, { day: "numeric", month: "long", year: "numeric" });
   return `<section class="report-changes">
     <div class="report-changes-head"><h4>${escapeHtml(t.title)}</h4><span>${escapeHtml(t.since(date))}</span></div>
-    <p class="report-changes-counts"><b class="rc-good">${improved} ${escapeHtml(t.improved)}</b> · <b class="rc-bad">${worse} ${escapeHtml(t.worse)}</b> · <span>${same} ${escapeHtml(t.same)}</span></p>
-    <ul>${changes.rows.map((r) => `<li class="rc-${escapeHtml(r.kind)}"><span class="rc-arrow" aria-hidden="true">${arrow(r)}</span> <b>${escapeHtml(r.name)}</b> ${escapeHtml(String(r.before))} → ${escapeHtml(String(r.now))} ${escapeHtml(r.unit)} · ${escapeHtml(changeLabel(r, t))}</li>`).join("")}</ul>
+    <p class="report-changes-counts"><b class="rc-good">${improved} ${escapeHtml(t.improved)}</b> · <b class="rc-bad">${worse} ${escapeHtml(t.worse)}</b> · <span>${same} ${escapeHtml(t.same)}</span>${notCompared ? ` · <span>${notCompared} ${escapeHtml(t.notCompared)}</span>` : ""}</p>
+    <ul>${changes.rows.map((r) => `<li class="rc-${escapeHtml(r.kind)}"><span class="rc-arrow" aria-hidden="true">${arrow(r)}</span> <b>${escapeHtml(r.name)}</b> ${unitKey(r.beforeUnit) && unitKey(r.beforeUnit) !== unitKey(r.unit) ? `${escapeHtml(String(r.before))} ${escapeHtml(r.beforeUnit)} → ${escapeHtml(String(r.now))} ${escapeHtml(r.unit)}` : `${escapeHtml(String(r.before))} → ${escapeHtml(String(r.now))} ${escapeHtml(r.unit)}`} · ${escapeHtml(changeLabel(r, t))}</li>`).join("")}</ul>
   </section>`;
 }
 
