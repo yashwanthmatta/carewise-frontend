@@ -5876,9 +5876,13 @@ function renderHistoryTrends(allReports, personFilter) {
     <div class="trend-grid">${groups.map((group) => {
       const units = new Set(group.entries.map((entry) => entry.parts?.unit || ""));
       const chart = trendChartSvg(group);
+      // Different labs can print different ranges for the same test (26 Nov 2026). The values are
+      // still shown exactly; this only says each one belongs with its own row's range.
+      const ranges = new Set(group.entries.filter((entry) => entry.range).map((entry) => String(entry.range).replace(/\s+/g, "")));
       return `<article class="trend-card">
         <h5>${escapeHtml(group.name)}</h5>
         ${chart || `<p class="history-trends-note">${units.size > 1 ? "The units differ between reports, so these are not drawn on one chart." : "Listed, not drawn: a value with < or > has no exact point."}</p>`}
+        ${ranges.size > 1 ? `<p class="history-trends-note trend-range-note">These reports printed different lab ranges. Compare each result with the range on its own row.</p>` : ""}
         <table class="trend-table"><thead><tr><th scope="col">Date</th><th scope="col">Result</th><th scope="col">Lab's range</th></tr></thead><tbody>
           ${group.entries.map((entry) => `<tr><td>${escapeHtml(entry.known ? formatTestDate(entry.when) : `Saved ${formatTestDate(entry.when)}`)}</td><td><strong>${escapeHtml(entry.value)}</strong>${entry.label ? `<span class="trend-label trend-label-${escapeHtml(entry.status || "none")}">${escapeHtml(entry.label)}</span>` : ""}</td><td>${escapeHtml(entry.range || "Not printed")}</td></tr>`).join("")}
         </tbody></table>

@@ -336,3 +336,16 @@ Earlier list, kept for reference:
 
 **Next task:** B7 still waits for the owner's yes. Engineering next: "Compare the same laboratory test over time" in History should also flag a change of lab range between reports (owner priority 2).
 
+## Run on 26 Nov (daily, 04:23 UTC)
+
+**Open PRs:** backend #65 and frontend #181 are both green and still waiting for the owner, with no review comments. Every main is unchanged and green.
+
+**Done (owner priority 2, "see dates, units and reference ranges; identify when comparisons are not valid"):**
+- **Gap:** History → "Results over time" showed each report's lab range on its own row. When two labs printed different ranges for the same test, nothing said so, and the chart could suggest the values sat on one scale.
+- **Fix:** the trend card now says: "These reports printed different lab ranges. Compare each result with the range on its own row."
+  - The note appears only on the test whose ranges differ.
+  - Values and ranges are shown unchanged.
+- **Tests:** `history-trends.mjs` has 2 new checks at desktop and phone sizes. They fail on the old code.
+
+**Next task:** B7 still waits for the owner. Engineering next: check the doctor brief and the share packet for the same cross-unit or cross-range comparisons.
+

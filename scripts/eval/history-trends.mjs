@@ -58,6 +58,7 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   check(creat && creat.rows.length === 3 && creat.rows.map((row) => row[1]).every((cell, i) => cell.startsWith(["1.4 mg/dL", "1.9 mg/dL", "2.3 mg/dL"][i])), `${size}: creatinine values exact and in date order`);
   check(creat && creat.rows.every((row) => row[2] === "0.6-1.3"), `${size}: each row shows that report's lab range`);
   check(creat && /2026/.test(creat.rows[0][0]) && /Mar/.test(creat.rows[0][0]) && !/Saved/.test(creat.rows[0][0]), `${size}: dates come from the report's Collected line`);
+  check(!/different lab ranges/.test(await page.innerText("#history-trends")), `${size}: no range note when every report printed the same range`);
   check(creat && /1\.4 mg\/dL on .*Mar.*2026.*2\.3 mg\/dL on .*Nov.*2026/.test(creat.chart), `${size}: chart has a text description with values and dates`);
   check(!cards.some((card) => card.rows.some((row) => row[1].startsWith("1.1 mg/dL"))), `${size}: Dad's value never appears in Mum's trends`);
   const tsh = cards.find((card) => /TSH/.test(card.name));
@@ -74,6 +75,15 @@ for (const [size, viewport] of [["desktop", { width: 1280, height: 900 }], ["pho
   await page.waitForTimeout(400);
   check(/Report from/.test(await page.innerText(".v1-history-list")), `${size}: reload with saved reports: History renders`);
   check(!errors.length, `${size}: no script errors, including while loading with saved reports ${errors.join("; ")}`);
+  // Two labs, two ranges for the same test (26 Nov 2026): the values stay exact and each row keeps
+  // its own range, and the card says the ranges differ.
+  await explain("Mum", "Other Lab\nCollected: 20 Nov 2026\nCreatinine 1.2 mg/dL 0.5-1.1");
+  await page.evaluate(() => { location.hash = "saved-title"; const select = document.querySelector("#history-person-filter"); select.value = "Mum"; select.dispatchEvent(new Event("change")); });
+  await page.waitForTimeout(300);
+  const mixed = await page.$$eval("#history-trends .trend-card", (items) => items.map((card) => ({ name: card.querySelector("h5").textContent, text: card.innerText, ranges: [...card.querySelectorAll("tbody tr")].map((row) => row.cells[2].textContent.trim()) })));
+  const creat2 = mixed.find((card) => card.name === "Creatinine");
+  check(creat2 && /different lab ranges/.test(creat2.text) && creat2.ranges.includes("0.5-1.1") && creat2.ranges.includes("0.6-1.3"), `${size}: different ranges are pointed out and each row keeps its own (${creat2?.ranges.join(", ")})`);
+  check(!mixed.filter((card) => card.name !== "Creatinine").some((card) => /different lab ranges/.test(card.text)), `${size}: the note appears only on the test whose ranges differ`);
   await context.close();
 }
 await browser.close();
