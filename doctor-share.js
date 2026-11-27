@@ -55,7 +55,7 @@
       },
       questions: analysis.questions || [],
       changes: analysis._changes?.rows?.length
-        ? { since: analysis._changes.since, rows: analysis._changes.rows.map((r) => ({ name: r.name, before: String(r.before), now: String(r.now), unit: r.unit, label: changeLabel(r, CHANGE_TEXT.en) })) }
+        ? { since: analysis._changes.since, rows: analysis._changes.rows.map((r) => ({ name: r.name, before: String(r.before), now: String(r.now), unit: r.unit, before_unit: r.beforeUnit || "", label: changeLabel(r, CHANGE_TEXT.en) })) }
         : null,
     };
   }

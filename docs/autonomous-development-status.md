@@ -349,3 +349,20 @@ Earlier list, kept for reference:
 
 **Next task:** B7 still waits for the owner. Engineering next: check the doctor brief and the share packet for the same cross-unit or cross-range comparisons.
 
+
+## Run on 27 Nov (daily, 04:23 UTC)
+
+**Open PRs:** backend #65 and frontend #181 are green and still waiting for the owner, with no review comments. Every main is unchanged and green. The live backend smoke is still red only because the AI key is rejected (`provider_auth_rejected`, B1).
+
+**Done (owner priority 2, continued from 26 Nov): what goes to the doctor now keeps each report's unit.**
+- **Gap:** "What changed" was fixed on screen on 25 Nov, but four other places still printed "126 → 7.2 mmol/L", giving the earlier mg/dL value the newer report's unit:
+  - the printable doctor summary;
+  - the share-packet PDF;
+  - the "Share with my doctor" link (the snapshot did not carry the earlier unit);
+  - the clinic visit summary (backend `/clinics/{id}/patients/{ref}/summary`).
+  The label already said "different units, so the numbers are not compared"; only the numbers were wrong.
+- **Fix:** one formatter (`changeValues`) shows "126 mg/dL → 7.2 mmol/L" when the units differ and "4.2 → 4.4 mmol/L" when they match. Nothing is converted or rounded. The share snapshot and the backend clinic summary now carry `before_unit`; older shared links without it still read as before.
+- **Tests:** `compare-units.mjs` has 9 new checks covering the summary, the PDF, the snapshot, the shared-link viewer (including an old link) and the clinic view. 6 of them fail on the old code. Backend: `test_visit_summary_keeps_each_reports_unit` is new; 291 passed, ruff clean. Frontend: all 42 CI checks pass locally.
+- **PRs:** frontend #181 (cache stays at 247); backend #65.
+
+**Next task:** B7 still waits for the owner. Engineering next: the clinic visit summary (backend) lists a change whenever the value text differs, even when the units differ. Check whether its "status" wording ever implies a direction across units.

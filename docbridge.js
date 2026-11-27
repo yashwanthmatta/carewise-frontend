@@ -678,7 +678,7 @@
       const hidden = new Set(settings.hidden_blocks || []);
       const blocks = {
         changes: `<h5>What changed since the last lab</h5>
-        ${data.changes.length ? `<ul>${data.changes.map((c) => `<li><b>${escapeHtml(c.name)}</b>: ${escapeHtml(c.before)} → ${escapeHtml(c.now)} ${escapeHtml(c.unit)}${c.status ? ` (${escapeHtml(c.status)})` : ""}</li>`).join("")}</ul>` : "<p>No earlier lab with the same tests to compare.</p>"}`,
+        ${data.changes.length ? `<ul>${data.changes.map((c) => `<li><b>${escapeHtml(c.name)}</b>: ${escapeHtml(c.before)}${c.before_unit && c.before_unit.toLowerCase().replace(/\s+/g, "") !== String(c.unit || "").toLowerCase().replace(/\s+/g, "") ? ` ${escapeHtml(c.before_unit)}` : ""} → ${escapeHtml(c.now)} ${escapeHtml(c.unit)}${c.status ? ` (${escapeHtml(c.status)})` : ""}</li>`).join("")}</ul>` : "<p>No earlier lab with the same tests to compare.</p>"}`,
         flagged: `<h5>Outside the usual range now</h5>
         ${flagged.length ? `<ul>${flagged.map((m) => `<li>${escapeHtml(m.name)}: ${escapeHtml(`${m.value} ${m.unit}`.trim())}</li>`).join("")}</ul>` : "<p>None flagged.</p>"}`,
         told: `<h5>What the patient was told</h5>

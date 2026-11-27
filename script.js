@@ -7823,6 +7823,20 @@ function computeReportChanges(analysis) {
   return analysis._changes;
 }
 
+// "126 → 110 mg/dL" when both reports used one unit; "126 mg/dL → 7.2 mmol/L" when they did not, so
+// the earlier value never borrows the newer report's unit (27 Nov 2026: the doctor summary, the PDF and
+// the shared link printed "126 → 7.2 mmol/L"). The values are shown exactly as printed.
+function changeValues(row, arrow = "→") {
+  const before = String(row.before ?? "");
+  const now = String(row.now ?? "");
+  const unit = row.unit || "";
+  const beforeUnit = row.beforeUnit || "";
+  if (beforeUnit && unitKey(beforeUnit) !== unitKey(unit)) {
+    return `${before} ${beforeUnit} ${arrow} ${now}${unit ? ` ${unit}` : ""}`;
+  }
+  return `${before} ${arrow} ${now}${unit ? ` ${unit}` : ""}`;
+}
+
 function changeLabel(row, t) {
   if (row.kind === "backIn") return t.backIn;
   if (row.kind === "newOut") return t.newOut;
@@ -7845,7 +7859,7 @@ function renderReportChanges(analysis) {
   return `<section class="report-changes">
     <div class="report-changes-head"><h4>${escapeHtml(t.title)}</h4><span>${escapeHtml(t.since(date))}</span></div>
     <p class="report-changes-counts"><b class="rc-good">${improved} ${escapeHtml(t.improved)}</b> · <b class="rc-bad">${worse} ${escapeHtml(t.worse)}</b> · <span>${same} ${escapeHtml(t.same)}</span>${notCompared ? ` · <span>${notCompared} ${escapeHtml(t.notCompared)}</span>` : ""}</p>
-    <ul>${changes.rows.map((r) => `<li class="rc-${escapeHtml(r.kind)}"><span class="rc-arrow" aria-hidden="true">${arrow(r)}</span> <b>${escapeHtml(r.name)}</b> ${unitKey(r.beforeUnit) && unitKey(r.beforeUnit) !== unitKey(r.unit) ? `${escapeHtml(String(r.before))} ${escapeHtml(r.beforeUnit)} → ${escapeHtml(String(r.now))} ${escapeHtml(r.unit)}` : `${escapeHtml(String(r.before))} → ${escapeHtml(String(r.now))} ${escapeHtml(r.unit)}`} · ${escapeHtml(changeLabel(r, t))}</li>`).join("")}</ul>
+    <ul>${changes.rows.map((r) => `<li class="rc-${escapeHtml(r.kind)}"><span class="rc-arrow" aria-hidden="true">${arrow(r)}</span> <b>${escapeHtml(r.name)}</b> ${escapeHtml(changeValues(r))} · ${escapeHtml(changeLabel(r, t))}</li>`).join("")}</ul>
   </section>`;
 }
 
@@ -8495,7 +8509,7 @@ ${view.headline ? `<h2>Summary</h2><p><b>${escapeHtml(view.headline)}.</b> ${esc
 ${view.tests.length ? `<h2>Tests on the report (compared with the lab's printed range)</h2><table><tr><th>Test</th><th>Result</th><th>Lab range</th><th>Status</th></tr>${view.tests.map((item) => `<tr><td>${escapeHtml(item.name)}</td><td>${escapeHtml(item.value)}</td><td>${escapeHtml(item.range || "not printed")}</td><td>${escapeHtml(item.label)}</td></tr>`).join("")}</table>` : rows ? `<h2>Values detected in the report</h2><table><tr><th>Test</th><th>Value</th><th>FollowThrough Health note</th></tr>${rows}</table>` : ""}
 ${analysis.scan ? `<h2>Imaging report (${escapeHtml(analysis.scan.en.modality || "imaging")}), explained from the radiologist's text only</h2>${analysis.scan.en.followUps.length ? `<p>Lines the patient would like to discuss:</p><ul>${analysis.scan.en.followUps.map((item) => `<li>“${escapeHtml(item.sentence)}”</li>`).join("")}</ul>` : "<p>No follow-up lines were flagged in the report text.</p>"}` : ""}
 ${view.tests.length ? "" : `<h2>Discussion points</h2><ul>${findings}</ul>`}
-${analysis._changes?.rows?.length ? `<h2>Changes since the previous report (${escapeHtml(analysis._changes.since)})</h2><ul>${analysis._changes.rows.map((r) => `<li>${escapeHtml(r.name)}: ${escapeHtml(String(r.before))} → ${escapeHtml(String(r.now))} ${escapeHtml(r.unit)} (${escapeHtml(changeLabel(r, CHANGE_TEXT.en))})</li>`).join("")}</ul>` : ""}
+${analysis._changes?.rows?.length ? `<h2>Changes since the previous report (${escapeHtml(analysis._changes.since)})</h2><ul>${analysis._changes.rows.map((r) => `<li>${escapeHtml(r.name)}: ${escapeHtml(changeValues(r))} (${escapeHtml(changeLabel(r, CHANGE_TEXT.en))})</li>`).join("")}</ul>` : ""}
 ${ocrReviewed.length ? `<h2>Numbers read from a photo and checked by the patient</h2><ul>${ocrReviewed.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
 ${buildHealthHistoryBriefSection(person)}
 <h2>Patient questions</h2><ol>${questions}</ol>
@@ -8674,7 +8688,7 @@ function buildSharePacketPdf(analysis, person = "Me") {
   }
   if (analysis._changes?.rows?.length) {
     blocks.push({ type: "heading", text: `Changes since the previous report (${analysis._changes.since})` });
-    blocks.push({ type: "list", items: analysis._changes.rows.map((r) => `${r.name}: ${r.before} -> ${r.now} ${r.unit} (${changeLabel(r, CHANGE_TEXT.en)})`) });
+    blocks.push({ type: "list", items: analysis._changes.rows.map((r) => `${r.name}: ${changeValues(r, "->")} (${changeLabel(r, CHANGE_TEXT.en)})`) });
   }
   if (ocrReviewed.length) {
     blocks.push({ type: "heading", text: "Numbers read from a photo and checked by the patient" }, { type: "list", items: ocrReviewed });

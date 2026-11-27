@@ -55,6 +55,41 @@ check(/Glucose[^·]* 126 mg\/dL → 7\.2 mmol\/L · different units/.test(change
 check(!/Glucose[^·]*· improving/.test(changes), "glucose is not called improving");
 check(/Potassium 4\.2 → 4\.4 mmol\/L/.test(changes), "a test in the same unit is still compared");
 
+// The same comparison in what goes to the doctor (27 Nov 2026): the printable summary, the PDF and
+// the shared link printed "126 → 7.2 mmol/L", dropping the earlier report's unit.
+const out = await page.evaluate(() => {
+  const brief = buildDoctorBriefHtml(latestReportAnalysis, "Me").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  // PDF text escapes brackets as \( and \); drop the escapes before matching.
+  const pdf = new TextDecoder("latin1").decode(buildSharePacketPdf(latestReportAnalysis, "Me")).replace(/\\([()])/g, "$1");
+  return { brief, pdf };
+});
+check(/Glucose[^:]*: 126 mg\/dL → 7\.2 mmol\/L \(different units/.test(out.brief), "the doctor summary keeps each report's unit");
+check(!/Glucose[^:]*: 126 → /.test(out.brief), "the doctor summary never shows 126 without its unit");
+check(/Glucose[^:]*: 126 mg\/dL -> 7\.2 mmol\/L \(different units/.test(out.pdf), "the PDF keeps each report's unit");
+check(/Potassium: 4\.2 -> 4\.4 mmol\/L/.test(out.pdf), "the PDF still shows one unit when both reports used it");
+
+const { readFileSync } = await import("node:fs");
+const shareSource = readFileSync(new URL("../../doctor-share.js", import.meta.url), "utf8");
+check(/before_unit: r\.beforeUnit/.test(shareSource), "the shared-link snapshot carries the earlier unit");
+
+// The doctor's view of a shared link, with a synthetic snapshot.
+const shareRows = (rows) => ({ snapshot: { person: "Me", changes: { since: "2026-10-01", rows } } });
+for (const [rows, want, label] of [
+  [[{ name: "Glucose", before: "126", before_unit: "mg/dL", now: "7.2", unit: "mmol/L", label: "different units, so the numbers are not compared" }], /Glucose: 126 mg\/dL → 7\.2 mmol\/L \(different units/, "the shared link keeps each report's unit"],
+  [[{ name: "Potassium", before: "4.2", before_unit: "mmol/L", now: "4.4", unit: "mmol/L", label: "no change" }], /Potassium: 4\.2 → 4\.4 mmol\/L/, "the shared link shows one unit when both match"],
+  [[{ name: "Potassium", before: "4.2", now: "4.4", unit: "mmol/L", label: "no change" }], /Potassium: 4\.2 → 4\.4 mmol\/L/, "an older shared link without the earlier unit still reads"],
+]) {
+  const viewer = await context.newPage();
+  await viewer.route(/onrender\.com\/shares\/view/, (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(shareRows(rows)) }));
+  await viewer.goto(`${base}share.html#t=${"s".repeat(32)}`, { waitUntil: "load" });
+  const text = await viewer.locator("body").innerText({ timeout: 10000 }).catch(() => "");
+  check(want.test(text.replace(/\s+/g, " ")), label);
+  await viewer.close();
+}
+
+const clinicSource = readFileSync(new URL("../../docbridge.js", import.meta.url), "utf8");
+check(/c\.before_unit/.test(clinicSource), "the clinic visit summary shows the earlier unit when it differs");
+
 await browser.close();
 if (failed) { console.log(`${failed} comparison check(s) failed`); process.exit(1); }
 console.log("All comparison unit checks passed");
