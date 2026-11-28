@@ -366,3 +366,22 @@ Earlier list, kept for reference:
 - **PRs:** frontend #181 (cache stays at 247); backend #65.
 
 **Next task:** B7 still waits for the owner. Engineering next: the clinic visit summary (backend) lists a change whenever the value text differs, even when the units differ. Check whether its "status" wording ever implies a direction across units.
+
+## Run on 28 Nov (daily, 04:23 UTC)
+
+**Open PRs:** backend #65 and frontend #181 were green before this run, with no review comments. Every main is unchanged and green. The live backend smoke is still red only because the AI key is rejected (`provider_auth_rejected`, B1), for the fourth day running.
+
+**Done: the clinic visit summary no longer counts a change between two units as "changed".**
+- **Gap:** the backend listed a change whenever the value text differed. As a result:
+  - 162 mg/dL then 4.2 mmol/L LDL was counted in the agenda's "N changed since last time", although nothing was compared;
+  - 5.5 mg/dL then 5.5 mmol/L was left out as "no change", because the numbers matched.
+- **Fix:**
+  - **Backend:** compares units as printed, ignoring case and spaces. A row is kept when either the units or the value differ, and is marked `units_differ`.
+  - **Clinic view:** shows "different units, so the numbers are not compared" on that row, and leaves it out of the agenda count. When an older server sends no flag, the view also compares the units itself.
+  - Nothing is converted; the status shown is still the latest lab's own.
+- **Tests:**
+  - Backend: a new `test_visit_summary_marks_different_units_even_when_the_numbers_match`; 292 passed, ruff and readiness clean. Three docbridge tests fail on the old code.
+  - Frontend: a new `clinic-visit-units.mjs` (5 checks, in CI) drives the real clinic view with a simulated signed-in clinic and synthetic labs. 3 of its checks fail on the old code. All 43 CI checks pass locally.
+- **PRs:** frontend #181 and backend #65, which should still be merged first.
+
+**Next task:** B7 still waits for the owner. Engineering next: the patient packet page (`packet.html`, what a clinic's patient opens) shows values from one lab only. Check whether it repeats any comparison text from the clinic side.

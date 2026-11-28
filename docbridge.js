@@ -286,6 +286,12 @@
       <ul class="db-muted">${checklist.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>`;
   }
 
+  // A change between two labs printed in different units is shown with both units and is not counted
+  // as "changed": nothing is converted (28 Nov 2026). The server sets units_differ; older servers do not,
+  // so the units are also compared here, ignoring case and spaces.
+  const unitKey = (unit) => String(unit || "").toLowerCase().replace(/\s+/g, "");
+  const unitsDiffer = (c) => Boolean(c.units_differ) || (Boolean(c.before_unit) && unitKey(c.before_unit) !== unitKey(c.unit));
+
   function agendaBlock(flaggedCount, questionCount, changeCount) {
     const items = [
       `2 min · Results: ${flaggedCount ? `${flaggedCount} outside the usual range` : "nothing outside the usual range"}${changeCount ? `, ${changeCount} changed since last time` : ""}`,
@@ -678,7 +684,7 @@
       const hidden = new Set(settings.hidden_blocks || []);
       const blocks = {
         changes: `<h5>What changed since the last lab</h5>
-        ${data.changes.length ? `<ul>${data.changes.map((c) => `<li><b>${escapeHtml(c.name)}</b>: ${escapeHtml(c.before)}${c.before_unit && c.before_unit.toLowerCase().replace(/\s+/g, "") !== String(c.unit || "").toLowerCase().replace(/\s+/g, "") ? ` ${escapeHtml(c.before_unit)}` : ""} → ${escapeHtml(c.now)} ${escapeHtml(c.unit)}${c.status ? ` (${escapeHtml(c.status)})` : ""}</li>`).join("")}</ul>` : "<p>No earlier lab with the same tests to compare.</p>"}`,
+        ${data.changes.length ? `<ul>${data.changes.map((c) => `<li><b>${escapeHtml(c.name)}</b>: ${escapeHtml(c.before)}${unitsDiffer(c) && c.before_unit ? ` ${escapeHtml(c.before_unit)}` : ""} → ${escapeHtml(c.now)} ${escapeHtml(c.unit)}${unitsDiffer(c) ? " · different units, so the numbers are not compared" : ""}${c.status ? ` (${escapeHtml(c.status)})` : ""}</li>`).join("")}</ul>` : "<p>No earlier lab with the same tests to compare.</p>"}`,
         flagged: `<h5>Outside the usual range now</h5>
         ${flagged.length ? `<ul>${flagged.map((m) => `<li>${escapeHtml(m.name)}: ${escapeHtml(`${m.value} ${m.unit}`.trim())}</li>`).join("")}</ul>` : "<p>None flagged.</p>"}`,
         told: `<h5>What the patient was told</h5>
@@ -686,7 +692,7 @@
         <blockquote>${escapeHtml(latest?.summary || "").replace(/\n/g, "<br>")}</blockquote>`,
         questions: `<h5>Questions the patient may ask</h5>
         ${(latest?.questions || []).length ? `<ol>${latest.questions.map((q) => `<li>${escapeHtml(q)}</li>`).join("")}</ol>` : "<p>None recorded.</p>"}`,
-        agenda: agendaBlock(flagged.length, (latest?.questions || []).length, data.changes.length),
+        agenda: agendaBlock(flagged.length, (latest?.questions || []).length, data.changes.filter((c) => !unitsDiffer(c)).length),
         coverage: coverageBlock(latest?.markers || [], settings),
       };
       const shown = VISIT_BLOCKS.filter(([key]) => !hidden.has(key) && blocks[key]);
