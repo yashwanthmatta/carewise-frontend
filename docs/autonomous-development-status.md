@@ -300,3 +300,88 @@ Earlier list, kept for reference:
 
 **Next task:** B5. Each result card gets an explicit "check this value against your report" step, and a mismatch is counted in aggregate.
 
+## Run on 24 Nov (daily, 04:24 UTC)
+
+**Open PRs:** none before this run. Frontend #179 (turnaround: docs, funnel, founder page, `.8` pack) was merged on 23 Nov. Read-only checks on every main are green. The live backend smoke ran 4 hours late on 23 Nov and failed on `provider_auth_rejected`. The Anthropic key (E-001) is still rejected, now for 3 days.
+
+**Done (roadmap B5, the "verify" step of the core workflow):**
+- **The question:** every result card asks "Does this match your report? Yes / No".
+  - **Yes:** confirms the check.
+  - **No:** explains the fix and offers "Show me the line", which selects that exact line in the report text. Nothing is changed for the person.
+- **Counting:** each answer sends one anonymous count, once per card and answer: `value_confirmed` or `value_mismatch`. The backend PR accepts both names, and the founder page shows "match / do not". No value, test name or text is sent.
+- **Other details:**
+  - Spanish wording is included.
+  - The question is hidden when printing.
+  - No medical wording, rule or value changed.
+
+**Tests:** new `scripts/eval/value-check.mjs`, also in CI: 25 checks at 1280 and 320 px plus Spanish. `usage-events.mjs` covers the new names. Full suite below.
+
+**Next task:** B7 (move "Lab testing" and "For clinics" out of the top navigation) needs the owner's yes first. Until then, the next engineering task is the history comparison checks from the owner's priority 2: "identify when comparisons are not valid", for different units or ranges.
+
+## Run on 25 Nov (daily, 04:23 UTC)
+
+**Open PRs:** backend #65 and frontend #181 are both green and waiting for the owner. Read-only checks on every main are green. The live smoke failed again on 24 Nov (`provider_auth_rejected`, day 4).
+
+**Fixed (patient safety, the owner's priority 2: "identify when comparisons are not valid"):**
+- **Bug 1, wrong verdict:** "What changed since your last report" compared numbers without checking units. A synthetic glucose of 126 mg/dL followed by 7.2 mmol/L was shown as "improving". 7.2 mmol/L is about 130 mg/dL, so the value had risen.
+- **Bug 2, wrong unit:** the line printed only the new unit ("126 → 7.2 mmol/L"), so the old value looked like 126 mmol/L.
+- **The fix:**
+  - Units are compared as printed, ignoring case and spaces. Nothing is converted.
+  - When units differ, the row says "different units, so the numbers are not compared", and the count line adds "N not compared".
+  - Each value keeps its own unit: "126 mg/dL → 7.2 mmol/L".
+  - "Back in range" and "now outside" still show across units, because each uses its own report's lab range.
+  - A missing unit on one side is not assumed to match.
+- **Unchanged:** no rule, threshold or urgency. The History trend chart already refused to draw mixed units. The mobile app has no comparison.
+- **Tests:** new `scripts/eval/compare-units.mjs`, in CI. It checks the function directly and then two real reports explained in sequence. 6 of its checks fail on the old code.
+
+**Next task:** B7 still waits for the owner's yes. Engineering next: "Compare the same laboratory test over time" in History should also flag a change of lab range between reports (owner priority 2).
+
+## Run on 26 Nov (daily, 04:23 UTC)
+
+**Open PRs:** backend #65 and frontend #181 are both green and still waiting for the owner, with no review comments. Every main is unchanged and green.
+
+**Done (owner priority 2, "see dates, units and reference ranges; identify when comparisons are not valid"):**
+- **Gap:** History → "Results over time" showed each report's lab range on its own row. When two labs printed different ranges for the same test, nothing said so, and the chart could suggest the values sat on one scale.
+- **Fix:** the trend card now says: "These reports printed different lab ranges. Compare each result with the range on its own row."
+  - The note appears only on the test whose ranges differ.
+  - Values and ranges are shown unchanged.
+- **Tests:** `history-trends.mjs` has 2 new checks at desktop and phone sizes. They fail on the old code.
+
+**Next task:** B7 still waits for the owner. Engineering next: check the doctor brief and the share packet for the same cross-unit or cross-range comparisons.
+
+
+## Run on 27 Nov (daily, 04:23 UTC)
+
+**Open PRs:** backend #65 and frontend #181 are green and still waiting for the owner, with no review comments. Every main is unchanged and green. The live backend smoke is still red only because the AI key is rejected (`provider_auth_rejected`, B1).
+
+**Done (owner priority 2, continued from 26 Nov): what goes to the doctor now keeps each report's unit.**
+- **Gap:** "What changed" was fixed on screen on 25 Nov, but four other places still printed "126 → 7.2 mmol/L", giving the earlier mg/dL value the newer report's unit:
+  - the printable doctor summary;
+  - the share-packet PDF;
+  - the "Share with my doctor" link (the snapshot did not carry the earlier unit);
+  - the clinic visit summary (backend `/clinics/{id}/patients/{ref}/summary`).
+  The label already said "different units, so the numbers are not compared"; only the numbers were wrong.
+- **Fix:** one formatter (`changeValues`) shows "126 mg/dL → 7.2 mmol/L" when the units differ and "4.2 → 4.4 mmol/L" when they match. Nothing is converted or rounded. The share snapshot and the backend clinic summary now carry `before_unit`; older shared links without it still read as before.
+- **Tests:** `compare-units.mjs` has 9 new checks covering the summary, the PDF, the snapshot, the shared-link viewer (including an old link) and the clinic view. 6 of them fail on the old code. Backend: `test_visit_summary_keeps_each_reports_unit` is new; 291 passed, ruff clean. Frontend: all 42 CI checks pass locally.
+- **PRs:** frontend #181 (cache stays at 247); backend #65.
+
+**Next task:** B7 still waits for the owner. Engineering next: the clinic visit summary (backend) lists a change whenever the value text differs, even when the units differ. Check whether its "status" wording ever implies a direction across units.
+
+## Run on 28 Nov (daily, 04:23 UTC)
+
+**Open PRs:** backend #65 and frontend #181 were green before this run, with no review comments. Every main is unchanged and green. The live backend smoke is still red only because the AI key is rejected (`provider_auth_rejected`, B1), for the fourth day running.
+
+**Done: the clinic visit summary no longer counts a change between two units as "changed".**
+- **Gap:** the backend listed a change whenever the value text differed. As a result:
+  - 162 mg/dL then 4.2 mmol/L LDL was counted in the agenda's "N changed since last time", although nothing was compared;
+  - 5.5 mg/dL then 5.5 mmol/L was left out as "no change", because the numbers matched.
+- **Fix:**
+  - **Backend:** compares units as printed, ignoring case and spaces. A row is kept when either the units or the value differ, and is marked `units_differ`.
+  - **Clinic view:** shows "different units, so the numbers are not compared" on that row, and leaves it out of the agenda count. When an older server sends no flag, the view also compares the units itself.
+  - Nothing is converted; the status shown is still the latest lab's own.
+- **Tests:**
+  - Backend: a new `test_visit_summary_marks_different_units_even_when_the_numbers_match`; 292 passed, ruff and readiness clean. Three docbridge tests fail on the old code.
+  - Frontend: a new `clinic-visit-units.mjs` (5 checks, in CI) drives the real clinic view with a simulated signed-in clinic and synthetic labs. 3 of its checks fail on the old code. All 43 CI checks pass locally.
+- **PRs:** frontend #181 and backend #65, which should still be merged first.
+
+**Next task:** B7 still waits for the owner. Engineering next: the patient packet page (`packet.html`, what a clinic's patient opens) shows values from one lab only. Check whether it repeats any comparison text from the clinic side.

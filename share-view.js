@@ -15,6 +15,15 @@
     return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
   };
 
+  // Each value keeps its own report's unit: "126 mg/dL → 7.2 mmol/L", never "126 → 7.2 mmol/L".
+  const unitKey = (unit) => String(unit || "").toLowerCase().replace(/\s+/g, "");
+  const changeValues = (r) => {
+    const unit = r.unit || "";
+    const beforeUnit = r.before_unit || "";
+    const before = beforeUnit && unitKey(beforeUnit) !== unitKey(unit) ? `${r.before} ${beforeUnit}` : `${r.before}`;
+    return `${before} → ${r.now}${unit ? ` ${unit}` : ""}`;
+  };
+
   function fail(message) {
     $("sv-loading").hidden = true;
     $("sv-error").hidden = false;
@@ -39,7 +48,7 @@
         ${s.score != null ? `<p class="sv-score"><strong>${esc(s.score)}</strong>/100 <span class="sv-muted">educational estimate</span></p>` : ""}
         ${s.next_step ? `<p class="sv-next">${esc(s.next_step)}</p>` : ""}
       </section>
-      ${s.changes && (s.changes.rows || []).length ? `<section class="sv-card"><h2>Changes since the previous report</h2><p class="sv-muted">Compared with the report from ${esc(date(s.changes.since))}.</p>${list(s.changes.rows, (r) => `<li><b>${esc(r.name)}</b>: ${esc(r.before)} → ${esc(r.now)} ${esc(r.unit)} (${esc(r.label)})</li>`)}</section>` : ""}
+      ${s.changes && (s.changes.rows || []).length ? `<section class="sv-card"><h2>Changes since the previous report</h2><p class="sv-muted">Compared with the report from ${esc(date(s.changes.since))}.</p>${list(s.changes.rows, (r) => `<li><b>${esc(r.name)}</b>: ${esc(changeValues(r))} (${esc(r.label)})</li>`)}</section>` : ""}
       ${(s.findings || []).length ? `<section class="sv-card"><h2>Discussion points</h2>${list(s.findings, (f) => `<li><b>${esc(f.label)}:</b> ${esc(f.level)}. ${esc(f.detail)}</li>`)}</section>` : ""}
       ${(s.values || []).length ? `<section class="sv-card"><h2>Values detected in the report</h2><div class="sv-table"><table><tr><th>Test</th><th>Value</th><th>Note</th></tr>${s.values.map((v) => `<tr><td>${esc(v.label)}</td><td>${esc(`${v.value} ${v.unit}`.trim())}</td><td>${esc(v.flag)}</td></tr>`).join("")}</table></div></section>` : ""}
       ${(s.panel || []).length ? `<section class="sv-card"><h2>All tests on the report</h2><div class="sv-table"><table><tr><th>Test</th><th>Result</th><th>Lab range</th><th>Status</th></tr>${s.panel.map((p) => `<tr><td>${esc(p.name)}</td><td>${esc(p.result)}</td><td>${esc(p.range || "not printed")}</td><td>${esc(p.status)}</td></tr>`).join("")}</table></div></section>` : ""}

@@ -97,6 +97,12 @@ jobs:
         run: node scripts/eval/founder-dashboard.mjs
       - name: Clinician validation pack matches the live rules
         run: node scripts/eval/validation-pack-current.mjs
+      - name: Does this match your report? (value check on each result card)
+        run: node scripts/eval/value-check.mjs
+      - name: What changed since your last report never compares different units
+        run: node scripts/eval/compare-units.mjs
+      - name: Clinic visit summary keeps each lab's unit
+        run: node scripts/eval/clinic-visit-units.mjs
 
       - name: Report questions are about the report's own results
         run: node scripts/eval/report-questions.mjs

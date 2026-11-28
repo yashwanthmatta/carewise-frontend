@@ -61,6 +61,7 @@
 
     const activityCards = [
       card("Values corrected by people", usage("value_corrected"), { def: "Times someone fixed a value the photo reader misread.", source: COUNTS, period: SINCE, limits: DAY_TOTALS }),
+      card("Values checked against the report", countingStarted ? `${usage("value_confirmed")} match · ${usage("value_mismatch")} do not` : null, { def: "Answers to “Does this match your report?” on result cards. “Do not” is a misread the person found.", source: COUNTS, period: SINCE, limits: `${DAY_TOTALS} Only people who chose to answer; a misread nobody notices is not counted.` }),
       card("Doctor questions copied", usage("questions_copied"), { def: "Times the doctor questions were copied.", source: COUNTS, period: SINCE, limits: DAY_TOTALS }),
       card("Returning visits", usage("returning_visit"), { def: "Visits from a browser that was here on an earlier day.", source: COUNTS, period: SINCE, limits: `${DAY_TOTALS} Cleared browsers look new.` }),
       card("Interest in a paid plan", usage("plan_interest"), { def: "Clicks on Choose Plus or Choose Family. Not a purchase.", source: COUNTS, period: SINCE, limits: DAY_TOTALS }),

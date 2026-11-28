@@ -5876,9 +5876,13 @@ function renderHistoryTrends(allReports, personFilter) {
     <div class="trend-grid">${groups.map((group) => {
       const units = new Set(group.entries.map((entry) => entry.parts?.unit || ""));
       const chart = trendChartSvg(group);
+      // Different labs can print different ranges for the same test (26 Nov 2026). The values are
+      // still shown exactly; this only says each one belongs with its own row's range.
+      const ranges = new Set(group.entries.filter((entry) => entry.range).map((entry) => String(entry.range).replace(/\s+/g, "")));
       return `<article class="trend-card">
         <h5>${escapeHtml(group.name)}</h5>
         ${chart || `<p class="history-trends-note">${units.size > 1 ? "The units differ between reports, so these are not drawn on one chart." : "Listed, not drawn: a value with < or > has no exact point."}</p>`}
+        ${ranges.size > 1 ? `<p class="history-trends-note trend-range-note">These reports printed different lab ranges. Compare each result with the range on its own row.</p>` : ""}
         <table class="trend-table"><thead><tr><th scope="col">Date</th><th scope="col">Result</th><th scope="col">Lab's range</th></tr></thead><tbody>
           ${group.entries.map((entry) => `<tr><td>${escapeHtml(entry.known ? formatTestDate(entry.when) : `Saved ${formatTestDate(entry.when)}`)}</td><td><strong>${escapeHtml(entry.value)}</strong>${entry.label ? `<span class="trend-label trend-label-${escapeHtml(entry.status || "none")}">${escapeHtml(entry.label)}</span>` : ""}</td><td>${escapeHtml(entry.range || "Not printed")}</td></tr>`).join("")}
         </tbody></table>
@@ -7280,6 +7284,68 @@ function resultValueHtml(card) {
   return escapeHtml(value);
 }
 
+// "Does this match your report?" (roadmap B5, 24 Nov 2026). The reader can misread a number, unit or
+// range, so each card asks the person to check it against their own report. "No" points them to
+// the exact line in the report text to fix, then Explain again; nothing is changed for them. Each
+// answer adds one anonymous count (value_confirmed / value_mismatch), with no value, name or text.
+function renderValueCheck(card, line, es) {
+  const id = `vc-${String(card.key || card.name).replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`;
+  return `
+            <div class="result-card-verify" data-value-check data-value-line="${escapeHtml(line || "")}" role="group" aria-labelledby="${id}">
+              <span id="${id}">${es ? "¿Coincide con su informe?" : "Does this match your report?"}</span>
+              <button type="button" class="result-card-verify-btn" data-value-answer="yes" aria-pressed="false">${es ? "Sí" : "Yes"}</button>
+              <button type="button" class="result-card-verify-btn" data-value-answer="no" aria-pressed="false">${es ? "No" : "No"}</button>
+              <p class="result-card-verify-note" role="status"></p>
+            </div>`;
+}
+
+function answerValueCheck(button) {
+  const box = button.closest("[data-value-check]");
+  if (!box) return;
+  const es = reportLanguage === "es";
+  const answer = button.dataset.valueAnswer;
+  box.querySelectorAll("[data-value-answer]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+  box.dataset.answered = answer;
+  const note = box.querySelector(".result-card-verify-note");
+  const line = box.dataset.valueLine || "";
+  if (answer === "yes") {
+    note.textContent = es ? "Gracias. Comprobado con su informe." : "Thanks. Checked against your report.";
+  } else {
+    note.innerHTML = `${escapeHtml(es
+      ? "Corrija la línea en el texto del informe para que coincida con su informe en papel, y luego pulse Explicar informe de nuevo."
+      : "Fix the line in the report text so it matches your paper report, then press Explain report again.")}${line ? ` <button type="button" class="secondary-button compact" data-value-fix>${es ? "Mostrar la línea" : "Show me the line"}</button>` : ""}`;
+  }
+  // One count per card and answer, so changing your mind does not double count.
+  const counted = (box.dataset.counted || "").split(",");
+  if (!counted.includes(answer)) {
+    box.dataset.counted = [...counted.filter(Boolean), answer].join(",");
+    trackReportUsage(answer === "yes" ? "value_confirmed" : "value_mismatch");
+  }
+}
+
+function showValueLine(button) {
+  const line = button.closest("[data-value-check]")?.dataset.valueLine || "";
+  const textArea = document.querySelector("#report-text");
+  if (!line || !textArea) return;
+  const lines = textArea.value.split("\n");
+  const index = lines.findIndex((item) => item.trim() === line.trim());
+  if (index < 0) return;
+  const start = lines.slice(0, index).reduce((total, item) => total + item.length + 1, 0);
+  textArea.scrollIntoView({ block: "center" });
+  textArea.focus({ preventScroll: true });
+  textArea.setSelectionRange(start, start + lines[index].length);
+  reportStatus.textContent = reportLanguage === "es"
+    ? "Corrija la línea resaltada y pulse Explicar informe."
+    : "Fix the highlighted line so it matches your report, then press Explain report.";
+}
+
+document.addEventListener("click", (event) => {
+  const answer = event.target.closest?.("[data-value-answer]");
+  if (answer) { answerValueCheck(answer); return; }
+  const fix = event.target.closest?.("[data-value-fix]");
+  if (fix) showValueLine(fix);
+});
+
 function renderResultCard(card, text, testIndex = -1) {
   const line = sourceLineFor(card);
   const es = reportLanguage === "es";
@@ -7291,6 +7357,7 @@ function renderResultCard(card, text, testIndex = -1) {
             ${card.rangeLabel ? `<p class="result-card-range">${escapeHtml(card.rangeLabel)}: ${escapeHtml(card.range || text.noRangePrinted)}</p>` : ""}
             ${card.note ? `<p class="result-card-range">${escapeHtml(card.note)}</p>` : ""}
             ${card.meaning ? `<h5 class="visually-hidden">${escapeHtml(text.whatMeans)}</h5><p class="result-card-meaning">${escapeHtml(card.meaning)}</p>` : ""}
+            ${renderValueCheck(card, line, es)}
             ${card.what || card.ask || line ? `<details class="result-card-more">
               <summary>${line ? (es ? "Más, y la línea de su informe" : "More, and the line in your report") : (es ? "Más sobre este resultado" : "More about this result")}</summary>
               ${line ? `<div class="result-card-source"><h5 class="result-card-source-title">${es ? "La línea de su informe" : "The line in your report"}</h5><code class="result-card-source-line">${escapeHtml(line)}</code>${pageRow ? `<button class="secondary-button compact result-card-source-page" type="button" data-source-line="${escapeHtml(line)}">${reportSourcePdf?.kind === "photo" ? (es ? "Verla en su foto" : "See it on your photo") : (es ? "Ver la página del informe" : "See it on the report page")}</button>` : ""}</div>` : ""}
@@ -7650,8 +7717,8 @@ async function copyPersonalPlan() {
 // ----- What changed since the last report (stored on this device only) -----
 const SNAPSHOT_KEY = "carewiseReportSnapshots";
 const CHANGE_TEXT = {
-  en: { title: "What changed since your last report", since: (d) => `Compared with your report from ${d}`, improved: "improved", worse: "need attention", same: "unchanged", improving: "improving", worsening: "moving away from the range", backIn: "back in range", stillOut: "still outside the range", newOut: "now outside the range", steady: "no change" },
-  es: { title: "Qué cambió desde su último informe", since: (d) => `Comparado con su informe del ${d}`, improved: "mejoraron", worse: "requieren atención", same: "sin cambios", improving: "mejorando", worsening: "alejándose del rango", backIn: "de vuelta en el rango", stillOut: "todavía fuera del rango", newOut: "ahora fuera del rango", steady: "sin cambios" },
+  en: { title: "What changed since your last report", since: (d) => `Compared with your report from ${d}`, improved: "improved", worse: "need attention", same: "unchanged", improving: "improving", worsening: "moving away from the range", backIn: "back in range", stillOut: "still outside the range", newOut: "now outside the range", steady: "no change", unitsDiffer: "different units, so the numbers are not compared", notCompared: "not compared" },
+  es: { title: "Qué cambió desde su último informe", since: (d) => `Comparado con su informe del ${d}`, improved: "mejoraron", worse: "requieren atención", same: "sin cambios", improving: "mejorando", worsening: "alejándose del rango", backIn: "de vuelta en el rango", stillOut: "todavía fuera del rango", newOut: "ahora fuera del rango", steady: "sin cambios", unitsDiffer: "unidades distintas, así que los números no se comparan", notCompared: "no comparados" },
 };
 
 // A plain count instead of a 0-100 score: how many results sit outside the lab's range.
@@ -7699,6 +7766,10 @@ function readSnapshots() {
   }
 }
 
+// Units are compared as printed, ignoring case and spaces ("mg/dL" = "mg/dl"). Nothing is converted:
+// a value in mg/dL and one in mmol/L are never put on one scale (24 Nov 2026: 126 mg/dL then
+// 7.2 mmol/L glucose was called "improving", although 7.2 mmol/L is the higher value).
+const unitKey = (unit) => String(unit || "").toLowerCase().replace(/\s+/g, "");
 function compareMarkers(before, now) {
   const previous = new Map(before.map((m) => [m.name.toLowerCase(), m]));
   return now.flatMap((m) => {
@@ -7706,14 +7777,17 @@ function compareMarkers(before, now) {
     if (!old) return [];
     const a = parseFloat(String(old.value).replace(/[^\d.-]/g, ""));
     const b = parseFloat(String(m.value).replace(/[^\d.-]/g, ""));
+    const sameUnit = unitKey(old.unit) === unitKey(m.unit);
     let kind = "same";
+    // Back in range / now outside compare each report with its own lab's range, so they stay valid.
     if (old.out && !m.out) kind = "backIn";
     else if (!old.out && m.out) kind = "newOut";
+    else if (!sameUnit) kind = "unitsDiffer";
     else if (Number.isFinite(a) && Number.isFinite(b) && a !== b && m.out) {
       const lowerIsBetter = (m.direction || old.direction) !== "high-good";
       kind = (lowerIsBetter ? b < a : b > a) ? "improving" : "worsening";
     } else if (String(old.value) !== String(m.value)) kind = "steady-changed";
-    return [{ name: m.name, before: old.value, now: m.value, unit: m.unit, kind, out: m.out }];
+    return [{ name: m.name, before: old.value, beforeUnit: old.unit || "", now: m.value, unit: m.unit, kind, out: m.out }];
   });
 }
 
@@ -7749,11 +7823,26 @@ function computeReportChanges(analysis) {
   return analysis._changes;
 }
 
+// "126 → 110 mg/dL" when both reports used one unit; "126 mg/dL → 7.2 mmol/L" when they did not, so
+// the earlier value never borrows the newer report's unit (27 Nov 2026: the doctor summary, the PDF and
+// the shared link printed "126 → 7.2 mmol/L"). The values are shown exactly as printed.
+function changeValues(row, arrow = "→") {
+  const before = String(row.before ?? "");
+  const now = String(row.now ?? "");
+  const unit = row.unit || "";
+  const beforeUnit = row.beforeUnit || "";
+  if (beforeUnit && unitKey(beforeUnit) !== unitKey(unit)) {
+    return `${before} ${beforeUnit} ${arrow} ${now}${unit ? ` ${unit}` : ""}`;
+  }
+  return `${before} ${arrow} ${now}${unit ? ` ${unit}` : ""}`;
+}
+
 function changeLabel(row, t) {
   if (row.kind === "backIn") return t.backIn;
   if (row.kind === "newOut") return t.newOut;
   if (row.kind === "improving") return `${t.improving}, ${t.stillOut}`;
   if (row.kind === "worsening") return `${t.worsening}, ${t.stillOut}`;
+  if (row.kind === "unitsDiffer") return t.unitsDiffer;
   return t.steady;
 }
 
@@ -7763,13 +7852,14 @@ function renderReportChanges(analysis) {
   const t = CHANGE_TEXT[reportLanguage === "es" ? "es" : "en"];
   const improved = changes.rows.filter((r) => r.kind === "backIn" || r.kind === "improving").length;
   const worse = changes.rows.filter((r) => r.kind === "newOut" || r.kind === "worsening").length;
-  const same = changes.rows.length - improved - worse;
+  const notCompared = changes.rows.filter((r) => r.kind === "unitsDiffer").length;
+  const same = changes.rows.length - improved - worse - notCompared;
   const arrow = (r) => (r.kind === "backIn" || r.kind === "improving" ? "▲" : r.kind === "newOut" || r.kind === "worsening" ? "▼" : "•");
   const date = new Date(`${changes.since}T12:00:00`).toLocaleDateString(reportLanguage === "es" ? "es" : undefined, { day: "numeric", month: "long", year: "numeric" });
   return `<section class="report-changes">
     <div class="report-changes-head"><h4>${escapeHtml(t.title)}</h4><span>${escapeHtml(t.since(date))}</span></div>
-    <p class="report-changes-counts"><b class="rc-good">${improved} ${escapeHtml(t.improved)}</b> · <b class="rc-bad">${worse} ${escapeHtml(t.worse)}</b> · <span>${same} ${escapeHtml(t.same)}</span></p>
-    <ul>${changes.rows.map((r) => `<li class="rc-${escapeHtml(r.kind)}"><span class="rc-arrow" aria-hidden="true">${arrow(r)}</span> <b>${escapeHtml(r.name)}</b> ${escapeHtml(String(r.before))} → ${escapeHtml(String(r.now))} ${escapeHtml(r.unit)} · ${escapeHtml(changeLabel(r, t))}</li>`).join("")}</ul>
+    <p class="report-changes-counts"><b class="rc-good">${improved} ${escapeHtml(t.improved)}</b> · <b class="rc-bad">${worse} ${escapeHtml(t.worse)}</b> · <span>${same} ${escapeHtml(t.same)}</span>${notCompared ? ` · <span>${notCompared} ${escapeHtml(t.notCompared)}</span>` : ""}</p>
+    <ul>${changes.rows.map((r) => `<li class="rc-${escapeHtml(r.kind)}"><span class="rc-arrow" aria-hidden="true">${arrow(r)}</span> <b>${escapeHtml(r.name)}</b> ${escapeHtml(changeValues(r))} · ${escapeHtml(changeLabel(r, t))}</li>`).join("")}</ul>
   </section>`;
 }
 
@@ -8419,7 +8509,7 @@ ${view.headline ? `<h2>Summary</h2><p><b>${escapeHtml(view.headline)}.</b> ${esc
 ${view.tests.length ? `<h2>Tests on the report (compared with the lab's printed range)</h2><table><tr><th>Test</th><th>Result</th><th>Lab range</th><th>Status</th></tr>${view.tests.map((item) => `<tr><td>${escapeHtml(item.name)}</td><td>${escapeHtml(item.value)}</td><td>${escapeHtml(item.range || "not printed")}</td><td>${escapeHtml(item.label)}</td></tr>`).join("")}</table>` : rows ? `<h2>Values detected in the report</h2><table><tr><th>Test</th><th>Value</th><th>FollowThrough Health note</th></tr>${rows}</table>` : ""}
 ${analysis.scan ? `<h2>Imaging report (${escapeHtml(analysis.scan.en.modality || "imaging")}), explained from the radiologist's text only</h2>${analysis.scan.en.followUps.length ? `<p>Lines the patient would like to discuss:</p><ul>${analysis.scan.en.followUps.map((item) => `<li>“${escapeHtml(item.sentence)}”</li>`).join("")}</ul>` : "<p>No follow-up lines were flagged in the report text.</p>"}` : ""}
 ${view.tests.length ? "" : `<h2>Discussion points</h2><ul>${findings}</ul>`}
-${analysis._changes?.rows?.length ? `<h2>Changes since the previous report (${escapeHtml(analysis._changes.since)})</h2><ul>${analysis._changes.rows.map((r) => `<li>${escapeHtml(r.name)}: ${escapeHtml(String(r.before))} → ${escapeHtml(String(r.now))} ${escapeHtml(r.unit)} (${escapeHtml(changeLabel(r, CHANGE_TEXT.en))})</li>`).join("")}</ul>` : ""}
+${analysis._changes?.rows?.length ? `<h2>Changes since the previous report (${escapeHtml(analysis._changes.since)})</h2><ul>${analysis._changes.rows.map((r) => `<li>${escapeHtml(r.name)}: ${escapeHtml(changeValues(r))} (${escapeHtml(changeLabel(r, CHANGE_TEXT.en))})</li>`).join("")}</ul>` : ""}
 ${ocrReviewed.length ? `<h2>Numbers read from a photo and checked by the patient</h2><ul>${ocrReviewed.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
 ${buildHealthHistoryBriefSection(person)}
 <h2>Patient questions</h2><ol>${questions}</ol>
@@ -8598,7 +8688,7 @@ function buildSharePacketPdf(analysis, person = "Me") {
   }
   if (analysis._changes?.rows?.length) {
     blocks.push({ type: "heading", text: `Changes since the previous report (${analysis._changes.since})` });
-    blocks.push({ type: "list", items: analysis._changes.rows.map((r) => `${r.name}: ${r.before} -> ${r.now} ${r.unit} (${changeLabel(r, CHANGE_TEXT.en)})`) });
+    blocks.push({ type: "list", items: analysis._changes.rows.map((r) => `${r.name}: ${changeValues(r, "->")} (${changeLabel(r, CHANGE_TEXT.en)})`) });
   }
   if (ocrReviewed.length) {
     blocks.push({ type: "heading", text: "Numbers read from a photo and checked by the patient" }, { type: "list", items: ocrReviewed });
